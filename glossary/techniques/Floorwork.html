@@ -1,625 +1,613 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>部分绳缚技术名称</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 基础重置 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { 
-            font-family: "微软雅黑", sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
+      /* 基础重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "微软雅黑", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航样式 */
+      .navbar {
+        background: #667eea;
+        padding: 12px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 面包屑导航 */
+      .breadcrumb {
+        background: #f5f5f5;
+        padding: 12px 0;
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+      }
+
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* 术语详情页头 */
+      .term-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        text-align: center;
+        border-radius: 10px;
+      }
+
+      .term-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .term-header .term-origin {
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+
+      /* 多语言表述 */
+      .language-expressions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .language-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .language-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .language-card .expression {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin: 10px 0;
+        padding: 8px;
+        background: white;
+        border-radius: 8px;
+      }
+
+      .language-card .pronunciation {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+
+      /* 内容区域 */
+      .content-section {
+        margin-bottom: 40px;
+      }
+
+      .content-section h2 {
+        font-size: 1.7rem;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+
+      .content-section p {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 15px;
+      }
+
+      .content-section ul,
+      .content-section ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .content-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      /* 图片展示区 */
+      .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .image-item {
+        background: #f9f9f9;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .image-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .image-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-caption {
+        padding: 15px;
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+      }
+
+      /* 相关技术 */
+      .related-techniques {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .related-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .related-card:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-5px);
+      }
+
+      .related-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+      }
+
+      /* 返回按钮 */
+      .back-button {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 500;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: #5a6fd8;
+        transform: translateX(-3px);
+      }
+
+      /* 页脚 */
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 25px 0;
+        margin-top: 40px;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: white;
+        text-decoration: underline;
+      }
+
+      .footer p {
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 992px) {
+        html {
+          font-size: 15px;
         }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 15px; 
-        }
-        
-        /* 导航样式 */
-        .navbar {
-            background: #667eea;
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            background: #f5f5f5;
-            padding: 12px 0;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 术语详情页头 */
-        .term-header {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            text-align: center;
-            border-radius: 10px;
-        }
-        
+
         .term-header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+          font-size: 2rem;
         }
-        
-        .term-header .term-origin {
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        /* 多语言表述 */
+
         .language-expressions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
-        
-        .language-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .language-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .language-card .expression {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-        }
-        
-        .language-card .pronunciation {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        
-        /* 内容区域 */
-        .content-section {
-            margin-bottom: 40px;
-        }
-        
-        .content-section h2 {
-            font-size: 1.7rem;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
-        }
-        
-        .content-section p {
-            font-size: 0.95rem;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        
-        .content-section ul, .content-section ol {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .content-section li {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-        
-        /* 图片展示区 */
+
         .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
-        
-        .image-item {
-            background: #f9f9f9;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        html {
+          font-size: 14px;
         }
-        
-        .image-item:hover {
-            transform: translateY(-5px);
+
+        .term-header {
+          padding: 25px 0;
         }
-        
+
+        .term-header h1 {
+          font-size: 1.8rem;
+        }
+
+        .language-expressions {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .language-card {
+          padding: 15px;
+        }
+
+        .language-card h3 {
+          font-size: 1.2rem;
+        }
+
+        .content-section h2 {
+          font-size: 1.5rem;
+        }
+
+        .image-gallery {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
         .image-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
+          height: 180px;
         }
-        
-        .image-caption {
-            padding: 15px;
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-        }
-        
-        /* 相关技术 */
+
         .related-techniques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(2, 1fr);
         }
-        
-        .related-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+
+        .navbar .container {
+          flex-direction: column;
+          gap: 10px;
         }
-        
-        .related-card:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-5px);
+
+        .nav-links {
+          gap: 8px;
         }
-        
-        .related-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+
+        .nav-links a {
+          font-size: 0.85rem;
+          padding: 4px 8px;
         }
-        
-        /* 返回按钮 */
-        .back-button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 500;
-            margin: 20px 0;
-            transition: all 0.3s ease;
+
+        .logo {
+          font-size: 1.1rem;
         }
-        
-        .back-button:hover {
-            background: #5a6fd8;
-            transform: translateX(-3px);
+      }
+
+      @media (max-width: 576px) {
+        html {
+          font-size: 13px;
         }
-        
-        /* 页脚 */
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 40px;
+
+        .term-header h1 {
+          font-size: 1.6rem;
+          padding: 0 10px;
         }
-        
+
+        .content-section h2 {
+          font-size: 1.4rem;
+        }
+
+        .image-item img {
+          height: 160px;
+        }
+
+        .related-techniques {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links a {
+          font-size: 0.8rem;
+          padding: 3px 6px;
+        }
+
+        .container {
+          padding: 0 10px;
+        }
+
         .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+          gap: 15px;
         }
-        
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 0.9rem;
+      }
+
+      @media (max-width: 360px) {
+        html {
+          font-size: 12px;
         }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
+
+        .term-header h1 {
+          font-size: 1.4rem;
         }
-        
-        .footer p {
-            font-size: 0.9rem;
-            margin-top: 10px;
+
+        .nav-links {
+          flex-direction: column;
+          align-items: center;
         }
-        
-        /* 响应式调整 */
-        @media (max-width: 992px) {
-            html { font-size: 15px; }
-            
-            .term-header h1 {
-                font-size: 2rem;
-            }
-            
-            .language-expressions {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-            
-            .image-gallery {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
+
+        .nav-links a {
+          font-size: 0.85rem;
         }
-        
-        @media (max-width: 768px) {
-            html { font-size: 14px; }
-            
-            .term-header {
-                padding: 25px 0;
-            }
-            
-            .term-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .language-expressions {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .language-card {
-                padding: 15px;
-            }
-            
-            .language-card h3 {
-                font-size: 1.2rem;
-            }
-            
-            .content-section h2 {
-                font-size: 1.5rem;
-            }
-            
-            .image-gallery {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .image-item img {
-                height: 180px;
-            }
-            
-            .related-techniques {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .navbar .container {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .nav-links {
-                gap: 8px;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-                padding: 4px 8px;
-            }
-            
-            .logo {
-                font-size: 1.1rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            html { font-size: 13px; }
-            
-            .term-header h1 {
-                font-size: 1.6rem;
-                padding: 0 10px;
-            }
-            
-            .content-section h2 {
-                font-size: 1.4rem;
-            }
-            
-            .image-item img {
-                height: 160px;
-            }
-            
-            .related-techniques {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links a {
-                font-size: 0.8rem;
-                padding: 3px 6px;
-            }
-            
-            .container {
-                padding: 0 10px;
-            }
-            
-            .footer-links {
-                gap: 15px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            html { font-size: 12px; }
-            
-            .term-header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-mountain"></i>
-                <span>常用绳缚词汇库</span>
-            </div>
-            <div class="nav-links">
-                <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
-                <a href="#" class="active"><i class="fas fa-ribbon"></i> 地面缚</a>
-            </div>
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-mountain"></i>
+          <span>常用绳缚词汇库</span>
         </div>
+        <div class="nav-links">
+          <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
+          <a href="#" class="active"><i class="fas fa-ribbon"></i> 地面缚</a>
+        </div>
+      </div>
     </nav>
 
     <!-- 面包屑导航 -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="../../index.html">首页</a> &gt; 
-            <a href="../techniques/index.html">部分绳缚技术名称</a> &gt; 
-            <span>地面缚 (Floorwork)</span>
-        </div>
+      <div class="container">
+        <a href="../../index.html">首页</a> &gt;
+        <a href="../techniques/index.html">部分绳缚技术名称</a> &gt;
+        <span>地面缚</span>
+      </div>
     </div>
 
     <!-- 术语详情页头 -->
     <header class="term-header">
-        <div class="container">
-            <h1>地面缚 (Floorwork)</h1>
-            <div class="term-origin">
-                <i class="fas fa-language"></i> 地面基础绳缚技术
-            </div>
+      <div class="container">
+        <h1>地面缚 (Floorwork)</h1>
+        <div class="term-origin">
+          <i class="fas fa-language"></i> 地面基础绳缚技术
         </div>
+      </div>
     </header>
 
     <!-- 多语言表述 -->
     <section class="container">
-        <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-globe-asia"></i> 多语言表述
-        </h2>
-        <div class="language-expressions">
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 中文表述</h3>
-                <div class="expression">地面缚</div>
-                <div class="pronunciation">Dì miàn fù</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">在地面上进行的绳缚技术</p>
-            </div>
-            
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 英文表述</h3>
-                <div class="expression">Floorwork / Ground Bondage</div>
-                <div class="pronunciation">/ˈflɔːrwɜːrk/</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">Bondage performed on the floor</p>
-            </div>
-            
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 日文表述</h3>
-                <div class="expression">床縛り</div>
-                <div class="pronunciation">ゆかしばり</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">床の上で行う縄術</p>
-            </div>
+      <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+        <i class="fas fa-globe-asia"></i> 多语言表述
+      </h2>
+      <div class="language-expressions">
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 中文表述</h3>
+          <div class="expression">地面缚</div>
         </div>
+
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 英文表述</h3>
+          <div class="expression">Floorwork</div>
+        </div>
+
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 日文表述</h3>
+          <div class="expression">寝技</div>
+          <div class="pronunciation">ねわざ</div>
+        </div>
+      </div>
     </section>
 
     <!-- 详细介绍 -->
     <section class="container">
-        <div class="content-section">
-            <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
-            <p>地面缚（Floorwork）是指在地面上进行的绳缚技术，是绳缚艺术的基础形式，适合初学者练习和高级绳缚技术的基础训练。</p>
-            <p>地面缚相对安全，风险较低，是学习绳缚技术和建立施缚者与被缚者之间信任关系的理想起点。</p>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-star"></i> 主要特点</h2>
-            <ul>
-                <li><strong>安全性高：</strong>在地面进行，坠落风险最小</li>
-                <li><strong>基础性强：</strong>是学习所有绳缚技术的基础</li>
-                <li><strong>适应性强：</strong>可在任何平坦地面上进行</li>
-                <li><strong>学习曲线平缓：</strong>适合初学者逐步掌握技术</li>
-                <li><strong>创造空间大：</strong>可以尝试多种姿势和缚法</li>
-            </ul>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-list-ol"></i> 常见形式与技术</h2>
-            <ol>
-                <li><strong>卧位缚：</strong>受缚者平躺或俯卧的地面缚</li>
-                <li><strong>坐位缚：</strong>受缚者坐姿的地面缚</li>
-                <li><strong>侧卧位缚：</strong>受缚者侧卧姿势的绳缚</li>
-                <li><strong>四肢缚：</strong>着重束缚四肢的地面缚</li>
-                <li><strong>组合缚：</strong>多种姿势结合的综合地面缚</li>
-                <li><strong>动态缚：</strong>允许受缚者有限移动的地面缚</li>
-            </ol>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-graduation-cap"></i> 学习价值</h2>
-            <p>地面缚作为入门技术具有重要的学习价值：</p>
-            <ul>
-                <li><strong>技术基础：</strong>掌握基本的绳结和缚法技术</li>
-                <li><strong>安全认知：</strong>建立正确的安全意识和操作习惯</li>
-                <li><strong>沟通练习：</strong>练习施缚者与被缚者之间的有效沟通</li>
-                <li><strong>信任建立：</strong>在安全环境中逐步建立双方信任</li>
-                <li><strong>创意探索：</strong>在低风险环境中尝试创新缚法</li>
-            </ul>
-        </div>
+      <div class="content-section">
+        <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
+        <p>地面缚（Floorwork）是指在地板（或其他表面，如床）上进行的绳缚方法，是不需要进行悬吊的一种玩法。适合初学者练习和高级绳缚技术的基础训练。</p>
+        <p>地面缚相对安全，风险较低，是学习绳缚技术和建立施缚者与被缚者之间信任关系的理想起点。</p>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-star"></i> 主要特点</h2>
+        <ul>
+          <li><strong>安全性高：</strong>在地面进行，坠落风险最小</li>
+          <li><strong>基础性强：</strong>是学习所有绳缚技术的基础</li>
+          <li><strong>适应性强：</strong>可在任何平坦地面上进行</li>
+          <li><strong>学习曲线平缓：</strong>适合初学者逐步掌握技术</li>
+          <li><strong>创造空间大：</strong>可以尝试多种姿势和缚法</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-list-ol"></i> 常见形式与技术</h2>
+        <ol>
+          <li><strong>卧位缚：</strong>受缚者平躺或俯卧的地面缚</li>
+          <li><strong>坐位缚：</strong>受缚者坐姿的地面缚</li>
+          <li><strong>侧卧位缚：</strong>受缚者侧卧姿势的绳缚</li>
+          <li><strong>四肢缚：</strong>着重束缚四肢的地面缚</li>
+          <li><strong>组合缚：</strong>多种姿势结合的综合地面缚</li>
+          <li><strong>动态缚：</strong>允许受缚者有限移动的地面缚</li>
+        </ol>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-graduation-cap"></i> 学习价值</h2>
+        <p>地面缚作为入门技术具有重要的学习价值：</p>
+        <ul>
+          <li><strong>技术基础：</strong>掌握基本的绳结和缚法技术</li>
+          <li><strong>安全认知：</strong>建立正确的安全意识和操作习惯</li>
+          <li><strong>沟通练习：</strong>练习施缚者与被缚者之间的有效沟通</li>
+          <li><strong>信任建立：</strong>在安全环境中逐步建立双方信任</li>
+          <li><strong>创意探索：</strong>在低风险环境中尝试创新缚法</li>
+        </ul>
+      </div>
     </section>
 
     <!-- 图片展示区 -->
     <section class="container">
-        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-images"></i> 示意图展示
-        </h2>
-        <div class="image-gallery">
-            <div class="image-item">
-                <img src="assets/images/floorwork-basic.jpg" alt="基础地面缚示意图" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GbG9vcndvcmsgQmFzaWM8L3RleHQ+PC9zdmc+'">
-                <div class="image-caption">基础地面缚示意图 - 卧位缚</div>
-            </div>
-            
-            <div class="image-item">
-                <img src="assets/images/floorwork-sitting.jpg" alt="坐位地面缚示意图" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5TaXR0aW5nIEZsb29yd29yazwvdGV4dD48L3N2Zz4='">
-                <div class="image-caption">坐位地面缚示意图 - 双手背后缚</div>
-            </div>
+      <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+        <i class="fas fa-images"></i> 示意图展示
+      </h2>
+      <div class="image-gallery">
+        <div class="image-item">
+          <img src="assets/images/floorwork-basic.jpg" alt="基础地面缚示意图" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GbG9vcndvcmsgQmFzaWM8L3RleHQ+PC9zdmc+'">
+          <div class="image-caption">基础地面缚示意图 - 卧位缚</div>
         </div>
-    </section>
 
-    <!-- 相关技术 -->
-    <section class="container">
-        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-link"></i> 相关绳缚技术
-        </h2>
-        <div class="related-techniques">
-            <a href="Suspension.html" class="related-card">
-                <h4>吊缚</h4>
-                <p>Suspension</p>
-            </a>
-            
-            <a href="Partial.html" class="related-card">
-                <h4>半吊</h4>
-                <p>Partial Suspension</p>
-            </a>
-            
-            <a href="Shibari.html" class="related-card">
-                <h4>绳艺</h4>
-                <p>Shibari</p>
-            </a>
-            
-            <a href="Kinbaku.html" class="related-card">
-                <h4>紧缚</h4>
-                <p>Kinbaku</p>
-            </a>
+        <div class="image-item">
+          <img src="assets/images/floorwork-sitting.jpg" alt="坐位地面缚示意图" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5TaXR0aW5nIEZsb29yd29yazwvdGV4dD48L3N2Zz4='">
+          <div class="image-caption">坐位地面缚示意图 - 双手背后缚</div>
         </div>
+      </div>
     </section>
 
     <!-- 返回按钮 -->
     <div class="container" style="text-align: center;">
-        <a href="../techniques/index.html" class="back-button">
-            <i class="fas fa-arrow-left"></i> 返回
-        </a>
+      <a href="../techniques/index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> 返回
+      </a>
     </div>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="../../index.html">返回首页</a>
-            </div>
-            <p>© 2026 常用绳缚词汇库</p>
+      <div class="container">
+        <div class="footer-links">
+          <a href="../../index.html">返回首页</a>
         </div>
+        <p>© 2026 常用绳缚词汇库</p>
+      </div>
     </footer>
 
     <script>
-        // 显示当前日期
-        const now = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        
-        // 简单的图片加载错误处理
-        document.querySelectorAll('img').forEach(img => {
-            img.onerror = function() {
-                console.log('图片加载失败: ' + this.src);
-            };
+      // 显示当前日期
+      const now = new Date();
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+
+      // 简单的图片加载错误处理
+      document.querySelectorAll('img').forEach(img => {
+        img.onerror = function () {
+          console.log('图片加载失败: ' + this.src);
+        };
+      });
+
+      // 平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const targetId = this.getAttribute('href');
+          if (targetId !== '#') {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              e.preventDefault();
+              targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }
+          }
         });
-        
-        // 平滑滚动
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('href');
-                if (targetId !== '#') {
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        e.preventDefault();
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            });
-        });
+      });
     </script>
-</body>
+  </body>
+
 </html>
