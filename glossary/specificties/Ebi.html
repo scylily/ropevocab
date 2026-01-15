@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一些绑法的名称</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 基础重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+        body { 
+            font-family: "微软雅黑", sans-serif; 
+            line-height: 1.6; 
+            color: #333;
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 15px; 
+        }
+        
+        /* 导航样式 */
+        .navbar {
+            background: #667eea;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 面包屑导航 */
+        .breadcrumb {
+            background: #f5f5f5;
+            padding: 12px 0;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
+        }
+        
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 术语详情页头 */
+        .term-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        
+        .term-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .term-header .term-origin {
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        /* 多语言表述 */
+        .language-expressions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .language-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .language-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .language-card .expression {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .language-card .pronunciation {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* 详细介绍样式 */
+        .content-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .content-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .content-section p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .content-section ul, .content-section ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .content-section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .content-section strong {
+            color: #667eea;
+        }
+        
+        /* 图片展示区 */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .image-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .image-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .image-caption {
+            padding: 15px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: #666;
+            background: #f9f9f9;
+        }
+        
+        /* 相关技术 */
+        .related-techniques {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .related-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .related-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .related-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* 返回按钮 */
+        .back-button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1rem;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #5568d2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background: #333;
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        
+        .footer-links a:hover {
+            color: #667eea;
+        }
+        
+        .footer p {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .term-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+            
+            .image-gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="../../index.html" class="logo">
+                <i class="fas fa-book"></i>
+                常用绳缚词汇库
+            </a>
+            <div class="nav-links">
+                <a href="../../index.html">首页</a>
+                <a href="#" class="active"><i class="fas fa-globe"></i> 海老缚</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../../index.html">首页</a> &gt; 
+            <a href="../specificties/index.html">一些绑法的名称</a> &gt; 
+            海老缚
+        </div>
+    </div>
+
+    <!-- 术语详情页头 -->
+    <header class="term-header">
+        <div class="container">
+            <h1>海老缚 (Ebi / Shrimp Tie)</h1>
+            <div class="term-origin">
+                <i class="fas fa-language"></i> 日本传统的身体前屈缚法
+            </div>
+        </div>
+    </header>
+
+    <!-- 多语言表述 -->
+    <section class="container">
+        <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+            <i class="fas fa-globe-asia"></i> 多语言表述
+        </h2>
+        <div class="language-expressions">
+            <div class="language-card">
+                <h3><i class="fas fa-language"></i> 中文表述</h3>
+                <div class="expression">海老缚 / 虾缚</div>
+                <div class="pronunciation">Hǎi lǎo fù</div>
+                <p style="font-size: 0.85rem; margin-top: 10px;">因身体弯曲如虾（海老）而得名</p>
+            </div>
+            
+            <div class="language-card">
+                <h3><i class="fas fa-language"></i> 英文表述</h3>
+                <div class="expression">Ebi / Shrimp Tie</div>
+                <div class="pronunciation">/ˈɛbi/</div>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Japanese forward-bending restraint technique</p>
+            </div>
+            
+            <div class="language-card">
+                <h3><i class="fas fa-language"></i> 日文表述</h3>
+                <div class="expression">海老縛り</div>
+                <div class="pronunciation">えびしばり</div>
+                <p style="font-size: 0.85rem; margin-top: 10px;">えびのように体を丸める縛り方</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 详细介绍 -->
+    <section class="container">
+        <div class="content-section">
+            <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
+            <p>海老缚（Ebi / Shrimp Tie）是日本绳缚中的一种经典缚法，其核心特征是将被缚者的身体向前弯曲，使背部弓起、头部接近膝盖，整体姿态弯曲如虾（日语"海老"即虾），因此得名。这与西方Hogtie的形态有明显区别。</p>
+            <p>这是一种极具视觉冲击力的束缚姿势，能够有效限制行动并创造强烈的身体感受。在传统绳艺中，海老缚不仅是一种束缚技术，也是一种具有美学价值的身体塑形方式。</p>
+        </div>
+        
+        <div class="content-section">
+            <h2><i class="fas fa-star"></i> 技术特征</h2>
+            <ul>
+                <li><strong>核心姿态：</strong>身体强力前屈，背部弓起，形成虾形曲线。</li>
+                <li><strong>连接方式：</strong>通常将手腕与脚踝或膝弯在身体前方或侧方连接。</li>
+                <li><strong>受力点：</strong>压力主要分布于脊柱（特别是胸椎和腰椎）、腹部及大腿后侧。</li>
+                <li><strong>基本结构：</strong>以单柱缚（SCT）固定四肢，再用绳索进行特定角度的连接。</li>
+                <li><strong>变体：</strong>根据手腕与脚踝连接的具体位置（胸前、腿侧等）有多种变化。</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2><i class="fas fa-map-marker-alt"></i> 主要应用场景</h2>
+            <ul>
+                <li><strong>艺术展示与摄影：</strong>独特的虾形曲线极具美学价值，是绳艺摄影的经典主题。</li>
+                <li><strong>身体柔韧性探索：</strong>在安全范围内探索脊柱前屈的极限。</li>
+                <li><strong>感官集中体验：</strong>压缩的姿势能增强身体感受的集中度。</li>
+                <li><strong>传统绳艺实践：</strong>作为日本绳缚技术体系的代表性缚法之一。</li>
+                <li><strong>剧情扮演：</strong>适用于需要表现出极度顺从、蜷缩或等待姿态的场景。</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2><i class="fas fa-exclamation-triangle"></i> 安全注意事项</h2>
+            <ul>
+                <li><strong>脊柱安全：</strong>对腰椎和胸椎压力较大，有脊柱问题者绝对禁止尝试。</li>
+                <li><strong>呼吸监控：</strong>压缩的胸腔可能限制呼吸，需确保被缚者能顺畅呼吸。</li>
+                <li><strong>柔韧性评估：</strong>必须根据被缚者的身体柔韧度调整弯曲程度，不可强行施压。</li>
+                <li><strong>血液循环：</strong>关注四肢末端颜色和温度，防止因姿势导致的循环不畅。</li>
+                <li><strong>时间限制：</strong>建议维持时间不超过15-20分钟，需定时放松检查。</li>
+                <li><strong>沟通清晰：</strong>必须建立有效的安全信号系统，特别是非语言的信号。</li>
+                <li><strong>禁止新手单独尝试：</strong>此缚法具有一定风险，需要经验者指导或监护。</li>
+            </ul>
+        </div>
+        
+        <div class="content-section">
+            <h2><i class="fas fa-images"></i> 图片展示</h2>
+            <p style="text-align: center; color: #666; font-style: italic;">
+                （此处为图片占位区域，用于展示海老缚经典的向前弯曲虾形姿态）
+            </p>
+            <!-- 在实际使用中，此处应替换为 <img> 标签 -->
+        </div>
+        
+        <div class="content-section">
+            <h2><i class="fas fa-link"></i> 相关绑法</h2>
+            <ul>
+                <li><strong><a href="./SCT.html">单柱缚 (SCT)</a>：</strong>固定四肢的基础。</li>
+                <li><strong><a href="./DCT.html">双柱缚 (DCT)</a>：</strong>连接两个部位的核心技术。</li>
+                <li><strong>逆海老缚 (Hogtie)：</strong>与其对应的身体向后弯曲的缚法。</li>
+                <li><strong>龟甲缚：</strong>另一种经典的装饰性全身缚法，可与海老缚结合。</li>
+                <li><strong>胸缚：</strong>常作为上半身的基础结构，用于辅助形成前屈姿态。</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 相关绑法 -->
+    <section class="container">
+        <div class="content-section">
+            <h2><i class="fas fa-link"></i> 相关绑法</h2>
+            <div class="related-terms">
+                <div class="term-cards-grid">
+                    <a href="reverse_ebi.html" class="term-card">
+                        <h3>逆海老缚</h3>
+                        <p>Reverse Ebi</p>
+                        <div class="term-description">反向虾形姿势缚法</div>
+                    </a>
+                    
+                    <a href="futomomo.html" class="term-card">
+                        <h3>折腿缚</h3>
+                        <p>Futomomo</p>
+                        <div class="term-description">腿部折叠缚法</div>
+                    </a>
+                    
+                    <a href="takatekote.html" class="term-card">
+                        <h3>高手小手缚</h3>
+                        <p>Takatekote</p>
+                        <div class="term-description">传统后手缚技术</div>
+                    </a>
+                    
+                    <a href="kikkou.html" class="term-card">
+                        <h3>龟甲缚</h3>
+                        <p>Kikkou</p>
+                        <div class="term-description">龟壳图案的全身缚法</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 相关名称 -->
+    <section class="container">
+        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+            <i class="fas fa-link"></i> 相关术语
+        </h2>
+        <div class="related-techniques">
+            <a href="DCT.html" class="related-card">
+                <h4>双柱缚</h4>
+                <p>Double Column Tie</p>
+            </a>
+
+            <a href="TK.html" class="related-card">
+                <h4>高手小手缚</h4>
+                <p>TK / Box Tie</p>
+            </a>
+
+            <a href="Hishi.html" class="related-card">
+                <h3>菱形缚</h3>
+                <p>Hishi</p>
+            </a>
+
+            <a href="Futomomo.html" class="related-card">
+                <h3>折腿缚</h3>
+                <p>Futomomo</p>
+            </a>
+        </div>
+    </section>
+
+    <!-- 返回按钮 -->
+    <div class="container" style="text-align: center;">
+        <a href="../specificties/index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> 返回
+        </a>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../../index.html">返回首页</a>
+            </div>
+            <p>© 2026 常用绳缚词汇库</p>
+        </div>
+    </footer>
+</body>
+</html>

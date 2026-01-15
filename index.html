@@ -2,62 +2,662 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>绳索专业词汇库</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>常用绳缚词汇库</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 基础样式（手机电脑都能用） */
+        /* 基础重置 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "微软雅黑", sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        /* 页头 */
-        .header { background: #4CAF50; color: white; padding: 20px 0; margin-bottom: 30px; }
-        .header h1 { font-size: 2.5rem; text-align: center; }
-        .header p { font-size: 1.2rem; text-align: center; margin-top: 10px; }
-        /* 术语卡片 */
-        .term-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .term-card { background: #f9f9f9; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .term-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #4CAF50; }
-        .term-card p { font-size: 1rem; color: #666; }
+        html { font-size: 16px; } /* 基础字体大小 */
+        body { 
+            font-family: "Noto Sans SC", "微软雅黑", sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            -webkit-text-size-adjust: 100%; /* 防止IOS自动调整字体 */
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 15px; 
+        }
+        
+        /* 导航栏 */
+        .navbar {
+            background: #667eea;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .nav-links a:hover, .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 首页特有样式 */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%),
+                        url('assets/images/hero-bg.jpg') center/cover no-repeat;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .hero-subtitle {
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+            opacity: 0.95;
+        }
+        
+        .search-box {
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            padding-left: 45px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1rem;
+        }
+        
+        .category-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 2px solid transparent;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            border-color: #667eea;
+        }
+        
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .category-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .category-card p {
+            color: #666;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .statistics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        /* 术语列表 */
+        .term-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .term-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .term-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .term-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            background: #4CAF50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .quick-link {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+        }
+        
+        .quick-link:hover {
+            transform: translateX(3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .quick-link i {
+            font-size: 1.5rem;
+            color: #667eea;
+        }
+        
+        .quick-link h4 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        
+        .quick-link p {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
         /* 页脚 */
-        .footer { background: #333; color: white; text-align: center; padding: 20px 0; margin-top: 50px; }
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 25px 0;
+            margin-top: 40px;
+        }
+        
+        .footer h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .copyright {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #bdc3c7;
+        }
+        
+        /* 响应式调整 - 重点修改部分 */
+        @media (max-width: 768px) {
+            html { font-size: 15px; }
+            
+            .hero-title { 
+                font-size: 1.8rem; 
+                padding: 0 10px;
+            }
+            
+            .hero-subtitle { 
+                font-size: 0.95rem; 
+                padding: 0 10px;
+            }
+            
+            .category-nav { 
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+                gap: 10px;
+            }
+            
+            .category-card {
+                padding: 15px 10px;
+            }
+            
+            .category-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .category-card p {
+                font-size: 0.8rem;
+            }
+            
+            .statistics { 
+                grid-template-columns: repeat(2, 1fr); 
+                padding: 15px;
+                gap: 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .term-list {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .term-card {
+                padding: 15px;
+            }
+            
+            .term-card h3 {
+                font-size: 1.2rem;
+            }
+            
+            .term-card p {
+                font-size: 0.85rem;
+            }
+            
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                gap: 8px;
+            }
+            
+            .nav-links a {
+                font-size: 0.85rem;
+                padding: 4px 8px;
+            }
+            
+            .logo {
+                font-size: 1.1rem;
+            }
+            
+            section h2 {
+                font-size: 1.5rem !important;
+                margin: 30px 0 20px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            html { font-size: 14px; }
+            
+            .hero-title { 
+                font-size: 1.6rem; 
+            }
+            
+            .hero-section {
+                padding: 30px 0;
+            }
+            
+            .category-nav { 
+                grid-template-columns: 1fr; 
+            }
+            
+            .statistics { 
+                grid-template-columns: repeat(2, 1fr); 
+            }
+            
+            .navbar .container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-box input {
+                padding: 10px 12px;
+                padding-left: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            section h2 {
+                font-size: 1.4rem !important;
+            }
+            
+            .category-card h3 {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            html { font-size: 13px; }
+            
+            .hero-title { 
+                font-size: 1.4rem; 
+            }
+            
+            .category-icon {
+                font-size: 1.8rem;
+            }
+            
+            .stat-number {
+                font-size: 1.3rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.8rem;
+                padding: 3px 6px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- 页头 -->
-    <header class="header">
+    <!-- 导航栏 -->
+    <nav class="navbar">
         <div class="container">
-            <h1>绳索专业词汇库</h1>
-            <p>全面的绳索术语、打结技巧和装备知识库（GitBook迁移版）</p>
+            <div class="logo">
+                <i class="fas fa-mountain"></i>
+                <span>常用绳缚词汇库</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> 首页</a>
+                <a href="about.html"><i class="fas fa-info-circle"></i> 关于</a>
+                <a href="#categories"><i class="fas fa-th-large"></i> 分类</a>
+                <a href="admin/index.html"><i class="fas fa-cog"></i> 管理</a>
+            </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- 术语内容 -->
-    <main class="container">
-        <div class="term-list">
-            <!-- 术语卡片1：登山绳 -->
-            <div class="term-card">
-                <h3>登山绳</h3>
-                <p>攀岩运动中使用的专业绳索，分为动力绳（有弹性，吸收冲击力）和静力绳（无弹性，用于固定保护）。</p>
+    <!-- 主横幅区域 -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">常用绳缚词汇库</h1>
+            <p class="hero-subtitle">按场景分类整理，快速查找您需要的绳缚词汇</p>
+                        
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="请输入你想搜索的内容...">
             </div>
-            <!-- 术语卡片2：八字结 -->
-            <div class="term-card">
-                <h3>八字结</h3>
-                <p>登山和航海常用的基本绳结，特点是简单易打、牢固可靠，适合连接安全带或固定绳索。</p>
+            
+            <div class="statistics">
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">专业术语</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">分类目录</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span class="stat-label">图解说明</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">免费开放</span>
+                </div>
             </div>
-            <!-- 术语卡片3：双渔人结 -->
-            <div class="term-card">
-                <h3>双渔人结</h3>
-                <p>用于连接两根直径相近的绳索，强度高、不易滑脱，常用于制作绳圈或连接主绳。</p>
-            </div>
-            <!-- 可继续添加更多术语卡片 -->
         </div>
-    </main>
+    </section>
+
+    <!-- SSC强调 -->
+    <section class="container">
+        <h2 style="text-align: center; margin: 40px 0 20px; font-size: 1.8rem; color: #333;">
+            <i class="fas fa-exclamation-triangle" style="color: #ff6b6b; margin-right: 10px;"></i>
+            RACK与SSC
+        </h2>
+        <div class="term-list">
+            <div class="term-card">
+                <p><strong>RACK </strong>是"Risk-Aware Consensual Kink"的首字母缩写，中文译为<strong>"风险意识的共识"</strong>。</p>
+                <p>它是一种比传统<strong> SSC（安全、理智、知情同意）</strong>更为现代和诚实的绳缚与BDSM实践伦理框架。</p>
+                <div style="margin-top: 5px; display: flex; gap: 10px;">
+                    <a href="SSC_RACK.html" style="color: #667eea; text-decoration: none; font-size: 1.2rem;">   
+                    <i class="fas fa-book-open"></i> 请点击查看更多关于SSC和RACK的介绍
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+    <!-- 分类导航 -->
+    <section class="container" id="categories">
+        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.8rem; color: #333;">
+            <i class="fas fa-folder-open" style="color: #667eea; margin-right: 10px;"></i>
+            词汇分类
+        </h2>
+        
+        <div class="category-nav">
+            <a href="glossary/techniques/index.html" class="category-card">
+                <div class="category-icon">🎨</div>
+                <h3>部分绳缚技术名称</h3>
+                <p>Techniques</p>
+                <div style="margin-top: 10px; color: #667eea; font-size: 0.85rem;">
+                </div>
+            </a>
+            
+            <a href="glossary/locations/index.html" class="category-card">
+                <div class="category-icon">🕹️</div>
+                <h3>常见绳缚位置</h3>
+                <p>Locations</p>
+                <div style="margin-top: 10px; color: #667eea; font-size: 0.85rem;">
+                </div>
+            </a>
+            
+            <a href="glossary/roles/index.html" class="category-card">
+                <div class="category-icon">👨‍🎨</div>
+                <h3>绳缚者、角色、活动</h3>
+                <p>Roles</p>
+                <div style="margin-top: 10px; color: #667eea; font-size: 0.85rem;">
+                </div>
+            </a>
+            
+            <a href="glossary/terms/index.html" class="category-card">
+                <div class="category-icon">➰</div>
+                <h3>部分绳缚术语</h3>
+                <p>Terms</p>
+                <div style="margin-top: 10px; color: #667eea; font-size: 0.85rem;">
+                </div>
+            </a>
+            
+            <a href="glossary/specificties/index.html" class="category-card">
+                <div class="category-icon">♾️</div>
+                <h3>一些绑法的名称</h3>
+                <p>Specific Ties</p>
+                <div style="margin-top: 10px; color: #667eea; font-size: 0.85rem;">
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 快速链接 -->
+    <section class="container">
+        <h2 style="text-align: center; margin: 40px 0 20px; font-size: 1.8rem; color: #333;">快速链接</h2>
+        
+        <div class="quick-links">
+            <a href="about.html" class="quick-link">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <h4>关于项目</h4>
+                    <p>了解本项目的背景和目的</p>
+                </div>
+            </a>
+            
+            <a href="admin/index.html" class="quick-link">
+                <i class="fas fa-user-cog"></i>
+                <div>
+                    <h4>后台管理</h4>
+                    <p>管理员登录入口</p>
+                </div>
+            </a>
+                       
+            <a href="contact.html" class="quick-link">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <h4>联系我们</h4>
+                    <p>反馈问题或建议</p>
+                </div>
+            </a>
+        </div>
+    </section>
 
     <!-- 页脚 -->
     <footer class="footer">
         <div class="container">
-            <p>© 2024 绳索专业词汇库 | 迁移自GitBook</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <h4>常用绳缚词汇库</h4>
+                    <p style="color: #bdc3c7; font-size: 0.85rem; line-height: 1.4;">
+                        为喜爱绳缚的朋友提供参考。
+                    </p>
+                </div>
+                
+                <div>
+                    <h4>快速链接</h4>
+                    <a href="index.html">首页</a>
+                    <a href="about.html">关于我们</a>
+                    <a href="glossary/all-terms.html">全部术语</a>
+                    <a href="admin/index.html">后台管理</a>
+                </div>
+                
+                <div>
+                    <h4>联系方式</h4>
+                    <p style="color: #bdc3c7; font-size: 0.85rem; line-height: 1.4;">
+                        <i class="fas fa-envelope"></i> contact@rope-vocab.com
+                    </p>
+                    <p style="color: #bdc3c7; font-size: 0.85rem; line-height: 1.4;">
+                        <i class="fas fa-globe"></i> https://rope-vocab.com
+                    </p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>© 2026 常用绳缚词汇库 | 本网站内容遵循 CC BY-NC-SA 4.0 协议</p>
+                <p style="margin-top: 8px; font-size: 0.8rem; color: #95a5a6;">
+                    最后更新: <span id="current-date"></span> | 版本: 1.0.0
+                </p>
+            </div>
         </div>
     </footer>
+
+    <script>
+        // 显示当前日期
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+        
+        // 简单的搜索功能（示例）
+        document.querySelector('.search-box input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query) {
+                    alert('搜索功能待实现，您搜索的是: ' + query);
+                    // 实际应用中这里应该跳转到搜索结果页面
+                }
+            }
+        });
+        
+        // 平滑滚动到分类区域
+        document.querySelectorAll('a[href="#categories"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('categories').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>

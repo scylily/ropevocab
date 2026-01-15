@@ -1,0 +1,31 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "techniques"
+    label: "技术技巧"
+    folder: "glossary/techniques"
+    create: true
+    fields:
+      - { label: "术语名称", name: "title", widget: "string" }
+      - { label: "英文名称", name: "english", widget: "string", required: false }
+      - { label: "定义描述", name: "definition", widget: "markdown" }
+      - { label: "应用场景", name: "application", widget: "text", required: false }
+      - { label: "安全提示", name: "safety", widget: "text", required: false }
+      - { label: "示意图", name: "image", widget: "image", required: false }
+
+  - name: "locations"
+    label: "位置区域"
+    folder: "glossary/locations"
+    create: true
+    fields:
+      - { label: "位置名称", name: "title", widget: "string" }
+      - { label: "位置描述", name: "description", widget: "markdown" }
+      - { label: "安全检查点", name: "checkpoints", widget: "list" }
+      - { label: "位置图片", name: "image", widget: "image", required: false }
+
+  # 其他分类类似配置...
