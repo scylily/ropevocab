@@ -1,639 +1,656 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>绳缚者、角色、活动 - 常用绳缚词汇库</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 基础重置 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { 
-            font-family: "Noto Sans SC", "微软雅黑", sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-            background: #f8f9fa;
-        }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 15px; 
-        }
-        
-        /* 导航样式 */
-        .navbar {
-            background: #667eea;
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
+      /* 基础重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "微软雅黑", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        background: #f8f9fa;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航样式 */
+      .navbar {
+        background: #667eea;
+        padding: 12px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 面包屑导航 */
+      .breadcrumb {
+        background: #f5f5f5;
+        padding: 12px 0;
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+      }
+
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* 位置分类页头 */
+      .locations-header {
+        background: #667eea;
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .locations-header h1 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        padding: 0 15px;
+      }
+
+      .locations-header p {
+        font-size: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        opacity: 0.95;
+        padding: 0 15px;
+      }
+
+      /* 响应式表格容器 - 新增 */
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* 表格样式 */
+      .locations-table {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 40px;
+      }
+
+      .table-header {
+        background: #f0f4ff;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .table-header h2 {
+        font-size: 1.4rem;
+        color: #333;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .table-header h2 i {
+        color: #667eea;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+        /* 设置最小宽度以便在小屏幕上滚动 */
+      }
+
+      thead {
+        background: #f8f9fa;
+      }
+
+      th {
+        padding: 16px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e9ecef;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: top;
+      }
+
+      tbody tr:hover {
+        background: #f8f9fa;
+      }
+
+      .location-category {
+        font-weight: 600;
+        color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .location-category td {
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+
+      .chinese-name {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .english-name {
+        color: #666;
+        font-size: 0.95rem;
+      }
+
+      .japanese-name {
+        font-family: "Meiryo", "Hiragino Sans GB", sans-serif;
+        color: #333;
+      }
+
+      .romaji {
+        color: #888;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+
+      .notes {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .location-type {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-top: 5px;
+      }
+
+      .type-primary {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .type-decorative {
+        background: #fff3e0;
+        color: #ef6c00;
+      }
+
+      .type-support {
+        background: #e3f2fd;
+        color: #1565c0;
+      }
+
+      /* 页脚 */
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 25px 0;
+        margin-top: 40px;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: white;
+        text-decoration: underline;
+      }
+
+      .footer p {
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      /* 响应式表格 调整 */
+      @media (max-width: 992px) {
         .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+          flex-direction: column;
+          gap: 10px;
         }
-        
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .locations-header h1 {
+          font-size: 1.7rem;
         }
-        
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+
+        .locations-header p {
+          font-size: 0.95rem;
         }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            background: #f5f5f5;
-            padding: 12px 0;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 页面页头 */
-        .roles-header {
-            background: #667eea;
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .roles-header h1 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            padding: 0 15px;
-        }
-        
-        .roles-header p {
-            font-size: 1rem;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0.95;
-            padding: 0 15px;
-        }
-        
-        /* 表格样式 */
-        .roles-table {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 40px;
-        }
-        
-        .table-header {
-            background: #f0f4ff;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .table-header h2 {
-            font-size: 1.4rem;
-            color: #333;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .table-header h2 i {
-            color: #667eea;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        thead {
-            background: #f8f9fa;
-        }
-        
-        th {
-            padding: 16px 20px;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 2px solid #e9ecef;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        
+
+        th,
         td {
-            padding: 16px 20px;
-            border-bottom: 1px solid #e9ecef;
-            vertical-align: top;
+          padding: 12px 15px;
+          font-size: 0.85rem;
         }
-        
-        tbody tr:hover {
-            background: #f8f9fa;
+
+        /* 小屏幕下优化表格显示 */
+        .table-responsive {
+          margin: 0 -15px;
+          padding: 0 15px;
         }
-        
-        .role-category {
-            font-weight: 600;
-            color: #667eea;
-            background: #f0f4ff;
+      }
+
+      @media (max-width: 480px) {
+        .locations-header {
+          padding: 25px 0;
         }
-        
-        .role-category td {
-            padding-top: 20px;
-            padding-bottom: 20px;
+
+        th,
+        td {
+          padding: 10px 12px;
         }
-        
-        .chinese-name {
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .english-name {
-            color: #666;
-            font-size: 0.95rem;
-        }
-        
-        .japanese-name {
-            font-family: "Meiryo", "Hiragino Sans GB", sans-serif;
-            color: #333;
-        }
-        
-        .romaji {
-            color: #888;
-            font-size: 0.9rem;
-            font-style: italic;
-        }
-        
-        .notes {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        
-        .role-type {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-top: 5px;
-        }
-        
-        .type-practitioner {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .type-role {
-            background: #fff3e0;
-            color: #ef6c00;
-        }
-        
-        .type-event {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-        
-        /* 页脚 */
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 40px;
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-        
-        .footer p {
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-        
-        /* 响应式表格 */
-        @media (max-width: 992px) {
-            .table-responsive {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .roles-table {
-                min-width: 800px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .navbar .container {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .roles-header h1 {
-                font-size: 1.7rem;
-            }
-            
-            .roles-header p {
-                font-size: 0.95rem;
-            }
-            
-            th, td {
-                padding: 12px 15px;
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .roles-header {
-                padding: 25px 0;
-            }
-            
-            th, td {
-                padding: 10px 12px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <a class="logo">
-                <i class="fas fa-mountain"></i>
-                常用绳缚词汇库
-            </a>
-            <div class="nav-links">
-                <a href="../../index.html">首页</a>
-                <a href="#" class="active"><i class="fas fa-users"></i> 角色与活动</a>
-            </div>
+      <div class="container">
+        <a class="logo">
+          <i class="fas fa-mountain"></i>
+          常用绳缚词汇库
+        </a>
+        <div class="nav-links">
+          <a href="../../index.html">首页</a>
+          <a href="#" class="active"><i class="fas fa-users"></i> 角色与活动</a>
         </div>
+      </div>
     </nav>
 
     <!-- 面包屑导航 -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="../../index.html">首页</a> &gt; 
-            绳缚者、角色、活动
-        </div>
+      <div class="container">
+        <a href="../../index.html">首页</a> &gt;
+        绳缚者、角色、活动
+      </div>
     </div>
 
-    <!-- 页面页头 -->
-    <header class="roles-header">
-        <div class="container">
-            <h1>绳缚者、角色与活动</h1>
-            <p>介绍绳缚实践中常见的参与者角色、身份称谓以及相关活动形式，帮助理解绳缚社区的交流用语和文化背景。</p>
-        </div>
+    <!-- 位置分类页头 -->
+    <header class="locations-header">
+      <div class="container">
+        <h1>绳缚者、角色与活动</h1>
+        <p>介绍绳缚实践中常见的参与者角色、身份称谓以及相关活动形式，帮助理解绳缚社区的交流用语和文化背景。</p>
+      </div>
     </header>
 
     <main class="container">
-        <!-- 实践者角色表格 -->
-        <div class="roles-table">
-            <div class="table-header">
-                <h2><i class="fas fa-user-tie"></i> 实践者与角色</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="15%">中文表述</th>
-                            <th width="15%">英文表述</th>
-                            <th width="15%">日本语表述</th>
-                            <th width="15%">罗马音</th>
-                            <th width="30%">备注</th>
-                            <th width="10%">类型</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="role-category">
-                            <td colspan="6">绳缚实践者</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">缚手</td>
-                            <td class="english-name">Rigger</td>
-                            <td class="japanese-name">縛り手</td>
-                            <td class="romaji">Shibarite</td>
-                            <td class="notes">进行绳缚操作的一方，负责设计、实施绳缚，关注安全与美学。</td>
-                            <td><span class="role-type type-practitioner">实践者</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">受缚者</td>
-                            <td class="english-name">Model / Bunny</td>
-                            <td class="japanese-name">縛られ</td>
-                            <td class="romaji">Shibarare</td>
-                            <td class="notes">接受绳缚的一方，在绳缚过程中提供身体反应和反馈，参与共创。</td>
-                            <td><span class="role-type type-practitioner">实践者</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳师</td>
-                            <td class="english-name">Rope Master</td>
-                            <td class="japanese-name">縄師</td>
-                            <td class="romaji">Nawashi</td>
-                            <td class="notes">技艺精湛的绳缚专家，通常指经过长期训练和传承的资深实践者。</td>
-                            <td><span class="role-type type-practitioner">专业者</span></td>
-                        </tr>
-                        
-                        <tr class="role-category">
-                            <td colspan="6">活动参与者</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">观众</td>
-                            <td class="english-name">Spectator</td>
-                            <td class="japanese-name">観客</td>
-                            <td class="romaji">Kankyaku</td>
-                            <td class="notes">观看绳缚表演或展示的旁观者，需遵守现场规则和礼仪。</td>
-                            <td><span class="role-type type-role">参与者</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">安全员</td>
-                            <td class="english-name">Safety Officer / Spotter</td>
-                            <td class="japanese-name">安全係</td>
-                            <td class="romaji">Anzen-kakari</td>
-                            <td class="notes">在绳缚活动特别是悬吊中负责观察安全状况的人员。</td>
-                            <td><span class="role-type type-role">辅助者</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">摄影师</td>
-                            <td class="english-name">Photographer</td>
-                            <td class="japanese-name">写真家</td>
-                            <td class="romaji">Shashinka</td>
-                            <td class="notes">记录绳缚艺术的专业人员，需尊重参与者的隐私和界限。</td>
-                            <td><span class="role-type type-role">记录者</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      <!-- 实践者角色表格 -->
+      <div class="roles-table">
+        <div class="table-header">
+          <h2><i class="fas fa-user-tie"></i> 实践者与角色</h2>
         </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th width="15%">中文表述</th>
+                <th width="15%">英文表述</th>
+                <th width="15%">日本语表述</th>
+                <th width="15%">罗马音</th>
+                <th width="30%">备注</th>
+                <th width="10%">类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="location-category">
+                <td colspan="6">绳缚实践者</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">缚手</td>
+                <td class="english-name">Rigger</td>
+                <td class="japanese-name">縛り手</td>
+                <td class="romaji">Shibarite</td>
+                <td class="notes">进行绳缚操作的一方，负责设计、实施绳缚，关注安全与美学。</td>
+                <td><span class="role-type type-practitioner">实践者</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">受缚者</td>
+                <td class="english-name">Model / Bunny</td>
+                <td class="japanese-name">縛られ</td>
+                <td class="romaji">Shibarare</td>
+                <td class="notes">接受绳缚的一方，在绳缚过程中提供身体反应和反馈，参与共创。</td>
+                <td><span class="role-type type-practitioner">实践者</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳师</td>
+                <td class="english-name">Rope Master</td>
+                <td class="japanese-name">縄師</td>
+                <td class="romaji">Nawashi</td>
+                <td class="notes">技艺精湛的绳缚专家，通常指经过长期训练和传承的资深实践者。</td>
+                <td><span class="role-type type-practitioner">专业者</span></td>
+              </tr>
 
-        <!-- 关系与动态表格 -->
-        <div class="roles-table">
-            <div class="table-header">
-                <h2><i class="fas fa-handshake"></i> 关系与动态</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="15%">中文表述</th>
-                            <th width="15%">英文表述</th>
-                            <th width="15%">日本语表述</th>
-                            <th width="15%">罗马音</th>
-                            <th width="30%">备注</th>
-                            <th width="10%">类型</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="role-category">
-                            <td colspan="6">绳缚关系</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚拍档</td>
-                            <td class="english-name">Rope Partner</td>
-                            <td class="japanese-name">縄のパートナー</td>
-                            <td class="romaji">Nawa no pātonā</td>
-                            <td class="notes">长期合作进行绳缚实践的双方，基于信任和默契建立的关系。</td>
-                            <td><span class="role-type type-role">关系</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚导师</td>
-                            <td class="english-name">Rope Mentor</td>
-                            <td class="japanese-name">縄の指導者</td>
-                            <td class="romaji">Nawa no shidōsha</td>
-                            <td class="notes">在绳缚技艺上提供指导和教学的资深实践者。</td>
-                            <td><span class="role-type type-role">教学关系</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚学徒</td>
-                            <td class="english-name">Rope Apprentice</td>
-                            <td class="japanese-name">縄の弟子</td>
-                            <td class="romaji">Nawa no deshi</td>
-                            <td class="notes">跟随导师学习绳缚技艺的学习者，通常有明确的师徒关系。</td>
-                            <td><span class="role-type type-role">教学关系</span></td>
-                        </tr>
-                        
-                        <tr class="role-category">
-                            <td colspan="6">实践动态</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚对话</td>
-                            <td class="english-name">Rope Dialogue</td>
-                            <td class="japanese-name">縄の対話</td>
-                            <td class="romaji">Nawa no taiwa</td>
-                            <td class="notes">缚手与受缚者之间通过绳缚进行的非语言沟通和交流过程。</td>
-                            <td><span class="role-type type-role">互动</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚关怀</td>
-                            <td class="english-name">Rope Aftercare</td>
-                            <td class="japanese-name">縄のアフターケア</td>
-                            <td class="romaji">Nawa no afutākea</td>
-                            <td class="notes">绳缚结束后对受缚者的身体和情感的照料与恢复过程。</td>
-                            <td><span class="role-type type-role">关怀</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+              <tr class="location-category">
+                <td colspan="6">活动参与者</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">观众</td>
+                <td class="english-name">Spectator</td>
+                <td class="japanese-name">観客</td>
+                <td class="romaji">Kankyaku</td>
+                <td class="notes">观看绳缚表演或展示的旁观者，需遵守现场规则和礼仪。</td>
+                <td><span class="role-type type-role">参与者</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">安全员</td>
+                <td class="english-name">Safety Officer / Spotter</td>
+                <td class="japanese-name">安全係</td>
+                <td class="romaji">Anzen-kakari</td>
+                <td class="notes">在绳缚活动特别是悬吊中负责观察安全状况的人员。</td>
+                <td><span class="role-type type-role">辅助者</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">摄影师</td>
+                <td class="english-name">Photographer</td>
+                <td class="japanese-name">写真家</td>
+                <td class="romaji">Shashinka</td>
+                <td class="notes">记录绳缚艺术的专业人员，需尊重参与者的隐私和界限。</td>
+                <td><span class="role-type type-role">记录者</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        <!-- 活动与聚会表格 -->
-        <div class="roles-table">
-            <div class="table-header">
-                <h2><i class="fas fa-calendar-alt"></i> 活动与聚会</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="15%">中文表述</th>
-                            <th width="15%">英文表述</th>
-                            <th width="15%">日本语表述</th>
-                            <th width="15%">罗马音</span></th>
-                            <th width="30%">备注</th>
-                            <th width="10%">类型</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="role-category">
-                            <td colspan="6">绳缚活动</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚工作坊</td>
-                            <td class="english-name">Rope Workshop</td>
-                            <td class="japanese-name">縄ワークショップ</td>
-                            <td class="romaji">Nawa wākushoppu</td>
-                            <td class="notes">以教学为主的绳缚活动，通常有明确的教学大纲和技能目标。</td>
-                            <td><span class="role-type type-event">学习活动</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚表演</td>
-                            <td class="english-name">Rope Performance / Showcase</td>
-                            <td class="japanese-name">縄パフォーマンス</td>
-                            <td class="romaji">Nawa pafōmansu</td>
-                            <td class="notes">以展示绳缚艺术为主的公开或半公开演出活动。</td>
-                            <td><span class="role-type type-event">表演活动</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚聚会</td>
-                            <td class="english-name">Rope Jam / Munch</td>
-                            <td class="japanese-name">縄の集まり</td>
-                            <td class="romaji">Nawa no atsumari</td>
-                            <td class="notes">绳缚爱好者社交和自由练习的聚会，通常较为轻松随意。</td>
-                            <td><span class="role-type type-event">社交活动</span></td>
-                        </tr>
-                        
-                        <tr class="role-category">
-                            <td colspan="6">节庆与赛事</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚节</td>
-                            <td class="english-name">Rope Festival</td>
-                            <td class="japanese-name">縄祭り</td>
-                            <td class="romaji">Nawamatsuri</td>
-                            <td class="notes">大型的绳缚主题活动，通常包含工作坊、表演、比赛等多种形式。</td>
-                            <td><span class="role-type type-event">节庆活动</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚比赛</td>
-                            <td class="english-name">Rope Competition</td>
-                            <td class="japanese-name">縄コンテスト</td>
-                            <td class="romaji">Nawa kontesuto</td>
-                            <td class="notes">展示绳缚技巧和创造力的比赛活动，通常有评委和评分标准。</td>
-                            <td><span class="role-type type-event">竞技活动</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      <!-- 关系与动态表格 -->
+      <div class="roles-table">
+        <div class="table-header">
+          <h2><i class="fas fa-handshake"></i> 关系与动态</h2>
         </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th width="15%">中文表述</th>
+                <th width="15%">英文表述</th>
+                <th width="15%">日本语表述</th>
+                <th width="15%">罗马音</th>
+                <th width="30%">备注</th>
+                <th width="10%">类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="location-category">
+                <td colspan="6">绳缚关系</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚拍档</td>
+                <td class="english-name">Rope Partner</td>
+                <td class="japanese-name">縄のパートナー</td>
+                <td class="romaji">Nawa no pātonā</td>
+                <td class="notes">长期合作进行绳缚实践的双方，基于信任和默契建立的关系。</td>
+                <td><span class="role-type type-role">关系</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚导师</td>
+                <td class="english-name">Rope Mentor</td>
+                <td class="japanese-name">縄の指導者</td>
+                <td class="romaji">Nawa no shidōsha</td>
+                <td class="notes">在绳缚技艺上提供指导和教学的资深实践者。</td>
+                <td><span class="role-type type-role">教学关系</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚学徒</td>
+                <td class="english-name">Rope Apprentice</td>
+                <td class="japanese-name">縄の弟子</td>
+                <td class="romaji">Nawa no deshi</td>
+                <td class="notes">跟随导师学习绳缚技艺的学习者，通常有明确的师徒关系。</td>
+                <td><span class="role-type type-role">教学关系</span></td>
+              </tr>
 
-        <!-- 社区与文化表格 -->
-        <div class="roles-table">
-            <div class="table-header">
-                <h2><i class="fas fa-people-group"></i> 社区与文化</h2>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="15%">中文表述</th>
-                            <th width="15%">英文表述</th>
-                            <th width="15%">日本语表述</th>
-                            <th width="15%">罗马音</th>
-                            <th width="30%">备注</th>
-                            <th width="10%">类型</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="role-category">
-                            <td colspan="6">绳缚社区</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚社区</td>
-                            <td class="english-name">Rope Community</td>
-                            <td class="japanese-name">縄コミュニティ</td>
-                            <td class="romaji">Nawa komyuniti</td>
-                            <td class="notes">由绳缚爱好者组成的社群，通常有线上线下多种交流形式。</td>
-                            <td><span class="role-type type-role">社区</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚小组</td>
-                            <td class="english-name">Rope Group / Study Group</td>
-                            <td class="japanese-name">縄研究会</td>
-                            <td class="romaji">Nawa kenkyūkai</td>
-                            <td class="notes">小规模的学习和练习小组，通常有固定成员和活动频率。</td>
-                            <td><span class="role-type type-role">子社群</span></td>
-                        </tr>
-                        
-                        <tr class="role-category">
-                            <td colspan="6">文化概念</td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚美学</td>
-                            <td class="english-name">Rope Aesthetics</td>
-                            <td class="japanese-name">縄美学</td>
-                            <td class="romaji">Nawa bigaku</td>
-                            <td class="notes">绳缚艺术中的审美理念和视觉表现原则。</td>
-                            <td><span class="role-type type-role">文化概念</span></td>
-                        </tr>
-                        <tr>
-                            <td class="chinese-name">绳缚哲学</td>
-                            <td class="english-name">Rope Philosophy</td>
-                            <td class="japanese-name">縄哲学</td>
-                            <td class="romaji">Nawa tetsugaku</td>
-                            <td class="notes">绳缚实践背后的思想体系和文化理念。</td>
-                            <td><span class="role-type type-role">文化概念</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+              <tr class="location-category">
+                <td colspan="6">实践动态</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚对话</td>
+                <td class="english-name">Rope Dialogue</td>
+                <td class="japanese-name">縄の対話</td>
+                <td class="romaji">Nawa no taiwa</td>
+                <td class="notes">缚手与受缚者之间通过绳缚进行的非语言沟通和交流过程。</td>
+                <td><span class="role-type type-role">互动</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚关怀</td>
+                <td class="english-name">Rope Aftercare</td>
+                <td class="japanese-name">縄のアフターケア</td>
+                <td class="romaji">Nawa no afutākea</td>
+                <td class="notes">绳缚结束后对受缚者的身体和情感的照料与恢复过程。</td>
+                <td><span class="role-type type-role">关怀</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
+
+      <!-- 活动与聚会表格 -->
+      <div class="roles-table">
+        <div class="table-header">
+          <h2><i class="fas fa-calendar-alt"></i> 活动与聚会</h2>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th width="15%">中文表述</th>
+                <th width="15%">英文表述</th>
+                <th width="15%">日本语表述</th>
+                <th width="15%">罗马音</span></th>
+                <th width="30%">备注</th>
+                <th width="10%">类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="location-category">
+                <td colspan="6">绳缚活动</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚工作坊</td>
+                <td class="english-name">Rope Workshop</td>
+                <td class="japanese-name">縄ワークショップ</td>
+                <td class="romaji">Nawa wākushoppu</td>
+                <td class="notes">以教学为主的绳缚活动，通常有明确的教学大纲和技能目标。</td>
+                <td><span class="role-type type-event">学习活动</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚表演</td>
+                <td class="english-name">Rope Performance / Showcase</td>
+                <td class="japanese-name">縄パフォーマンス</td>
+                <td class="romaji">Nawa pafōmansu</td>
+                <td class="notes">以展示绳缚艺术为主的公开或半公开演出活动。</td>
+                <td><span class="role-type type-event">表演活动</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚聚会</td>
+                <td class="english-name">Rope Jam / Munch</td>
+                <td class="japanese-name">縄の集まり</td>
+                <td class="romaji">Nawa no atsumari</td>
+                <td class="notes">绳缚爱好者社交和自由练习的聚会，通常较为轻松随意。</td>
+                <td><span class="role-type type-event">社交活动</span></td>
+              </tr>
+
+              <tr class="location-category">
+                <td colspan="6">节庆与赛事</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚节</td>
+                <td class="english-name">Rope Festival</td>
+                <td class="japanese-name">縄祭り</td>
+                <td class="romaji">Nawamatsuri</td>
+                <td class="notes">大型的绳缚主题活动，通常包含工作坊、表演、比赛等多种形式。</td>
+                <td><span class="role-type type-event">节庆活动</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚比赛</td>
+                <td class="english-name">Rope Competition</td>
+                <td class="japanese-name">縄コンテスト</td>
+                <td class="romaji">Nawa kontesuto</td>
+                <td class="notes">展示绳缚技巧和创造力的比赛活动，通常有评委和评分标准。</td>
+                <td><span class="role-type type-event">竞技活动</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 社区与文化表格 -->
+      <div class="roles-table">
+        <div class="table-header">
+          <h2><i class="fas fa-people-group"></i> 社区与文化</h2>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th width="15%">中文表述</th>
+                <th width="15%">英文表述</th>
+                <th width="15%">日本语表述</th>
+                <th width="15%">罗马音</th>
+                <th width="30%">备注</th>
+                <th width="10%">类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="location-category">
+                <td colspan="6">绳缚社区</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚社区</td>
+                <td class="english-name">Rope Community</td>
+                <td class="japanese-name">縄コミュニティ</td>
+                <td class="romaji">Nawa komyuniti</td>
+                <td class="notes">由绳缚爱好者组成的社群，通常有线上线下多种交流形式。</td>
+                <td><span class="role-type type-role">社区</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚小组</td>
+                <td class="english-name">Rope Group / Study Group</td>
+                <td class="japanese-name">縄研究会</td>
+                <td class="romaji">Nawa kenkyūkai</td>
+                <td class="notes">小规模的学习和练习小组，通常有固定成员和活动频率。</td>
+                <td><span class="role-type type-role">子社群</span></td>
+              </tr>
+
+              <tr class="location-category">
+                <td colspan="6">文化概念</td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚美学</td>
+                <td class="english-name">Rope Aesthetics</td>
+                <td class="japanese-name">縄美学</td>
+                <td class="romaji">Nawa bigaku</td>
+                <td class="notes">绳缚艺术中的审美理念和视觉表现原则。</td>
+                <td><span class="role-type type-role">文化概念</span></td>
+              </tr>
+              <tr>
+                <td class="chinese-name">绳缚哲学</td>
+                <td class="english-name">Rope Philosophy</td>
+                <td class="japanese-name">縄哲学</td>
+                <td class="romaji">Nawa tetsugaku</td>
+                <td class="notes">绳缚实践背后的思想体系和文化理念。</td>
+                <td><span class="role-type type-role">文化概念</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </main>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="../../index.html">返回首页</a>
-            </div>
-            <p>© 2026 常用绳缚词汇库 | 绳缚术语分类</p>
+      <div class="container">
+        <div class="footer-links">
+          <a href="../../index.html">返回首页</a>
         </div>
+        <p>© 2026 常用绳缚词汇库 | 绳缚术语分类</p>
+      </div>
     </footer>
 
     <script>
-        // 表格行悬停效果
-        document.querySelectorAll('tbody tr').forEach(row => {
-            row.addEventListener('mouseenter', function() {
-                this.style.transition = 'background-color 0.2s ease';
-            });
+      // 表格行悬停效果
+      document.querySelectorAll('tbody tr').forEach(row => {
+        row.addEventListener('mouseenter', function () {
+          this.style.transition = 'background-color 0.2s ease';
         });
+      });
     </script>
-</body>
+  </body>
+
 </html>
