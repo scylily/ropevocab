@@ -1,481 +1,460 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>雀头结 (Sparrow's Head Knot) - 常用绳缚词汇库</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 基础重置 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { 
-            font-family: "微软雅黑", sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 15px; 
-        }
-        
-        /* 导航样式 */
-        .navbar {
-            background: #667eea;
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            background: #f5f5f5;
-            padding: 12px 0;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 术语详情页头 */
-        .term-header {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            text-align: center;
-            border-radius: 10px;
-        }
-        
+      /* 基础重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "微软雅黑", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航样式 */
+      .navbar {
+        background: #667eea;
+        padding: 12px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 面包屑导航 */
+      .breadcrumb {
+        background: #f5f5f5;
+        padding: 12px 0;
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+      }
+
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* 术语详情页头 */
+      .term-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        text-align: center;
+        border-radius: 10px;
+      }
+
+      .term-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .term-header .term-origin {
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+
+      /* 多语言表述 */
+      .language-expressions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .language-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .language-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .language-card .expression {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin: 10px 0;
+        padding: 8px;
+        background: white;
+        border-radius: 8px;
+      }
+
+      .language-card .pronunciation {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+
+      /* 详细介绍样式 */
+      .content-section {
+        margin-bottom: 30px;
+        padding: 25px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .content-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .content-section p {
+        margin-bottom: 15px;
+        line-height: 1.7;
+      }
+
+      .content-section ul,
+      .content-section ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .content-section li {
+        margin-bottom: 8px;
+        line-height: 1.6;
+      }
+
+      .content-section strong {
+        color: #667eea;
+      }
+
+      /* 图片展示区 */
+      .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .image-item {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .image-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+
+      .image-caption {
+        padding: 15px;
+        text-align: center;
+        font-size: 0.95rem;
+        color: #666;
+        background: #f9f9f9;
+      }
+
+      /* 相关技术 */
+      .related-techniques {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .related-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .related-card h4 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+      }
+
+      .related-card p {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      /* 返回按钮 */
+      .back-button {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 1rem;
+        margin: 30px 0;
+        transition: all 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: #5568d2;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* 页脚 */
+      .footer {
+        background: #333;
+        color: white;
+        padding: 30px 0;
+        margin-top: 50px;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      .footer-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+
+      .footer-links a:hover {
+        color: #667eea;
+      }
+
+      .footer p {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 768px) {
         .term-header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+          font-size: 1.8rem;
         }
-        
-        .term-header .term-origin {
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        /* 多语言表述 */
-        .language-expressions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .language-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .language-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .language-card .expression {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-        }
-        
-        .language-card .pronunciation {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        
-        /* 详细介绍样式 */
+
         .content-section {
-            margin-bottom: 30px;
-            padding: 25px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+          padding: 20px;
         }
-        
-        .content-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .content-section p {
-            margin-bottom: 15px;
-            line-height: 1.7;
-        }
-        
-        .content-section ul, .content-section ol {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .content-section li {
-            margin-bottom: 8px;
-            line-height: 1.6;
-        }
-        
-        .content-section strong {
-            color: #667eea;
-        }
-        
-        /* 图片展示区 */
+
         .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+          grid-template-columns: 1fr;
         }
-        
-        .image-item {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .image-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        
-        .image-caption {
-            padding: 15px;
-            text-align: center;
-            font-size: 0.95rem;
-            color: #666;
-            background: #f9f9f9;
-        }
-        
-        /* 相关技术 */
-        .related-techniques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .related-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        
-        .related-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            border-color: #667eea;
-            color: #667eea;
-        }
-        
-        .related-card h4 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .related-card p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        /* 返回按钮 */
-        .back-button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1rem;
-            margin: 30px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background: #5568d2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        /* 页脚 */
-        .footer {
-            background: #333;
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-        
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.95rem;
-        }
-        
-        .footer-links a:hover {
-            color: #667eea;
-        }
-        
-        .footer p {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #aaa;
-        }
-        
-        /* 响应式调整 */
-        @media (max-width: 768px) {
-            .term-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .content-section {
-                padding: 20px;
-            }
-            
-            .image-gallery {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <a href="../../index.html" class="logo">
-                <i class="fas fa-book"></i>
-                常用绳缚词汇库
-            </a>
-            <div class="nav-links">
-                <a href="../../index.html">首页</a>
-                <a href="../terms/index.html">部分绳缚术语</a>
-                <a href="#" class="active"><i class="fas fa-globe"></i> 8字扣</a>
-            </div>
+      <div class="container">
+        <a href="../../index.html" class="logo">
+          <i class="fas fa-book"></i>
+          常用绳缚词汇库
+        </a>
+        <div class="nav-links">
+          <a href="../../index.html">首页</a>
+          <a href="../terms/index.html">部分绳缚术语</a>
+          <a href="#" class="active"><i class="fas fa-globe"></i> 8字扣</a>
         </div>
+      </div>
     </nav>
 
     <!-- 面包屑导航 -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="../../index.html">首页</a> &gt; 
-            <a href="../terms/index.html">部分绳缚术语</a> &gt; 
-            8字扣
-        </div>
+      <div class="container">
+        <a href="../../index.html">首页</a> &gt;
+        <a href="../terms/index.html">部分绳缚术语</a> &gt;
+        8字扣
+      </div>
     </div>
 
     <!-- 术语详情页头 -->
     <header class="term-header">
-        <div class="container">
-            <h1>8字扣 (Figure-Eight Hitch)</h1>
-            <div class="term-origin">
-                <i class="fas fa-language"></i> 形成"8"字形固定效果的扣结
-            </div>
+      <div class="container">
+        <h1>8字扣 (Figure-Eight Hitch)</h1>
+        <div class="term-origin">
+          <i class="fas fa-language"></i> 形成"8"字形固定效果的扣结
         </div>
+      </div>
     </header>
 
     <!-- 多语言表述 -->
     <section class="container">
-        <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-globe-asia"></i> 多语言表述
-        </h2>
-        <div class="language-expressions">
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 中文表述</h3>
-                <div class="expression">8字扣 / 八字扣</div>
-                <div class="pronunciation">Bā zì kòu</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">形成"8"字形固定效果的扣结</p>
-            </div>
-            
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 英文表述</h3>
-                <div class="expression">Figure-Eight Hitch</div>
-                <div class="pronunciation">/ˈfɪɡjər eɪt hɪtʃ/</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">A hitch that forms a figure-eight pattern</p>
-            </div>
-            
-            <div class="language-card">
-                <h3><i class="fas fa-language"></i> 日文表述</h3>
-                <div class="expression">8の字結び</div>
-                <div class="pronunciation">はちのじむすび</div>
-                <p style="font-size: 0.85rem; margin-top: 10px;">8の字形を作る結び</p>
-            </div>
+      <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+        <i class="fas fa-globe-asia"></i> 多语言表述
+      </h2>
+      <div class="language-expressions">
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 中文表述</h3>
+          <div class="expression">8字扣</div>
         </div>
+
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 英文表述</h3>
+          <div class="expression">Figure-Eight Hitch</div>
+        </div>
+
+        <div class="language-card">
+          <h3><i class="fas fa-language"></i> 日文表述</h3>
+          <div class="expression">8の字結び</div>
+          <div class="pronunciation">はちのじむすび</div>
+        </div>
+      </div>
     </section>
 
     <!-- 详细介绍 -->
     <section class="container">
-        <div class="content-section">
-            <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
-            <p>8字扣是一种形成"8"字形固定效果的扣结，结合了8字结的稳定性和扣结的固定功能，适用于需要牢固且易于检查的固定场合。</p>
-            <p>该结以其清晰的8字形结构而易于识别和检查，在安全要求较高的场合特别受欢迎，因为其结构清晰不易出错。</p>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-star"></i> 主要特征</h2>
-            <ul>
-                <li><strong>8字结构：</strong>明显的"8"字形外观特征</li>
-                <li><strong>易于检查：</strong>结构清晰便于安全检查</li>
-                <li><strong>稳定性好：</strong>8字形结构提供良好稳定性</li>
-                <li><strong>受力均匀：</strong>受力分布较为均匀</li>
-                <li><strong>不易意外解开：</strong>在正常受力下不易意外解开</li>
-            </ul>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-cogs"></i> 应用场景</h2>
-            <ul>
-                <li><strong>安全固定：</strong>需要高安全性的固定场合</li>
-                <li><strong>救援作业：</strong>救援操作中的关键连接点</li>
-                <li><strong>登山保护：</strong>登山保护系统中的连接</li>
-                <li><strong>工业作业：</strong>工业绳索作业中的固定点</li>
-                <li><strong>教学示范：</strong>绳索安全教学的标准示范结</li>
-            </ul>
-        </div>
+      <div class="content-section">
+        <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
+        <p>8 字扣可用来固定数根并排的绳子。由于绳缚中经常需要以数根绳子并排成带状，所以8 字扣使用得相当频繁。</p>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-star"></i> 主要特征</h2>
+        <ul>
+          <li><strong>8字结构：</strong>明显的"8"字形外观特征</li>
+          <li><strong>易于检查：</strong>结构清晰便于安全检查</li>
+          <li><strong>稳定性好：</strong>8字形结构提供良好稳定性</li>
+          <li><strong>受力均匀：</strong>受力分布较为均匀</li>
+          <li><strong>不易意外解开：</strong>在正常受力下不易意外解开</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-cogs"></i> 应用场景</h2>
+        <ul>
+          <li><strong>安全固定：</strong>需要高安全性的固定场合</li>
+          <li><strong>救援作业：</strong>救援操作中的关键连接点</li>
+          <li><strong>登山保护：</strong>登山保护系统中的连接</li>
+          <li><strong>工业作业：</strong>工业绳索作业中的固定点</li>
+          <li><strong>教学示范：</strong>绳索安全教学的标准示范结</li>
+        </ul>
+      </div>
     </section>
 
     <!-- 图片展示区 -->
     <section class="container">
-        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-images"></i> 示意图展示
-        </h2>
-        <div class="image-gallery">
-            <div class="image-item">
-                <img src="assets/images/figure-eight-hitch-tying.jpg" alt="8字扣打法" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GaWd1cmUtRWlnaHQgSGl0Y2ggVHlpbmc8L3RleHQ+PC9zdmc+'">
-                <div class="image-caption">8字扣打法 — 形成8字结构</div>
-            </div>
-            
-            <div class="image-item">
-                <img src="assets/images/figure-eight-hitch-application.jpg" alt="8字扣应用" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GaWd1cmUtRWlnaHQgSGl0Y2ggQXBwbGljYXRpb248L3RleHQ+PC9zdmc+'">
-                <div class="image-caption">8字扣应用 — 安全连接点</div>
-            </div>
+      <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+        <i class="fas fa-images"></i> 示意图展示
+      </h2>
+      <div class="image-gallery">
+        <div class="image-item">
+          <img src="assets/images/figure-eight-hitch-tying.jpg" alt="8字扣打法" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GaWd1cmUtRWlnaHQgSGl0Y2ggVHlpbmc8L3RleHQ+PC9zdmc+'">
+          <div class="image-caption">8字扣打法 — 形成8字结构</div>
         </div>
-    </section>
 
-    <!-- 相关名称 -->
-    <section class="container">
-        <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
-            <i class="fas fa-link"></i> 相关术语
-        </h2>
-        <div class="related-techniques">
-            <a href="figure-eight-knot.html" class="related-card">
-                <h4>8字结</h4>
-                <p>Figure-Eight Knot</p>
-            </a>
-            
-            <a href="hitch.html" class="related-card">
-                <h4>扣</h4>
-                <p>Hitch</p>
-            </a>
-            
-            <a href="safety-knots.html" class="related-card">
-                <h4>安全绳结</h4>
-                <p>Safety Knots</p>
-            </a>
-            
-            <a href="rope-connection.html" class="related-card">
-                <h4>绳索连接</h4>
-                <p>Rope Connection</p>
-            </a>
+        <div class="image-item">
+          <img src="assets/images/figure-eight-hitch-application.jpg" alt="8字扣应用" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9IiM2NjdlZWEiPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj5GaWd1cmUtRWlnaHQgSGl0Y2ggQXBwbGljYXRpb248L3RleHQ+PC9zdmc+'">
+          <div class="image-caption">8字扣应用 — 安全连接点</div>
         </div>
+      </div>
     </section>
 
     <!-- 返回按钮 -->
     <div class="container" style="text-align: center;">
-        <a href="../terms/index.html" class="back-button">
-            <i class="fas fa-arrow-left"></i> 返回
-        </a>
+      <a href="../terms/index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> 返回
+      </a>
     </div>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="../../index.html">返回首页</a>
-            </div>
-            <p>© 2026 常用绳缚词汇库</p>
+      <div class="container">
+        <div class="footer-links">
+          <a href="../../index.html">返回首页</a>
         </div>
+        <p>© 2026 常用绳缚词汇库</p>
+      </div>
     </footer>
-</body>
+  </body>
+
 </html>
