@@ -1,785 +1,809 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RACK与SSC</title>
+    <title>SSC与RACK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 基础重置 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { 
-            font-family: "微软雅黑", sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
+      /* 基础重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "微软雅黑", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航样式 */
+      .navbar {
+        background: #667eea;
+        padding: 12px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 面包屑导航 */
+      .breadcrumb {
+        background: #f5f5f5;
+        padding: 12px 0;
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+      }
+
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* 术语详情页头 */
+      .term-header {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        text-align: center;
+        border-radius: 10px;
+      }
+
+      .term-header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .term-header .term-origin {
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 15px;
+        border-radius: 20px;
+        display: inline-block;
+      }
+
+      /* 多语言表述 */
+      .language-expressions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .language-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .language-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .language-card .expression {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin: 10px 0;
+        padding: 8px;
+        background: white;
+        border-radius: 8px;
+      }
+
+      .language-card .pronunciation {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+
+      /* 内容区域 */
+      .content-section {
+        margin-bottom: 40px;
+      }
+
+      .content-section h2 {
+        font-size: 1.7rem;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+
+      .content-section p {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 15px;
+      }
+
+      .content-section ul,
+      .content-section ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+      }
+
+      .content-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+
+      /* 图片展示区 */
+      .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .image-item {
+        background: #f9f9f9;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .image-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .image-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .image-caption {
+        padding: 15px;
+        font-size: 0.9rem;
+        color: #666;
+        text-align: center;
+      }
+
+      /* 相关技术 */
+      .related-techniques {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .related-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .related-card:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-5px);
+      }
+
+      .related-card h4 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+      }
+
+      /* 返回按钮 */
+      .back-button {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 500;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+      }
+
+      .back-button:hover {
+        background: #5a6fd8;
+        transform: translateX(-3px);
+      }
+
+      /* 页脚 */
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 25px 0;
+        margin-top: 40px;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: white;
+        text-decoration: underline;
+      }
+
+      .footer p {
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 992px) {
+        html {
+          font-size: 15px;
         }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 15px; 
-        }
-        
-        /* 导航样式 */
-        .navbar {
-            background: #667eea;
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            background: #f5f5f5;
-            padding: 12px 0;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 术语详情页头 */
-        .term-header {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            text-align: center;
-            border-radius: 10px;
-        }
-        
+
         .term-header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+          font-size: 2rem;
         }
-        
-        .term-header .term-origin {
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
-        /* 多语言表述 */
+
         .language-expressions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
-        
-        .language-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .language-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-            color: #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .language-card .expression {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin: 10px 0;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-        }
-        
-        .language-card .pronunciation {
-            color: #666;
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        
-        /* 内容区域 */
-        .content-section {
-            margin-bottom: 40px;
-        }
-        
-        .content-section h2 {
-            font-size: 1.7rem;
-            margin-bottom: 15px;
-            color: #333;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
-        }
-        
-        .content-section p {
-            font-size: 0.95rem;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        
-        .content-section ul, .content-section ol {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .content-section li {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-        }
-        
-        /* 图片展示区 */
+
         .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         }
-        
-        .image-item {
-            background: #f9f9f9;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        html {
+          font-size: 14px;
         }
-        
-        .image-item:hover {
-            transform: translateY(-5px);
+
+        .term-header {
+          padding: 25px 0;
         }
-        
+
+        .term-header h1 {
+          font-size: 1.8rem;
+        }
+
+        .language-expressions {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .language-card {
+          padding: 15px;
+        }
+
+        .language-card h3 {
+          font-size: 1.2rem;
+        }
+
+        .content-section h2 {
+          font-size: 1.5rem;
+        }
+
+        .image-gallery {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
         .image-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
+          height: 180px;
         }
-        
-        .image-caption {
-            padding: 15px;
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-        }
-        
-        /* 相关技术 */
+
         .related-techniques {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(2, 1fr);
         }
-        
-        .related-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+
+        .navbar .container {
+          flex-direction: column;
+          gap: 10px;
         }
-        
-        .related-card:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-5px);
+
+        .nav-links {
+          gap: 8px;
         }
-        
-        .related-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
+
+        .nav-links a {
+          font-size: 0.85rem;
+          padding: 4px 8px;
         }
-        
-        /* 返回按钮 */
-        .back-button {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 500;
-            margin: 20px 0;
-            transition: all 0.3s ease;
+
+        .logo {
+          font-size: 1.1rem;
         }
-        
-        .back-button:hover {
-            background: #5a6fd8;
-            transform: translateX(-3px);
+      }
+
+      @media (max-width: 576px) {
+        html {
+          font-size: 13px;
         }
-        
-        /* 页脚 */
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 40px;
+
+        .term-header h1 {
+          font-size: 1.6rem;
+          padding: 0 10px;
         }
-        
+
+        .content-section h2 {
+          font-size: 1.4rem;
+        }
+
+        .image-item img {
+          height: 160px;
+        }
+
+        .related-techniques {
+          grid-template-columns: 1fr;
+        }
+
+        .nav-links a {
+          font-size: 0.8rem;
+          padding: 3px 6px;
+        }
+
+        .container {
+          padding: 0 10px;
+        }
+
         .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+          gap: 15px;
         }
-        
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 0.9rem;
+      }
+
+      @media (max-width: 360px) {
+        html {
+          font-size: 12px;
         }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
+
+        .term-header h1 {
+          font-size: 1.4rem;
         }
-        
-        .footer p {
-            font-size: 0.9rem;
-            margin-top: 10px;
+
+        .nav-links {
+          flex-direction: column;
+          align-items: center;
         }
-        
-        /* 响应式调整 */
-        @media (max-width: 992px) {
-            html { font-size: 15px; }
-            
-            .term-header h1 {
-                font-size: 2rem;
-            }
-            
-            .language-expressions {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-            
-            .image-gallery {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
+
+        .nav-links a {
+          font-size: 0.85rem;
         }
-        
-        @media (max-width: 768px) {
-            html { font-size: 14px; }
-            
-            .term-header {
-                padding: 25px 0;
-            }
-            
-            .term-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .language-expressions {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .language-card {
-                padding: 15px;
-            }
-            
-            .language-card h3 {
-                font-size: 1.2rem;
-            }
-            
-            .content-section h2 {
-                font-size: 1.5rem;
-            }
-            
-            .image-gallery {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .image-item img {
-                height: 180px;
-            }
-            
-            .related-techniques {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .navbar .container {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .nav-links {
-                gap: 8px;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-                padding: 4px 8px;
-            }
-            
-            .logo {
-                font-size: 1.1rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            html { font-size: 13px; }
-            
-            .term-header h1 {
-                font-size: 1.6rem;
-                padding: 0 10px;
-            }
-            
-            .content-section h2 {
-                font-size: 1.4rem;
-            }
-            
-            .image-item img {
-                height: 160px;
-            }
-            
-            .related-techniques {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links a {
-                font-size: 0.8rem;
-                padding: 3px 6px;
-            }
-            
-            .container {
-                padding: 0 10px;
-            }
-            
-            .footer-links {
-                gap: 15px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            html { font-size: 12px; }
-            
-            .term-header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
-<!-- 导航栏 -->
+  </head>
+
+  <body>
+    <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <a class="logo">
-                <i class="fas fa-book"></i>
-                常用绳缚词汇库
-            </a>
-            <div class="nav-links">
-                <a href="index.html">首页</a>
-                <a href="#" class="active"><i class="fas fa-globe"></i> RACK</a>
-            </div>
+      <div class="container">
+        <a class="logo">
+          <i class="fas fa-book"></i>
+          常用绳缚词汇库
+        </a>
+        <div class="nav-links">
+          <a href="index.html">首页</a>
+          <a href="#" class="active"><i class="fas fa-globe"></i> SSC 与 RACK</a>
         </div>
+      </div>
     </nav>
 
     <!-- 面包屑导航 -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="index.html">首页</a> &gt; 
-            RACK
-        </div>
+      <div class="container">
+        <a href="index.html">首页</a> &gt;
+        SSC 与 RACK
+      </div>
     </div>
 
     <!-- 术语详情页头 -->
     <header class="term-header">
-        <div class="container">
-            <h1>RACK</h1>
-            <div class="term-origin">
-                <i class="fas fa-language"></i> 风险认知的共识性癖好
-            </div>
+      <div class="container">
+        <h1>SSC 与 RACK</h1>
+        <div class="term-origin">
+          <i class="fas fa-language"></i> BDSM社群中常见的指导规则
         </div>
+      </div>
     </header>
 
     <!-- 详细介绍 -->
     <section class="container">
-        <div class="content-section">
-            <h2><i class="fas fa-info-circle" ></i> 定义与概述</h2>
-            <p>首先我们要知道，<strong>SSC原则</strong>是"Safe, Sane, Consensual"的首字母缩写，中文译为<strong>"安全、理智、知情同意"</strong>。它是绳缚与BDSM实践中最基础、最广为人知的伦理框架，自20世纪80年代以来一直是社区的核心指导原则。</p>
-            <p>SSC 强调三大支柱：</p>
-            <p><strong>安全：</strong>优先保障参与者身体和心理安全；<strong>理智：</strong>在清醒、理性的状态下进行活动；<strong>知情同意：</strong>所有参与者在充分了解情况后明确同意</p>
-            <p>这一原则为初学者和常规实践提供了清晰、稳妥的伦理基础，是进入绳缚世界的“入门守则”。它特别适合低风险实践，强调风险规避和安全第一的文化。</p>
-            <p><strong>RACK </strong>是"Risk-Aware Consensual Kink"的首字母缩写，中文译为<strong>"风险意识的共识"</strong>。它是一种比传统"SSC"（安全、理智、知情同意）更为现代和诚实的绳缚与BDSM实践伦理框架。</p>
-            <p>RACK 承认并正视所有活动都存在固有风险，强调参与者必须在充分了解这些风险的基础上，通过明确、持续的共识来开展活动。它为高风险、高强度的实践（如高级悬吊）提供了合理的伦理基础。</p>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-star"></i> 核心四要素</h2>
-            
-            <div class="rack-elements">
-                <div class="rack-element">
-                    <h3><i class="fas fa-exclamation-triangle"></i> 风险认知<br><span class="element-en">Risk-Aware</span></h3>
-                    <ul>
-                        <li>承认活动固有风险的存在</li>
-                        <li>主动学习、识别和评估潜在风险</li>
-                        <li>制定风险最小化策略和应急预案</li>
-                        <li>接受"零风险"是不现实的</li>
-                    </ul>
-                </div>
-                
-                <div class="rack-element">
-                    <h3><i class="fas fa-handshake"></i> 共识性<br><span class="element-en">Consensual</span></h3>
-                    <ul>
-                        <li>所有参与方自愿、明确的同意</li>
-                        <li>同意基于充分的信息和理解</li>
-                        <li>同意可在任何时刻撤销</li>
-                        <li>持续的沟通和界限确认</li>
-                    </ul>
-                </div>
-                
-                <div class="rack-element">
-                    <h3><i class="fas fa-user-shield"></i> 个人责任<br><span class="element-en">Personal Responsibility</span></h3>
-                    <ul>
-                        <li>为自己和伙伴的安全负责</li>
-                        <li>基于成年人身份做出知情选择</li>
-                        <li>诚实评估自身技能和极限</li>
-                        <li>承担选择带来的后果</li>
-                    </ul>
-                </div>
-                
-                <div class="rack-element">
-                    <h3><i class="fas fa-project-diagram"></i> 持续流程<br><span class="element-en">Continuous Process</span></h3>
-                    <ul>
-                        <li>非一次性"免责声明"</li>
-                        <li>贯穿活动前、中、后的动态评估</li>
-                        <li>随时调整和重新协商</li>
-                        <li>事后关怀与复盘</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-project-diagram"></i> RACK实践流程图</h2>
-            
-            <div class="rack-flowchart">
-                <div class="flow-step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>风险教育与认知</h4>
-                        <p>学习特定技术（如十字缚）的已知风险：神经损伤、呼吸限制、心理影响等</p>
-                    </div>
-                </div>
-                
-                <div class="flow-step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>坦诚沟通与协商</h4>
-                        <p>交换医疗信息、过往经验、恐惧和期待；设定活动边界、强度、时长</p>
-                    </div>
-                </div>
-                
-                <div class="flow-step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>建立安全系统</h4>
-                        <p>确定安全词/安全信号；准备安全剪刀和应急措施；安排监护者</p>
-                    </div>
-                </div>
-                
-                <div class="flow-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h4>基于共识开始活动</h4>
-                        <p>所有参与者明确表示"我知晓风险，并自愿参与"</p>
-                    </div>
-                </div>
-                
-                <div class="flow-step">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <h4>持续监控与调整</h4>
-                        <p>活动过程中持续关注身体反应、心理状态；随时准备暂停或调整</p>
-                    </div>
-                </div>
-                
-                <div class="flow-step">
-                    <div class="step-number">6</div>
-                    <div class="step-content">
-                        <h4>事后关怀与复盘</h4>
-                        <p>身体检查、情感支持、补充水分；讨论体验，为下次实践提供反馈</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-balance-scale"></i> RACK 与 SSC 对比</h2>
-            
-            <div class="comparison-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>对比维度</th>
-                            <th>RACK (风险意识的共识)</th>
-                            <th>SSC (安全、理智、知情同意)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>核心哲学</strong></td>
-                            <td>承认风险存在，管理而非消除风险</td>
-                            <td>追求活动本身的"安全"和"理智"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>风险评估</strong></td>
-                            <td>诚实、具体、基于事实的风险认知</td>
-                            <td>相对主观，依赖个人判断何为"安全"</td>
-                        </tr>
-                        <tr>
-                            <td><strong>适用场景</strong></td>
-                            <td>适用于高风险、高强度的进阶实践</td>
-                            <td>更适合初学者和中低风险活动</td>
-                        </tr>
-                        <tr>
-                            <td><strong>责任主体</strong></td>
-                            <td>强调个人责任和知情选择</td>
-                            <td>隐含对活动本身"安全性"的依赖</td>
-                        </tr>
-                        <tr>
-                            <td><strong>对"风险"的态度</strong></td>
-                            <td>风险是现实，需认知和管理</td>
-                            <td>风险应被最小化或避免</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div class="content-section">
-            <h2><i class="fas fa-exclamation-triangle"></i> 在绳缚中的具体应用</h2>
+      <div class="content-section">
+        <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
+        <p>首先，我们要知道，安全原则的本质不是消除风险，而是在清醒认知中权衡欲望与代价。
+          无论选择何种框架，持续的沟通教育（Communication）、可撤销的同意机制（Revocable Consent）和事后的心理照护（Aftercare）才是实践的核心支柱</p>
+        <p><strong>SSC原则</strong>是"Safe, Sane, Consensual"的首字母缩写，中文译为<strong>"安全、理智、知情同意"</strong>。<br>它是绳缚与BDSM实践中最基础、最广为人知的伦理框架，自20世纪80年代以来一直是社区的核心指导原则。</p>
+        <p></p>
+        <p>SSC 强调三大核心支柱：<br><strong>安全（Safe）：</strong>优先保障参与者身体和心理安全，尽可能规避可预见的身体/心理伤害（如避开高危部位、使用安全工具）；<br><strong>理智（Sane）：</strong>活动需在清醒、理性的心理状态下进行（排除药物、酒精、情绪崩溃等干扰）；<br><strong>知情同意（Consensual）：</strong>所有参与者需在无胁迫、无欺骗下充分了解情况后明确同意活动的内容与边界。</p>
+        <p>这一原则为初学者和常规实践提供了清晰、稳妥的伦理基础，是进入绳缚世界的“入门守则”。它特别适合低风险实践，强调风险规避和安全第一的文化。</p>
+        <p><strong>RACK </strong>是"Risk-Aware Consensual Kink"的首字母缩写，中文译为<strong>"风险意识的共识"</strong>。<br>它是一种比传统 SSC 更为现代和诚实的绳缚与BDSM实践伦理框架。</p>
+        <p>RACK的三大核心逻辑：<br><strong>风险评估（Risk-Accepted）：</strong>参与者需充分认知行为潜在风险（如捆绑缺血致神经坏死、低温烫伤真皮损伤）并自愿承担；<br><strong>知情同意（Consensual）：</strong>同SSC，但更强调风险告知的详细性；<br><strong>癖好（Kink）：</strong>活动需符合双方共同癖好，避免因单方妥协而导致问题发生。</p>
+        <p>RACK 承认并正视所有活动都存在固有风险，强调参与者必须在充分了解这些风险的基础上，通过明确、持续的共识来开展活动。它为高风险、高强度的实践（如悬吊）提供了合理的伦理基础。</p>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-star"></i> 核心四要素</h2>
+
+        <div class="rack-elements">
+          <div class="rack-element">
+            <h3><i class="fas fa-exclamation-triangle"></i> 风险认知<br><span class="element-en">Risk-Aware</span></h3>
             <ul>
-                <li><strong>技术学习阶段：</strong>学习某项缚法（如海老缚）时，必须同时学习其<strong>所有已知风险</strong>和安全注意事项</li>
-                <li><strong>实践前沟通：</strong>明确告知伙伴技术风险、自身技能水平、应急预案</li>
-                <li><strong>活动过程中：</strong>持续监控风险指标（血液循环、呼吸、心理状态）</li>
-                <li><strong>高风险技术：</strong>对于十字缚等高风险技术，RACK要求参与者必须证明已充分认知风险并自愿承担</li>
-                <li><strong>事后责任：</strong>如发生意外，参与者基于"风险认知"的前提承担责任，而非简单归咎于"活动不安全"</li>
+              <li>承认活动固有风险的存在</li>
+              <li>主动学习、识别和评估潜在风险</li>
+              <li>制定风险最小化策略和应急预案</li>
+              <li>接受"零风险"是不现实的</li>
             </ul>
+          </div>
+
+          <div class="rack-element">
+            <h3><i class="fas fa-handshake"></i> 共识性<br><span class="element-en">Consensual</span></h3>
+            <ul>
+              <li>所有参与方自愿、明确的同意</li>
+              <li>同意基于充分的信息和理解</li>
+              <li>同意可在任何时刻撤销</li>
+              <li>持续的沟通和界限确认</li>
+            </ul>
+          </div>
+
+          <div class="rack-element">
+            <h3><i class="fas fa-user-shield"></i> 个人责任<br><span class="element-en">Personal Responsibility</span></h3>
+            <ul>
+              <li>为自己和伙伴的安全负责</li>
+              <li>基于成年人身份做出知情选择</li>
+              <li>诚实评估自身技能和极限</li>
+              <li>承担选择带来的后果</li>
+            </ul>
+          </div>
+
+          <div class="rack-element">
+            <h3><i class="fas fa-project-diagram"></i> 持续流程<br><span class="element-en">Continuous Process</span></h3>
+            <ul>
+              <li>非一次性"免责声明"</li>
+              <li>贯穿活动前、中、后的动态评估</li>
+              <li>随时调整和重新协商</li>
+              <li>事后关怀与复盘</li>
+            </ul>
+          </div>
         </div>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-project-diagram"></i> RACK实践流程图</h2>
+
+        <div class="rack-flowchart">
+          <div class="flow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>风险教育与认知</h4>
+              <p>学习特定技术（如十字缚）的已知风险：神经损伤、呼吸限制、心理影响等</p>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>坦诚沟通与协商</h4>
+              <p>交换医疗信息、过往经验、恐惧和期待；设定活动边界、强度、时长</p>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>建立安全系统</h4>
+              <p>确定安全词/安全信号；准备安全剪刀和应急措施；安排监护者</p>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>基于共识开始活动</h4>
+              <p>所有参与者明确表示"我知晓风险，并自愿参与"</p>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h4>持续监控与调整</h4>
+              <p>活动过程中持续关注身体反应、心理状态；随时准备暂停或调整</p>
+            </div>
+          </div>
+
+          <div class="flow-step">
+            <div class="step-number">6</div>
+            <div class="step-content">
+              <h4>事后关怀与复盘</h4>
+              <p>身体检查、情感支持、补充水分；讨论体验，为下次实践提供反馈</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-balance-scale"></i> RACK 与 SSC 对比</h2>
+
+        <div class="comparison-table">
+          <table>
+            <thead>
+              <tr>
+                <th>对比维度</th>
+                <th>RACK (风险意识的共识)</th>
+                <th>SSC (安全、理智、知情同意)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>核心哲学</strong></td>
+                <td>承认风险存在，管理而非消除风险</td>
+                <td>追求活动本身的"安全"和"理智"</td>
+              </tr>
+              <tr>
+                <td><strong>风险评估</strong></td>
+                <td>诚实、具体、基于事实的风险认知</td>
+                <td>相对主观，依赖个人判断何为"安全"</td>
+              </tr>
+              <tr>
+                <td><strong>适用场景</strong></td>
+                <td>适用于高风险、高强度的进阶实践</td>
+                <td>更适合初学者和中低风险活动</td>
+              </tr>
+              <tr>
+                <td><strong>责任主体</strong></td>
+                <td>强调个人责任和知情选择</td>
+                <td>隐含对活动本身"安全性"的依赖</td>
+              </tr>
+              <tr>
+                <td><strong>对"风险"的态度</strong></td>
+                <td>风险是现实，需认知和管理</td>
+                <td>风险应被最小化或避免</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <h2><i class="fas fa-exclamation-triangle"></i> 在绳缚中的具体应用</h2>
+        <ul>
+          <li><strong>技术学习阶段：</strong>学习某项缚法（如海老缚）时，必须同时学习其<strong>所有已知风险</strong>和安全注意事项</li>
+          <li><strong>实践前沟通：</strong>明确告知伙伴技术风险、自身技能水平、应急预案</li>
+          <li><strong>活动过程中：</strong>持续监控风险指标（血液循环、呼吸、心理状态）</li>
+          <li><strong>高风险技术：</strong>对于十字缚等高风险技术，RACK要求参与者必须证明已充分认知风险并自愿承担</li>
+          <li><strong>事后责任：</strong>如发生意外，参与者基于"风险认知"的前提承担责任，而非简单归咎于"活动不安全"</li>
+        </ul>
+      </div>
     </section>
 
     <!-- 返回按钮 -->
     <div class="container" style="text-align: center;">
-        <a href="index.html" class="back-button">
-            <i class="fas fa-arrow-left"></i> 返回
-        </a>
+      <a href="index.html" class="back-button">
+        <i class="fas fa-arrow-left"></i> 返回
+      </a>
     </div>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="container">
-            <p>© 2026 常用绳缚词汇库</p>
-        </div>
+      <div class="container">
+        <p>© 2026 常用绳缚词汇库</p>
+      </div>
     </footer>
     <style>
+      .rack-elements {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .rack-element {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        border-left: 3px solid #667eea;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .element-icon {
+        font-size: 1.2rem;
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .element-en {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: normal;
+        font-style: italic;
+      }
+
+      .rack-flowchart {
+        margin-top: 20px;
+      }
+
+      .flow-step {
+        background: white;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        border: 2px solid #e9ecef;
+        position: relative;
+      }
+
+      .step-number {
+        background: #667eea;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-right: 20px;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        flex-grow: 1;
+      }
+
+      .step-content h4 {
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .step-content p {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .step-arrow {
+        color: #667eea;
+        font-size: 1rem;
+        margin-left: 20px;
+      }
+
+      .comparison-table {
+        overflow-x: auto;
+        margin-top: 20px;
+      }
+
+      .comparison-table table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .comparison-table th {
+        background: #667eea;
+        color: white;
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .comparison-table td {
+        padding: 15px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .comparison-table tr:nth-child(even) {
+        background: #f8f9fa;
+      }
+
+      .rack-element ul,
+      .content-section ul {
+        padding-left: 20px;
+        margin-top: 10px;
+      }
+
+      .rack-element li,
+      .content-section li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 768px) {
         .rack-elements {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+          grid-template-columns: 1fr;
         }
-        
-        .rack-element {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 3px solid #667eea;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .element-icon {
-            font-size: 1.2rem;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-        
-        .element-en {
-            font-size: 0.9rem;
-            color: #666;
-            font-weight: normal;
-            font-style: italic;
-        }
-        
-        .rack-flowchart {
-            margin-top: 20px;
-        }
-        
+
         .flow-step {
-            background: white;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            border: 2px solid #e9ecef;
-            position: relative;
+          flex-direction: column;
+          text-align: center;
+          padding: 15px;
         }
-        
+
         .step-number {
-            background: #667eea;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1rem;
-            margin-right: 20px;
-            flex-shrink: 0;
+          margin-right: 0;
+          margin-bottom: 15px;
         }
-        
-        .step-content {
-            flex-grow: 1;
-        }
-        
-        .step-content h4 {
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .step-content p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
+
         .step-arrow {
-            color: #667eea;
-            font-size: 1rem;
-            margin-left: 20px;
+          margin-left: 0;
+          margin-top: 10px;
+          transform: rotate(90deg);
         }
-        
-        .comparison-table {
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-        
-        .comparison-table table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        }
-        
-        .comparison-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-        
-        .comparison-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .comparison-table tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        .rack-element ul, 
-        .content-section ul {
-            padding-left: 20px;
-            margin-top: 10px;
-        }
-        
-        .rack-element li, 
-        .content-section li {
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        
-        @media (max-width: 768px) {
-            .rack-elements {
-                grid-template-columns: 1fr;
-            }
-            
-            .flow-step {
-                flex-direction: column;
-                text-align: center;
-                padding: 15px;
-            }
-            
-            .step-number {
-                margin-right: 0;
-                margin-bottom: 15px;
-            }
-            
-            .step-arrow {
-                margin-left: 0;
-                margin-top: 10px;
-                transform: rotate(90deg);
-            }
-        }
+      }
     </style>
-    </body>
+  </body>
+
 </html>
