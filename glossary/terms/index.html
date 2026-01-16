@@ -1,596 +1,618 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
+
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>部分绳缚术语</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 基础重置 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { 
-            font-family: "微软雅黑", sans-serif; 
-            line-height: 1.6; 
-            color: #333;
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
+      /* 基础重置 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        font-family: "微软雅黑", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航样式 */
+      .navbar {
+        background: #667eea;
+        padding: 12px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* 技术分类页头 */
+      .techniques-header {
+        background: #667eea;
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .techniques-header h1 {
+        font-size: 2rem;
+        margin-bottom: 12px;
+        padding: 0 15px;
+      }
+
+      .techniques-header p {
+        font-size: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        opacity: 0.95;
+        padding: 0 15px;
+      }
+
+      /* 面包屑导航 */
+      .breadcrumb {
+        background: #f5f5f5;
+        padding: 12px 0;
+        margin-bottom: 25px;
+        font-size: 0.85rem;
+      }
+
+      .breadcrumb a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      /* 子分类导航 */
+      .subcategory-nav {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .subcategory-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px 15px;
+        text-align: center;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .subcategory-card:hover,
+      .subcategory-card.active {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        border-color: #667eea;
+      }
+
+      .subcategory-card div {
+        font-size: 2rem;
+        margin-bottom: 12px;
+      }
+
+      .subcategory-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        color: #667eea;
+      }
+
+      .subcategory-card p {
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      /* 技术术语列表 */
+      .techniques-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .technique-card {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .technique-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .technique-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+        color: #667eea;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+      }
+
+      .technique-card p {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 12px;
+      }
+
+      .technique-meta {
+        display: flex;
+        gap: 12px;
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 8px;
+      }
+
+      .technique-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* 技术详情区 */
+      .technique-detail {
+        background: #f9f9f9;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .technique-detail h2 {
+        font-size: 1.7rem;
+        margin-bottom: 12px;
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 8px;
+      }
+
+      .technique-detail h3 {
+        font-size: 1.2rem;
+        margin: 20px 0 8px;
+        color: #667eea;
+      }
+
+      .technique-detail ul,
+      .technique-detail ol {
+        margin-left: 20px;
+        margin-bottom: 12px;
+      }
+
+      .technique-detail li {
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+      }
+
+      /* 页脚 */
+      .footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 25px 0;
+        margin-top: 40px;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .footer-links a:hover {
+        color: white;
+        text-decoration: underline;
+      }
+
+      .footer p {
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
+
+      /* 响应式调整 */
+      @media (max-width: 992px) {
+        html {
+          font-size: 15px;
         }
-        
-        .container { 
-            max-width: 1200px; 
-            margin: 0 auto; 
-            padding: 0 15px; 
-        }
-        
-        /* 导航样式 */
-        .navbar {
-            background: #667eea;
-            padding: 12px 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* 技术分类页头 */
-        .techniques-header {
-            background: #667eea;
-            color: white;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .techniques-header h1 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            padding: 0 15px;
-        }
-        
-        .techniques-header p {
-            font-size: 1rem;
-            max-width: 800px;
-            margin: 0 auto;
-            opacity: 0.95;
-            padding: 0 15px;
-        }
-        
-        /* 面包屑导航 */
-        .breadcrumb {
-            background: #f5f5f5;
-            padding: 12px 0;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        /* 子分类导航 */
+
         .subcategory-nav {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 12px;
         }
-        
-        .subcategory-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px 15px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+
+        .techniques-header h1 {
+          font-size: 1.8rem;
         }
-        
-        .subcategory-card:hover, .subcategory-card.active {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            border-color: #667eea;
+
+        .techniques-header p {
+          font-size: 0.95rem;
         }
-        
+      }
+
+      @media (max-width: 768px) {
+        html {
+          font-size: 14px;
+        }
+
+        .techniques-header {
+          padding: 25px 0;
+        }
+
+        .techniques-header h1 {
+          font-size: 1.6rem;
+        }
+
+        .techniques-header p {
+          font-size: 0.9rem;
+        }
+
+        .subcategory-nav {
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+
         .subcategory-card div {
-            font-size: 2rem;
-            margin-bottom: 12px;
+          font-size: 1.8rem;
         }
-        
+
         .subcategory-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: #667eea;
+          font-size: 1.1rem;
         }
-        
+
         .subcategory-card p {
-            font-size: 0.85rem;
-            color: #666;
+          font-size: 0.8rem;
         }
-        
-        /* 技术术语列表 */
+
         .techniques-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+          grid-template-columns: 1fr;
+          gap: 15px;
         }
-        
+
         .technique-card {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+          padding: 15px;
         }
-        
-        .technique-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        }
-        
+
         .technique-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-            color: #667eea;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
+          font-size: 1.2rem;
         }
-        
+
         .technique-card p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 12px;
+          font-size: 0.85rem;
         }
-        
-        .technique-meta {
-            display: flex;
-            gap: 12px;
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 8px;
-        }
-        
-        .technique-meta span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        /* 技术详情区 */
+
         .technique-detail {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          padding: 20px;
         }
-        
+
         .technique-detail h2 {
-            font-size: 1.7rem;
-            margin-bottom: 12px;
-            color: #333;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
+          font-size: 1.5rem;
         }
-        
+
         .technique-detail h3 {
-            font-size: 1.2rem;
-            margin: 20px 0 8px;
-            color: #667eea;
+          font-size: 1.1rem;
         }
-        
-        .technique-detail ul, .technique-detail ol {
-            margin-left: 20px;
-            margin-bottom: 12px;
+
+        .navbar .container {
+          flex-direction: column;
+          gap: 10px;
         }
-        
-        .technique-detail li {
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+
+        .nav-links {
+          gap: 8px;
         }
-        
-        /* 页脚 */
-        .footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 25px 0;
-            margin-top: 40px;
+
+        .nav-links a {
+          font-size: 0.85rem;
+          padding: 4px 8px;
         }
-        
+
+        .logo {
+          font-size: 1.1rem;
+        }
+
+        section h2 {
+          font-size: 1.5rem !important;
+          margin-bottom: 20px !important;
+        }
+      }
+
+      @media (max-width: 576px) {
+        html {
+          font-size: 13px;
+        }
+
+        .techniques-header h1 {
+          font-size: 1.4rem;
+        }
+
+        .subcategory-nav {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .subcategory-card {
+          padding: 15px 10px;
+        }
+
+        .subcategory-card div {
+          font-size: 1.6rem;
+        }
+
+        .subcategory-card h3 {
+          font-size: 1rem;
+        }
+
+        .technique-detail {
+          padding: 15px;
+        }
+
+        .technique-detail h2 {
+          font-size: 1.3rem;
+        }
+
+        .technique-detail h3 {
+          font-size: 1rem;
+        }
+
+        .nav-links a {
+          font-size: 0.8rem;
+          padding: 3px 6px;
+        }
+
+        .container {
+          padding: 0 10px;
+        }
+
         .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+          gap: 15px;
         }
-        
+
         .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            font-size: 0.9rem;
+          font-size: 0.85rem;
         }
-        
-        .footer-links a:hover {
-            color: white;
-            text-decoration: underline;
+      }
+
+      @media (max-width: 360px) {
+        html {
+          font-size: 12px;
         }
-        
-        .footer p {
-            font-size: 0.9rem;
-            margin-top: 10px;
+
+        .techniques-header h1 {
+          font-size: 1.2rem;
         }
-        
-        /* 响应式调整 */
-        @media (max-width: 992px) {
-            html { font-size: 15px; }
-            
-            .subcategory-nav {
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-                gap: 12px;
-            }
-            
-            .techniques-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .techniques-header p {
-                font-size: 0.95rem;
-            }
+
+        .subcategory-nav {
+          grid-template-columns: 1fr;
         }
-        
-        @media (max-width: 768px) {
-            html { font-size: 14px; }
-            
-            .techniques-header {
-                padding: 25px 0;
-            }
-            
-            .techniques-header h1 {
-                font-size: 1.6rem;
-            }
-            
-            .techniques-header p {
-                font-size: 0.9rem;
-            }
-            
-            .subcategory-nav {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            }
-            
-            .subcategory-card div {
-                font-size: 1.8rem;
-            }
-            
-            .subcategory-card h3 {
-                font-size: 1.1rem;
-            }
-            
-            .subcategory-card p {
-                font-size: 0.8rem;
-            }
-            
-            .techniques-list {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .technique-card {
-                padding: 15px;
-            }
-            
-            .technique-card h3 {
-                font-size: 1.2rem;
-            }
-            
-            .technique-card p {
-                font-size: 0.85rem;
-            }
-            
-            .technique-detail {
-                padding: 20px;
-            }
-            
-            .technique-detail h2 {
-                font-size: 1.5rem;
-            }
-            
-            .technique-detail h3 {
-                font-size: 1.1rem;
-            }
-            
-            .navbar .container {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .nav-links {
-                gap: 8px;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-                padding: 4px 8px;
-            }
-            
-            .logo {
-                font-size: 1.1rem;
-            }
-            
-            section h2 {
-                font-size: 1.5rem !important;
-                margin-bottom: 20px !important;
-            }
+
+        .nav-links {
+          flex-direction: column;
+          align-items: center;
         }
-        
-        @media (max-width: 576px) {
-            html { font-size: 13px; }
-            
-            .techniques-header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .subcategory-nav {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .subcategory-card {
-                padding: 15px 10px;
-            }
-            
-            .subcategory-card div {
-                font-size: 1.6rem;
-            }
-            
-            .subcategory-card h3 {
-                font-size: 1rem;
-            }
-            
-            .technique-detail {
-                padding: 15px;
-            }
-            
-            .technique-detail h2 {
-                font-size: 1.3rem;
-            }
-            
-            .technique-detail h3 {
-                font-size: 1rem;
-            }
-            
-            .nav-links a {
-                font-size: 0.8rem;
-                padding: 3px 6px;
-            }
-            
-            .container {
-                padding: 0 10px;
-            }
-            
-            .footer-links {
-                gap: 15px;
-            }
-            
-            .footer-links a {
-                font-size: 0.85rem;
-            }
+
+        .nav-links a {
+          font-size: 0.85rem;
         }
-        
-        @media (max-width: 360px) {
-            html { font-size: 12px; }
-            
-            .techniques-header h1 {
-                font-size: 1.2rem;
-            }
-            
-            .subcategory-nav {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .nav-links a {
-                font-size: 0.85rem;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <!-- 导航栏 -->
     <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-mountain"></i>
-                <span>常用绳缚词汇库</span>
-            </div>
-            <div class="nav-links">
-                <a href="../../index.html" class="active"><i class="fas fa-home"></i> 首页</a>
-                <a href="#" class="active"><i class="fas fa-magnet"></i> 部分绳缚术语</a>
-            </div>
+      <div class="container">
+        <div class="logo">
+          <i class="fas fa-mountain"></i>
+          <span>常用绳缚词汇库</span>
         </div>
+        <div class="nav-links">
+          <a href="../../index.html" class="active"><i class="fas fa-home"></i> 首页</a>
+          <a href="#" class="active"><i class="fas fa-magnet"></i> 部分绳缚术语</a>
+        </div>
+      </div>
     </nav>
 
     <!-- 面包屑导航 -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="../../index.html">首页</a> &gt; 
-            <span>部分绳缚术语</span>
-        </div>
+      <div class="container">
+        <a href="../../index.html">首页</a> &gt;
+        <span>部分绳缚术语</span>
+      </div>
     </div>
 
     <!-- 技术分类页头 -->
     <header class="techniques-header">
-        <div class="container">
-            <h1>部分绳缚术语</h1>
-            <p>介绍部分绳缚术语，包括绳头、绳尾、闩、半扣、8字结、十字结、本结、雀头结等分类</p>
-        </div>
+      <div class="container">
+        <h1>部分绳缚术语</h1>
+        <p>介绍部分绳缚术语，包括绳头、绳尾、闩、半扣、8字结、十字结、本结、雀头结等分类</p>
+      </div>
     </header>
 
     <!-- 子分类导航 -->
     <section class="container">
-        <h2 style="text-align: center; margin-bottom: 25px; font-size: 1.6rem; color: #333;"></h2>
-        <div class="subcategory-nav">
-            <a href="Hemprope.html" class="subcategory-card">
-                <div>🎯</div>
-                <h3>麻绳</h3>
-                <p>Hemp rope</p>
-            </a>
-            <a href="Bight.html" class="subcategory-card">
-                <div>🪀</div>
-                <h3>绳头</h3>
-                <p>Bight</p>
-            </a>
-            <a href="Tail.html" class="subcategory-card">
-                <div>🪁</div>
-                <h3>绳尾</h3>
-                <p>Tail</p>
-            </a>
-            <a href="Loop.html" class="subcategory-card">
-                <div>🔫</div>
-                <h3>绳圈</h3>
-                <p>Loop</p>
-            </a>
-            <a href="Tension.html" class="subcategory-card">
-                <div>🧸</div>
-                <h3>张力</h3>
-                <p>Tension</p>
-            </a>
-            <a href="Cinch.html" class="subcategory-card">
-                <div>🔮</div>
-                <h3>闩</h3>
-                <p>Cinch</p>
-            </a>
-            <a href="Hitch.html" class="subcategory-card">
-                <div>🎮</div>
-                <h3>扣</h3>
-                <p>Hitch</p>
-            </a>
-            <a href="HalfHitch.html" class="subcategory-card">
-                <div>🎰</div>
-                <h3>半扣</h3>
-                <p>Half Hitch</p>
-            </a>
-            <a href="CrossingHitch.html" class="subcategory-card">
-                <div>🎲</div>
-                <h3>十字扣</h3>
-                <p>Crossing Hitch</p>
-            </a>
-            <a href="MunterHitch.html" class="subcategory-card">
-                <div>🧩</div>
-                <h3>穆特结</h3>
-                <p>Munter Hitch</p>
-            </a>
-             <a href="Figure-8Knot.html" class="subcategory-card">
-                <div>🎱</div>
-                <h3>8字扣</h3>
-                <p>Figure-8 Knot</p>
-            </a>
-            <a href="Half-MoonKnot.html" class="subcategory-card">
-                <div>🌗</div>
-                <h3>半月扣</h3>
-                <p>Half-Moon Knot</p>
-            </a>
-            <a href="OverhandKnot.html" class="subcategory-card">
-                <div>♠️</div>
-                <h3>单结</h3>
-                <p>Overhand Knot</p>
-            </a>
-            <a href="ReefKnot.html" class="subcategory-card">
-                <div>🔗</div>
-                <h3>本结</h3>
-                <p>Reef Knot</p>
-            </a>
-            <a href="SomervilleBowline.html" class="subcategory-card">
-                <div>👓</div>
-                <h3>萨默维尔称人结</h3>
-                <p>Somerville Bowline</p>
-            </a>
-            <a href="CowHitch.html" class="subcategory-card">
-                <div>👔</div>
-                <h3>雀头结</h3>
-                <p>Cow Hitch / Lark’s head</p>
-            </a>
-            <a href="SheetBend.html" class="subcategory-card">
-                <div>🎼</div>
-                <h3>接绳结</h3>
-                <p>Sheet Bend</p>
-            </a>
-            <a href="CloveHitch.html" class="subcategory-card">
-                <div>🎧</div>
-                <h3>双套结/丁香结</h3>
-                <p>Clove Hitch</p>
-            </a>
-            <a href="HojoCuff.html" class="subcategory-card">
-                <div>⛓️</div>
-                <h3>捕绳扣</h3>
-                <p>Inline Cuff / Hojo Cuff</p>
-            </a>
-            <a href="Quick-ReleaseKnot.html" class="subcategory-card">
-                <div>🧷</div>
-                <h3>快拆结 / 雪村结</h3>
-                <p>Quick-Release Knot</p>
-            </a>
-             <a href="NakaKnot.html" class="subcategory-card">
-                <div>🔐</div>
-                <h3>奈加结</h3>
-                <p>Naka Knot</p>
-            </a>
-        </div>
+      <h2 style="text-align: center; margin-bottom: 25px; font-size: 1.6rem; color: #333;"></h2>
+      <div class="subcategory-nav">
+        <a href="Hemprope.html" class="subcategory-card">
+          <div>🧵</div>
+          <h3>麻绳</h3>
+          <p>Hemp rope</p>
+        </a>
+        <a href="Bight.html" class="subcategory-card">
+          <div>🪀</div>
+          <h3>绳头</h3>
+          <p>Bight</p>
+        </a>
+        <a href="Tail.html" class="subcategory-card">
+          <div>🪁</div>
+          <h3>绳尾</h3>
+          <p>Tail</p>
+        </a>
+        <a href="Loop.html" class="subcategory-card">
+          <div>🍩</div>
+          <h3>绳圈</h3>
+          <p>Loop</p>
+        </a>
+        <a href="Tension.html" class="subcategory-card">
+          <div>🧸</div>
+          <h3>张力</h3>
+          <p>Tension</p>
+        </a>
+        <a href="Cinch.html" class="subcategory-card">
+          <div>⛔️</div>
+          <h3>闩</h3>
+          <p>Cinch</p>
+        </a>
+        <a href="Hitch.html" class="subcategory-card">
+          <div>🪐</div>
+          <h3>扣</h3>
+          <p>Hitch</p>
+        </a>
+        <a href="HalfHitch.html" class="subcategory-card">
+          <div>➰️</div>
+          <h3>半扣</h3>
+          <p>Half Hitch</p>
+        </a>
+        <a href="CrossingHitch.html" class="subcategory-card">
+          <div>➕︎</div>
+          <h3>十字扣</h3>
+          <p>Crossing Hitch</p>
+        </a>
+        <a href="MunterHitch.html" class="subcategory-card">
+          <div>🥨</div>
+          <h3>穆特结</h3>
+          <p>Munter Hitch</p>
+        </a>
+        <a href="Figure-8Knot.html" class="subcategory-card">
+          <div>🎱</div>
+          <h3>8字扣</h3>
+          <p>Figure-8 Knot</p>
+        </a>
+        <a href="Half-MoonKnot.html" class="subcategory-card">
+          <div>🌗</div>
+          <h3>半月扣</h3>
+          <p>Half-Moon Knot</p>
+        </a>
+        <a href="OverhandKnot.html" class="subcategory-card">
+          <div>🎀</div>
+          <h3>单结</h3>
+          <p>Overhand Knot</p>
+        </a>
+        <a href="ReefKnot.html" class="subcategory-card">
+          <div>♾️</div>
+          <h3>本结</h3>
+          <p>Reef Knot</p>
+        </a>
+        <a href="SomervilleBowline.html" class="subcategory-card">
+          <div>👓</div>
+          <h3>萨默维尔称人结</h3>
+          <p>Somerville Bowline</p>
+        </a>
+        <a href="CowHitch.html" class="subcategory-card">
+          <div>🕊️</div>
+          <h3>雀头结</h3>
+          <p>Cow Hitch / Lark’s head</p>
+        </a>
+        <a href="SheetBend.html" class="subcategory-card">
+          <div>🎼</div>
+          <h3>接绳结</h3>
+          <p>Sheet Bend</p>
+        </a>
+        <a href="CloveHitch.html" class="subcategory-card">
+          <div>🎧</div>
+          <h3>双套结/丁香结</h3>
+          <p>Clove Hitch</p>
+        </a>
+        <a href="HojoCuff.html" class="subcategory-card">
+          <div>⛓️</div>
+          <h3>捕绳扣</h3>
+          <p>Inline Cuff / Hojo Cuff</p>
+        </a>
+        <a href="Quick-ReleaseKnot.html" class="subcategory-card">
+          <div>🧷</div>
+          <h3>快拆结 / 雪村结</h3>
+          <p>Quick-Release Knot</p>
+        </a>
+        <a href="NakaKnot.html" class="subcategory-card">
+          <div>🔐</div>
+          <h3>奈加结</h3>
+          <p>Naka Knot</p>
+        </a>
+      </div>
     </section>
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="../../index.html">返回首页</a>
-            </div>
-            <p>© 2026 常用绳缚词汇库 | 绳缚术语分类</p>
+      <div class="container">
+        <div class="footer-links">
+          <a href="../../index.html">返回首页</a>
         </div>
+        <p>© 2026 常用绳缚词汇库 | 绳缚术语分类</p>
+      </div>
     </footer>
-</body>
+  </body>
+
 </html>
