@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>绳艺 - 部分绳缚技术名称</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
       /* 基础重置 */
       * {
@@ -96,7 +96,9 @@
 
       /* 术语详情页头 */
       .term-header {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.9) 0%,
+            rgba(118, 75, 162, 0.9) 100%);
         color: white;
         padding: 30px 0;
         margin-bottom: 30px;
@@ -551,7 +553,7 @@
     <nav class="navbar">
       <div class="container">
         <div class="logo">
-          <i class="fas fa-mountain"></i>
+          <i class="fas fa-book"></i>
           <span>常用绳缚词汇库</span>
         </div>
         <div class="nav-links">
@@ -582,7 +584,12 @@
 
     <!-- 多语言表述 -->
     <section class="container">
-      <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+      <h2 style="
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 1.6rem;
+          color: #333;
+        ">
         <i class="fas fa-globe-asia"></i> 多语言表述
       </h2>
       <div class="language-expressions">
@@ -608,9 +615,16 @@
     <section class="container">
       <div class="content-section">
         <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
-        <p>日语中单词“Shibaru 缚る（しばる）”的变形，意思为“绑定”或“固定”。在英语中使用时通常指日式绳缚。</p>
-        <p>绳艺（Shibari）是源自日本的传统绳缚艺术，强调美学价值、视觉美感和意境表达。</p>
-        <p>绳艺在日本有着悠久的历史，最初用于武士时代的俘虏束缚，后来演变为一种独特的表演艺术和审美表达形式。</p>
+        <p>
+          日语中单词“Shibaru
+          缚る（しばる）”的变形，意思为“绑定”或“固定”。在英语中使用时通常指日式绳缚。
+        </p>
+        <p>
+          绳艺（Shibari）是源自日本的传统绳缚艺术，强调美学价值、视觉美感和意境表达。
+        </p>
+        <p>
+          绳艺在日本有着悠久的历史，最初用于武士时代的俘虏束缚，后来演变为一种独特的表演艺术和审美表达形式。
+        </p>
       </div>
 
       <div class="content-section">
@@ -638,19 +652,30 @@
 
       <div class="content-section">
         <h2><i class="fas fa-palette"></i> 艺术价值</h2>
-        <p>绳艺不仅是一种束缚技术，更是一种身体艺术形式。它在以下领域有广泛应用：</p>
+        <p>
+          绳艺不仅是一种束缚技术，更是一种身体艺术形式。它在以下领域有广泛应用：
+        </p>
         <ul>
           <li><strong>摄影艺术：</strong>绳艺摄影已成为独立的艺术门类</li>
           <li><strong>表演艺术：</strong>绳艺表演结合了戏剧、舞蹈和视觉艺术</li>
-          <li><strong>文化传承：</strong>体现日本传统文化中的审美理念和技艺传承</li>
-          <li><strong>心理互动：</strong>强调施缚者与被缚者之间的信任和情感连接</li>
+          <li>
+            <strong>文化传承：</strong>体现日本传统文化中的审美理念和技艺传承
+          </li>
+          <li>
+            <strong>心理互动：</strong>强调施缚者与被缚者之间的信任和情感连接
+          </li>
         </ul>
       </div>
     </section>
 
     <!-- 图片展示区 -->
     <section class="container">
-      <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+      <h2 style="
+          text-align: center;
+          margin: 30px 0 20px;
+          font-size: 1.6rem;
+          color: #333;
+        ">
         <i class="fas fa-images"></i> 示意图展示
       </h2>
       <div class="container">
@@ -666,13 +691,12 @@
             </div>
           </div>
             -->
-
         </div>
       </div>
     </section>
 
     <!-- 返回按钮 -->
-    <div class="container" style="text-align: center;">
+    <div class="container" style="text-align: center">
       <a href="../techniques/index.html" class="back-button">
         <i class="fas fa-arrow-left"></i> 返回
       </a>
@@ -691,26 +715,26 @@
     <script>
       // 显示当前日期
       const now = new Date();
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const options = { year: "numeric", month: "long", day: "numeric" };
 
       // 简单的图片加载错误处理
-      document.querySelectorAll('img').forEach(img => {
+      document.querySelectorAll("img").forEach((img) => {
         img.onerror = function () {
-          console.log('图片加载失败: ' + this.src);
+          console.log("图片加载失败: " + this.src);
         };
       });
 
       // 平滑滚动
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          const targetId = this.getAttribute('href');
-          if (targetId !== '#') {
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const targetId = this.getAttribute("href");
+          if (targetId !== "#") {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
               e.preventDefault();
               targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+                behavior: "smooth",
+                block: "start",
               });
             }
           }
