@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>半吊 - 部分绳缚技术名称</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
       /* 基础重置 */
       * {
@@ -96,7 +96,9 @@
 
       /* 术语详情页头 */
       .term-header {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.9) 0%,
+            rgba(118, 75, 162, 0.9) 100%);
         color: white;
         padding: 30px 0;
         margin-bottom: 30px;
@@ -556,7 +558,7 @@
         </div>
         <div class="nav-links">
           <a href="../../index.html"><i class="fas fa-home"></i> 首页</a>
-          <a href="#" class="active"><i class="fas fa-ribbon"></i> 半吊</a>
+          <a href="../techniques/index.html" class="active"><i class="fas fa-ribbon"></i> 半吊</a>
         </div>
       </div>
     </nav>
@@ -582,7 +584,12 @@
 
     <!-- 多语言表述 -->
     <section class="container">
-      <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+      <h2 style="
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 1.6rem;
+          color: #333;
+        ">
         <i class="fas fa-globe-asia"></i> 多语言表述
       </h2>
       <div class="language-expressions">
@@ -608,8 +615,13 @@
     <section class="container">
       <div class="content-section">
         <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
-        <p>半吊（Partial Suspension）是介于地面缚和全吊之间的绳缚技术，受缚者部分身体悬空，部分身体接触地面或支撑物。</p>
-        <p>这种技术比全吊相对安全，风险较低，是学习悬吊技术的理想过渡形式，适合有一定基础但尚未准备好尝试全吊的绳缚爱好者。</p>
+        <p>
+          半吊（Partial
+          Suspension）是介于地面缚和全吊之间的绳缚技术，受缚者部分身体悬空，部分身体接触地面或支撑物。
+        </p>
+        <p>
+          这种技术比全吊相对安全，风险较低，是学习悬吊技术的理想过渡形式，适合有一定基础但尚未准备好尝试全吊的绳缚爱好者。
+        </p>
       </div>
 
       <div class="content-section">
@@ -650,7 +662,12 @@
 
     <!-- 图片展示区 -->
     <section class="container">
-      <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+      <h2 style="
+          text-align: center;
+          margin: 30px 0 20px;
+          font-size: 1.6rem;
+          color: #333;
+        ">
         <i class="fas fa-images"></i> 示意图展示
       </h2>
       <div class="container">
@@ -659,20 +676,19 @@
           <!--
           <div class="image-item">
             <div class="image-container">
-              <img src="/assets/images/vocs/hemprope_1.jpg" alt="麻绳">
+              <img src="../../assets/images/vocs/hemprope_1.jpg" alt="麻绳">
             </div>
             <div class="image-caption">
               麻绳
             </div>
           </div>
           -->
-
         </div>
       </div>
     </section>
 
     <!-- 返回按钮 -->
-    <div class="container" style="text-align: center;">
+    <div class="container" style="text-align: center">
       <a href="../techniques/index.html" class="back-button">
         <i class="fas fa-arrow-left"></i> 返回
       </a>
@@ -691,26 +707,26 @@
     <script>
       // 显示当前日期
       const now = new Date();
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const options = { year: "numeric", month: "long", day: "numeric" };
 
       // 简单的图片加载错误处理
-      document.querySelectorAll('img').forEach(img => {
+      document.querySelectorAll("img").forEach((img) => {
         img.onerror = function () {
-          console.log('图片加载失败: ' + this.src);
+          console.log("图片加载失败: " + this.src);
         };
       });
 
       // 平滑滚动
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          const targetId = this.getAttribute('href');
-          if (targetId !== '#') {
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          const targetId = this.getAttribute("href");
+          if (targetId !== "#") {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
               e.preventDefault();
               targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+                behavior: "smooth",
+                block: "start",
               });
             }
           }
