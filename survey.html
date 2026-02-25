@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="image/favicon.ico">
+    <title>绳缚体验知情同意与偏好调查表</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      :root {
+        --primary: #8b5cf6;
+        --primary-dark: #7c3aed;
+        --secondary: #f8fafc;
+        --text: #334155;
+        --text-light: #64748b;
+        --border: #e2e8f0;
+        --danger: #ef4444;
+        --success: #10b981;
+
+        /* 添加情感多选时新增的 */
+        --base-color: #4a6fa5;
+        --light-color: #edf2f7;
+        --hover-color: #f0f0f0;
+        --text-dark: #333;
+        --text-medium: #666;
+        --text-light: #888;
+        --border-color: #ddd;
+        --level1-color: #7cb342;
+        --level2-color: #ffb74d;
+        --level3-color: #ff7043;
+        --level4-color: #e53935;
+        --safety-bg: #fff0f0;
+        --safety-text: #c62828;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        color: var(--text);
+        line-height: 1.6;
+        padding: clamp(0.75rem, 2vw, 1.25rem);
+        min-height: 100vh;
+
+        /* 添加情感多选时新增的 */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        max-width: min(90vw, 1000px);
+        margin: 0 auto;
+        background: white;
+        border-radius: clamp(0.75rem, 2vw, 1rem);
+        box-shadow: 0 clamp(0.375rem, 1vw, 0.625rem) clamp(0.9375rem, 2.5vw, 1.5625rem) rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        border: 0.0625rem solid var(--border);
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: clamp(0.5rem, 1vw, 0.625rem);
+        letter-spacing: -0.03125rem;
+      }
+
+      .header p {
+        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        opacity: 0.9;
+        max-width: min(90%, 700px);
+        margin: 0 auto;
+        line-height: 1.4;
+      }
+
+      .status-bar {
+        display: flex;
+        background: var(--secondary);
+        padding: clamp(0.75rem, 2vw, 0.9375rem) clamp(1.5rem, 4vw, 2.5rem);
+        border-bottom: 0.0625rem solid var(--border);
+        gap: clamp(1rem, 3vw, 1.875rem);
+        justify-content: space-around;
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.5rem, 1.5vw, 0.625rem);
+        color: var(--text-light);
+        font-size: clamp(0.8rem, 2vw, 1rem);
+      }
+
+      .status-item.active {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .status-item i {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+      }
+
+      .content {
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+      }
+
+      .form-section {
+        margin-bottom: clamp(2rem, 5vw, 3.125rem);
+        padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+        border-bottom: 0.125rem dashed var(--border);
+      }
+
+      .form-section:last-child {
+        border-bottom: none;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+        padding-bottom: clamp(0.75rem, 2vw, 0.9375rem);
+        border-bottom: 0.125rem solid var(--border);
+      }
+
+      .section-title i {
+        color: var(--primary);
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+      }
+
+      .section-title h2 {
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+        color: var(--text);
+      }
+
+      .warning-box {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 0.3125rem solid #f59e0b;
+        padding: clamp(1rem, 3vw, 1.25rem);
+        border-radius: 0.5rem;
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+      }
+
+      .warning-box h3 {
+        color: #92400e;
+        margin-bottom: 0.625rem;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+      }
+
+      .warning-box p {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+      }
+
+      /* 添加情感多选时新增的 */
+      .form-group {
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.625rem;
+        color: var(--text);
+        font-size: clamp(1rem, 2.5vw, 1.1rem);
+      }
+
+      .form-help {
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        color: var(--text-light);
+        margin-top: 0.3125rem;
+        margin-bottom: 0.9375rem;
+        line-height: 1.4;
+      }
+
+      .feeling-options {
+        margin-top: 15px;
+      }
+
+      .feeling-option {
+        position: relative;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+      }
+
+      .feeling-option:hover {
+        transform: translateX(5px);
+      }
+
+      .feeling-option input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+      }
+
+      .feeling-option label {
+        display: block;
+        padding: 18px 20px;
+        background: #f8f8f8;
+        border-radius: 10px;
+        border-left: 6px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .feeling-option input[type="checkbox"]:checked+label {
+        background: var(--light-color);
+        box-shadow: 0 2px 8px rgba(74, 111, 165, 0.15);
+      }
+
+      .feeling-option:hover label {
+        background: var(--hover-color);
+      }
+
+      .option-title {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+      }
+
+      .option-title i {
+        margin-right: 10px;
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+      }
+
+      .option-desc {
+        display: block;
+        font-size: 14px;
+        color: var(--text-medium);
+        line-height: 1.6;
+        padding-left: 34px;
+      }
+
+      .safety-note {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 10px;
+        background: var(--safety-bg);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--safety-text);
+        line-height: 1.4;
+      }
+
+      .safety-note i {
+        margin-right: 5px;
+      }
+
+      /* 强度级别样式 */
+      .level-1 input[type="checkbox"]:checked+label {
+        border-left-color: var(--level1-color);
+      }
+
+      .level-2 input[type="checkbox"]:checked+label {
+        border-left-color: var(--level2-color);
+      }
+
+      .level-3 input[type="checkbox"]:checked+label {
+        border-left-color: var(--level3-color);
+      }
+
+      .level-4 input[type="checkbox"]:checked+label {
+        border-left-color: var(--level4-color);
+      }
+
+      /* 强度标签 */
+      .intensity-label {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: normal;
+      }
+
+      .level-1 .intensity-label {
+        background-color: #7cb34226;
+        color: var(--level1-color);
+      }
+
+      .level-2 .intensity-label {
+        background-color: #ffb74d26;
+        color: var(--level2-color);
+      }
+
+      .level-3 .intensity-label {
+        background-color: #ff704326;
+        color: var(--level3-color);
+      }
+
+      .level-4 .intensity-label {
+        background-color: #e5393526;
+        color: var(--level4-color);
+      }
+
+      /* 原.form-group */
+      .form-group {
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.625rem;
+        color: var(--text);
+        font-size: clamp(1rem, 2.5vw, 1.1rem);
+      }
+
+      .form-help {
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        color: var(--text-light);
+        margin-top: 0.3125rem;
+        margin-bottom: 0.9375rem;
+        line-height: 1.4;
+      }
+
+      /* 原style继续 */
+      .input-text {
+        width: 100%;
+        padding: 0.875rem;
+        border: 0.125rem solid var(--border);
+        border-radius: 0.625rem;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        transition: all 0.3s;
+      }
+
+      .input-text:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.1875rem rgba(139, 92, 246, 0.1);
+      }
+
+      .radio-group,
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(0.5rem, 2vw, 1.25rem);
+        margin-top: 0.625rem;
+      }
+
+      .radio-label,
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.625rem 0.9375rem;
+        border-radius: 0.5rem;
+        border: 0.125rem solid var(--border);
+        transition: all 0.2s;
+        user-select: none;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+      }
+
+      .radio-label:hover,
+      .checkbox-label:hover {
+        border-color: var(--primary);
+      }
+
+      input[type="radio"],
+      input[type="checkbox"] {
+        width: 1.125rem;
+        height: 1.125rem;
+        accent-color: var(--primary);
+      }
+
+      .body-part-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(120px, 30vw), 1fr));
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-top: 0.9375rem;
+      }
+
+      .body-part-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.9375rem 0.625rem;
+        border: 0.125rem solid var(--border);
+        border-radius: 0.625rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+      }
+
+      .body-part-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-0.125rem);
+      }
+
+      .body-part-item.selected {
+        background-color: rgba(139, 92, 246, 0.1);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .body-part-item i {
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        margin-bottom: 0.5rem;
+      }
+
+      .feeling-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-top: 0.9375rem;
+      }
+
+      .feeling-tag {
+        padding: 0.625rem 1.125rem;
+        background: var(--secondary);
+        border-radius: 3.125rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 0.125rem solid var(--border);
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+      }
+
+      .feeling-tag:hover {
+        transform: translateY(-0.125rem);
+      }
+
+      .feeling-tag.selected {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .btn-submit {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        border: none;
+        padding: clamp(1rem, 3vw, 1.125rem) clamp(1.5rem, 5vw, 2.5rem);
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        font-weight: 600;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: clamp(1.5rem, 4vw, 1.875rem);
+        letter-spacing: 0.03125rem;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-0.1875rem);
+        box-shadow: 0 0.625rem 1.25rem rgba(139, 92, 246, 0.3);
+      }
+
+      .btn-submit:active {
+        transform: translateY(-0.0625rem);
+      }
+
+      .footer {
+        text-align: center;
+        padding: clamp(1rem, 3vw, 1.875rem);
+        color: var(--text-light);
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        border-top: 0.0625rem solid var(--border);
+        background: var(--secondary);
+      }
+
+      .privacy-note {
+        background: rgba(139, 92, 246, 0.05);
+        padding: 0.9375rem;
+        border-radius: 0.5rem;
+        margin-top: 1.25rem;
+        border-left: 0.25rem solid var(--primary);
+      }
+
+      .success-message {
+        text-align: center;
+        padding: clamp(2rem, 8vw, 3.75rem) clamp(1.5rem, 4vw, 2.5rem);
+        display: none;
+      }
+
+      .success-message i {
+        font-size: clamp(2.5rem, 10vw, 4rem);
+        color: var(--success);
+        margin-bottom: 1.25rem;
+      }
+
+      .success-message h2 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        margin-bottom: 1rem;
+      }
+
+      .success-message p {
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        margin-bottom: 0.5rem;
+      }
+
+      /* 确认页面样式 */
+      .confirmation-page {
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        display: none;
+      }
+
+      .confirmation-section {
+        margin-bottom: clamp(0.5rem, 2vw, 0.625rem);
+        padding-bottom: 1.25rem;
+        border-bottom: 0rem dashed var(--border);
+      }
+
+      .confirmation-section:last-child {
+        border-bottom: none;
+      }
+
+      .confirmation-item {
+        margin-bottom: 1.25rem;
+        padding: 0.9375rem;
+        background: var(--secondary);
+        border-radius: 0.625rem;
+        border-left: 0.25rem solid var(--primary);
+      }
+
+      .confirmation-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+      }
+
+      .confirmation-label i {
+        color: var(--primary);
+      }
+
+      .confirmation-value {
+        color: var(--text-light);
+        padding-left: 1.625rem;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+      }
+
+      .confirmation-value ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .confirmation-value li {
+        padding: 0.3125rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .confirmation-value li i {
+        color: var(--primary);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.9375rem;
+        margin-top: clamp(1.5rem, 4vw, 1.875rem);
+        justify-content: center;
+      }
+
+      .btn-action {
+        padding: clamp(0.75rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 1.875rem);
+        border-radius: 0.625rem;
+        border: none;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--text);
+        border: 0.125rem solid var(--border);
+      }
+
+      .btn-action:hover {
+        transform: translateY(-0.125rem);
+        box-shadow: 0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1);
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        body {
+          padding: 0.75rem;
+        }
+
+        .container {
+          max-width: 95vw;
+        }
+
+        .header,
+        .content,
+        .confirmation-page {
+          padding: clamp(1rem, 3vw, 1.5625rem);
+        }
+
+        .header h1 {
+          font-size: clamp(1.3rem, 4vw, 2rem);
+        }
+
+        .status-bar {
+          padding: 0.9375rem clamp(1rem, 3vw, 1.5625rem);
+          flex-direction: column;
+          gap: 0.9375rem;
+        }
+
+        .body-part-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.5rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .btn-action {
+          width: 100%;
+          justify-content: center;
+          padding: 0.75rem 1rem;
+        }
+
+        .radio-group,
+        .checkbox-group {
+          gap: 0.75rem;
+        }
+
+        .radio-label,
+        .checkbox-label {
+          padding: 0.5rem 0.75rem;
+        }
+
+        /* 添加情感多选时新增的响应式设计 */
+        .form-group {
+          padding: 15px;
+        }
+
+        .feeling-option label {
+          padding: 15px;
+        }
+
+        .option-title {
+          font-size: 15px;
+        }
+
+        .option-desc {
+          font-size: 13px;
+          padding-left: 30px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>绳缚体验知情同意与偏好调查表</h1>
+        <p>基于 RACK "风险认知下的知情同意" 原则
+          <br>您的回答将帮助我们确保体验的安全与舒适
+        </p>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-item active">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>安全须知</span>
+        </div>
+        <div class="status-item">
+          <i class="fas fa-heartbeat"></i>
+          <span>基本信息</span>
+        </div>
+        <div class="status-item">
+          <i class="fas fa-sliders-h"></i>
+          <span>喜好设置</span>
+        </div>
+      </div>
+
+      <!-- 表单部分 -->
+      <form id="ropeForm" action="https://formspree.io/f/xvzzowko" method="POST">
+        <div class="content" id="formContent">
+          <!-- 第一部分：安全须知 -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-exclamation-triangle"></i>
+              <h2>第一部分：安全须知与准备事项</h2>
+            </div>
+
+            <div class="warning-box">
+              <h3><i class="fas fa-check-circle"></i> 重要安全须知</h3>
+              <p>绳缚过程中可能因绳索压迫导致肢体血液循环受限而麻木。若压迫神经，严重时可能导致神经损伤。</p>
+              <p>血液循环问题通常在解绳后缓解。</p>
+              <p>为避免神经损伤，<strong>如在过程中感到任何异常感觉（如麻木、刺痛），必须立即发出信号</strong>。</p>
+              <p>解绳需要时间，若感到不适，请在承受范围内预留缓冲时间。若需紧急解绳，请立即明确告知。</p>
+              <p><strong>身体或心理任何不适，您均有权随时、以任何方式叫停，无需犹豫。</strong></p>
+              <br>
+              <h3><i class="fas fa-check-circle"></i> 体验前的准备事项</h3>
+              <p>女性请避开经期。</p>
+              <p>请勿穿着带有钢圈的内衣或牛仔裤等硬质面料服饰。</p>
+              <p>请提前摘下手腕、颈部等部位的饰品；长发请扎起，避免使用硬质发饰。</p>
+              <p>如有特殊疾病史、受伤史、手术史、过敏史，<strong>请务必提前告知</strong>。</p>
+              <p>体验过程中如有任何不适，需立即沟通。</p>
+              <p>体验前请勿饮酒，请勿空腹，亦请勿过饱。</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">我已仔细阅读并理解以上安全须知：</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="safety_acknowledged" value="是，我已理解并同意" required>
+                  <span>是，我已理解并同意</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- 第二部分：基本信息与健康 -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-heartbeat"></i>
+              <h2>第二部分：基本信息与健康声明</h2>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="nickname">可以这样称呼我：</label>
+              <input type="text" id="nickname" name="nickname" class="input-text" placeholder="请填写您希望被称呼的方式" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">是否已成年：</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="adult" value="yes" required>
+                  <span>是</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="adult" value="no">
+                  <span>否</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="medical_history">请说明任何健康问题（神经受损、关节问题、呼吸问题、心脑血管疾病、过敏史、手术史等）：</label>
+              <textarea id="medical_history" name="medical_history" class="input-text" placeholder="如有，请详细说明（如无，请填写'无'）"></textarea>
+              <div class="form-help">此信息仅用于评估活动安全性，并将严格保密。</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="piercings">身上是否有穿孔、埋钉或其他身体改造：</label>
+              <textarea id="piercings" name="piercings" class="input-text" placeholder="如有，请说明部位（如无，请填写'无'）"></textarea>
+            </div>
+          </div>
+
+          <!-- 第三部分：喜好设置 -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-sliders-h"></i>
+              <h2>第三部分：喜好程度与界限设置</h2>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="safeword">安全词/安全动作：</label>
+              <div class="form-help">请设定一个在紧急情况下用于立即、无条件中止活动的词语或动作</div>
+              <input type="text" id="safeword" name="safeword" class="input-text" placeholder="例如：'红色' 或 '拍打三下'" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">身体裸露接受度：</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="topless" value="accept" required>
+                  <span>接受上半身赤裸</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="topless" value="not_accept">
+                  <span>不接受</span>
+                </label>
+              </div>
+              <div class="form-help">注：下体私密部位需穿着内裤</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">身体痕迹接受度：</label>
+              <div class="form-help">绳缚可能导致绳痕、淤青、水泡、擦伤或过敏反应，通常数小时至数日内消退</div>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="marks" value="accept" required>
+                  <span>能接受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="marks" value="not_accept">
+                  <span>不能接受</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="no_marks_areas">若不能接受痕迹，不可留痕的区域为：</label>
+              <input type="text" id="no_marks_areas" name="no_marks_areas" class="input-text" placeholder="例如：脸部、手臂等">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">不希望被触碰的部位（可多选）：</label>
+              <div class="body-part-grid" id="noTouchAreas">
+                <!-- 通过JS动态生成 -->
+              </div>
+              <input type="hidden" id="no_touch_input" name="no_touch">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">不可捆绑的部位（可多选）：</label>
+              <div class="body-part-grid" id="noBondageAreas">
+                <!-- 通过JS动态生成 -->
+              </div>
+              <input type="hidden" id="no_bondage_input" name="no_bondage">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">疼痛相关偏好：</label>
+              <div class="form-help">是否希望体验除捆绑感外的其他疼痛？</div>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="other_pain" value="yes" required>
+                  <span>是</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="other_pain" value="no">
+                  <span>否</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">您对疼痛的忍耐程度是？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="pain_tolerance" value="恋痛" required>
+                  <span>恋痛</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="pain_tolerance" value="不怕">
+                  <span>不怕</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="pain_tolerance" value="轻微">
+                  <span>轻微</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="pain_tolerance" value="完全不要">
+                  <span>完全不要</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">可接受以下哪些项目（可多选）？：</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" name="accepts" value="拉头发">
+                  <span>拉头发</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="accepts" value="耳光">
+                  <span>耳光</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="accepts" value="SP">
+                  <span>SP</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" name="accepts" value="股绳">
+                  <span>股绳</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">我们可能会有一些“身体接触”，您会接受拥抱吗？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="hug" value="yes" required>
+                  <span>可以</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="hug" value="no">
+                  <span>不可以</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">对"五感剥夺"玩法感兴趣吗？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="sensory_deprivation" value="yes" required>
+                  <span>是</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="sensory_deprivation" value="no">
+                  <span>否</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">能否接受蒙眼？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="blindfold" value="享受" required>
+                  <span>享受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="blindfold" value="可以接受">
+                  <span>可以接受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="blindfold" value="不接受（会不安）">
+                  <span>不接受（会不安）</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">能否接受堵嘴（可能会流口水）？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="gag" value="享受" required>
+                  <span>享受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="gag" value="可以轻度接受">
+                  <span>可以轻度接受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="gag" value="不接受">
+                  <span>不接受</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">能否接受呼吸控制？</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="breath_control" value="享受" required>
+                  <span>享受</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="breath_control" value="颈部束缚控制">
+                  <span>颈部束缚控制</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="breath_control" value="轻度控制">
+                  <span>轻度控制</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="breath_control" value="不接受">
+                  <span>不接受</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">是否希望或允许在过程中留下影像（照片/视频）？<strong>【未经允许不可对外流传】</strong></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="recording" value="yes" required>
+                  <span>是</span>
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="recording" value="no">
+                  <span>否</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                您希望在绳缚体验中主要感受到哪些程度或体验（可多选）？
+              </label>
+
+              <div class="feeling-options">
+                <!-- 基础体验 - 强度1 -->
+                <div class="feeling-option level-1">
+                  <input type="checkbox" id="feeling_meditation" name="feelings" value="静心冥想：呼吸同步的安宁">
+                  <label for="feeling_meditation">
+                    <span class="option-title">
+                      <i class="fas fa-spa"></i>
+                      静心冥想：呼吸同步的安宁
+                      <span class="intensity-label">舒缓接纳</span>
+                    </span>
+                    <span class="option-desc">
+                      感受绳子随着呼吸轻轻收紧放松，帮你慢慢静下来
+                    </span>
+                  </label>
+                </div>
+
+                <div class="feeling-option level-1">
+                  <input type="checkbox" id="feeling_safety" name="feelings" value="安全茧房：被妥帖守护的松弛">
+                  <label for="feeling_safety">
+                    <span class="option-title">
+                      <i class="fas fa-shield-alt"></i>
+                      安全茧房：被妥帖守护的松弛
+                      <span class="intensity-label">舒缓接纳</span>
+                    </span>
+                    <span class="option-desc">
+                      全身被柔软包裹，像裹在厚毯子里，如同被云朵承托，随时可调整松紧度
+                    </span>
+                  </label>
+                </div>
+
+                <!-- 互动探索 - 强度2 -->
+                <div class="feeling-option level-2">
+                  <input type="checkbox" id="feeling_playful" name="feelings" value="趣味互动：跃动的好奇心探索">
+                  <label for="feeling_playful">
+                    <span class="option-title">
+                      <i class="fas fa-laugh-wink"></i>
+                      趣味互动：跃动的好奇心探索
+                      <span class="intensity-label">灵蕴交流</span>
+                    </span>
+                    <span class="option-desc">
+                      绳子以不同力度和节奏触碰皮肤，专注感受触觉变化，为你建立非语言的触觉对话
+                    </span>
+                  </label>
+                </div>
+
+                <div class="feeling-option level-2">
+                  <input type="checkbox" id="feeling_discovery" name="feelings" value="身体发现：新知觉的温柔启蒙">
+                  <label for="feeling_discovery">
+                    <span class="option-title">
+                      <i class="fas fa-search"></i>
+                      身体发现：新知觉的温柔启蒙
+                      <span class="intensity-label">灵蕴交流</span>
+                    </span>
+                    <span class="option-desc">
+                      通过局部束缚，引导注意力重新发现身体各部位的感知差异，绑住手腕后，突然发现肩膀原来这么敏感
+                    </span>
+                  </label>
+                </div>
+
+                <!-- 深度体验 - 强度3 -->
+                <div class="feeling-option level-3">
+                  <input type="checkbox" id="feeling_anticipation" name="feelings" value="延迟满足：克制的甜蜜煎熬，自主掌控的等待">
+                  <label for="feeling_anticipation">
+                    <span class="option-title">
+                      <i class="fas fa-hourglass-half"></i>
+                      延迟满足：克制的甜蜜煎熬，自主掌控的等待
+                      <span class="intensity-label">浸漫共鸣</span>
+                    </span>
+                    <span class="option-desc">
+                      解脱条件清晰明确，需要你主动使用安全词或约定手势才能解缚，体验克制带来的心理释放，培养耐受与表达并重的互动模式
+                    </span>
+                  </label>
+                </div>
+
+                <div class="feeling-option level-3">
+                  <input type="checkbox" id="feeling_flow" name="feelings" value="心流状态：浑然忘我的协同，身心合一的专注">
+                  <label for="feeling_flow">
+                    <span class="option-title">
+                      <i class="fas fa-water"></i>
+                      心流状态：浑然忘我的协同，身心合一的专注
+                      <span class="intensity-label">浸漫共鸣</span>
+                    </span>
+                    <span class="option-desc">
+                      主动探索束缚状态下的身体可能，每次身体的调整都能触发精准的绳索配合变化，让你每个细微的身体信号都能获得恰到好处的回应，体验身体与绳索自然达成的动态平衡
+                    </span>
+                  </label>
+                </div>
+
+                <!-- 特殊状态 - 强度4 -->
+                <div class="feeling-option level-4">
+                  <input type="checkbox" id="feeling_intensity" name="feelings" value="痛感转化：探索压力与愉悦、煎熬与释放的临界">
+                  <label for="feeling_intensity">
+                    <span class="option-title">
+                      <i class="fas fa-bolt"></i>
+                      痛感转化：探索压力与愉悦、煎熬与释放的临界
+                      <span class="intensity-label">沉淬突破</span>
+                    </span>
+                    <span class="option-desc">
+                      精准控制的束缚将身体推向耐受边缘，当肌肉颤抖、呼吸急促达到顶点时，神经系统会自然触发镇痛机制，内啡肽如潮水般涌来，将剧烈紧绷转化为深沉的满足感，如同长跑后的疲惫与愉悦交融
+                    </span>
+                  </label>
+                </div>
+
+                <div class="feeling-option level-4">
+                  <input type="checkbox" id="feeling_submission" name="feelings" value="完全交付：信任的终极试炼">
+                  <label for="feeling_submission">
+                    <span class="option-title">
+                      <i class="fas fa-lock"></i>
+                      完全交付：信任的终极试炼
+                      <span class="intensity-label">沉淬突破</span>
+                    </span>
+                    <span class="option-desc">
+                      身体将经历从抵抗到接纳的完整转变过程。肌肉的紧绷、皮肤的灼热、心理的抗拒，这些初期的不适感会逐渐累积。当达到临界点时，身体会进入一种特殊的被动敏感状态：原本被忽略的细微感知开始浮现，绳索的触感、空气的流动、血液的脉动都变得异常清晰。这种由完全交付带来的感官觉醒，能够创造出全新的体验维度
+                    </span>
+                  </label>
+                </div>
+
+                <label class="form-label">
+                  <i class="fas fa-bell" style="font-size: 0.75em;"> 体验程度的名词解释：</i>
+                  <p>
+                    <span class="intensity-label"><strong style="color: #7cb342;">程度1：舒缓接纳：</strong>如同初春被温暖包裹的溪流，适合初次尝试或需要放松时建立信任与安全感的入门体验</span>
+                    <span class="intensity-label"><strong style="color: #ffb74d;">程度2：灵蕴交流：</strong>类似盛夏微风的嬉戏，像打水漂时的水花跳跃溅起涟漪，有来有回的趣味探索</span>
+                    <span class="intensity-label"><strong style="color: #ff7043;">程度3：浸漫共鸣：</strong>犹如深秋深潭的引力，被漩涡吸引，需要全神贯注才能保持平衡</span>
+                    <span class="intensity-label"><strong style="color: #e53935;">程度4：沉淬突破：</strong>就像寒冬金属淬火的过程，在安全框架下探索耐受边界的转化体验，体验生理极限的突破与转化，最终在痛苦中重生，获得超越寻常的感受</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="privacy-note">
+              <p><strong>隐私声明：</strong>本人确认，以上所填内容均真实有效。本人理解并认同 RACK "风险认知下的知情同意" 的原则，知晓在活动开始前或过程中，可随时撤销同意，活动结束后，不可撤销已发生的同意。</p>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <i class="fas fa-paper-plane"></i> 提交问卷
+            </button>
+      </form>
+    </div>
+    </div>
+
+
+    <!-- 成功提交消息 -->
+    <div class="success-message" id="successMessage">
+      <i class="fas fa-check-circle"></i>
+      <h2>提交成功！</h2>
+      <p>感谢您填写问卷，我们会尽快与您联系确认细节。</p>
+      <p>请记住：在活动开始前或过程中，您可随时撤销同意。</p>
+
+      <div class="action-buttons" style="margin-top: 40px;">
+        <button class="btn-action btn-primary" onclick="showConfirmation()">
+          <i class="fas fa-eye"></i> 查看已填写的调查表
+        </button>
+        <button class="btn-action btn-secondary" onclick="location.reload()">
+          <i class="fas fa-redo"></i> 重新填写
+        </button>
+      </div>
+    </div>
+
+    <!-- 确认页面（显示用户填写的内容） -->
+    <div class="confirmation-page" id="confirmationPage">
+      <div class="section-title">
+        <i class="fas fa-file-contract"></i>
+        <h2>您已填写的调查表</h2>
+      </div>
+
+      <div class="confirmation-section">
+        <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-exclamation-triangle"></i> 第一部分：安全须知与准备事项</h3>
+
+        <div class="confirmation-item">
+          <div class="confirmation-label">
+            <i class="fas fa-check-circle"></i>
+            <span>安全须知确认</span>
+          </div>
+          <div class="confirmation-value" id="confSafety">
+            <!-- 安全须知确认内容 -->
+          </div>
+        </div>
+
+        <div class="confirmation-section">
+          <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-heartbeat"></i> 第二部分：基本信息与健康声明</h3>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-user"></i>
+              <span>称呼方式</span>
+            </div>
+            <div class="confirmation-value" id="confNickname">
+              <!-- 称呼内容 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-birthday-cake"></i>
+              <span>是否成年</span>
+            </div>
+            <div class="confirmation-value" id="confAdult">
+              <!-- 成年状态 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-heartbeat"></i>
+              <span>健康问题声明</span>
+            </div>
+            <div class="confirmation-value" id="confMedical">
+              <!-- 健康问题 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-plus-square"></i>
+              <span>身体穿孔/埋钉</span>
+            </div>
+            <div class="confirmation-value" id="confPiercings">
+              <!-- 穿孔信息 -->
+            </div>
+          </div>
+        </div>
+
+        <div class="confirmation-section">
+          <h3 style="margin-bottom: 1.25rem;"><i class="fas fa-sliders-h"></i> 第三部分：喜好程度与界限设置</h3>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>安全词/安全动作</span>
+            </div>
+            <div class="confirmation-value" id="confSafeword">
+              <!-- 安全词 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-tshirt"></i>
+              <span>身体裸露接受度</span>
+            </div>
+            <div class="confirmation-value" id="confTopless">
+              <!-- 裸露接受度 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-sticky-note"></i>
+              <span>身体痕迹接受度</span>
+            </div>
+            <div class="confirmation-value" id="confMarks">
+              <!-- 痕迹接受度 -->
+            </div>
+          </div>
+          <!-- 痕迹不接受区域确认项 -->
+          <div class="confirmation-item" id="confirmationNoMarksAreas" style="display: none;">
+            <div class="confirmation-label">
+              <i class="fas fa-eye-slash"></i>
+              <span>不可留痕的区域：</span>
+            </div>
+            <div class="confirmation-value" id="noMarksAreasValue"></div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-handshake-alt-slash"></i>
+              <span>不希望被触碰的部位</span>
+            </div>
+            <div class="confirmation-value" id="confNoTouch">
+              <!-- 不希望触碰的部位 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-ban"></i>
+              <span>不可以被捆绑的部位</span>
+            </div>
+            <div class="confirmation-value" id="confNoBondage">
+              <!-- 不可捆绑的部位 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-skull"></i>
+              <span>疼痛相关偏好</span>
+            </div>
+            <div class="confirmation-value" id="confPain">
+              <!-- 疼痛偏好 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-heart"></i>
+              <span>互动偏好</span>
+            </div>
+            <div class="confirmation-value" id="confInteraction">
+              <!-- 互动偏好 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-camera"></i>
+              <span>影像记录</span>
+            </div>
+            <div class="confirmation-value" id="confRecording">
+              <!-- 影像记录 -->
+            </div>
+          </div>
+
+          <div class="confirmation-item">
+            <div class="confirmation-label">
+              <i class="fas fa-feather-alt"></i>
+              <span>期望的感受</span>
+            </div>
+            <div class="confirmation-value" id="confFeelings">
+              <!-- 期望感受 -->
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-note">
+          <p><strong>最终确认：</strong>本人确认，以上所填内容均真实有效。本人理解并认同 RACK "风险认知下的知情同意" 的原则，知晓在活动开始前或过程中，可随时撤销同意，活动结束后，不可撤销已发生的同意。</p>
+
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-secondary" onclick="goBackToForm()">
+            <i class="fas fa-arrow-left"></i> 返回修改
+          </button>
+          <button class="btn-action btn-primary" onclick="printConfirmation()">
+            <i class="fas fa-print"></i> 打印确认页
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>© 2026 绳缚体验知情同意与偏好调查表 | 基于安全、理智、知情同意的原则</p>
+        <p>此表格是双方沟通的起点，在活动开始前，我们将就填写内容进行面对面或线上交流，以最终确认所有细节。</p>
+      </div>
+    </div>
+
+    <script>
+      // 身体部位数据
+      const bodyParts = [
+        { id: '头发', name: '头发', icon: 'fas fa-cut' },
+        { id: '面部', name: '面部', icon: 'fas fa-smile' },
+        { id: '脖子', name: '脖子', icon: 'fas fa-user' },
+        { id: '胸部', name: '胸部', icon: 'fas fa-glasses' },
+        { id: '手臂', name: '手臂', icon: 'fas fa-hand-paper' },
+        { id: '手指', name: '手指', icon: 'fas fa-hand-point-up' },
+        { id: '腰部', name: '腰部', icon: 'fas fa-sort' },
+        { id: '臀部', name: '臀部', icon: 'fas fa-heart' },
+        { id: '私密部位', name: '私密部位', icon: 'fas fa-chevron-circle-down' },
+        { id: '下肢', name: '下肢', icon: 'fas fa-walking' },
+        { id: '脚', name: '脚', icon: 'fas fa-shoe-prints' }
+      ];
+
+      // 存储用户填写的数据
+      let userFormData = {};
+
+      // 初始化身体部位选择
+      function initBodyPartSelectors() {
+        const noTouchContainer = document.getElementById('noTouchAreas');
+        const noBondageContainer = document.getElementById('noBondageAreas');
+
+        bodyParts.forEach(part => {
+          // 不希望被触碰
+          const touchDiv = document.createElement('div');
+          touchDiv.className = 'body-part-item';
+          touchDiv.dataset.id = part.id;
+          touchDiv.dataset.name = part.name;
+          touchDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
+          touchDiv.addEventListener('click', () => {
+            touchDiv.classList.toggle('selected');
+            updateHiddenInput('no_touch_input', 'noTouchAreas');
+          });
+          noTouchContainer.appendChild(touchDiv);
+
+          // 不可捆绑
+          const bondageDiv = document.createElement('div');
+          bondageDiv.className = 'body-part-item';
+          bondageDiv.dataset.id = part.id;
+          bondageDiv.dataset.name = part.name;
+          bondageDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
+          bondageDiv.addEventListener('click', () => {
+            bondageDiv.classList.toggle('selected');
+            updateHiddenInput('no_bondage_input', 'noBondageAreas');
+          });
+          noBondageContainer.appendChild(bondageDiv);
+        });
+      }
+
+      // 更新隐藏输入框的值
+      function updateHiddenInput(inputId, containerId) {
+        const input = document.getElementById(inputId);
+        const container = document.getElementById(containerId);
+        const selectedItems = container.querySelectorAll('.selected');
+
+        const values = Array.from(selectedItems).map(item => {
+          if (containerId === 'feelingTags') {
+            return item.textContent;
+          } else {
+            return item.dataset.id;
+          }
+        });
+
+        input.value = values.join(',');
+      }
+
+      // 收集所有表单数据
+      function collectFormData() {
+        const form = document.getElementById('ropeForm');
+        const formData = new FormData(form);
+        userFormData = {};
+
+        // 收集所有表单字段
+        for (let [key, value] of formData.entries()) {
+          if (key === 'accepts') {
+            if (!userFormData.accepts) userFormData.accepts = [];
+            userFormData.accepts.push(value);
+          } else {
+            userFormData[key] = value;
+          }
+        }
+
+        // 收集身体部位选择
+        const noTouchItems = document.querySelectorAll('#noTouchAreas .selected');
+        userFormData.noTouchItems = Array.from(noTouchItems).map(item => ({
+          id: item.dataset.id,
+          name: item.dataset.name
+        }));
+
+        const noBondageItems = document.querySelectorAll('#noBondageAreas .selected');
+        userFormData.noBondageItems = Array.from(noBondageItems).map(item => ({
+          id: item.dataset.id,
+          name: item.dataset.name
+        }));
+
+        // 收集感受标签
+        const feelingItems = document.querySelectorAll('.feeling-option input[type="checkbox"]:checked');
+        userFormData.feelingItems = Array.from(feelingItems).map(item => ({
+          value: item.value,
+          text: item.nextElementSibling.querySelector('.option-title').textContent.trim(),
+          desc: item.nextElementSibling.querySelector('.option-desc').textContent.trim()
+        }));
+
+        return userFormData;
+      }
+
+
+      // 显示确认页面
+      function showConfirmation() {
+        // 隐藏成功消息，显示确认页面
+        document.getElementById('successMessage').style.display = 'none';
+        document.getElementById('confirmationPage').style.display = 'block';
+
+        // 填充确认页面的数据
+        populateConfirmationPage();
+      }
+
+      // 填充确认页面
+      function populateConfirmationPage() {
+        // 安全须知确认
+        document.getElementById('confSafety').innerHTML =
+          `<p>✅ 我已确认理解并同意所有安全须知内容</p>`;
+
+        // 基本信息
+        document.getElementById('confNickname').innerHTML =
+          `<p><strong>${userFormData.nickname || '未填写'}</strong></p>`;
+
+        document.getElementById('confAdult').innerHTML =
+          `<p>${userFormData.adult === 'yes' ? '是' : '否'}</p>`;
+
+        document.getElementById('confMedical').innerHTML =
+          `<p>${userFormData.medical_history || '无'}</p>`;
+
+        document.getElementById('confPiercings').innerHTML =
+          `<p>${userFormData.piercings || '无'}</p>`;
+
+        // 安全词
+        document.getElementById('confSafeword').innerHTML =
+          `<p><strong>${userFormData.safeword || '未设置'}</strong></p>
+                 <p class="form-help">在紧急情况下说出此安全词或做出安全动作，将无条件立即中止活动</p>`;
+
+        // 裸露程度
+        document.getElementById('confTopless').innerHTML =
+          `<p>${userFormData.topless === 'accept' ? '接受上半身赤裸' : '不接受上半身赤裸'}</p>
+                 <p class="form-help">注：下体私密部位需穿着内裤</p>`;
+
+        // 痕迹接受度
+        let marksHtml = `<p>${userFormData.marks === 'accept' ? '能接受痕迹' : '不能接受痕迹'}</p>`;
+        if (userFormData.marks === 'not_accept' && userFormData.no_marks_areas) {
+          marksHtml += `<p class="form-help">不可以留下痕迹的区域：${userFormData.no_marks_areas}</p>`;
+        }
+        document.getElementById('confMarks').innerHTML = marksHtml;
+
+        // 获取并显示不可留痕的区域
+        var noMarksAreas = document.getElementById('no_marks_areas').value;
+        var confirmationNoMarksAreas = document.getElementById('confirmationNoMarksAreas');
+        var noMarksAreasValue = document.getElementById('noMarksAreasValue');
+        if (noMarksAreas && noMarksAreas.trim() !== '') {
+          noMarksAreasValue.textContent = noMarksAreas;
+          confirmationNoMarksAreas.style.display = 'block';
+        } else {
+          confirmationNoMarksAreas.style.display = 'none';
+        }
+
+        // 不希望被触碰的部位
+        let noTouchHtml = '<ul>';
+        if (userFormData.noTouchItems && userFormData.noTouchItems.length > 0) {
+          userFormData.noTouchItems.forEach(item => {
+            const part = bodyParts.find(p => p.id === item.id);
+            noTouchHtml += `<li><i class="${part.icon}"></i> ${item.name}</li>`;
+          });
+        } else {
+          noTouchHtml += '<li>无特殊限制</li>';
+        }
+        noTouchHtml += '</ul>';
+        document.getElementById('confNoTouch').innerHTML = noTouchHtml;
+
+        // 不可以被捆绑的部位
+        let noBondageHtml = '<ul>';
+        if (userFormData.noBondageItems && userFormData.noBondageItems.length > 0) {
+          userFormData.noBondageItems.forEach(item => {
+            const part = bodyParts.find(p => p.id === item.id);
+            noBondageHtml += `<li><i class="${part.icon}"></i> ${item.name}</li>`;
+          });
+        } else {
+          noBondageHtml += '<li>无特殊限制</li>';
+        }
+        noBondageHtml += '</ul>';
+        document.getElementById('confNoBondage').innerHTML = noBondageHtml;
+
+        // 疼痛相关偏好
+        let painHtml = `<p>${userFormData.other_pain === 'yes' ? '希望体验除捆绑感外的其他疼痛' : '不希望体验其他疼痛'}</p>`;
+
+        // 疼痛忍耐程度
+        const painToleranceMap = {
+          '恋痛': '恋痛',
+          '不怕': '不怕',
+          '轻微': '轻微',
+          '完全不要': '完全不要'
+        };
+        painHtml += `<p>疼痛忍耐程度：<strong>${painToleranceMap[userFormData.pain_tolerance] || '未选择'}</strong></p>`;
+
+        // 具体项目接受度
+        if (userFormData.accepts && userFormData.accepts.length > 0) {
+          painHtml += '<p>能接受的特定项目：</p><ul>';
+          const acceptMap = {
+            'hair_pulling': '拉头发',
+            'slapping': '耳光',
+            'spanking': 'SP',
+            'thigh_rope': '股绳'
+          };
+          userFormData.accepts.forEach(accept => {
+            painHtml += `<li><strong>${acceptMap[accept] || accept}</strong></li>`;
+          });
+          painHtml += '</ul>';
+        }
+
+        document.getElementById('confPain').innerHTML = painHtml;
+
+        // 互动偏好
+        let interactionHtml = `<p>接受拥抱：<strong>${userFormData.hug === 'yes' ? '是' : '否'}</strong></p>`;
+        interactionHtml += `<p>喜欢"五感剥夺"玩法：<strong>${userFormData.sensory_deprivation === 'yes' ? '是' : '否'}</strong></p>`;
+
+        // 蒙眼接受度
+        const blindfoldMap = {
+          '享受': '享受',
+          '可以接受': '可以接受',
+          '不接受（会不安）': '不接受（会不安）'
+        };
+        interactionHtml += `<p>蒙眼接受度：<strong>${blindfoldMap[userFormData.blindfold] || '未选择'}</strong></p>`;
+
+        // 堵嘴接受度
+        const gagMap = {
+          '享受': '享受',
+          '可以轻度接受': '可以轻度接受',
+          '不接受': '不接受'
+        };
+        interactionHtml += `<p>堵嘴接受度：<strong>${gagMap[userFormData.gag] || '未选择'}</strong></p>`;
+
+        // 呼吸控制接受度
+        const breathControlMap = {
+          '享受': '享受',
+          '脖颈呼吸控制': '脖颈呼吸控制',
+          '轻度呼吸控制': '轻度呼吸控制',
+          '不接受': '不接受'
+        };
+        interactionHtml += `<p>呼吸控制接受度：<strong>${breathControlMap[userFormData.breath_control] || '未选择'}</strong></p>`;
+
+        document.getElementById('confInteraction').innerHTML = interactionHtml;
+
+        // 影像记录<strong>【未经允许不可对外流传】</strong>
+        document.getElementById('confRecording').innerHTML =
+          `<p>${userFormData.recording === 'yes' ? '希望留下影像记录' : '不希望留下影像记录'}</p>`;
+
+        // 期望的感受
+        let feelingsHtml = '<ul style="list-style-type: none; padding-left: 0;">';
+        if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
+          userFormData.feelingItems.forEach(item => {
+            feelingsHtml += `
+                        <li style="margin-bottom: 15px; padding: 12px; background: #f8f8f8; border-radius: 8px;">
+                            <strong style="display: block; margin-bottom: 5px; color: #4a6fa5;">${item.text}</strong>
+                        </li>`;
+          });
+        } else {
+          feelingsHtml += '<li>无特殊偏好</li>';
+        }
+        feelingsHtml += '</ul>';
+        document.getElementById('confFeelings').innerHTML = feelingsHtml;
+      }
+
+      // 返回修改
+      function goBackToForm() {
+        document.getElementById('confirmationPage').style.display = 'none';
+        document.getElementById('formContent').style.display = 'block';
+        document.querySelector('.status-bar').style.display = 'flex';
+      }
+
+      // 打印确认页
+      function printConfirmation() {
+        const printContent = document.getElementById('confirmationPage').innerHTML;
+        const originalContent = document.body.innerHTML;
+
+        document.body.innerHTML = `
+                <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+                    <h1 style="text-align: center; color: #8b5cf6; margin-bottom: 30px;">绳缚体验知情同意与偏好调查表 - 确认页</h1>
+                    ${printContent}
+                </div>
+            `;
+
+        window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+      }
+
+      // 表单提交处理
+      document.getElementById('ropeForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // 收集表单数据
+        collectFormData();
+
+        // 在实际使用中，这里会提交到Formspree
+
+        /*
+        // 现在先显示成功消息
+        document.getElementById('formContent').style.display = 'none';
+        document.querySelector('.status-bar').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        */
+
+        // 实际提交代码（取消注释并替换YOUR_FORM_ID后使用）
+        const form = e.target;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              document.getElementById('formContent').style.display = 'none';
+              document.querySelector('.status-bar').style.display = 'none';
+              document.getElementById('successMessage').style.display = 'block';
+            } else {
+              alert('提交失败，请稍后重试');
+            }
+          })
+          .catch(error => {
+            alert('提交失败，请检查网络连接');
+          });
+
+      });
+
+      // 页面加载完成后初始化
+      document.addEventListener('DOMContentLoaded', function () {
+        initBodyPartSelectors();
+        initFeelingTags();
+
+        // 更新状态栏
+        const sections = document.querySelectorAll('.form-section');
+        const statusItems = document.querySelectorAll('.status-item');
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const index = Array.from(sections).indexOf(entry.target);
+              statusItems.forEach((item, i) => {
+                if (i <= index) {
+                  item.classList.add('active');
+                } else {
+                  item.classList.remove('active');
+                }
+              });
+            }
+          });
+        }, { threshold: 0.5 });
+
+        sections.forEach(section => observer.observe(section));
+      });
+
+    </script>
+
+  </body>
+
+</html>
