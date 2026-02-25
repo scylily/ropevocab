@@ -1916,16 +1916,14 @@
 
         // 影像记录<strong>【未经允许不可对外流传】</strong>
         document.getElementById('confRecording').innerHTML =
-          `<p>${userFormData.recording === 'yes' ? '希望留下影像记录' : '不希望留下影像记录'}</p>`;
+          `<p><strong>${userFormData.recording === 'yes' ? '希望留下影像记录' : '不希望留下影像记录'}</strong></p>`;
 
         // 期望的感受
         let feelingsHtml = '<ul style="list-style-type: none; padding-left: 0;">';
         if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
           userFormData.feelingItems.forEach(item => {
             feelingsHtml += `
-                        <li style="margin-bottom: 15px; padding: 12px; background: #f8f8f8; border-radius: 8px;">
-                            <strong style="display: block; margin-bottom: 5px; color: #4a6fa5;">${item.text}</strong>
-                        </li>`;
+                       <p><strong>${item.text}</strong>`;
           });
         } else {
           feelingsHtml += '<li>无特殊偏好</li>';
