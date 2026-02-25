@@ -608,496 +608,490 @@
       }
 
       /* 响应式设计 */
-      @media (max-width: 768px) {
-        body {
-          padding: 0.75rem;
-        }
-
-        .container {
-          max-width: 95vw;
-        }
-
-        .header,
-        .content,
-        .confirmation-page {
-          padding: clamp(1rem, 3vw, 1.5625rem);
-        }
-
-        .header h1 {
-          font-size: clamp(1.3rem, 4vw, 2rem);
-        }
-
-        /* 修改 status-bar 为横向排列 */
-        .status-bar {
-          padding: 0.75rem clamp(0.5rem, 2vw, 1rem);
-          flex-direction: row;
-          /* 改为横向排列 */
-          gap: clamp(0.5rem, 2vw, 1rem);
-          justify-content: space-between;
-          /* 改为均匀分布 */
-          flex-wrap: wrap;
-          /* 允许换行 */
-        }
-
-        /* 调整 status-item 以适应横向排列 */
-        .status-item {
-          flex: 1;
-          /* 让每个项平均分配空间 */
-          min-width: 80px;
-          /* 设置最小宽度 */
-          justify-content: center;
-          /* 居中内容 */
-          text-align: center;
-          padding: 0.5rem 0.25rem;
-          flex-direction: column;
-          /* 图标和文字垂直排列 */
-          gap: 0.25rem;
-        }
-
-        .status-item i {
-          font-size: clamp(0.9rem, 2.5vw, 1rem);
-          margin: 0 auto;
-          /* 图标居中 */
-        }
-
-        .status-item span {
-          font-size: clamp(0.7rem, 1.8vw, 0.85rem);
-          line-height: 1.2;
-        }
-
-        .body-part-grid {
-          grid-template-columns: repeat(3, 1fr);
-          gap: 0.5rem;
-        }
-
-        .action-buttons {
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .btn-action {
-          width: 100%;
-          justify-content: center;
-          padding: 0.75rem 1rem;
-        }
-
-        .radio-group,
-        .checkbox-group {
-          gap: 0.75rem;
-        }
-
-        .radio-label,
-        .checkbox-label {
-          padding: 0.5rem 0.75rem;
-        }
-
-        /* 添加情感多选时新增的响应式设计 */
-        .form-group {
-          padding: 15px;
-        }
-
-        .feeling-option label {
-          padding: 15px;
-        }
-
-        .option-title {
-          font-size: 15px;
-        }
-
-        .option-desc {
-          font-size: 13px;
-          padding-left: 30px;
-        }
-
-        /* 新增：修复章节标题的布局 */
-        .section-title {
-          flex-direction: row !important;
-          /* 确保横向排列 */
-          align-items: flex-start !important;
-          /* 顶部对齐 */
-          flex-wrap: nowrap !important;
-          /* 防止换行 */
-          white-space: nowrap !important;
-          /* 防止文字换行 */
-        }
-
-        .section-title i {
-          flex-shrink: 0 !important;
-          /* 防止图标被压缩 */
-          margin-top: 0.2rem !important;
-          /* 微调图标位置使其与文字对齐 */
-        }
-
-        .section-title h2 {
-          flex: 1;
-          /* 占据剩余空间 */
-          white-space: normal !important;
-          /* 允许标题文字换行 */
-          word-break: break-word !important;
-          /* 允许单词内断行 */
-        }
-
-        /* 修复警告框中的图标排列 */
-        .warning-box h3 {
-          flex-direction: row !important;
-          align-items: flex-start !important;
-          flex-wrap: nowrap !important;
-        }
-
-        .warning-box h3 i {
-          flex-shrink: 0 !important;
-          margin-top: 0.1rem !important;
-        }
-      }
-
-      /* 手机端专用响应式设计 - 添加在现有@media规则之后 */
-      @media (max-width: 480px) {
-        body {
-          padding: 10px;
-          background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-        }
-
-        .container {
-          max-width: 100%;
-          border-radius: 12px;
-          margin: 0;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .header {
-          padding: 20px 15px;
-        }
-
-        .header h1 {
-          font-size: 1.5rem;
-          line-height: 1.3;
-          margin-bottom: 8px;
-        }
-
-        .header p {
-          font-size: 0.9rem;
-          line-height: 1.4;
-        }
-
-        /* 状态栏进一步优化 */
-        .status-bar {
-          padding: 0.5rem 0.25rem;
-          gap: 0.25rem;
-          flex-direction: row !important;
-          /* 确保横向排列 */
-          justify-content: space-between !important;
-          /* 确保均匀分布 */
-          flex-wrap: nowrap !important;
-          /* 防止换行 */
-        }
-
-        .status-item {
-          min-width: 70px;
-          padding: 0.4rem 0.2rem;
-          flex-direction: column;
-          /* 保持图标和文字垂直排列 */
-          flex-shrink: 1;
-          /* 允许适当收缩 */
-        }
-
-        .status-item i {
-          font-size: clamp(0.8rem, 2.2vw, 0.9rem);
-        }
-
-        .status-item span {
-          font-size: clamp(0.65rem, 1.6vw, 0.75rem);
-        }
-
-        .content {
-          padding: 20px 15px;
-        }
-
-        .form-section {
-          margin-bottom: 25px;
-          padding-bottom: 20px;
-        }
-
-        /* 修复：这是导致图标和文字分行的主要问题 - 移除或修改这行 */
-        .section-title {
-          /* 删除或注释掉 flex-direction: column; */
-          flex-direction: row !important;
-          /* 改为横向排列 */
-          align-items: flex-start !important;
-          /* 顶部对齐 */
-          gap: 8px;
-          /* 保持适当的间距 */
-          padding-bottom: 12px;
-          margin-bottom: 20px;
-          flex-wrap: nowrap !important;
-          /* 防止换行 */
-          white-space: nowrap !important;
-          /* 防止文字换行 */
-        }
-
-        .section-title i {
-          flex-shrink: 0 !important;
-          /* 防止图标被压缩 */
-          margin-top: 0.2rem !important;
-          /* 微调图标位置使其与文字对齐 */
-        }
-
-        .section-title h2 {
-          font-size: 1.3rem;
-          line-height: 1.4;
-          flex: 1;
-          /* 占据剩余空间 */
-          white-space: normal !important;
-          /* 允许标题文字换行 */
-          word-break: break-word !important;
-          /* 允许单词内断行 */
-        }
-
-        .warning-box {
-          padding: 15px;
-          margin-bottom: 20px;
-        }
-
-        .warning-box h3 {
-          font-size: 1rem;
-          flex-direction: row !important;
-          /* 确保横向排列 */
-          align-items: flex-start !important;
-          /* 顶部对齐 */
-          flex-wrap: nowrap !important;
-          /* 防止换行 */
-        }
-
-        .warning-box h3 i {
-          flex-shrink: 0 !important;
-          /* 防止图标被压缩 */
-          margin-top: 0.1rem !important;
-          /* 微调图标位置 */
-        }
-
-        .warning-box p {
-          font-size: 0.85rem;
-          line-height: 1.5;
-        }
-
-        .form-group {
-          margin-bottom: 25px;
-        }
-
-        .form-label {
-          font-size: 1rem;
-          margin-bottom: 8px;
-          line-height: 1.4;
-        }
-
-        .form-help {
-          font-size: 0.8rem;
-          margin-bottom: 12px;
-        }
-
-        .input-text {
-          padding: 14px;
-          font-size: 0.95rem;
-          border-radius: 8px;
-        }
-
-        .radio-group,
-        .checkbox-group {
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .radio-label,
-        .checkbox-label {
-          width: 100%;
-          padding: 12px 15px;
-          justify-content: flex-start;
-          font-size: 0.95rem;
-        }
-
-        .body-part-grid {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 8px;
-        }
-
-        .body-part-item {
-          padding: 12px 8px;
-          font-size: 0.85rem;
-          min-height: 80px;
-          text-align: center;
-        }
-
-        .body-part-item i {
-          font-size: 1.4rem;
-          margin-bottom: 6px;
-        }
-
-        /* 情感多选优化 */
-        .feeling-options {
-          margin-top: 10px;
-        }
-
-        .feeling-option {
-          margin-bottom: 12px;
-        }
-
-        .feeling-option label {
-          padding: 16px;
-          border-left-width: 4px;
-        }
-
-        .option-title {
-          flex-wrap: wrap;
-          font-size: 0.85rem;
-          margin-bottom: 6px;
-        }
-
-        .option-title i {
-          font-size: 16px;
-          width: 22px;
-        }
-
-        .option-desc {
-          font-size: 0.7rem;
-          padding-left: 22px;
-          line-height: 1.5;
-        }
-
-        .intensity-label {
-          font-size: 11px;
-          padding: 2px 6px;
-          margin-left: 8px;
-        }
-
-        .safety-note {
-          font-size: 0.75rem;
-          padding: 5px 8px;
-          margin-top: 8px;
-        }
-
-        /* 提交按钮优化 */
-        .btn-submit {
-          padding: 16px 20px;
-          font-size: 1.1rem;
-          border-radius: 10px;
-          margin-top: 25px;
-          position: relative;
-        }
-
-        .btn-submit:active {
-          transform: scale(0.98);
-        }
-
-        /* 确认页面优化 */
-        .confirmation-page {
-          padding: 20px 15px;
-        }
-
-        .confirmation-item {
-          padding: 12px;
-          margin-bottom: 15px;
-        }
-
-        .confirmation-label {
-          font-size: 0.95rem;
-        }
-
-        .confirmation-value {
-          padding-left: 0;
-          font-size: 0.9rem;
-          margin-top: 5px;
-        }
-
-        /* 操作按钮优化 */
-        .action-buttons {
-          flex-direction: column;
-          gap: 10px;
-          margin-top: 20px;
-        }
-
-        .btn-action {
-          width: 100%;
-          padding: 14px 20px;
-          justify-content: center;
-          font-size: 1rem;
-        }
-
-        /* 底部优化 */
-        .footer {
-          padding: 15px;
-          font-size: 0.8rem;
-        }
-
-        .privacy-note {
-          padding: 12px;
-          margin-top: 15px;
-        }
-
-        /* 成功消息优化 */
-        .success-message {
-          padding: 30px 20px;
-        }
-
-        .success-message h2 {
-          font-size: 1.5rem;
-        }
-
-        .success-message p {
-          font-size: 0.95rem;
-        }
-      }
-
-      /* 针对超小屏幕的额外优化（如iPhone SE） */
-      @media (max-width: 360px) {
-        .status-bar {
-          padding: 0.4rem 0.15rem;
-          gap: 0.15rem;
-        }
-
-        .status-item {
-          min-width: 60px;
-          padding: 0.3rem 0.1rem;
-        }
-
-        .status-item i {
-          font-size: 0.8rem;
-        }
-
-        .status-item span {
-          font-size: 0.6rem;
-        }
-
-        .section-title h2 {
-          font-size: 1.1rem;
-        }
-
-        .section-title i {
-          font-size: 1.2rem;
-        }
-
-        .body-part-grid {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 6px;
-        }
-
-        .body-part-item {
-          padding: 10px 5px;
-          font-size: 0.8rem;
-          min-height: 70px;
-        }
-
-        .feeling-option label {
-          padding: 14px 12px;
-        }
-
-        .option-title {
-          font-size: 0.725rem;
-        }
-
-        .radio-label,
-        .checkbox-label {
-          padding: 10px 12px;
-        }
-      }
+@media (max-width: 768px) {
+  body {
+    padding: 0.75rem;
+  }
+
+  .container {
+    max-width: 95vw;
+  }
+
+  .header,
+  .content,
+  .confirmation-page {
+    padding: clamp(1rem, 3vw, 1.5625rem);
+  }
+
+  .header h1 {
+    font-size: clamp(1.3rem, 4vw, 2rem);
+  }
+
+  /* 修改 status-bar 为横向排列 */
+  .status-bar {
+    padding: 0.75rem clamp(0.5rem, 2vw, 1rem);
+    flex-direction: row;
+    /* 改为横向排列 */
+    gap: clamp(0.5rem, 2vw, 1rem);
+    justify-content: space-between;
+    /* 改为均匀分布 */
+    flex-wrap: wrap;
+    /* 允许换行 */
+  }
+
+  /* 调整 status-item 以适应横向排列 */
+  .status-item {
+    flex: 1;
+    /* 让每个项平均分配空间 */
+    min-width: 80px;
+    /* 设置最小宽度 */
+    justify-content: center;
+    /* 居中内容 */
+    text-align: center;
+    padding: 0.5rem 0.25rem;
+    flex-direction: column;
+    /* 图标和文字垂直排列 */
+    gap: 0.25rem;
+  }
+
+  .status-item i {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    margin: 0 auto;
+    /* 图标居中 */
+  }
+
+  .status-item span {
+    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+    line-height: 1.2;
+  }
+
+  .body-part-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-action {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+
+  .radio-group,
+  .checkbox-group {
+    gap: 0.75rem;
+  }
+
+  .radio-label,
+  .checkbox-label {
+    padding: 0.5rem 0.75rem;
+  }
+
+  /* 添加情感多选时新增的响应式设计 */
+  .form-group {
+    padding: 15px;
+  }
+
+  .feeling-option label {
+    padding: 15px;
+  }
+
+  /* 修复 option-title：强制图标和文字垂直排列，图标居中 */
+  .option-title {
+    flex-direction: column;
+    /* 改为垂直排列 */
+    align-items: center;
+    /* 水平居中 */
+    text-align: center;
+    /* 文字居中 */
+    gap: 0.1rem;
+    /* 图标和文字之间的间距 */
+  }
+
+  .option-title i {
+    margin-right: 0;
+    /* 移除原有的右边距 */
+    margin-bottom: 0.2rem;
+    /* 添加下边距，与文字保持间距 */
+    font-size: 1rem;
+    /* 图标大小不变 */
+    width: auto;
+    /* 移除固定宽度 */
+  }
+
+  .option-desc {
+    font-size: 13px;
+    padding-left: 0;
+    /* 移除左侧内边距 */
+    padding-top: 0.3rem;
+    /* 添加顶部内边距 */
+    text-align: justify;
+    /* 描述文字居中 */
+  }
+
+  /* 新增：修复章节标题的布局 */
+  .section-title {
+    flex-direction: row !important;
+    /* 确保横向排列 */
+    align-items: flex-start !important;
+    /* 顶部对齐 */
+    flex-wrap: nowrap !important;
+    /* 防止换行 */
+    white-space: nowrap !important;
+    /* 防止文字换行 */
+  }
+
+  .section-title i {
+    flex-shrink: 0 !important;
+    /* 防止图标被压缩 */
+    margin-top: 0.2rem !important;
+    /* 微调图标位置使其与文字对齐 */
+  }
+
+  .section-title h2 {
+    flex: 1;
+    /* 占据剩余空间 */
+    white-space: normal !important;
+    /* 允许标题文字换行 */
+    word-break: break-word !important;
+    /* 允许单词内断行 */
+  }
+
+  /* 修复警告框中的图标排列 */
+  .warning-box h3 {
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .warning-box h3 i {
+    flex-shrink: 0 !important;
+    margin-top: 0.1rem !important;
+  }
+}
+
+/* 手机端专用响应式设计 - 添加在现有@media规则之后 */
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  }
+
+  .container {
+    max-width: 100%;
+    border-radius: 12px;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .header {
+    padding: 20px 15px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+
+  .header p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  /* 状态栏进一步优化 */
+  .status-bar {
+    padding: 0.5rem 0.25rem;
+    gap: 0.25rem;
+    flex-direction: row !important;
+    /* 确保横向排列 */
+    justify-content: space-between !important;
+    /* 确保均匀分布 */
+    flex-wrap: nowrap !important;
+    /* 防止换行 */
+  }
+
+  .status-item {
+    min-width: 70px;
+    padding: 0.4rem 0.2rem;
+    flex-direction: column;
+    /* 保持图标和文字垂直排列 */
+    flex-shrink: 1;
+    /* 允许适当收缩 */
+  }
+
+  .status-item i {
+    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+  }
+
+  .status-item span {
+    font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+  }
+
+  .content {
+    padding: 20px 15px;
+  }
+
+  .form-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+  }
+
+  /* 修复：这是导致图标和文字分行的主要问题 - 移除或修改这行 */
+  .section-title {
+    /* 删除或注释掉 flex-direction: column; */
+    flex-direction: row !important;
+    /* 改为横向排列 */
+    align-items: flex-start !important;
+    /* 顶部对齐 */
+    gap: 8px;
+    /* 保持适当的间距 */
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    flex-wrap: nowrap !important;
+    /* 防止换行 */
+    white-space: nowrap !important;
+    /* 防止文字换行 */
+  }
+
+  .section-title i {
+    flex-shrink: 0 !important;
+    /* 防止图标被压缩 */
+    margin-top: 0.2rem !important;
+    /* 微调图标位置使其与文字对齐 */
+  }
+
+  .section-title h2 {
+    font-size: 1.3rem;
+    line-height: 1.4;
+    flex: 1;
+    /* 占据剩余空间 */
+    white-space: normal !important;
+    /* 允许标题文字换行 */
+    word-break: break-word !important;
+    /* 允许单词内断行 */
+  }
+
+  .warning-box {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .warning-box h3 {
+    font-size: 1rem;
+    flex-direction: row !important;
+    /* 确保横向排列 */
+    align-items: flex-start !important;
+    /* 顶部对齐 */
+    flex-wrap: nowrap !important;
+    /* 防止换行 */
+  }
+
+  .warning-box h3 i {
+    flex-shrink: 0 !important;
+    /* 防止图标被压缩 */
+    margin-top: 0.1rem !important;
+    /* 微调图标位置 */
+  }
+
+  .warning-box p {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .form-group {
+    margin-bottom: 25px;
+  }
+
+  .form-label {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .form-help {
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+  }
+
+  .input-text {
+    padding: 14px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+
+  .radio-group,
+  .checkbox-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .radio-label,
+  .checkbox-label {
+    width: 100%;
+    padding: 12px 15px;
+    justify-content: flex-start;
+    font-size: 0.95rem;
+  }
+
+  .body-part-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .body-part-item {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    min-height: 80px;
+    text-align: center;
+  }
+
+  .body-part-item i {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+
+  /* 情感多选优化 */
+  .feeling-options {
+    margin-top: 10px;
+  }
+
+  .feeling-option {
+    margin-bottom: 12px;
+  }
+
+  .feeling-option label {
+    padding: 16px;
+    border-left-width: 4px;
+  }
+
+  /* 在480px以下进一步优化 option-title */
+  .option-title {
+    flex-direction: column;
+    /* 垂直排列 */
+    align-items: center;
+    /* 水平居中 */
+    text-align: center;
+    /* 文字居中 */
+    gap: 0.1rem;
+    /* 减小间距 */
+    font-size: 0.9rem;
+    /* 稍微减小字体 */
+    margin-bottom: 4px;
+    /* 减小底部间距 */
+  }
+
+  .option-title i {
+    font-size: 1rem;
+    /* 图标大小不变 */
+    margin-right: 0;
+    /* 移除右边距 */
+    margin-bottom: 0.2rem;
+    /* 添加下边距 */
+    width: auto;
+    /* 移除固定宽度 */
+  }
+
+  .option-desc {
+    font-size: 0.8rem;
+    /* 稍微增大描述文字 */
+    padding-left: 0;
+    /* 移除左侧内边距 */
+    padding-top: 0.2rem;
+    /* 添加顶部内边距 */
+    text-align: justify;
+    /* 描述文字居中 */
+    line-height: 1.4;
+    /* 调整行高 */
+  }
+
+  .intensity-label {
+    font-size: 11px;
+    padding: 2px 6px;
+    margin-left: 8px;
+  }
+
+  .safety-note {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    margin-top: 8px;
+  }
+
+  /* 提交按钮优化 */
+  .btn-submit {
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    margin-top: 25px;
+    position: relative;
+  }
+
+  .btn-submit:active {
+    transform: scale(0.98);
+  }
+
+  /* 确认页面优化 */
+  .confirmation-page {
+    padding: 20px 15px;
+  }
+
+  .confirmation-item {
+    padding: 12px;
+    margin-bottom: 15px;
+  }
+
+  .confirmation-label {
+    font-size: 0.95rem;
+  }
+
+  .confirmation-value {
+    padding-left: 0;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+
+  /* 操作按钮优化 */
+  .action-buttons {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-action {
+    width: 100%;
+    padding: 14px 20px;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  /* 底部优化 */
+  .footer {
+    padding: 15px;
+    font-size: 0.8rem;
+  }
+
+  .privacy-note {
+    padding: 12px;
+    margin-top: 15px;
+  }
+
+  /* 成功消息优化 */
+  .success-message {
+    padding: 30px 20px;
+  }
+
+  .success-message h2 {
+    font-size: 1.5rem;
+  }
+
+  .success-message p {
+    font-size: 0.95rem;
+  }
+}
     </style>
   </head>
 
@@ -1491,11 +1485,11 @@
 
                 <!-- 深度体验 - 强度3 -->
                 <div class="feeling-option level-3">
-                  <input type="checkbox" id="feeling_anticipation" name="feelings" value="【程度3：浸漫共鸣】 延迟满足：克制的煎熬，掌控的等待">
+                  <input type="checkbox" id="feeling_anticipation" name="feelings" value="【程度3：浸漫共鸣】 延迟满足：克制的甜蜜煎熬，自主掌控的等待">
                   <label for="feeling_anticipation">
                     <span class="option-title">
                       <i class="fas fa-hourglass-half"></i>
-                      延迟满足：克制的煎熬，掌控的等待
+                      延迟满足：克制的甜蜜煎熬，自主掌控的等待
                       <span class="intensity-label">浸漫共鸣</span>
                     </span>
                     <span class="option-desc">
@@ -1505,11 +1499,11 @@
                 </div>
 
                 <div class="feeling-option level-3">
-                  <input type="checkbox" id="feeling_flow" name="feelings" value="【程度3：浸漫共鸣】 心流状态：浑然忘我，身心合一">
+                  <input type="checkbox" id="feeling_flow" name="feelings" value="【程度3：浸漫共鸣】 心流状态：浑然忘我的协同，身心合一的专注">
                   <label for="feeling_flow">
                     <span class="option-title">
                       <i class="fas fa-water"></i>
-                      心流状态：浑然忘我，身心合一
+                      心流状态：浑然忘我的协同，身心合一的专注
                       <span class="intensity-label">浸漫共鸣</span>
                     </span>
                     <span class="option-desc">
@@ -1520,11 +1514,11 @@
 
                 <!-- 特殊状态 - 强度4 -->
                 <div class="feeling-option level-4">
-                  <input type="checkbox" id="feeling_intensity" name="feelings" value="【程度4：沉淬突破】 痛感转化：探索煎熬与愉悦释放的临界">
+                  <input type="checkbox" id="feeling_intensity" name="feelings" value="【程度4：沉淬突破】 痛感转化：探索压力与愉悦、煎熬与释放的临界">
                   <label for="feeling_intensity">
                     <span class="option-title">
                       <i class="fas fa-bolt"></i>
-                      痛感转化：探索煎熬与愉悦释放的临界
+                      痛感转化：探索压力与愉悦、煎熬与释放的临界
                       <span class="intensity-label">沉淬突破</span>
                     </span>
                     <span class="option-desc">
@@ -1548,7 +1542,7 @@
                 </div>
 
                 <label class="form-label">
-                  <i class="fas fa-bell" style="font-size: 0.75em;"> 体验程度的名词解释：</i>
+                  <i class="fas fa-bell" style="font-size: 0.85em;"> 体验程度的名词解释：</i>
                   <p>
                     <span class="intensity-label"><strong style="color: #7cb342;">程度1：舒缓接纳：</strong>如同初春被温暖包裹的溪流，适合初次尝试或需要放松时建立信任与安全感的入门体验</span>
                     <span class="intensity-label"><strong style="color: #ffb74d;">程度2：灵蕴交流：</strong>类似盛夏微风的嬉戏，像打水漂时的水花跳跃溅起涟漪，有来有回的趣味探索</span>
