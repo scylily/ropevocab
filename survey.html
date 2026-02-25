@@ -708,6 +708,46 @@
           font-size: 13px;
           padding-left: 30px;
         }
+
+        /* 新增：修复章节标题的布局 */
+        .section-title {
+          flex-direction: row !important;
+          /* 确保横向排列 */
+          align-items: flex-start !important;
+          /* 顶部对齐 */
+          flex-wrap: nowrap !important;
+          /* 防止换行 */
+          white-space: nowrap !important;
+          /* 防止文字换行 */
+        }
+
+        .section-title i {
+          flex-shrink: 0 !important;
+          /* 防止图标被压缩 */
+          margin-top: 0.2rem !important;
+          /* 微调图标位置使其与文字对齐 */
+        }
+
+        .section-title h2 {
+          flex: 1;
+          /* 占据剩余空间 */
+          white-space: normal !important;
+          /* 允许标题文字换行 */
+          word-break: break-word !important;
+          /* 允许单词内断行 */
+        }
+
+        /* 修复警告框中的图标排列 */
+        .warning-box h3 {
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .warning-box h3 i {
+          flex-shrink: 0 !important;
+          margin-top: 0.1rem !important;
+        }
       }
 
       /* 手机端专用响应式设计 - 添加在现有@media规则之后 */
@@ -739,14 +779,25 @@
           line-height: 1.4;
         }
 
+        /* 状态栏进一步优化 */
         .status-bar {
           padding: 0.5rem 0.25rem;
           gap: 0.25rem;
+          flex-direction: row !important;
+          /* 确保横向排列 */
+          justify-content: space-between !important;
+          /* 确保均匀分布 */
+          flex-wrap: nowrap !important;
+          /* 防止换行 */
         }
 
         .status-item {
           min-width: 70px;
           padding: 0.4rem 0.2rem;
+          flex-direction: column;
+          /* 保持图标和文字垂直排列 */
+          flex-shrink: 1;
+          /* 允许适当收缩 */
         }
 
         .status-item i {
@@ -766,17 +817,39 @@
           padding-bottom: 20px;
         }
 
+        /* 修复：这是导致图标和文字分行的主要问题 - 移除或修改这行 */
         .section-title {
-          flex-direction: column;
-          align-items: flex-start;
+          /* 删除或注释掉 flex-direction: column; */
+          flex-direction: row !important;
+          /* 改为横向排列 */
+          align-items: flex-start !important;
+          /* 顶部对齐 */
           gap: 8px;
+          /* 保持适当的间距 */
           padding-bottom: 12px;
           margin-bottom: 20px;
+          flex-wrap: nowrap !important;
+          /* 防止换行 */
+          white-space: nowrap !important;
+          /* 防止文字换行 */
+        }
+
+        .section-title i {
+          flex-shrink: 0 !important;
+          /* 防止图标被压缩 */
+          margin-top: 0.2rem !important;
+          /* 微调图标位置使其与文字对齐 */
         }
 
         .section-title h2 {
           font-size: 1.3rem;
           line-height: 1.4;
+          flex: 1;
+          /* 占据剩余空间 */
+          white-space: normal !important;
+          /* 允许标题文字换行 */
+          word-break: break-word !important;
+          /* 允许单词内断行 */
         }
 
         .warning-box {
@@ -786,6 +859,19 @@
 
         .warning-box h3 {
           font-size: 1rem;
+          flex-direction: row !important;
+          /* 确保横向排列 */
+          align-items: flex-start !important;
+          /* 顶部对齐 */
+          flex-wrap: nowrap !important;
+          /* 防止换行 */
+        }
+
+        .warning-box h3 i {
+          flex-shrink: 0 !important;
+          /* 防止图标被压缩 */
+          margin-top: 0.1rem !important;
+          /* 微调图标位置 */
         }
 
         .warning-box p {
@@ -960,8 +1046,34 @@
         }
       }
 
-      /* 超小屏幕额外优化 */
+      /* 针对超小屏幕的额外优化（如iPhone SE） */
       @media (max-width: 360px) {
+        .status-bar {
+          padding: 0.4rem 0.15rem;
+          gap: 0.15rem;
+        }
+
+        .status-item {
+          min-width: 60px;
+          padding: 0.3rem 0.1rem;
+        }
+
+        .status-item i {
+          font-size: 0.8rem;
+        }
+
+        .status-item span {
+          font-size: 0.6rem;
+        }
+
+        .section-title h2 {
+          font-size: 1.1rem;
+        }
+
+        .section-title i {
+          font-size: 1.2rem;
+        }
+
         .body-part-grid {
           grid-template-columns: repeat(2, 1fr);
           gap: 6px;
@@ -1321,7 +1433,7 @@
               <div class="feeling-options">
                 <!-- 基础体验 - 强度1 -->
                 <div class="feeling-option level-1">
-                  <input type="checkbox" id="feeling_meditation" name="feelings" value="静心冥想：呼吸同步的安宁">
+                  <input type="checkbox" id="feeling_meditation" name="feelings" value="【程度1：舒缓接纳】 静心冥想：呼吸同步的安宁">
                   <label for="feeling_meditation">
                     <span class="option-title">
                       <i class="fas fa-spa"></i>
@@ -1335,7 +1447,7 @@
                 </div>
 
                 <div class="feeling-option level-1">
-                  <input type="checkbox" id="feeling_safety" name="feelings" value="安全茧房：被妥帖守护的松弛">
+                  <input type="checkbox" id="feeling_safety" name="feelings" value="【程度1：舒缓接纳】 安全茧房：被妥帖守护的松弛">
                   <label for="feeling_safety">
                     <span class="option-title">
                       <i class="fas fa-shield-alt"></i>
@@ -1350,7 +1462,7 @@
 
                 <!-- 互动探索 - 强度2 -->
                 <div class="feeling-option level-2">
-                  <input type="checkbox" id="feeling_playful" name="feelings" value="趣味互动：跃动的好奇心探索">
+                  <input type="checkbox" id="feeling_playful" name="feelings" value="【程度2：灵蕴交流】 趣味互动：跃动的好奇心探索">
                   <label for="feeling_playful">
                     <span class="option-title">
                       <i class="fas fa-laugh-wink"></i>
@@ -1364,7 +1476,7 @@
                 </div>
 
                 <div class="feeling-option level-2">
-                  <input type="checkbox" id="feeling_discovery" name="feelings" value="身体发现：新知觉的温柔启蒙">
+                  <input type="checkbox" id="feeling_discovery" name="feelings" value="【程度2：灵蕴交流】 身体发现：新知觉的温柔启蒙">
                   <label for="feeling_discovery">
                     <span class="option-title">
                       <i class="fas fa-search"></i>
@@ -1379,11 +1491,11 @@
 
                 <!-- 深度体验 - 强度3 -->
                 <div class="feeling-option level-3">
-                  <input type="checkbox" id="feeling_anticipation" name="feelings" value="延迟满足：克制的甜蜜煎熬，自主掌控的等待">
+                  <input type="checkbox" id="feeling_anticipation" name="feelings" value="【程度3：浸漫共鸣】 延迟满足：克制的煎熬，掌控的等待">
                   <label for="feeling_anticipation">
                     <span class="option-title">
                       <i class="fas fa-hourglass-half"></i>
-                      延迟满足：克制的甜蜜煎熬，自主掌控的等待
+                      延迟满足：克制的煎熬，掌控的等待
                       <span class="intensity-label">浸漫共鸣</span>
                     </span>
                     <span class="option-desc">
@@ -1393,11 +1505,11 @@
                 </div>
 
                 <div class="feeling-option level-3">
-                  <input type="checkbox" id="feeling_flow" name="feelings" value="心流状态：浑然忘我的协同，身心合一的专注">
+                  <input type="checkbox" id="feeling_flow" name="feelings" value="【程度3：浸漫共鸣】 心流状态：浑然忘我，身心合一">
                   <label for="feeling_flow">
                     <span class="option-title">
                       <i class="fas fa-water"></i>
-                      心流状态：浑然忘我的协同，身心合一的专注
+                      心流状态：浑然忘我，身心合一
                       <span class="intensity-label">浸漫共鸣</span>
                     </span>
                     <span class="option-desc">
@@ -1408,11 +1520,11 @@
 
                 <!-- 特殊状态 - 强度4 -->
                 <div class="feeling-option level-4">
-                  <input type="checkbox" id="feeling_intensity" name="feelings" value="痛感转化：探索压力与愉悦、煎熬与释放的临界">
+                  <input type="checkbox" id="feeling_intensity" name="feelings" value="【程度4：沉淬突破】 痛感转化：探索煎熬与愉悦释放的临界">
                   <label for="feeling_intensity">
                     <span class="option-title">
                       <i class="fas fa-bolt"></i>
-                      痛感转化：探索压力与愉悦、煎熬与释放的临界
+                      痛感转化：探索煎熬与愉悦释放的临界
                       <span class="intensity-label">沉淬突破</span>
                     </span>
                     <span class="option-desc">
@@ -1422,7 +1534,7 @@
                 </div>
 
                 <div class="feeling-option level-4">
-                  <input type="checkbox" id="feeling_submission" name="feelings" value="完全交付：信任的终极试炼">
+                  <input type="checkbox" id="feeling_submission" name="feelings" value="【程度4：沉淬突破】 完全交付：信任的终极试炼">
                   <label for="feeling_submission">
                     <span class="option-title">
                       <i class="fas fa-lock"></i>
@@ -1923,7 +2035,7 @@
         if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
           userFormData.feelingItems.forEach(item => {
             feelingsHtml += `
-                       <p><strong>${item.text}</strong>`;
+                       <p><strong>${item.value}</strong>`;
           });
         } else {
           feelingsHtml += '<li>无特殊偏好</li>';
