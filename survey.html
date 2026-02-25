@@ -627,10 +627,42 @@
           font-size: clamp(1.3rem, 4vw, 2rem);
         }
 
+        /* 修改 status-bar 为横向排列 */
         .status-bar {
-          padding: 0.9375rem clamp(1rem, 3vw, 1.5625rem);
+          padding: 0.75rem clamp(0.5rem, 2vw, 1rem);
+          flex-direction: row;
+          /* 改为横向排列 */
+          gap: clamp(0.5rem, 2vw, 1rem);
+          justify-content: space-between;
+          /* 改为均匀分布 */
+          flex-wrap: wrap;
+          /* 允许换行 */
+        }
+
+        /* 调整 status-item 以适应横向排列 */
+        .status-item {
+          flex: 1;
+          /* 让每个项平均分配空间 */
+          min-width: 80px;
+          /* 设置最小宽度 */
+          justify-content: center;
+          /* 居中内容 */
+          text-align: center;
+          padding: 0.5rem 0.25rem;
           flex-direction: column;
-          gap: 0.9375rem;
+          /* 图标和文字垂直排列 */
+          gap: 0.25rem;
+        }
+
+        .status-item i {
+          font-size: clamp(0.9rem, 2.5vw, 1rem);
+          margin: 0 auto;
+          /* 图标居中 */
+        }
+
+        .status-item span {
+          font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+          line-height: 1.2;
         }
 
         .body-part-grid {
@@ -675,6 +707,283 @@
         .option-desc {
           font-size: 13px;
           padding-left: 30px;
+        }
+      }
+
+      /* 手机端专用响应式设计 - 添加在现有@media规则之后 */
+      @media (max-width: 480px) {
+        body {
+          padding: 10px;
+          background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        .container {
+          max-width: 100%;
+          border-radius: 12px;
+          margin: 0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+          padding: 20px 15px;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+          line-height: 1.3;
+          margin-bottom: 8px;
+        }
+
+        .header p {
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        .status-bar {
+          padding: 0.5rem 0.25rem;
+          gap: 0.25rem;
+        }
+
+        .status-item {
+          min-width: 70px;
+          padding: 0.4rem 0.2rem;
+        }
+
+        .status-item i {
+          font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+        }
+
+        .status-item span {
+          font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+
+        .form-section {
+          margin-bottom: 25px;
+          padding-bottom: 20px;
+        }
+
+        .section-title {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+          font-size: 1.3rem;
+          line-height: 1.4;
+        }
+
+        .warning-box {
+          padding: 15px;
+          margin-bottom: 20px;
+        }
+
+        .warning-box h3 {
+          font-size: 1rem;
+        }
+
+        .warning-box p {
+          font-size: 0.85rem;
+          line-height: 1.5;
+        }
+
+        .form-group {
+          margin-bottom: 25px;
+        }
+
+        .form-label {
+          font-size: 1rem;
+          margin-bottom: 8px;
+          line-height: 1.4;
+        }
+
+        .form-help {
+          font-size: 0.8rem;
+          margin-bottom: 12px;
+        }
+
+        .input-text {
+          padding: 14px;
+          font-size: 0.95rem;
+          border-radius: 8px;
+        }
+
+        .radio-group,
+        .checkbox-group {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .radio-label,
+        .checkbox-label {
+          width: 100%;
+          padding: 12px 15px;
+          justify-content: flex-start;
+          font-size: 0.95rem;
+        }
+
+        .body-part-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+        }
+
+        .body-part-item {
+          padding: 12px 8px;
+          font-size: 0.85rem;
+          min-height: 80px;
+          text-align: center;
+        }
+
+        .body-part-item i {
+          font-size: 1.4rem;
+          margin-bottom: 6px;
+        }
+
+        /* 情感多选优化 */
+        .feeling-options {
+          margin-top: 10px;
+        }
+
+        .feeling-option {
+          margin-bottom: 12px;
+        }
+
+        .feeling-option label {
+          padding: 16px;
+          border-left-width: 4px;
+        }
+
+        .option-title {
+          flex-wrap: wrap;
+          font-size: 0.95rem;
+          margin-bottom: 6px;
+        }
+
+        .option-title i {
+          font-size: 16px;
+          width: 22px;
+        }
+
+        .option-desc {
+          font-size: 0.85rem;
+          padding-left: 22px;
+          line-height: 1.5;
+        }
+
+        .intensity-label {
+          font-size: 11px;
+          padding: 2px 6px;
+          margin-left: 8px;
+        }
+
+        .safety-note {
+          font-size: 0.75rem;
+          padding: 5px 8px;
+          margin-top: 8px;
+        }
+
+        /* 提交按钮优化 */
+        .btn-submit {
+          padding: 16px 20px;
+          font-size: 1.1rem;
+          border-radius: 10px;
+          margin-top: 25px;
+          position: relative;
+        }
+
+        .btn-submit:active {
+          transform: scale(0.98);
+        }
+
+        /* 确认页面优化 */
+        .confirmation-page {
+          padding: 20px 15px;
+        }
+
+        .confirmation-item {
+          padding: 12px;
+          margin-bottom: 15px;
+        }
+
+        .confirmation-label {
+          font-size: 0.95rem;
+        }
+
+        .confirmation-value {
+          padding-left: 0;
+          font-size: 0.9rem;
+          margin-top: 5px;
+        }
+
+        /* 操作按钮优化 */
+        .action-buttons {
+          flex-direction: column;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        .btn-action {
+          width: 100%;
+          padding: 14px 20px;
+          justify-content: center;
+          font-size: 1rem;
+        }
+
+        /* 底部优化 */
+        .footer {
+          padding: 15px;
+          font-size: 0.8rem;
+        }
+
+        .privacy-note {
+          padding: 12px;
+          margin-top: 15px;
+        }
+
+        /* 成功消息优化 */
+        .success-message {
+          padding: 30px 20px;
+        }
+
+        .success-message h2 {
+          font-size: 1.5rem;
+        }
+
+        .success-message p {
+          font-size: 0.95rem;
+        }
+      }
+
+      /* 超小屏幕额外优化 */
+      @media (max-width: 360px) {
+        .body-part-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 6px;
+        }
+
+        .body-part-item {
+          padding: 10px 5px;
+          font-size: 0.8rem;
+          min-height: 70px;
+        }
+
+        .feeling-option label {
+          padding: 14px 12px;
+        }
+
+        .option-title {
+          font-size: 0.9rem;
+        }
+
+        .radio-label,
+        .checkbox-label {
+          padding: 10px 12px;
         }
       }
     </style>
@@ -1723,4 +2032,3 @@
   </body>
 
 </html>
-
