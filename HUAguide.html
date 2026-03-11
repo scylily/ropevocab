@@ -3,106 +3,436 @@
 
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高尿酸血症药物治疗与代谢干预指南</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>高尿酸血症药理与代谢干预全指南</title>
     <style>
       :root {
-        --primary-blue: #2c3e50;
-        --accent-gold: #b38d41;
-        --bg-gray: #f9f9f9;
-        --text: #34495e;
+        --primary: #2c3e50;
+        --accent: #b38d41;
+        --blue: #3498db;
+        --green: #2ecc71;
+        --bg: #f4f7f9;
+        --safe-area: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+
+      /* 流式布局基础 */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        font-size: 100%;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
       }
 
       body {
-        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        line-height: 1.8;
-        color: var(--text);
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 40px 20px;
-        background-color: var(--bg-gray);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.7;
+        color: #34495e;
+        background-color: var(--bg);
+        margin: 0;
+        padding: max(15px, 3vw) max(10px, 4vw);
+        padding: calc(15px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(15px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
       .container {
         background: #fff;
-        padding: 45px;
-        border-radius: 8px;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-        border-top: 5px solid var(--primary-blue);
+        max-width: min(900px, 95vw);
+        margin: 0 auto;
+        padding: clamp(20px, 4vw, 30px);
+        border-radius: clamp(8px, 2vw, 12px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border-top: clamp(4px, 1.2vw, 6px) solid var(--primary);
+        width: 100%;
       }
 
       h1 {
-        font-size: 26px;
-        color: var(--primary-blue);
+        font-size: clamp(1.3rem, 4.5vw, 1.8rem);
+        color: var(--primary);
         text-align: center;
-        margin-bottom: 35px;
+        margin-bottom: clamp(20px, 5vw, 25px);
+        line-height: 1.3;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
 
       h2 {
-        font-size: 20px;
-        border-left: 5px solid var(--accent-gold);
-        padding-left: 15px;
-        margin: 40px 0 20px;
-        color: var(--primary-blue);
+        font-size: clamp(1.1rem, 3.5vw, 1.2rem);
+        border-left: clamp(3px, 1.2vw, 5px) solid var(--accent);
+        padding-left: clamp(10px, 2vw, 12px);
+        margin: clamp(25px, 6vw, 35px) 0 clamp(12px, 3vw, 15px);
+        color: var(--primary);
+        background: #fcfcfc;
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+
+      /* 表格流式响应式处理 */
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: clamp(15px, 4vw, 20px) 0;
+        border: 1px solid #eee;
+        border-radius: clamp(6px, 1.5vw, 8px);
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 transparent;
+      }
+
+      .table-wrapper::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      .table-wrapper::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 3px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        margin: 20px 0;
-        font-size: 15px;
+        min-width: min(600px, 100%);
       }
 
       th {
-        background-color: #f8fafc;
-        color: #2c3e50;
-        font-weight: 600;
-        padding: 18px;
-        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        padding: clamp(12px, 3vw, 15px);
+        border-bottom: 2px solid #edf2f7;
         text-align: left;
+        font-weight: 600;
+        font-size: clamp(0.9rem, 2.8vw, 1rem);
+        white-space: nowrap;
       }
 
       td {
-        padding: 18px;
-        border: 1px solid #e2e8f0;
+        padding: clamp(12px, 3vw, 15px);
+        border-bottom: 1px solid #edf2f7;
         vertical-align: top;
+        font-size: clamp(0.875rem, 2.5vw, 0.9375rem);
+        word-break: break-word;
+        hyphens: auto;
       }
 
+      /* 对比卡片响应式布局优化 */
       .compare-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-top: 15px;
+        grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+        gap: clamp(15px, 3vw, 20px);
+        margin: clamp(15px, 4vw, 20px) 0;
       }
 
       .compare-item {
-        padding: 20px;
-        border-radius: 6px;
+        padding: clamp(15px, 3.5vw, 20px);
+        border-radius: clamp(6px, 1.5vw, 8px);
         border: 1px solid #edf2f7;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .compare-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       }
 
       .blue-theme {
-        border-left: 4px solid #3498db;
+        border-top: clamp(3px, 1vw, 4px) solid var(--blue);
         background: #f7fbfe;
       }
 
       .green-theme {
-        border-left: 4px solid #2ecc71;
+        border-top: clamp(3px, 1vw, 4px) solid var(--green);
         background: #f8fffb;
+      }
+
+      .compare-item h3 {
+        color: inherit;
+        margin-top: 0;
+        margin-bottom: clamp(10px, 2.5vw, 15px);
+        font-size: clamp(1rem, 3vw, 1.1rem);
+        line-height: 1.4;
+      }
+
+      .compare-item p {
+        margin-bottom: clamp(8px, 2vw, 12px);
+        line-height: 1.6;
+        flex-grow: 1;
       }
 
       .highlight-text {
         color: #e67e22;
         font-weight: 600;
+        display: inline-block;
+        margin-left: 2px;
       }
 
-      .clinical-footer {
-        margin-top: 50px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
+      .note-box {
+        background: #fffdf6;
+        border: 1px solid #f5e7c1;
+        padding: clamp(15px, 3.5vw, 20px);
+        border-radius: clamp(6px, 1.5vw, 8px);
+        font-size: clamp(0.85rem, 2.5vw, 0.875rem);
+        margin-top: clamp(20px, 5vw, 30px);
+        line-height: 1.7;
+      }
+
+      .note-box strong {
+        display: inline-block;
+        margin-bottom: 3px;
+      }
+
+      .footer {
         text-align: center;
-        font-size: 13px;
+        margin-top: clamp(25px, 6vw, 40px);
+        padding: clamp(15px, 3.5vw, 20px);
+        font-size: clamp(0.75rem, 2.2vw, 0.8125rem);
         color: #95a5a6;
+        border-top: 1px solid #eee;
+        line-height: 1.6;
+      }
+
+      /* 响应式断点优化 */
+      /* 平板设备 (768px以下) */
+      @media (max-width: 768px) {
+        body {
+          padding: max(12px, 2.5vw);
+        }
+
+        .container {
+          padding: clamp(18px, 3.5vw, 25px);
+        }
+
+        h1 {
+          font-size: clamp(1.25rem, 4vw, 1.5rem);
+        }
+
+        .compare-grid {
+          grid-template-columns: 1fr;
+          gap: clamp(12px, 2.5vw, 18px);
+        }
+
+        th,
+        td {
+          padding: clamp(10px, 2.5vw, 12px);
+        }
+      }
+
+      /* 手机设备 (480px以下) */
+      @media (max-width: 480px) {
+        body {
+          padding: max(10px, 2vw);
+          line-height: 1.6;
+        }
+
+        .container {
+          padding: clamp(15px, 3vw, 20px);
+          border-radius: clamp(6px, 1.5vw, 8px);
+        }
+
+        h1 {
+          font-size: clamp(1.2rem, 5vw, 1.4rem);
+          margin-bottom: clamp(15px, 4vw, 20px);
+        }
+
+        h2 {
+          font-size: clamp(1.05rem, 4vw, 1.15rem);
+          margin: clamp(20px, 5vw, 25px) 0 clamp(10px, 2.5vw, 12px);
+          padding-left: clamp(8px, 2vw, 10px);
+        }
+
+        .table-wrapper {
+          margin: clamp(12px, 3vw, 16px) 0;
+          border-radius: clamp(4px, 1vw, 6px);
+        }
+
+        table {
+          font-size: 0.9em;
+        }
+
+        th,
+        td {
+          padding: clamp(8px, 2vw, 10px);
+          font-size: clamp(0.825rem, 2.2vw, 0.875rem);
+        }
+
+        .compare-item {
+          padding: clamp(12px, 3vw, 16px);
+        }
+
+        .compare-item h3 {
+          font-size: clamp(0.95rem, 3.5vw, 1.05rem);
+        }
+
+        .note-box {
+          padding: clamp(12px, 3vw, 16px);
+          font-size: clamp(0.8rem, 2.2vw, 0.85rem);
+        }
+
+        .footer {
+          padding: clamp(12px, 3vw, 16px);
+          font-size: clamp(0.7rem, 2vw, 0.75rem);
+        }
+      }
+
+      /* 超小屏幕设备 (360px以下) */
+      @media (max-width: 360px) {
+        body {
+          padding: 8px;
+          font-size: 0.9em;
+        }
+
+        .container {
+          padding: 12px;
+        }
+
+        h1 {
+          font-size: 1.1rem;
+        }
+
+        h2 {
+          font-size: 1rem;
+        }
+
+        .compare-item {
+          padding: 10px;
+        }
+
+        th,
+        td {
+          padding: 8px;
+          font-size: 0.85em;
+        }
+      }
+
+      /* 大屏幕设备 (1200px以上) */
+      @media (min-width: 1200px) {
+        .container {
+          max-width: 1000px;
+        }
+
+        body {
+          padding: 20px;
+        }
+      }
+
+      /* 横屏模式优化 */
+      @media (orientation: landscape) and (max-width: 900px) {
+        .container {
+          max-width: 95vw;
+        }
+
+        .compare-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+
+        .table-wrapper {
+          margin: 15px 0;
+        }
+      }
+
+      /* 暗色模式支持 */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --primary: #4a6fa5;
+          --accent: #d4b170;
+          --bg: #1a1a1a;
+        }
+
+        body {
+          color: #e0e0e0;
+          background-color: var(--bg);
+        }
+
+        .container {
+          background: #2d2d2d;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h1,
+        h2 {
+          color: var(--primary);
+        }
+
+        .table-wrapper {
+          border-color: #444;
+        }
+
+        th {
+          background: #3a3a3a;
+          border-color: #555;
+        }
+
+        td {
+          border-color: #444;
+          color: #d0d0d0;
+        }
+
+        .compare-item {
+          background: #3a3a3a;
+          border-color: #444;
+        }
+
+        .blue-theme {
+          background: #2a3a4a;
+        }
+
+        .green-theme {
+          background: #2a3a2a;
+        }
+
+        .note-box {
+          background: #3a3500;
+          border-color: #5a4d00;
+          color: #e0e0e0;
+        }
+
+        .footer {
+          color: #888;
+          border-color: #444;
+        }
+      }
+
+      /* 打印样式 */
+      @media print {
+        body {
+          background: white;
+          color: black;
+          padding: 0;
+          font-size: 12pt;
+        }
+
+        .container {
+          max-width: 100%;
+          box-shadow: none;
+          border: 1px solid #ddd;
+          padding: 20px;
+        }
+
+        .table-wrapper {
+          overflow: visible;
+        }
+
+        .compare-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+        }
+
+        .highlight-text {
+          color: black;
+        }
       }
     </style>
   </head>
@@ -112,37 +442,42 @@
     <div class="container">
       <h1>高尿酸血症：药理机制与代谢支持方案</h1>
 
+      <div style="text-align: center; color: #7f8c8d; font-size: clamp(0.8rem, 2.5vw, 0.875rem); margin-bottom: clamp(8px, 2vw, 10px);">
+        临床药理深度解析 • 全设备适配版
+      </div>
+
       <h2>一、 药理逻辑与代谢路径对比</h2>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 20%;">对比维度</th>
-            <th style="width: 40%;">苯溴马隆 (促进排泄类)</th>
-            <th style="width: 40%;">非布司他 (抑制生成类)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>药理核心</strong></td>
-            <td><strong>“拓宽出口”</strong>：削弱肾小管对尿酸的重吸收，强制尿酸随尿液排出。</td>
-            <td><strong>“精简产能”</strong>：高度选择性抑制氧化酶，减少次黄嘌呤向尿酸的转化。</td>
-          </tr>
-          <tr>
-            <td><strong>代谢去向</strong></td>
-            <td>主要由肝脏处理。约6%经尿液排出，<span class="highlight-text">绝大部分（94%）随胆汁经粪便排出</span>。</td>
-            <td>主要由肝脏处理。排泄路径均衡，<span class="highlight-text">约50%经尿液，50%经粪便</span>双重代谢。</td>
-          </tr>
-          <tr>
-            <td><strong>规格差异</strong></td>
-            <td>单一规格（50mg），侧重于排泄通道的维持。</td>
-            <td>多元规格（20mg/40mg），侧重于根据血酸浓度进行梯度调节。</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: min(25%, 120px);">对比维度</th>
+              <th>苯溴马隆 (促进排泄类)</th>
+              <th>非布司他 (抑制生成类)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>药理核心</strong></td>
+              <td><strong>“拓宽出口”</strong>：削弱肾小管对尿酸的重吸收，强制尿酸随尿液排出。</td>
+              <td><strong>“精简产能”</strong>：高度选择性抑制氧化酶，减少次黄嘌呤向尿酸的转化。</td>
+            </tr>
+            <tr>
+              <td><strong>代谢去向</strong></td>
+              <td>主要由肝脏处理。约6%经尿液排出，<span class="highlight-text">绝大部分（94%）随胆汁经粪便排出</span>。</td>
+              <td>主要由肝脏处理。排泄路径均衡，<span class="highlight-text">约50%经尿液，50%经粪便</span>双重代谢。</td>
+            </tr>
+            <tr>
+              <td><strong>规格差异</strong></td>
+              <td>单一规格（50mg），侧重于排泄通道的维持。</td>
+              <td>多元规格（20mg/40mg），侧重于根据血酸浓度进行梯度调节。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h2>二、 代谢支持与饮水干预策略</h2>
       <p>水分不仅是生命溶剂，在降尿酸过程中更是重要的“治疗介质”。两者对饮水的依赖逻辑存在本质区别：</p>
-
       <div class="compare-grid">
         <!-- 苯溴马隆侧 -->
         <div class="compare-item blue-theme">
@@ -151,7 +486,6 @@
           <p><strong>饮水逻辑：</strong>由于该药会显著提升尿液中的尿酸浓度，若尿量不足，尿酸易在肾小管或输尿管结晶，形成<strong>尿路结石</strong>。</p>
           <p><strong>干预目标：</strong>保持每日尿量在 2000ml 以上。通常需辅助<strong>碱化尿液</strong>，使尿 pH 值维持在 6.2-6.9 之间，以最大化尿酸溶解度。</p>
         </div>
-
         <!-- 非布司他侧 -->
         <div class="compare-item green-theme">
           <h3 style="color:#27ae60; margin-top:0;">非布司他：维持“全身水平衡”</h3>
@@ -162,14 +496,16 @@
       </div>
 
       <h2>三、 临床用药管理建议</h2>
-      <div style="background: #fdfaf6; padding: 25px; border-radius: 4px; border: 1px solid #f3e5ab;">
+      <div class="note-box">
         <p><strong>1. 溶晶痛预防：</strong> 降尿酸是一个平稳过渡的过程。初期血酸下降过快可能诱发痛风发作，建议在医师指导下使用极小剂量辅助药物平稳过渡。</p>
         <p><strong>2. 规格选择逻辑：</strong> 非布司他 20mg 规格更易于精细化控制降幅，降低诱发急性痛风的频率；40mg 则更适合高基数尿酸的达标治疗。</p>
         <p><strong>3. 器官功能评估：</strong> 使用苯溴马隆需确认无<strong>肾结石病史</strong>；使用非布司他则需定期评估<strong>心血管风险</strong>，两药均需在用药期间关注肝酶变化。</p>
+        <strong>4. 饮食注意：</strong> 药物治疗期间，低嘌呤饮食与适量运动是维持血尿酸长期稳定的物理基础。
       </div>
 
-      <div class="clinical-footer">
-        本页面内容经由药理学逻辑汇总 | 仅供健康档案参考 | 诊疗请严格遵照专业处方
+      <div class="footer">
+        本文档基于药理学文献汇总，仅供专业参考。<br>
+        请务必遵循临床医师开具的处方剂量。
       </div>
     </div>
 
