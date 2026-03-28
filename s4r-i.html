@@ -1407,19 +1407,19 @@
               <label class="form-label">能否接受呼吸控制？</label>
               <div class="radio-group">
                 <label class="radio-label">
-                  <input type="radio" name="breath_control" value="享受" required>
+                  <input type="radio" name="breath_control" value="enjoy" required>
                   <span>享受</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" name="breath_control" value="颈部束缚控制">
+                  <input type="radio" name="breath_control" value="neck">
                   <span>颈部束缚控制</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" name="breath_control" value="轻度控制">
+                  <input type="radio" name="breath_control" value="light">
                   <span>轻度控制</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" name="breath_control" value="不接受">
+                  <input type="radio" name="breath_control" value="no">
                   <span>不接受</span>
                 </label>
               </div>
@@ -2073,10 +2073,10 @@
 
         // 呼吸控制接受度
         const breathControlMap = {
-          '享受': '享受',
-          '脖颈呼吸控制': '脖颈呼吸控制',
-          '轻度呼吸控制': '轻度呼吸控制',
-          '不接受': '不接受'
+          'enjoy': '享受',
+          'neck': '脖颈呼吸控制',
+          'light': '轻度呼吸控制',
+          'no': '不接受'
         };
         interactionHtml += `<p>呼吸控制接受度：<strong>${breathControlMap[userFormData.breath_control] || '未选择'}</strong></p>`;
 
