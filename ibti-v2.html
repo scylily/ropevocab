@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBTI 潜向行为性格指标测试 - 官方旗舰版</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      :root {
+        --primary: #1a1a1a;
+        --accent: #c5a059;
+        --bg: #ffffff;
+        --text: #333;
+        --border: #eeeeee;
+        --selected-bg: #fdfaf2;
+      }
+
+      body {
+        font-family: 'Optima', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background-color: #f4f4f4;
+        color: var(--text);
+        margin: 0;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 850px;
+        width: 100%;
+        background: var(--bg);
+        padding: 40px 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0;
+        letter-spacing: 6px;
+        font-size: 2.2em;
+      }
+
+      .sub-title {
+        color: #888;
+        font-size: 0.85em;
+        margin-top: 10px;
+        letter-spacing: 2px;
+      }
+
+      .section {
+        display: none;
+      }
+
+      .active {
+        display: block;
+      }
+
+      /* 答题区 */
+      .q-item {
+        margin-bottom: 50px;
+        border-bottom: 1px solid #f9f9f9;
+        padding-bottom: 30px;
+      }
+
+      .q-title {
+        font-weight: bold;
+        font-size: 1.15em;
+        margin-bottom: 25px;
+        display: block;
+        line-height: 1.5;
+        color: var(--primary);
+      }
+
+      .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .option-label {
+        display: flex;
+        align-items: center;
+        padding: 18px 20px;
+        background: #fafafa;
+        border: 2px solid #eee;
+        cursor: pointer;
+        transition: 0.2s;
+        border-radius: 6px;
+        font-size: 0.95em;
+        position: relative;
+      }
+
+      .option-label:hover {
+        border-color: var(--accent);
+      }
+
+      .option-label input {
+        display: none;
+      }
+
+      /* 选中态极其明显 */
+      .option-label.selected {
+        background: var(--selected-bg);
+        border-color: var(--accent);
+        box-shadow: inset 0 0 0 1px var(--accent);
+      }
+
+      .option-label.selected::after {
+        content: "●";
+        position: absolute;
+        right: 20px;
+        color: var(--accent);
+        font-size: 0.8em;
+      }
+
+      /* 按钮 */
+      .btn {
+        width: 100%;
+        padding: 20px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        font-size: 1.1em;
+        letter-spacing: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 20px;
+        border-radius: 2px;
+      }
+
+      .btn:hover {
+        background: #333;
+      }
+
+      .btn-gold {
+        background: var(--accent);
+      }
+
+      .btn-outline {
+        background: #fff;
+        color: #666;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+      }
+
+      /* 确认页 */
+      .review-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9em;
+        text-align: left;
+      }
+
+      .review-q {
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+      }
+
+      .review-a {
+        color: var(--accent);
+      }
+
+      /* 结果页 */
+      .res-code {
+        font-size: 4.5em;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 12px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .res-tag {
+        font-size: 2em;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .chart-box {
+        max-width: 500px;
+        margin: 30px auto;
+      }
+
+      .egg-box {
+        text-align: left;
+        background: #f9f9f9;
+        padding: 30px;
+        border-top: 3px solid var(--primary);
+        line-height: 2;
+        margin-top: 30px;
+      }
+
+      #capture-area {
+        background: white;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div id="quiz-section" class="section active">
+        <header>
+          <h1>IBTI</h1>
+          <div class="sub-title">INCLINATION BEHAVIOR TYPE INDICATOR</div>
+        </header>
+        <div id="quiz-container"></div>
+        <button class="btn" onclick="goToReview()">核对清单并继续</button>
+      </div>
+
+      <div id="review-section" class="section">
+        <header>
+          <h1>确认清单</h1>
+          <div class="sub-title">请核对您的 40 项倾向选择</div>
+        </header>
+        <div id="review-list"></div>
+        <button class="btn btn-gold" onclick="goToResult()">确认无误，生成报告</button>
+        <button class="btn btn-outline" onclick="backToQuiz()">返回修改</button>
+        <button class="btn btn-outline" onclick="takeScreenshot('review-section', 'IBTI_Review')">保存清单图片</button>
+      </div>
+
+      <div id="result-section" class="section">
+        <div id="capture-area">
+          <header>
+            <h1>IBTI 指标报告</h1>
+            <div class="sub-title">PERSONAL INCLINATION MAPPING</div>
+          </header>
+          <div class="res-code" id="res-code"></div>
+          <div class="res-tag" id="res-tag"></div>
+          <div class="chart-box">
+            <canvas id="radarChart"></canvas>
+          </div>
+          <div class="egg-box" id="res-egg"></div>
+        </div>
+        <button class="btn btn-gold" onclick="takeScreenshot('capture-area', 'IBTI_Report')">保存映射全案长图</button>
+        <button class="btn btn-outline" onclick="location.reload()">重新测评</button>
+      </div>
+
+    </div>
+
+    <script>
+      // 性格矩阵
+      const IBTI_MATRIX = {
+        'M-I-C-G': '首席统筹官', 'M-I-C-D': '深度架构师', 'M-I-O-G': '实感指导者', 'M-I-O-D': '高压塑形师',
+        'S-R-C-G': '情绪共鸣者', 'S-R-C-D': '精神追随者', 'S-R-O-G': '感官接收方', 'S-R-O-D': '深度感知者',
+        'X-I-O-D': '全能探险家', 'X-R-C-G': '氛围协调员', 'X-I-C-D': '策略博弈者', 'X-R-O-G': '直觉感知位',
+        'M-R-C-D': '静默观察家', 'S-I-O-G': '主动协作员', 'M-X-O-G': '实感调律手', 'S-X-C-D': '深度回响者'
+      };
+
+      // 全量 40 道题库
+      const questionsData = [
+        // MS 控制域 (1-10)
+        { d: 'MS', q: "组团自驾游时，你更倾向于：", opts: ["由我亲手制作精细路线图，掌控全局", "我倾向主导大方向，细节听大家的", "随缘处理，谁有空谁定", "我喜欢参与讨论，最终由他人拍板", "我完全不想看地图，只想彻底被带飞"], side: ['M', 'S'] },
+        { d: 'MS', q: "压力巨大的工作后，你内心的真实渴求：", opts: ["极其渴望被接管细节，大脑彻底放空", "倾向由对方安排主要的休息活动", "简单商量，没有明确的控制需求", "我需要安静空间，由我决定放松方式", "必须按我的节奏打理，否则会烦躁"], side: ['S', 'M'] }, // 反向
+        { d: 'MS', q: "在玩复杂的竞技类桌游时：", opts: ["通常担任组织者，习惯分配任务", "喜欢在核心岗位做出决策主导比赛", "视需要而定，可以指挥也可以辅助", "倾向做一个执行者，完成分配的任务", "享受听从指令并完美达成的过程"], side: ['M', 'S'] },
+        { d: 'MS', q: "发现餐厅服务生上错了菜，你会：", opts: ["立刻要求按标准处理，指出其失职", "礼貌要求更换，确保权益被执行", "看心情，如果不影响口味就不换", "征询同伴意见，看大家是否想换", "默认接受，避免任何形式的冲突"], side: ['M', 'S'] },
+        { d: 'MS', q: "你认为最解压的浪漫表现为：", opts: ["彻底交出社会责任，成为纯粹受体", "感受对方引领，享受被带着走", "步调一致，没有明确的领导关系", "主动营造氛围，观察对方的快乐", "亲手构建秩序，拥有绝对话语权"], side: ['S', 'M'] }, // 反向
+        { d: 'MS', q: "关于琐事决策（如点餐）的倾向：", opts: ["极度享受对方直接决策我来享用", "喜欢对方拿主意，我给出反馈", "两个人翻着菜单互相商量", "询问对方忌口，最后由我综合下单", "必须是我下指令，确认一切在轨道"], side: ['S', 'M'] }, // 反向
+        { d: 'MS', q: "工作中被上司进行精细化进度管理：", opts: ["感束缚冒犯，产生强烈的抵触", "不太自在，想要更多自主支配权", "无所谓，只要把活干完就行", "可接受，说明在对方掌控关注中", "感安稳，被监督指导让我更有托底"], side: ['M', 'S'] },
+        { d: 'MS', q: "面对冷战或分歧，你更希望：", opts: ["对方按我设定的方式向我低头", "对方能主动妥协并承认我主导", "双方各退一步，找平衡点解决", "对方给个台阶，引导我走出僵局", "对方强势切入僵局，带我恢复关系"], side: ['M', 'S'] },
+        { d: 'MS', q: "你对“掌控感”的真实看法是：", opts: ["安全感来源，我无法想象失去它", "比较看重，拥有发言权让我自信", "双刃剑，有时想要有时想逃离", "是份责任，若有人分担会很开心", "沉重负担，渴望在某时空彻底逃离"], side: ['M', 'S'] },
+        { d: 'MS', q: "如果生活是一部电影，你更愿意做：", opts: ["决定每一帧画面和演员走向的导演", "掌控全局、确保不出错的监制", "既能策划也能客串的自由创作者", "配合导演意图发挥情感的主角", "全然沉浸在情绪中，交给导演摆布"], side: ['M', 'S'] },
+
+        // IR 能量域 (11-20)
+        { d: 'IR', q: "进入全新的社交场合，你的策略通常是：", opts: ["主动寻找话题，通过活跃带动气氛", "主动向感兴趣的人示意发起交流", "观察为主，有人找就聊没人就独处", "偏向被动，等待别人发现自己", "保持绝对静默，直到有强烈信号"], side: ['I', 'R'] },
+        { d: 'IR', q: "在合作中，哪种成就感更吸引你：", opts: ["我提出的方案被执行并看到改变", "我在项目中作为主力输出负责行动", "方案和执行都有参与，结果好就行", "我在配合过程中给出的反馈被采纳", "被对方带动能量包裹并做出响应"], side: ['I', 'R'] },
+        { d: 'IR', q: "觉得哪种特质更贴近你的性格：", opts: ["发射强光的灯泡，是能量的源头", "燃烧的蜡烛，温和但始终释放", "变色龙，根据环境能量调整自己", "聚集光线的透镜，负责捕捉传导", "折射光芒的棱镜，能量由别人赋予"], side: ['I', 'R'] },
+        { d: 'IR', q: "对话陷入沉默时，你倾向于：", opts: ["有责任打破僵局，抛出挑战话题", "思考推进交流的主题，不让冷场", "顺其自然，沉默也是一种交流", "等待对方先开口，猜测其心理", "享受静默张力，感应对方的状态"], side: ['I', 'R'] },
+        { d: 'IR', q: "送礼物给亲密的人，最开心的瞬间：", opts: ["看对方拆开时被我的预判所震惊", "看到礼物被对方实际使用", "互换礼物，双方都感到惊喜", "听到对方由衷的夸赞和感谢", "对方的反馈让我产生被能量震慑感"], side: ['I', 'R'] },
+        { d: 'IR', q: "在互动的关键时刻，你的视线习惯：", opts: ["盯着对方，观察因我产生的变化", "探究对方意图，试图理解其逻辑", "随便看看，好不好看直觉说了算", "等待对方引导，进入沉浸状态", "闭上眼，让身体感官完全接管大脑"], side: ['I', 'R'] },
+        { d: 'IR', q: "当节奏变得缓慢乏味时，你的反应：", opts: ["必须尝试加入变量，让事情有趣", "主动出新点子，试图让进度加快", "无所谓，快慢我都能接受", "顺应速度，看对方接下来如何安排", "极度享受松弛，交付给氛围节奏"], side: ['I', 'R'] },
+        { d: 'IR', q: "朋友们通常如何评价互动的你：", opts: ["极具行动力、总想出玩法的领头羊", "富有创意且乐于实施的行动派", "既能出主意也能配合大家的随和者", "温柔有耐性、能接住情绪的反馈者", "极具反馈精度的共鸣者"], side: ['I', 'R'] },
+        { d: 'IR', q: "学习一项新技能（如乐器）时：", opts: ["喜欢加入自己的创意进行大幅魔改", "会尝试微调，看有没有不同效果", "按大众方法来做，不出错就行", "会在模仿中追求精准，尊重秩序", "严格按教程，体会“被规则雕琢”感"], side: ['I', 'R'] },
+        { d: 'IR', q: "认为能量在关系中的流向应该是：", opts: ["我是源头，输出意志观察改变", "倾向主动给与，通过行动表达爱", "动态平衡，有时输出有时输入", "倾向接收，在对方关怀下满足", "我是容器，完全吸收对方的冲击"], side: ['I', 'R'] },
+
+        // CO 感知域 (21-30)
+        { d: 'CO', q: "哪种形式的“撩拨”更能让你心跳加速：", opts: ["言语试探或眼神中传递的压迫感", "逻辑上的博弈，猜不透对方下一步", "既有甜言蜜语，也有肢体互动", "突如其来的握手、拥抱或颈后呼吸", "真实的触觉、体温或力度的颤栗"], side: ['C', 'O'] },
+        { d: 'CO', q: "体验一次SPA，印象最深的通常是：", opts: ["装潢、灯光营造出的隐秘尊贵感", "技师的职业感及沟通时的信任感", "环境和力道各占一半", "精油的香气和毛巾贴在皮肤的质感", "发力那个瞬间，肌肉酸痛的真实感"], side: ['C', 'O'] },
+        { d: 'CO', q: "对“神秘感”的偏向更倾向于：", opts: ["思维迷宫，心理上捉迷藏的拉扯", "对方多变的性格和捉摸不透的情绪", "头脑和感官都要保留一点惊喜", "蒙上眼时，对下个位置的未知", "物理惊喜，猜不到下个力道的大小"], side: ['C', 'O'] },
+        { d: 'CO', q: "挑战极限运动时，你更享受：", opts: ["在跳台边缘心理防线崩溃的破防感", "克服恐惧、战胜自我后的精神愉悦", "过程中的失重感和刺激都很平均", "坠落时呼啸的风声和感官刺激", "绳索拉紧反弹时，身体的剧烈冲击"], side: ['C', 'O'] },
+        { d: 'CO', q: "如何确认自己与某人的特殊连接？", opts: ["专属称呼、暗号或心理契约", "从眼神中读出只有我懂的潜台词", "精神上的理解与身体上的亲密度", "指尖划过皮肤时的生理悸动", "留在身体上的温度、红痕或实感痕迹"], side: ['C', 'O'] },
+        { d: 'CO', q: "挑选贴身衣物或床品，最看重：", opts: ["设计内涵、品牌及穿戴的身份感", "视觉风格是否能传达我的品味", "好看且舒服，缺一不可", "轻薄、柔滑或粗糙等特定感官风格", "物理材质给皮肤最真实直接的反馈"], side: ['C', 'O'] },
+        { d: 'CO', q: "做错事被批评，哪种方式让你印象深：", opts: ["冷漠失望的眼神及心理冷处理", "严厉言语责备带来的精神压力", "都有，既有责骂也有一些惩戒", "强行限制我的行动，让我感无奈", "真实的体能惩戒（如痛感刺激）"], side: ['C', 'O'] },
+        { d: 'CO', q: "心目中完美的度假场景偏向：", opts: ["古堡里的一场沉浸式角色游戏", "设计感极强的酒店及身份剥离感", "能带给我新鲜体验的城市", "海滩阳光和沙粒的包裹感", "原始丛林里充满力量感的环境对抗"], side: ['C', 'O'] },
+        { d: 'CO', q: "感到由于投入产生的“过载”时状态：", opts: ["大脑飞速运转后的空白、眩晕感", "精神极度亢奋，灵魂脱离身体感", "心跳加快，精神和身体都疲惫", "身体敏感度升高，任何触碰都剧烈", "身体热度上升，肌肉紧致真实的疲惫"], side: ['C', 'O'] },
+        { d: 'CO', q: "认为互动中“前戏”的本质应该是：", opts: ["眼神交汇、言语博弈和心理铺垫", "对方的“势能”带来的精神压制", "氛围和互动的结合", "轻柔的接触和对敏感带的唤醒", "皮肤摩挲、力度试探和感官激发"], side: ['C', 'O'] },
+
+        // GD 强度域 (31-40)
+        { d: 'GD', q: "遇到意料之外的挑战或意外时：", opts: ["感极其焦虑，希望迅速回到正轨", "比较求稳，倾向在舒适区解决问题", "风险可控的话可以接受一点意外", "比较淡定，觉得生活多点变数有趣", "潜意识兴奋于失控带来的刺激"], side: ['G', 'D'] },
+        { d: 'GD', q: "阅读或观影时，你更喜欢哪种体验：", opts: ["治愈温馨，看完感世界美好放松", "轻度剧情片，节奏温和日常消遣", "题材不限，只要拍得好", "烧脑冲突感强，看完会有所思考", "深刻震撼甚至致郁，灵魂在颤栗"], side: ['G', 'D'] },
+        { d: 'GD', q: "如果要探险，你更倾向于：", opts: ["开发成熟、安全设施完善的风景区", "著名的度假胜地，按攻略走就行", "稍微有点陌生但有信号覆盖的地方", "需要一定体能和装备的野外徒步", "鲜有人迹、挑战生存极限的原始秘境"], side: ['G', 'D'] },
+        { d: 'GD', q: "你的世界观里对“苦痛”的理解是：", opts: ["完全负面的，必须极力规避的杂质", "我不喜欢痛苦，永远选平稳甜蜜", "它是成长的调味剂", "它是生活的另一面，助理解快感", "磨砺意志、产生极致觉醒的阶梯"], side: ['G', 'D'] },
+        { d: 'GD', q: "面对可能会让你“彻底改变”的体验：", opts: ["本能拒绝，害怕打破目前自我平衡", "需要极长时间建设，倾向维持现状", "视情况而定，看对方是谁", "有些好奇，安全有保障愿意尝试", "充满渴望，认为这是重生的必经之路"], side: ['G', 'D'] },
+        { d: 'GD', q: "一次完美的聚会或度假过后：", opts: ["轻松愉快，像充了电一样神清气爽", "心情明媚，生活压力得到舒缓", "有点累但是很开心", "感觉大脑被洗礼，对生活有新发现", "彻底虚脱释放，有一种“蜕皮”快感"], side: ['G', 'D'] },
+        { d: 'GD', q: "对生活刺激的需求更像是：", opts: ["每天都要喝的奶茶，微甜适度", "清淡的果茶，偶尔一点点小惊喜", "偶尔喝咖啡，偶尔喝茶", "浓郁手冲黑咖啡，苦后回甘", "偶尔一次的烈酒，烧灼上头直抵肺腑"], side: ['G', 'D'] },
+        { d: 'GD', q: "面对人性中那些“黑暗面”或“禁忌”：", opts: ["感极度不适，不希望生活中触碰这些", "会尽量回避，怕影响阳光的情绪", "只是当作猎奇新闻看看", "觉得有深度，是人性的一部分", "极度着迷，认为是生命力最真实部分"], side: ['G', 'D'] },
+        { d: 'GD', q: "安全感的最高定义是：", opts: ["凡事皆有预案，没有任何意外惊吓", "有一个温暖且熟悉的日常环境", "在自己熟悉的朋友圈子里", "即使在陌生环境也有自我保护力", "在最失控边缘依然有最稳固的信任"], side: ['G', 'D'] },
+        { d: 'GD', q: "你希望未来的自己变成：", opts: ["心态平和稳健，没有太多大起大落", "一个温柔、知足常乐的人", "事业有成，家庭美满", "阅历丰富，内心坚韧", "灵魂厚重，曾触达极限，无惧未知"], side: ['G', 'D'] }
+      ];
+
+      let userAnswers = [];
+      let shuffledQuiz = [];
+
+      // 初始化测试
+      function initQuiz() {
+        shuffledQuiz = [...questionsData].map((q, idx) => ({ ...q, originalIdx: idx }));
+        shuffledQuiz.sort(() => Math.random() - 0.5); // 题目乱序
+
+        const container = document.getElementById('quiz-container');
+        shuffledQuiz.forEach((q, qIdx) => {
+          const div = document.createElement('div');
+          div.className = 'q-item';
+
+          // 选项乱序处理
+          let optArray = q.opts.map((text, weightIdx) => ({ text, weightIdx }));
+          optArray.sort(() => Math.random() - 0.5);
+
+          let optionsHtml = optArray.map(opt => `
+                <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${opt.weightIdx})">
+                    <input type="radio" name="q${qIdx}" value="${opt.weightIdx}">
+                    ${opt.text}
+                </label>
+            `).join('');
+
+          div.innerHTML = `<span class="q-title">${qIdx + 1}. ${q.q}</span><div class="options-list">${optionsHtml}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function selectOpt(el, qIdx, wIdx) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
+        el.classList.add('selected');
+        userAnswers[qIdx] = { q: shuffledQuiz[qIdx].q, a: el.innerText, w: wIdx, data: shuffledQuiz[qIdx] };
+      }
+
+      // 确认清单页
+      function goToReview() {
+        if (userAnswers.filter(a => a !== undefined).length < 40) {
+          alert("请完成所有题目。"); return;
+        }
+        document.getElementById('quiz-section').classList.remove('active');
+        document.getElementById('review-section').classList.add('active');
+        window.scrollTo(0, 0);
+
+        const list = document.getElementById('review-list');
+        list.innerHTML = userAnswers.map((ans, i) => `
+            <div class="review-item">
+                <div class="review-q">${i + 1}. ${ans.q}</div>
+                <div class="review-a">选择：${ans.a}</div>
+            </div>
+        `).join('');
+      }
+
+      function backToQuiz() {
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('quiz-section').classList.add('active');
+      }
+
+      // 结果生成
+      function goToResult() {
+        let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+        userAnswers.forEach(ans => {
+          const w = ans.w;
+          const A = ans.data.side[0];
+          const B = ans.data.side[1];
+          if (w === 0) scores[A] += 1.5;
+          else if (w === 1) scores[A] += 0.5;
+          else if (w === 2) { scores[A] += 0.2; scores[B] += 0.2; }
+          else if (w === 3) scores[B] += 0.5;
+          else if (w === 4) scores[B] += 1.5;
+        });
+
+        const getDim = (a, b) => {
+          const net = scores[a] - scores[b];
+          return Math.abs(net) <= 2 ? 'X' : (net > 0 ? a : b);
+        };
+
+        const code = `${getDim('M', 'S')}-${getDim('I', 'R')}-${getDim('C', 'O')}-${getDim('G', 'D')}`;
+
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('result-section').classList.add('active');
+        window.scrollTo(0, 0);
+
+        document.getElementById('res-code').innerText = code;
+        document.getElementById('res-tag').innerText = IBTI_MATRIX[code] || "复合映射者 (X)";
+
+        // 渲染图表和彩蛋
+        drawRadar(scores);
+        renderEggs(scores);
+      }
+
+      function drawRadar(s) {
+        new Chart(document.getElementById('radarChart'), {
+          type: 'radar',
+          data: {
+            labels: ['掌控(M)', '主动(I)', '博弈(C)', '探索(D)', '配合(S)', '响应(R)', '本能(O)', '温和(G)'],
+            datasets: [{
+              data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
+              backgroundColor: 'rgba(197, 160, 89, 0.1)',
+              borderColor: 'rgba(197, 160, 89, 1)',
+              pointBackgroundColor: '#1a1a1a'
+            }]
+          },
+          options: {
+            scales: { r: { min: 0, max: 12, ticks: { display: false } } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+
+      function renderEggs(s) {
+        let eggs = ["<strong>潜意识映射分析：</strong>"];
+        if (s.M >= 8) eggs.push("• 现实生活中的你大概率是一位负责的决策者，通过建立秩序获得安全感。");
+        if (s.S >= 8) eggs.push("• 现实中你可能过度承担了期待，这里的‘顺从’是对灵魂的深度放假。");
+        if (s.C >= 8) eggs.push("• 心理拉扯对你而言是高级脑力SPA，你着迷于那些‘看破不说破’的博弈感。");
+        if (s.D >= 8) eggs.push("• 极致的张力是你确认自我存在的刻度，你渴望在深渊边缘直视生命力的真实。");
+        document.getElementById('res-egg').innerHTML = eggs.join("<br><br>");
+      }
+
+      // 截图保存功能
+      function takeScreenshot(id, name) {
+        const element = document.getElementById(id);
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = `${name}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        });
+      }
+
+      window.onload = initQuiz;
+    </script>
+
+  </body>
+
+</html>
