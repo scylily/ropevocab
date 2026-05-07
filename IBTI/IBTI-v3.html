@@ -18,6 +18,11 @@
         --border: #eeeeee;
       }
 
+      html {
+        font-size: 16px;
+        /* 这是你的量化基准，1rem = 16px */
+      }
+
       body {
         font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         background-color: #f5f5f5;
@@ -261,6 +266,87 @@
       #capture-area {
         background: white;
         padding: 20px;
+      }
+
+      #debug-panel {
+        /* 增加触摸响应范围 */
+        touch-action: manipulation;
+        /* 避免手机端长按弹出系统菜单 */
+        -webkit-user-select: none;
+        /* Safari 和 Chrome 的旧版本前缀 */
+        user-select: none;
+        /* 标准属性（必须加上这一行） */
+      }
+
+      /* === 手机端量化自适应补丁 (紧凑精致版) === */
+      @media (max-width: 600px) {
+
+        /* 1. 容器量化调整：进一步压缩顶部间距 */
+        .container {
+          padding: 0.8rem 0.5rem !important;
+          width: 100%;
+          box-shadow: none;
+          /* 手机端取消阴影，节省物理感空间 */
+        }
+
+        /* 2. 标题和代号量化：从 1.4rem -> 1.2rem / 2rem -> 1.8rem */
+        header h1 {
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem !important;
+          /* 标题下方的空隙 */
+        }
+
+        #res-code {
+          font-size: 1.8rem !important;
+          margin: 0.8rem 0 !important;
+        }
+
+        /* 3. 雷达图高度：从 300px 下调至 260px，为文字腾位 */
+        .chart-box {
+          height: 15rem !important;
+          margin-bottom: 0.5rem;
+        }
+
+        /* 4. Markdown 文案量化排版：核心调小区域 */
+        #res-desc {
+          /* 核心：从 0.94rem 下调至 0.85rem (约13.6px) */
+          font-size: 0.85rem !important;
+          /* 行高从 1.75 下调至 1.6，让段落更紧凑 */
+          line-height: 1.6;
+          text-align: justify;
+        }
+
+        /* Markdown 内的标题：从 1.15rem -> 1.0rem (与根字体持平) */
+        #res-desc h3 {
+          font-size: 1.0rem !important;
+          margin-top: 1.0rem !important;
+          /* 减少间距 */
+          border-bottom: 0.05rem solid #eee;
+          padding-bottom: 0.2rem;
+        }
+
+        /* 列表缩进 */
+        #res-desc ul,
+        #res-desc ol {
+          padding-left: 1rem !important;
+          margin: 0.4rem 0;
+        }
+
+        /* 引用块/角色独白：从 0.9rem -> 0.8rem */
+        #res-desc blockquote {
+          margin: 0.5rem 0 !important;
+          padding: 0.3rem 0.3rem !important;
+          font-size: 0.8rem !important;
+          background: #fcfcfc;
+          border-left: 1.2px solid #ddd;
+        }
+
+        /* 5. 调试面板：保持原样 */
+        #debug-panel {
+          transform: scale(0.65);
+          right: -180px;
+          /* 往右边藏一点 */
+        }
       }
     </style>
   </head>
@@ -610,74 +696,117 @@
 
       window.onload = initQuiz;
 
-  // 【测试专用】根据输入代号强制跳转结果页
-  function debugCustomCode() {
-    let input = document.getElementById('debug-input').value.trim().toUpperCase();
+      // 【测试专用】根据输入代号强制跳转结果页
+      function debugCustomCode() {
+        let input = document.getElementById('debug-input').value.trim().toUpperCase();
 
-    // 1. 格式处理：如果用户输入 MICG，自动转为 M-I-C-G
-    if (input.length === 4 && !input.includes('-')) {
-      input = input.split('').join('-');
-    }
+        // 1. 格式处理：如果用户输入 MICG，自动转为 M-I-C-G
+        if (input.length === 4 && !input.includes('-')) {
+          input = input.split('').join('-');
+        }
 
-    if (!input || input.split('-').length !== 4) {
-      alert("请输入正确的四维代号，例如: M-I-C-G");
-      return;
-    }
+        if (!input || input.split('-').length !== 4) {
+          alert("请输入正确的四维代号，例如: M-I-C-G");
+          return;
+        }
 
-    console.log("正在调试生成代号报告:", input);
+        console.log("正在调试生成代号报告:", input);
 
-    // 2. 模拟题目答案数据 (mock data)
-    // 逻辑：如果是代号包含的字母，我们就给该维度满分（weight: 0 或 4）
-    userAnswers = [];
-    const parts = input.split('-'); // [M, I, C, G]
+        // 2. 模拟题目答案数据 (mock data)
+        // 逻辑：如果是代号包含的字母，我们就给该维度满分（weight: 0 或 4）
+        userAnswers = [];
+        const parts = input.split('-'); // [M, I, C, G]
 
-    for (let i = 0; i < 40; i++) {
-      let side = [];
-      let weight = 2; // 默认中立
+        for (let i = 0; i < 40; i++) {
+          let side = [];
+          let weight = 2; // 默认中立
 
-      if (i < 10) {
-        side = ['M', 'S'];
-        if (parts[0] === 'M') weight = 0; else if (parts[0] === 'S') weight = 4;
-      } else if (i < 20) {
-        side = ['I', 'R'];
-        if (parts[1] === 'I') weight = 0; else if (parts[1] === 'R') weight = 4;
-      } else if (i < 30) {
-        side = ['C', 'O'];
-        if (parts[2] === 'C') weight = 0; else if (parts[2] === 'O') weight = 4;
-      } else {
-        side = ['G', 'D'];
-        if (parts[3] === 'G') weight = 0; else if (parts[3] === 'D') weight = 4;
+          if (i < 10) {
+            side = ['M', 'S'];
+            if (parts[0] === 'M') weight = 0; else if (parts[0] === 'S') weight = 4;
+          } else if (i < 20) {
+            side = ['I', 'R'];
+            if (parts[1] === 'I') weight = 0; else if (parts[1] === 'R') weight = 4;
+          } else if (i < 30) {
+            side = ['C', 'O'];
+            if (parts[2] === 'C') weight = 0; else if (parts[2] === 'O') weight = 4;
+          } else {
+            side = ['G', 'D'];
+            if (parts[3] === 'G') weight = 0; else if (parts[3] === 'D') weight = 4;
+          }
+
+          userAnswers.push({ weight: weight, data: { side: side } });
+        }
+
+        // 3. 切换页面状态
+        const intro = document.getElementById('intro-section');
+        const quiz = document.getElementById('quiz-section');
+        const result = document.getElementById('result-section');
+
+        if (intro) intro.classList.remove('active');
+        if (quiz) quiz.classList.remove('active');
+        if (result) result.classList.add('active');
+
+        // 4. 执行原有的报告生成逻辑
+        // 这样可以确保雷达图、Markdown 渲染、DOM 填充全部跑一遍
+        if (typeof generateReport === "function") {
+          generateReport();
+        } else {
+          // 如果你的提交函数叫 showReview，请根据实际情况改名
+          showReview();
+        }
       }
 
-      userAnswers.push({ weight: weight, data: { side: side } });
-    }
+      // 切换面板展开/收起的逻辑
+      function toggleDebugPanel() {
+        const panel = document.getElementById('debug-panel');
+        // 判断当前状态：如果右边距是负数，说明隐藏中，则展开；反之收起。
+        if (panel.style.right === '0px') {
+          panel.style.right = '-190px';
+        } else {
+          panel.style.right = '0px';
+        }
+      }
 
-    // 3. 切换页面状态
-    const intro = document.getElementById('intro-section');
-    const quiz = document.getElementById('quiz-section');
-    const result = document.getElementById('result-section');
-
-    if (intro) intro.classList.remove('active');
-    if (quiz) quiz.classList.remove('active');
-    if (result) result.classList.add('active');
-
-    // 4. 执行原有的报告生成逻辑
-    // 这样可以确保雷达图、Markdown 渲染、DOM 填充全部跑一遍
-    if (typeof generateReport === "function") {
-      generateReport();
-    } else {
-      // 如果你的提交函数叫 showReview，请根据实际情况改名
-      showReview();
-    }
-  }
+      // 之前的调试函数保持不变
+      function debugCustomCode() {
+        const code = document.getElementById('debug-input').value.toUpperCase();
+        if (code) {
+          // 假设你的显示函数叫 showReview 或类似名称
+          if (typeof showReview === 'function') {
+            // 这里如果是强制生成指定代号，你可能需要修改下你的 showReview 逻辑
+            // 或者直接操作 resCode 变量
+            localStorage.setItem('debug_res_code', code);
+            location.reload(); // 简单粗暴的方法：存入缓存并刷新
+          }
+        }
+      }
     </script>
 
-<div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-  <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
-  <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
-  <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
-  <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 支持带横杠或不带横杠格式</div>
-</div>
+    <div id="debug-panel" style="
+    position: fixed;
+    top: 50px;
+    right: -200px; /* 初始位置：向右隐藏 200px */
+    z-index: 9999;
+    background: rgba(0,0,0,0.85);
+    padding: 15px;
+    border-radius: 8px 0 0 8px; /* 左侧圆角 */
+    color: white;
+    font-family: monospace;
+    box-shadow: -2px 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease; /* 添加平滑动画效果 */
+    cursor: pointer;
+" onmouseenter="this.style.right='0px'" onmouseleave="this.style.right='-200px'">
+
+      <div style="position: absolute; left: -25px; top: 0; bottom: 0; width: 25px; background: #ff4757; color: white; display: flex; align-items: center; justify-content: center; border-radius: 8px 0 0 8px; font-size: 10px; writing-mode: vertical-lr;">
+        调试工具 ◀
+      </div>
+
+      <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
+      <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
+      <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
+      <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 鼠标移入展开，移出隐藏</div>
+    </div>
 
   </body>
 
