@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBTI 潜向行为性格指标测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="ibti_data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      :root {
+        --primary: #1a1a1a;
+        --accent: #c5a059;
+        --bg: #ffffff;
+        --option-bg: #f9f9f9;
+        --border: #eeeeee;
+      }
+
+      body {
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        margin: 0;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background: var(--bg);
+        padding: 40px 30px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0;
+        letter-spacing: 6px;
+        font-size: 2.2em;
+      }
+
+      .sub-title {
+        color: #888;
+        font-size: 0.85em;
+        margin-top: 10px;
+        letter-spacing: 2px;
+      }
+
+      .section {
+        display: none;
+      }
+
+      .active {
+        display: block;
+      }
+
+      /* 答题区样式 */
+      .q-item {
+        margin-bottom: 50px;
+      }
+
+      .q-title {
+        font-weight: bold;
+        font-size: 1.15em;
+        margin-bottom: 20px;
+        display: block;
+        color: var(--primary);
+        line-height: 1.5;
+      }
+
+      .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* 1. 基础容器：缩小左边距，适配更精致的小图标 */
+      .option-label {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px 15px 42px;
+        /* 适当缩小了上下间距，左侧留出 42px */
+        background: var(--option-bg);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        /* 圆角稍微增加一点点，更柔和 */
+        font-size: 0.95em;
+        line-height: 1.4;
+        position: relative;
+        color: #444;
+      }
+
+      .option-label:hover {
+        background: #fdfaf2;
+        border-color: var(--accent);
+      }
+
+      .option-label input {
+        display: none;
+      }
+
+      /* 2. 左侧的小方框 (未选中状态) */
+      .option-label::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        /* 图标距离左边的距离 */
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        /* 尺寸从 18 缩小到 16，更精致 */
+        height: 16px;
+        border: 1.5px solid #ccc;
+        /* 边框细一点 */
+        border-radius: 3px;
+        /* 小方框圆角 */
+        background: #fff;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+      }
+
+      /* 3. 选中状态的整体样式 */
+      .option-label.selected {
+        background: #fffdf5;
+        border-color: var(--accent);
+        color: var(--accent);
+        /* 选中后文字也稍微变色，加强反馈 */
+      }
+
+      /* 选中后方框变色 */
+      .option-label.selected::before {
+        background-color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* 4. 关键：选中后的“打钩”元素 */
+      .option-label.selected::after {
+        content: "";
+        position: absolute;
+        left: 20px;
+        /* 打钩在方框内的精准定位 */
+        top: 46%;
+        /* 微调垂直高度使其视觉居中 */
+        width: 4px;
+        /* 钩子的短边 */
+        height: 8px;
+        /* 钩子的长边 */
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        /* 用边框拼出 L 型再旋转 */
+        transform: translateY(-50%) rotate(45deg);
+        /* 旋转 45 度变成钩 */
+        transition: all 0.2s ease;
+      }
+
+      /* 按钮 */
+      .btn-group {
+        margin-top: 30px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 20px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        font-size: 1.1em;
+        letter-spacing: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .btn-gold {
+        background: var(--accent);
+      }
+
+      .btn-outline {
+        background: #fff;
+        color: #666;
+        border: 1px solid #ddd;
+      }
+
+      /* 确认页清单 */
+      .review-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 0.9em;
+      }
+
+      .review-q {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .review-a {
+        color: var(--accent);
+        margin-top: 5px;
+      }
+
+      /* 结果页 */
+      #result-screen {
+        text-align: center;
+      }
+
+      .res-code {
+        font-size: 4em;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 12px;
+        margin: 20px 0;
+      }
+
+      .res-tag {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      .chart-box {
+        max-width: 450px;
+        margin: 30px auto;
+        position: relative;
+        width: 100%;
+        /* 撑满父容器 */
+        aspect-ratio: 1 / 1;
+        /* 强制宽高比为 1:1，雷达图最舒服的比例 */
+        /* background-color: #f9f9f9;临时加个背景色，看看盒子是不是真的变大了 */
+      }
+
+      #radarChart {
+        width: 100%;
+        height: 100%;
+        display: block;
+        margin: 0 auto;
+      }
+
+      .desc-box {
+        text-align: left;
+        background: #fafafa;
+        padding: 30px;
+        border-top: 3px solid var(--primary);
+        line-height: 2;
+        margin-top: 30px;
+      }
+
+      #capture-area {
+        background: white;
+        padding: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container" id="main-container">
+
+      <div id="quiz-section" class="section active">
+        <header>
+          <h1>IBTI
+            <p>潜向行为性格指标测试
+          </h1>
+          <div class="sub-title">Inclination Behavior Type Indicator
+          </div>
+        </header>
+        <div id="quiz-container"></div>
+        <div class="btn-group">
+          <button class="btn" onclick="showReview()">核对选择并继续</button>
+        </div>
+      </div>
+
+      <div id="review-section" class="section">
+        <header>
+          <h1>确认清单</h1>
+          <div class="sub-title">请核对您的 40 项倾向选择</div>
+        </header>
+        <div id="review-list"></div>
+        <div class="btn-group">
+          <button class="btn btn-gold" onclick="generateReport()">确认无误，生成报告</button>
+          <button class="btn btn-outline" onclick="backToQuiz()">返回修改</button>
+          <button class="btn btn-outline" onclick="downloadImage('review-section', 'IBTI确认清单')">保存清单长图</button>
+        </div>
+      </div>
+
+      <div id="result-section" class="section">
+        <div id="capture-area">
+          <header>
+            <h1>IBTI 结果报告</h1>
+            <div class="sub-title">Personal Inclination Mapping</div>
+          </header>
+
+          <div class="res-code" id="res-code"></div>
+          <div class="res-tag" id="res-tag"></div>
+          <div class="chart-box">
+            <canvas id="radarChart"></canvas>
+          </div>
+          <div class="desc-box" id="res-desc"></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存映射全案长图</button>
+          <button class="btn btn-outline" onclick="location.reload()">重新测试</button>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // 原始 40 题库
+      const rawQuestions = [
+        // 控制域 MS (1-10)
+        { d: 'MS', q: "组团自驾游时，你更倾向于：", opts: ["由我亲手制作精细的路线图，来掌控全局", "我倾向于主导大方向，具体的细节听大家的", "随缘处理，谁有空就由谁来定", "我喜欢参与讨论，但最终由他人拍板决定", "我完全不想看地图，只想彻底被带飞"], side: ['M', 'S'] },
+        { d: 'MS', q: "压力巨大的工作后，你内心的真实渴求：", opts: ["一切必须按我的节奏来打理，否则会感到烦躁", "我需要安静的空间，由我来决定放松的方式", "简单商量就好，我并没有明确的控制需求", "倾向于由对方来安排主要的休息活动", "极其渴望被接管所有细节，让大脑彻底放空"], side: ['M', 'S'] },
+        { d: 'MS', q: "在玩复杂的竞技类桌游时：", opts: ["通常担任组织者的角色，习惯于分配任务", "喜欢在核心岗位上做出决策并主导比赛", "视具体需要而定，我可以指挥也可以辅助", "倾向于做一个执行者，完成被分配的任务", "享受听从指令并将其完美达成的过程"], side: ['M', 'S'] },
+        { d: 'MS', q: "发现餐厅服务生上错了菜，你会：", opts: ["立刻要求按标准处理，指出对方的失职", "礼貌地要求更换，确保自己的权益被执行", "看当时的心情，如果不影响口味就不换了", "征询同伴的意见，看看大家是否想要换菜", "默认并接受现状，尽量避免任何形式的冲突"], side: ['M', 'S'] },
+        { d: 'MS', q: "你认为最解压的浪漫表现为：", opts: ["亲手构建互动秩序，拥有绝对的话语权", "主动营造浪漫氛围，观察对方获得的快乐", "双方步调保持一致，没有明确的领导关系", "感受对方的引领，享受被对方带着走的感觉", "彻底交出社会责任，让自己成为纯粹的受体"], side: ['M', 'S'] },
+        { d: 'MS', q: "关于琐事决策（如点餐）的倾向：", opts: ["必须由我下达指令，确认一切都在轨道上", "先询问对方的忌口，最后由我综合下单", "两个人翻着菜单，互相商量着决定", "喜欢让对方拿主意，我只负责给出反馈", "极度享受由对方直接决策，我来直接享用"], side: ['M', 'S'] },
+        { d: 'MS', q: "工作中被上司进行精细化进度管理时：", opts: ["感到被束缚且被冒犯，会产生强烈的抵触", "会感到不太自在，想要拥有更多自主支配权", "对此感到无所谓，只要能把活干完就行", "可以接受，这说明我正处在对方的掌控与关注中", "感到很安稳，被监督和指导让我更有托底感"], side: ['M', 'S'] },
+        { d: 'MS', q: "面对冷战或分歧，你更希望：", opts: ["对方按照我设定的方式，主动向我低头", "对方能主动做出妥协，并承认由我主导", "双方各退一步，找到一个平衡点来解决", "对方能给个台阶，引导我慢慢走出僵局", "由对方强势地切入僵局，带我恢复关系"], side: ['M', 'S'] },
+        { d: 'MS', q: "你对“掌控感”的真实看法是：", opts: ["它是安全感的来源，我无法想象失去它的样子", "比较看重掌控感，拥有发言权让我更自信", "它是把双刃剑，有时想要拥有，有时想逃离", "它是一份责任，如果有人能分担我会很开心", "它是一种沉重的负担，渴望在某个时空彻底逃离"], side: ['M', 'S'] },
+        { d: 'MS', q: "如果生活是一部电影，你更愿意做：", opts: ["决定每一帧画面和演员走向的导演", "掌控全局、确保流程不出错的监制", "既能策划也能客串演出的自由创作者", "配合导演的意图来发挥情感的主角", "全然沉浸在情绪中，交给导演去摆布"], side: ['M', 'S'] },
+
+        // 能量域 IR (11-20)
+        { d: 'IR', q: "进入全新的社交场合，你的策略通常是：", opts: ["主动寻找话题，通过活跃表现带动气氛", "主动向感兴趣的人示意，并尝试发起交流", "以观察为主，有人找就聊，没人就独处", "表现偏向被动，等待着别人来发现自己", "保持绝对的静默，直到接收到强烈的信号"], side: ['I', 'R'] },
+        { d: 'IR', q: "在合作中，哪种成就感更吸引你：", opts: ["我提出的方案被执行，并亲眼看到改变", "我在项目中作为主力输出，负责实际行动", "方案和执行都有参与，只要结果好就行", "我在配合过程中给出的反馈被对方采纳", "被对方带动的能量所包裹，并做出响应"], side: ['I', 'R'] },
+        { d: 'IR', q: "觉得哪种特质更贴近你的性格：", opts: ["发射强光的灯泡，是能量输出的源头", "燃烧的蜡烛，虽然温和但始终在释放", "变色龙，会根据环境的能量来调整自己", "聚集光线的透镜，负责捕捉并传导能量", "折射光芒的棱镜，能量完全由别人赋予"], side: ['I', 'R'] },
+        { d: 'IR', q: "对话陷入沉默时，你倾向于：", opts: ["认为有责任打破僵局，抛出挑战性话题", "思考如何推进交流的主题，不让场面冷掉", "顺其自然，认为沉默本身也是一种交流", "等待对方先开口，试图猜测对方的心理", "享受这种静默的张力，感应对方当下的状态"], side: ['I', 'R'] },
+        { d: 'IR', q: "送礼物给亲密的人，最开心的瞬间是：", opts: ["看对方拆开时，被我精准的预判所震惊", "看到礼物被对方在实际生活中频繁使用", "互相交换礼物，双方都感到惊喜的时刻", "听到对方由衷的夸赞，并接收到谢意", "对方的反馈让我产生了一种被能量震慑的感觉"], side: ['I', 'R'] },
+        { d: 'IR', q: "在互动的关键时刻，你的视线习惯：", opts: ["盯着对方，观察对方因我而产生的变化", "探究对方的意图，试图理解其行为逻辑", "随便看看，好不好看全凭直觉说了算", "等待对方的引导，让自己进入沉浸状态", "闭上眼，让身体感官完全接管大脑的思考"], side: ['I', 'R'] },
+        { d: 'IR', q: "当节奏变得缓慢乏味时，你的反应是：", opts: ["必须尝试加入新的变量，让事情变得有趣", "主动出点新主意，试图让进度重新加快", "无所谓，节奏的快慢我都能坦然接受", "顺应当前的速度，看对方接下来如何安排", "极度享受松弛感，将自己交付给氛围和节奏"], side: ['I', 'R'] },
+        { d: 'IR', q: "朋友们通常如何评价互动中的你：", opts: ["极具行动力、总能想出新玩法的领头羊", "富有创意且乐于将想法付诸实施的行动派", "既能出主意也能配合大家的随和参与者", "温柔有耐性、能稳稳接住情绪的反馈者", "极具反馈精度、能产生深度共鸣的共鸣者"], side: ['I', 'R'] },
+        { d: 'IR', q: "学习一项新技能（如乐器）时：", opts: ["喜欢加入自己的创意，并进行大幅度魔改", "会尝试进行微调，看看有没有不同的效果", "按照大众通用的方法来做，不出错就行", "会在模仿中追求极致精准，尊重既有秩序", "严格按照教程练习，体会“被规则雕琢”的感觉"], side: ['I', 'R'] },
+        { d: 'IR', q: "你认为能量在关系中的流向应该是：", opts: ["我是源头，负责输出意志并观察改变", "倾向于主动给予，通过实际行动表达爱", "保持动态平衡，有时输出，有时输入", "倾向于接收，在对方的关怀下获得满足", "我是一个容器，完全吸收对方带来的冲击"], side: ['I', 'R'] },
+
+        // 感知域 CO (21-30)
+        { d: 'CO', q: "哪种形式的“撩拨”更能让你心跳加速：", opts: ["言语上的试探，或眼神中传递的压迫感", "逻辑层面的博弈，猜不透对方的下一步", "既有甜言蜜语的铺垫，也有肢体互动", "突如其来的握手、拥抱或颈后的呼吸", "真实的触觉、体温或力度带来的颤栗感"], side: ['C', 'O'] },
+        { d: 'CO', q: "体验一次SPA，印象最深的通常是：", opts: ["装潢与灯光营造出的那种隐秘尊贵感", "技师表现出的职业感，以及沟通时的信任感", "环境氛围和按摩力道各占一半的感受", "精油的香气以及毛巾贴在皮肤上的质感", "发力按压的瞬间，肌肉酸痛带来的真实感"], side: ['C', 'O'] },
+        { d: 'CO', q: "你对“神秘感”的偏向更倾向于：", opts: ["思维迷宫，是心理上捉迷藏般的拉扯", "对方多变的性格和捉摸不透的情绪起伏", "头脑和感官都要保留一点未知的惊喜", "蒙上双眼时，对下一个位置的未知恐惧", "物理上的惊喜，猜不到下一个力道的大小"], side: ['C', 'O'] },
+        { d: 'CO', q: "挑战极限运动时，你更享受：", opts: ["在跳台边缘心理防线彻底崩溃的破防感", "克服恐惧并战胜自我后获得的精神愉悦", "过程中的失重感和感官刺激分布得很平均", "坠落时耳边呼啸的风声和纯粹的感官刺激", "绳索拉紧反弹时，身体受到的剧烈冲击"], side: ['C', 'O'] },
+        { d: 'CO', q: "如何确认自己与某人的特殊连接？", opts: ["拥有专属的称呼、暗号或心理契约", "能从眼神中读出只有我才懂的潜台词", "精神上的深度理解与身体上的高度亲密", "指尖划过皮肤时产生的生理性悸动", "留在身体上的温度、红痕或实感的痕迹"], side: ['C', 'O'] },
+        { d: 'CO', q: "挑选贴身衣物或床品时，你最看重：", opts: ["设计的内涵、品牌以及穿戴时的身份感", "视觉风格是否能够传达出我的个人品味", "既要好看也要舒服，这两者缺一不可", "轻薄、柔滑或粗糙等特定的感官风格", "物理材质带给皮肤的最真实、最直接的反馈"], side: ['C', 'O'] },
+        { d: 'CO', q: "做错事被批评时，哪种方式让你印象最深：", opts: ["对方冷漠失望的眼神，以及心理上的冷处理", "严厉的言语责备所带来的巨大精神压力", "两者都有，既有口头的责骂也有一些惩戒", "强行限制我的行动自由，让我感到无奈", "真实的体能惩戒（如明显的痛感刺激）"], side: ['C', 'O'] },
+        { d: 'CO', q: "你心目中完美的度假场景偏向：", opts: ["古堡里进行的一场沉浸式角色扮演游戏", "设计感极强的酒店，以及身份剥离的快感", "一个能带给我全新生活体验的陌生城市", "海滩上的阳光和细碎沙粒带来的包裹感", "原始丛林里那种充满力量的环境对抗"], side: ['C', 'O'] },
+        { d: 'CO', q: "感到由于投入产生的“过载”状态时：", opts: ["大脑飞速运转后产生的空白感与眩晕感", "精神极度亢奋，产生一种灵魂脱离身体的感觉", "心跳加快，精神和身体都感到有些疲惫", "身体敏感度异常升高，任何触碰都变得剧烈", "身体热度上升，肌肉有一种紧致真实的疲惫感"], side: ['C', 'O'] },
+        { d: 'CO', q: "你认为互动中“前戏”的本质应该是：", opts: ["眼神的交汇、言语的博弈和长时间的心理铺垫", "对方散发出的那种“势能”所带来的精神压制", "现场氛围与互动节奏的深度结合", "轻柔的接触以及对敏感地带的唤醒", "皮肤的摩挲、力度的试探以及感官的直接激发"], side: ['C', 'O'] },
+
+        // 强度域 GD (31-40)
+        { d: 'GD', q: "遇到意料之外的挑战或意外时：", opts: ["会感到极其焦虑，希望一切迅速回到正轨", "表现得比较求稳，倾向在舒适区内解决问题", "只要风险是在可控范围，就可以接受一点意外", "心态比较淡定，甚至觉得生活多点变数很有趣", "潜意识里会兴奋于失控带来的某种刺激"], side: ['G', 'D'] },
+        { d: 'GD', q: "阅读或观影时，你更喜欢哪种体验：", opts: ["治愈且温馨的内容，看完感觉世界很美好", "轻度的剧情片，节奏温和，适合日常消遣", "题材不限，只要拍摄和制作水准高就行", "烧脑且冲突感强，看完后会引发深度思考", "深刻震撼甚至有些致郁，让灵魂在颤栗"], side: ['G', 'D'] },
+        { d: 'GD', q: "如果要开启一段探险，你更倾向于：", opts: ["开发成熟、各项安全设施完善的风景名胜区", "著名的度假胜地，只要按着攻略走就行", "稍微有点陌生，但至少有信号覆盖的地方", "需要一定体能和专业装备支持的野外徒步", "鲜有人迹、挑战生存极限的原始秘境"], side: ['G', 'D'] },
+        { d: 'GD', q: "你的世界观里对“苦痛”的理解是：", opts: ["完全负面的东西，必须极力规避的杂质", "我不喜欢痛苦，永远会选择平稳与甜蜜", "它是磨练人格并促进成长的调味剂", "它是生活的另一面，有助于理解真正的快感", "它是磨砺意志、产生极致觉醒的必经阶梯"], side: ['G', 'D'] },
+        { d: 'GD', q: "面对可能会让你“彻底改变”的体验：", opts: ["本能地拒绝，害怕打破目前的自我平衡", "需要极长时间的心里建设，倾向维持现状", "视具体情况而定，主要看对方是谁", "会感到有些好奇，安全有保障的话愿意尝试", "内心充满渴望，认为这是获得重生的必经之路"], side: ['G', 'D'] },
+        { d: 'GD', q: "一次完美的聚会或度假结束过后：", opts: ["感到轻松愉快，像充了电一样神清气爽", "心情变得明媚，生活的压力得到了舒缓", "虽然身体有点累，但是内心感到很开心", "感觉大脑被洗礼了，对生活有了新的发现", "感到彻底的虚脱与释放，有一种“蜕皮”的快感"], side: ['G', 'D'] },
+        { d: 'GD', q: "你对生活刺激的需求更像是：", opts: ["每天都要喝的奶茶，甜度微甜且适度", "一杯清淡的果茶，偶尔带有一点点小惊喜", "并没有固定偏好，偶尔喝咖啡，偶尔喝茶", "浓郁的手冲黑咖啡，苦涩之后会有回甘", "偶尔尝试一次的烈酒，烧灼上头且直抵肺腑"], side: ['G', 'D'] },
+        { d: 'GD', q: "面对人性中那些“黑暗面”或“禁忌”：", opts: ["感到极度不适，不希望生活中触碰到这些", "会尽量选择回避，怕影响到自己阳光的情绪", "只是将其当作猎奇的新闻随便看看", "觉得很有深度，认为这些也是人性的一部分", "极度为此着迷，认为这是生命力最真实的部分"], side: ['G', 'D'] },
+        { d: 'GD', q: "你对安全感的最高定义是：", opts: ["凡事皆有预案，没有任何意外带来的惊吓", "拥有一个温暖且高度熟悉的日常环境", "身处在自己熟悉的、有安全感的朋友圈子里", "即使身处陌生环境，也具备自我保护的能力", "在最接近失控的边缘，依然有最稳固的信任"], side: ['G', 'D'] },
+        { d: 'GD', q: "你希望未来的自己能够变成：", opts: ["心态平和且稳健，生活没有太多的大起大落", "变成一个性格温柔、知足常乐的人", "事业有成且家庭美满，过上标准的生活", "阅历丰富且内心坚韧，能够应对各种挑战", "灵魂厚重，曾触达过极限，从此无惧未知"], side: ['G', 'D'] }
+      ];
+
+      let currentQuiz = [];
+      let userAnswers = [];
+
+      // 初始化：题目乱序+选项乱序
+      function initQuiz() {
+        // 1. 题目乱序：暂时注释掉 .sort()，保持 rawQuestions 的原始顺序
+        // currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx })).sort(() => Math.random() - 0.5);
+        currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx }));
+
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = ''; // 确保初始化时容器是干净的
+
+        currentQuiz.forEach((q, qIdx) => {
+          const div = document.createElement('div');
+          div.className = 'q-item';
+
+          // 【核心改动】给每一题的容器加上唯一的 ID
+          div.id = 'q-' + qIdx;
+
+          // 2. 选项乱序：暂时注释掉 .sort()，固定为权重 [0, 1, 2, 3, 4] 的顺序
+          // let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+          let optIdxs = [0, 1, 2, 3, 4];
+
+          let optionsHtml = optIdxs.map(i => `
+            <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${i})">
+                <input type="radio" name="q${qIdx}" value="${i}"> ${q.opts[i]}
+            </label>
+        `).join('');
+
+          div.innerHTML = `<span class="q-title">${qIdx + 1}. ${q.q}</span><div class="options-list">${optionsHtml}</div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function selectOpt(el, qIdx, weightIdx) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
+        el.classList.add('selected');
+        userAnswers[qIdx] = { q: currentQuiz[qIdx].q, a: el.innerText, weight: weightIdx, data: currentQuiz[qIdx] };
+      }
+
+      // 确认清单页逻辑（修改版：增加淡红色高亮特效）
+      function showReview() {
+        // 1. 找出所有未做的题目序号
+        let unanswered = [];
+        for (let i = 0; i < 40; i++) {
+          if (!userAnswers[i]) {
+            unanswered.push(i + 1);
+          }
+        }
+
+        // 2. 如果有未做的题目，弹出具体题号并拦截
+        if (unanswered.length > 0) {
+          const listStr = unanswered.join('、');
+          alert("请完成所有题目后再提交。\n\n未完成题号：" + listStr);
+
+          // 自动滚动到第一道没做的题
+          const firstMiss = unanswered[0] - 1;
+          const target = document.querySelector(`[data-qidx="${firstMiss}"]`) || document.getElementById(`q-${firstMiss}`);
+
+          if (target) {
+            // 【新增高亮效果】
+            target.style.transition = "background-color 0.5s"; // 设置颜色变换的过渡时间
+            target.style.backgroundColor = "#fff1f0";         // 设置为淡红色
+
+            // 执行滚动
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // 2秒后自动恢复原背景色，形成一个“闪烁提醒”的效果
+            setTimeout(() => {
+              target.style.backgroundColor = "";
+            }, 2000);
+          }
+
+          return;
+        }
+
+        // 3. 如果全部完成，进入确认清单页
+        document.getElementById('quiz-section').classList.remove('active');
+        document.getElementById('review-section').classList.add('active');
+        window.scrollTo(0, 0);
+
+        const list = document.getElementById('review-list');
+        list.innerHTML = currentQuiz.map((qData, i) => `
+            <div class="review-item">
+              <div class="review-q">${i + 1}. ${qData.q}</div>
+              <div class="review-a">选择：${userAnswers[i].a}</div>
+            </div>
+        `).join('');
+      }
+
+      function backToQuiz() {
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('quiz-section').classList.add('active');
+      }
+
+      // 生成结果报告
+      function generateReport() {
+        // --- 1. 分数统计逻辑 (保持不变) ---
+        let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+        userAnswers.forEach(ans => {
+          const w = ans.weight;
+          const A = ans.data.side[0];
+          const B = ans.data.side[1];
+          if (w === 0) scores[A] += 1.5;
+          else if (w === 1) scores[A] += 0.5;
+          else if (w === 2) { scores[A] += 0.2; scores[B] += 0.2; }
+          else if (w === 3) scores[B] += 0.5;
+          else if (w === 4) scores[B] += 1.5;
+        });
+
+        // --- 2. 判定维度逻辑 (保持不变) ---
+        const getDim = (a, b) => {
+          const net = scores[a] - scores[b];
+          // 差值在 2 分以内判定为 X (混合型)
+          return Math.abs(net) <= 2 ? 'X' : (net > 0 ? a : b);
+        };
+
+        // 生成 Key (代号)，如 "M-I-C-G"
+        const code = `${getDim('M', 'S')}-${getDim('I', 'R')}-${getDim('C', 'O')}-${getDim('G', 'D')}`;
+
+        // --- 3. 页面切换逻辑 ---
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('result-section').classList.add('active');
+        window.scrollTo(0, 0);
+
+        // --- 4. 核心：获取并显示整段文案 ---
+
+        // 获取代号显示容器并设置样式（居中）
+        const resCodeElem = document.getElementById('res-code');
+        if (resCodeElem) {
+          resCodeElem.innerText = code;
+          resCodeElem.style.textAlign = 'center';
+          resCodeElem.style.display = 'block';
+          resCodeElem.style.fontSize = '24px';    // 稍微大一点，更有冲击力
+          resCodeElem.style.letterSpacing = '3px'; // 字母间距，看起来更专业
+          resCodeElem.style.margin = '20px 0';    // 增加上下间距
+        }
+
+        // 隐藏旧的 res-tag 容器（因为它现在和内容里的 ### 标题重复了）
+        const tagElem = document.getElementById('res-tag');
+        if (tagElem) tagElem.style.display = 'none';
+
+        // 从数据库中提取内容
+        const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
+        const descElem = document.getElementById('res-desc');
+
+        if (fullContent && descElem) {
+          // 使用 marked 解析 Markdown 并填充
+          descElem.innerHTML = marked.parse(fullContent);
+        } else if (descElem) {
+          descElem.innerHTML = "抱歉，未找到对应的结果文案。";
+        }
+
+        // --- 5. 绘制雷达图 ---
+        drawRadar(scores);
+      }
+
+      function drawRadar(s) {
+        const ctx = document.getElementById('radarChart');
+
+        // --- 优化1：销毁旧图表 (关键) ---
+        // 如果之前已经生成过图表，先销毁它，否则多次测试时图表会重叠、闪烁
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+
+        // --- 优化2：配置图表数据与样式 ---
+        window.myChart = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            // 维度标签，增加了一些间距感
+            labels: ['掌控感(M)', '主导力(I)', '认知博弈(C)', '探索深度(D)', '配合度(S)', '响应度(R)', '本能驱动(O)', '情绪边界(G)'],
+            datasets: [{
+              label: '倾向值',
+              data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
+              backgroundColor: 'rgba(197, 160, 89, 0.2)', // 填充颜色（金棕色）
+              borderColor: 'rgba(197, 160, 89, 1)',     // 线条颜色
+              borderWidth: 1,
+              pointBackgroundColor: '#1a1a1a',          // 点的颜色
+              pointRadius: 3                            // 点的大小
+            }]
+          },
+          options: {
+            responsive: true,           // 开启响应式
+            maintainAspectRatio: false,  // 关闭强制比例，使其适配父容器高度
+            layout: {
+              padding: 5 // 把这个值调小（比如 5 或 10），图形会瞬间胀大
+            },
+            scales: {
+              r: {
+                min: 0,
+                max: 15,            // 根据你的评分标准调整最大值
+                beginAtZero: true,
+                ticks: {
+                  display: false, // 隐藏刻度数字，保持干净
+                  stepSize: 3
+                },
+                grid: {
+                  color: '#cccccc', // 网格线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
+                angleLines: {
+                  color: '#cccccc', // 射线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
+                pointLabels: {
+                  padding: 10,   // 标签离图形的距离，越小图越大
+                  font: {
+                    size: 12,           // 缩小标签字体，防止溢出
+                    family: 'PingFang SC'
+                  },
+                  color: '#666'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false // 隐藏顶部的图例
+              },
+              tooltip: {
+                enabled: true // 开启鼠标悬停显示数值
+              }
+            }
+          }
+        });
+      }
+
+      function downloadImage(id, name) {
+        const element = document.getElementById(id);
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = `${name}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        });
+      }
+
+      window.onload = initQuiz;
+
+  // 【测试专用】根据输入代号强制跳转结果页
+  function debugCustomCode() {
+    let input = document.getElementById('debug-input').value.trim().toUpperCase();
+
+    // 1. 格式处理：如果用户输入 MICG，自动转为 M-I-C-G
+    if (input.length === 4 && !input.includes('-')) {
+      input = input.split('').join('-');
+    }
+
+    if (!input || input.split('-').length !== 4) {
+      alert("请输入正确的四维代号，例如: M-I-C-G");
+      return;
+    }
+
+    console.log("正在调试生成代号报告:", input);
+
+    // 2. 模拟题目答案数据 (mock data)
+    // 逻辑：如果是代号包含的字母，我们就给该维度满分（weight: 0 或 4）
+    userAnswers = [];
+    const parts = input.split('-'); // [M, I, C, G]
+
+    for (let i = 0; i < 40; i++) {
+      let side = [];
+      let weight = 2; // 默认中立
+
+      if (i < 10) {
+        side = ['M', 'S'];
+        if (parts[0] === 'M') weight = 0; else if (parts[0] === 'S') weight = 4;
+      } else if (i < 20) {
+        side = ['I', 'R'];
+        if (parts[1] === 'I') weight = 0; else if (parts[1] === 'R') weight = 4;
+      } else if (i < 30) {
+        side = ['C', 'O'];
+        if (parts[2] === 'C') weight = 0; else if (parts[2] === 'O') weight = 4;
+      } else {
+        side = ['G', 'D'];
+        if (parts[3] === 'G') weight = 0; else if (parts[3] === 'D') weight = 4;
+      }
+
+      userAnswers.push({ weight: weight, data: { side: side } });
+    }
+
+    // 3. 切换页面状态
+    const intro = document.getElementById('intro-section');
+    const quiz = document.getElementById('quiz-section');
+    const result = document.getElementById('result-section');
+
+    if (intro) intro.classList.remove('active');
+    if (quiz) quiz.classList.remove('active');
+    if (result) result.classList.add('active');
+
+    // 4. 执行原有的报告生成逻辑
+    // 这样可以确保雷达图、Markdown 渲染、DOM 填充全部跑一遍
+    if (typeof generateReport === "function") {
+      generateReport();
+    } else {
+      // 如果你的提交函数叫 showReview，请根据实际情况改名
+      showReview();
+    }
+  }
+    </script>
+
+<div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+  <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
+  <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
+  <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
+  <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 支持带横杠或不带横杠格式</div>
+</div>
+
+  </body>
+
+</html>
