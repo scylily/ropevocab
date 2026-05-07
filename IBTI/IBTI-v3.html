@@ -343,10 +343,22 @@
 
         /* 5. 调试面板：保持原样 */
         #debug-panel {
-          transform: scale(0.65);
+          /* 核心位置修改 */
+          top: auto !important;
+          /* 覆盖掉 PC 端的 top 设置 */
+          bottom: 20px !important;
+          /* 距离底部留出一点距离，避开手机虚拟按键 */
+
+          /* 视觉微调 */
           right: -10px;
-          /* 往右边藏一点 */
-          top: 5px;
+          /* 你原来的右偏移 */
+          transform: scale(0.65);
+          /* 你原来的缩放 */
+          transform-origin: right bottom;
+          /* 缩放基点改到右下角 */
+
+          /* 可选：为了不挡住手机最底部的文字，可以稍微加一点透明度 */
+          opacity: 0.9;
         }
       }
     </style>
