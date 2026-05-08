@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IBTI 潜向行为性格指标测试</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -240,6 +240,8 @@
         margin: 30px auto;
         position: relative;
         width: 100%;
+        overflow: hidden;
+        /* 掐掉任何冒出来的边角 */
         aspect-ratio: 1 / 1;
         /* 锁定 1:1 比例 */
       }
