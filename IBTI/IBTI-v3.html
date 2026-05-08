@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>IBTI 潜向行为性格指标测试</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -294,6 +294,17 @@
        7. 手机端量化自适应补丁 (Responsive)
        ============================================================ */
       @media (max-width: 600px) {
+
+        html,
+        body {
+          width: 100%;
+          overflow-x: hidden;
+          /* 严禁横向溢出 */
+          position: relative;
+          -webkit-text-size-adjust: 100%;
+          /* 禁止微信自动调整字体大小 */
+        }
+
         body {
           padding: 0.5rem !important;
         }
@@ -302,6 +313,13 @@
           padding: 0.8rem 0.4rem !important;
           box-shadow: none;
           border-radius: 0;
+          width: 100% !important;
+          max-width: 100vw !important;
+          /* 强制容器不超过屏幕宽 */
+          overflow: hidden;
+          /* 内部溢出直接切掉，不准撑开页面 */
+          box-sizing: border-box;
+          /* 确保 padding 不增加宽度 */
         }
 
         header h1 {
@@ -328,8 +346,19 @@
         }
 
         .chart-box {
-          height: 15rem !important;
+          width: 100%;
+          height: auto;
+          max-width: 90vw;
+          /* 比屏幕窄一点，留出缓冲 */
+          margin: 0 auto;
+          position: relative;
+          /* 核心：确保 canvas 不会瞬间撑大 */
           margin-bottom: 0.5rem;
+        }
+
+        #radarChart {
+          width: 100% !important;
+          height: auto !important;
         }
 
         /* 描述框移动端深度优化 */
@@ -562,6 +591,11 @@
           }
 
           return;
+          setTimeout(() => {
+            window.scrollTo(0, 0); // 强制回到顶部
+            // 有时微信需要这一句来重新触发布局计算
+            document.body.style.width = '100vw';
+          }, 100);
         }
 
         // 3. 如果全部完成，进入确认清单页
