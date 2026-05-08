@@ -10,29 +10,43 @@
     <script src="ibti_data.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
+      /* ============================================================
+       1. 全局配置与变量 (CSS Variables)
+       ============================================================ */
       :root {
         --primary: #1a1a1a;
         --accent: #c5a059;
         --bg: #ffffff;
         --option-bg: #f9f9f9;
         --border: #eeeeee;
+        --text-main: #333;
+        --text-muted: #888;
+      }
+
+      * {
+        box-sizing: border-box;
+        /* 如果需要调试布局，请取消下面一行的注释 */
+        /* outline: 1px solid rgba(255, 0, 0, 0.2); */
       }
 
       html {
         font-size: 16px;
-        /* 这是你的量化基准，1rem = 16px */
+        /* 量化基准：1rem = 16px */
       }
 
       body {
         font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
         background-color: #f5f5f5;
-        color: #333;
+        color: var(--text-main);
         margin: 0;
         padding: 10px;
         display: flex;
         justify-content: center;
       }
 
+      /* ============================================================
+       2. 基础布局结构 (Layout)
+       ============================================================ */
       .container {
         max-width: 800px;
         width: 100%;
@@ -56,7 +70,7 @@
       }
 
       .sub-title {
-        color: #888;
+        color: var(--text-muted);
         font-size: 0.85em;
         margin-top: 10px;
         letter-spacing: 2px;
@@ -70,7 +84,9 @@
         display: block;
       }
 
-      /* 答题区样式 */
+      /* ============================================================
+       3. 答题区组件 (Quiz Components)
+       ============================================================ */
       .q-item {
         margin-bottom: 50px;
       }
@@ -90,18 +106,16 @@
         gap: 10px;
       }
 
-      /* 1. 基础容器：缩小左边距，适配更精致的小图标 */
+      /* 选项容器 */
       .option-label {
         display: flex;
         align-items: center;
         padding: 15px 20px 15px 42px;
-        /* 适当缩小了上下间距，左侧留出 42px */
         background: var(--option-bg);
         border: 1px solid var(--border);
         cursor: pointer;
         transition: all 0.2s ease;
         border-radius: 6px;
-        /* 圆角稍微增加一点点，更柔和 */
         font-size: 0.95em;
         line-height: 1.4;
         position: relative;
@@ -117,61 +131,51 @@
         display: none;
       }
 
-      /* 2. 左侧的小方框 (未选中状态) */
+      /* 左侧复选框小方框 (伪元素实现) */
       .option-label::before {
         content: "";
         position: absolute;
         left: 15px;
-        /* 图标距离左边的距离 */
         top: 50%;
         transform: translateY(-50%);
         width: 16px;
-        /* 尺寸从 18 缩小到 16，更精致 */
         height: 16px;
         border: 1.5px solid #ccc;
-        /* 边框细一点 */
         border-radius: 3px;
-        /* 小方框圆角 */
         background: #fff;
         box-sizing: border-box;
         transition: all 0.2s ease;
       }
 
-      /* 3. 选中状态的整体样式 */
+      /* 选中状态样式 */
       .option-label.selected {
         background: #fffdf5;
         border-color: var(--accent);
         color: var(--accent);
-        /* 选中后文字也稍微变色，加强反馈 */
       }
 
-      /* 选中后方框变色 */
       .option-label.selected::before {
         background-color: var(--accent);
         border-color: var(--accent);
       }
 
-      /* 4. 关键：选中后的“打钩”元素 */
+      /* 选中后的打钩符号 */
       .option-label.selected::after {
         content: "";
         position: absolute;
         left: 20px;
-        /* 打钩在方框内的精准定位 */
         top: 46%;
-        /* 微调垂直高度使其视觉居中 */
         width: 4px;
-        /* 钩子的短边 */
         height: 8px;
-        /* 钩子的长边 */
         border: solid white;
         border-width: 0 2px 2px 0;
-        /* 用边框拼出 L 型再旋转 */
         transform: translateY(-50%) rotate(45deg);
-        /* 旋转 45 度变成钩 */
         transition: all 0.2s ease;
       }
 
-      /* 按钮 */
+      /* ============================================================
+       4. 按钮与操作区 (Actions)
+       ============================================================ */
       .btn-group {
         margin-top: 30px;
       }
@@ -187,6 +191,11 @@
         cursor: pointer;
         font-weight: bold;
         margin-bottom: 10px;
+        transition: opacity 0.2s;
+      }
+
+      .btn:active {
+        opacity: 0.8;
       }
 
       .btn-gold {
@@ -197,6 +206,59 @@
         background: #fff;
         color: #666;
         border: 1px solid #ddd;
+      }
+
+      /* ============================================================
+       5. 结果页与确认页 (Result & Review)
+       ============================================================ */
+      #result-screen {
+        text-align: center;
+      }
+
+      #capture-area {
+        background: white;
+        padding: 20px;
+      }
+
+      .res-code {
+        font-size: 4em;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 12px;
+        margin: 20px 0;
+      }
+
+      .res-tag {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      /* 雷达图容器 */
+      .chart-box {
+        max-width: 450px;
+        margin: 30px auto;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        /* 锁定 1:1 比例 */
+      }
+
+      #radarChart {
+        width: 100%;
+        height: 100%;
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* 结果文案描述区 */
+      .desc-box {
+        text-align: left;
+        background: #fafafa;
+        padding: 30px;
+        border-top: 3px solid var(--primary);
+        line-height: 2;
+        margin-top: 30px;
       }
 
       /* 确认页清单 */
@@ -217,83 +279,45 @@
         margin-top: 5px;
       }
 
-      /* 结果页 */
-      #result-screen {
-        text-align: center;
-      }
-
-      .res-code {
-        font-size: 4em;
-        font-weight: 800;
-        color: var(--accent);
-        letter-spacing: 12px;
-        margin: 20px 0;
-      }
-
-      .res-tag {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 30px;
-      }
-
-      .chart-box {
-        max-width: 450px;
-        margin: 30px auto;
-        position: relative;
-        width: 100%;
-        /* 撑满父容器 */
-        aspect-ratio: 1 / 1;
-        /* 强制宽高比为 1:1，雷达图最舒服的比例 */
-        /* background-color: #f9f9f9;临时加个背景色，看看盒子是不是真的变大了 */
-      }
-
-      #radarChart {
-        width: 100%;
-        height: 100%;
-        display: block;
-        margin: 0 auto;
-      }
-
-      .desc-box {
-        text-align: left;
-        background: #fafafa;
-        padding: 30px;
-        border-top: 3px solid var(--primary);
-        line-height: 2;
-        margin-top: 30px;
-      }
-
-      #capture-area {
-        background: white;
-        padding: 20px;
-      }
-
+      /* ============================================================
+       6. 调试工具面板 (Debug Tool)
+       ============================================================ */
       #debug-panel {
-        /* 增加触摸响应范围 */
         touch-action: manipulation;
-        /* 避免手机端长按弹出系统菜单 */
         -webkit-user-select: none;
-        /* Safari 和 Chrome 的旧版本前缀 */
         user-select: none;
-        /* 标准属性（必须加上这一行） */
       }
 
-      /* === 手机端量化自适应补丁 (紧凑精致版) === */
+      /* ============================================================
+       7. 手机端量化自适应补丁 (Responsive)
+       ============================================================ */
       @media (max-width: 600px) {
-
-        /* 1. 容器量化调整：进一步压缩顶部间距 */
-        .container {
-          padding: 0.8rem 0.5rem !important;
-          width: 100%;
-          box-shadow: none;
-          /* 手机端取消阴影，节省物理感空间 */
+        body {
+          padding: 0.5rem !important;
         }
 
-        /* 2. 标题和代号量化：从 1.4rem -> 1.2rem / 2rem -> 1.8rem */
+        .container {
+          padding: 0.8rem 0.4rem !important;
+          box-shadow: none;
+          border-radius: 0;
+        }
+
         header h1 {
           font-size: 1.2rem;
           margin-bottom: 0.5rem !important;
-          /* 标题下方的空隙 */
+        }
+
+        /* 强制拉满宽度，解除内边距限制 */
+        #result-screen,
+        .section,
+        #capture-area {
+          padding-left: 1 !important;
+          padding-right: 1 !important;
+          width: 100% !important;
+        }
+
+        #capture-area {
+          padding: 1rem 10px !important;
         }
 
         #res-code {
@@ -301,63 +325,55 @@
           margin: 0.8rem 0 !important;
         }
 
-        /* 3. 雷达图高度：从 300px 下调至 260px，为文字腾位 */
         .chart-box {
           height: 15rem !important;
           margin-bottom: 0.5rem;
         }
 
-        /* 4. Markdown 文案量化排版：核心调小区域 */
-        #res-desc {
-          /* 核心：从 0.94rem 下调至 0.85rem (约13.6px) */
-          font-size: 0.85rem !important;
-          /* 行高从 1.75 下调至 1.6，让段落更紧凑 */
-          line-height: 1.6;
-          text-align: justify;
+        /* 描述框移动端深度优化 */
+        .desc-box {
+          padding: 1.2rem 0.6rem !important;
+          border-top: 1px solid #eee !important;
+          margin-top: 1rem !important;
+          margin-left: 0rem;
+          margin-right: 0rem;
+          width: auto;
         }
 
-        /* Markdown 内的标题：从 1.15rem -> 1.0rem (与根字体持平) */
+        /* Markdown 文案细节调整 */
+        #res-desc {
+          font-size: 0.85rem !important;
+          line-height: 1.6;
+          text-align: justify !important;
+        }
+
         #res-desc h3 {
           font-size: 1.0rem !important;
           margin-top: 1.0rem !important;
-          /* 减少间距 */
           border-bottom: 0.05rem solid #eee;
           padding-bottom: 0.2rem;
         }
 
-        /* 列表缩进 */
         #res-desc ul,
         #res-desc ol {
-          padding-left: 1rem !important;
+          padding-left: 1.2rem !important;
           margin: 0.4rem 0;
         }
 
-        /* 引用块/角色独白：从 0.9rem -> 0.8rem */
         #res-desc blockquote {
           margin: 0.5rem 0 !important;
           padding: 0.3rem 0.3rem !important;
           font-size: 0.8rem !important;
-          background: #fcfcfc;
           border-left: 1.2px solid #ddd;
         }
 
-        /* 5. 调试面板：保持原样 */
+        /* 移动端调试面板定位 */
         #debug-panel {
-          /* 核心位置修改 */
           top: auto !important;
-          /* 覆盖掉 PC 端的 top 设置 */
           bottom: 20px !important;
-          /* 距离底部留出一点距离，避开手机虚拟按键 */
-
-          /* 视觉微调 */
           right: -10px;
-          /* 你原来的右偏移 */
           transform: scale(0.65);
-          /* 你原来的缩放 */
           transform-origin: right bottom;
-          /* 缩放基点改到右下角 */
-
-          /* 可选：为了不挡住手机最底部的文字，可以稍微加一点透明度 */
           opacity: 0.9;
         }
       }
