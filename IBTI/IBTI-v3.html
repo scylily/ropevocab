@@ -477,7 +477,7 @@
       function initQuiz() {
         // 1. 题目乱序：暂时注释掉 .sort()，保持 rawQuestions 的原始顺序
         // currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx })).sort(() => Math.random() - 0.5);
-        currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx }));
+        currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx })).sort(() => Math.random() - 0.5);
 
         const container = document.getElementById('quiz-container');
         container.innerHTML = ''; // 确保初始化时容器是干净的
@@ -491,7 +491,7 @@
 
           // 2. 选项乱序：暂时注释掉 .sort()，固定为权重 [0, 1, 2, 3, 4] 的顺序
           // let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
-          let optIdxs = [0, 1, 2, 3, 4];
+          let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
 
           let optionsHtml = optIdxs.map(i => `
             <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${i})">
