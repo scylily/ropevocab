@@ -409,6 +409,41 @@
           opacity: 0.9;
         }
       }
+
+      /* 解决 Markdown 渲染后的样式问题 */
+      #res-desc {
+        text-align: left !important;
+        /* 确保内容左对齐 */
+        line-height: 1.6;
+      }
+
+      #res-desc h3,
+      #res-desc h4 {
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        display: block !important;
+        color: #c5a059;
+        /* 匹配你的金色主题 */
+      }
+
+      #res-desc ul {
+        list-style-type: disc !important;
+        /* 强制显示圆点 */
+        padding-left: 25px !important;
+        /* 强制留出缩进空间 */
+        margin: 15px 0 !important;
+      }
+
+      #res-desc li {
+        display: list-item !important;
+        /* 确保是列表项格式 */
+        margin-bottom: 8px !important;
+      }
+
+      #res-desc strong {
+        color: #1a1a1a;
+        font-weight: bold;
+      }
     </style>
   </head>
 
@@ -624,6 +659,9 @@
 
         if (fullContent && descElem) {
           // 使用 marked 解析 Markdown 并填充
+          // 这里的正则表达式会自动去掉每行开头的多余空格，确保 Markdown 符号在行首
+          const cleanContent = fullContent.split('\n').map(line => line.trim()).join('\n');
+          descElem.innerHTML = marked.parse(cleanContent);
           descElem.innerHTML = marked.parse(fullContent);
         } else if (descElem) {
           descElem.innerHTML = "抱歉，未找到对应的结果文案。";
