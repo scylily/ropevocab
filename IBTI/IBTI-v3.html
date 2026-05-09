@@ -519,134 +519,113 @@
 
       let currentQuiz = [];
       let userAnswers = [];
-      let myChart = null;
 
-      // --- 常用 DOM 节点缓存 (优化性能) ---
-      const sections = {
-        intro: document.getElementById('intro-section'),
-        quiz: document.getElementById('quiz-section'),
-        review: document.getElementById('review-section'),
-        result: document.getElementById('result-section')
-      };
-
-      /**
-       * 通用：页面切换器
-       */
-      function switchSection(targetKey) {
-        Object.values(sections).forEach(sec => sec?.classList.remove('active'));
-        if (sections[targetKey]) {
-          sections[targetKey].classList.add('active');
-          window.scrollTo(0, 0);
-        }
-      }
-
-      /**
-       * 初始化：渲染题目
-       */
+      // 初始化：题目乱序+选项乱序
       function initQuiz() {
-        // 题目顺序：如需乱序取消注释 .sort()
+        // 1. 题目乱序：暂时注释掉 .sort()，保持 rawQuestions 的原始顺序
+        // currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx })).sort(() => Math.random() - 0.5);
         currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx }));
-        // .sort(() => Math.random() - 0.5);
 
         const container = document.getElementById('quiz-container');
-        if (!container) return;
-        container.innerHTML = '';
+        container.innerHTML = ''; // 确保初始化时容器是干净的
 
         currentQuiz.forEach((q, qIdx) => {
           const div = document.createElement('div');
           div.className = 'q-item';
-          div.id = `q-${qIdx}`;
 
-          // 选项顺序：如需乱序取消注释 .sort()
-          const optIdxs = [0, 1, 2, 3, 4];
-          // .sort(() => Math.random() - 0.5);
+          // 【核心改动】给每一题的容器加上唯一的 ID
+          div.id = 'q-' + qIdx;
 
-          const optionsHtml = optIdxs.map(i => `
-        <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${i})">
-          <input type="radio" name="q${qIdx}" value="${i}"> ${q.opts[i]}
-        </label>
-      `).join('');
+          // 2. 选项乱序：暂时注释掉 .sort()，固定为权重 [0, 1, 2, 3, 4] 的顺序
+          // let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+          let optIdxs = [0, 1, 2, 3, 4];
 
-          div.innerHTML = `
-        <span class="q-title">${qIdx + 1}. ${q.q}</span>
-        <div class="options-list">${optionsHtml}</div>
-      `;
+          let optionsHtml = optIdxs.map(i => `
+            <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${i})">
+                <input type="radio" name="q${qIdx}" value="${i}"> ${q.opts[i]}
+            </label>
+        `).join('');
+
+          div.innerHTML = `<span class="q-title">${qIdx + 1}. ${q.q}</span><div class="options-list">${optionsHtml}</div>`;
           container.appendChild(div);
         });
       }
 
-      /**
-       * 选项点击处理
-       */
       function selectOpt(el, qIdx, weightIdx) {
         const parent = el.parentElement;
         parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
         el.classList.add('selected');
-
-        // 存储答案数据
-        userAnswers[qIdx] = {
-          q: currentQuiz[qIdx].q,
-          a: el.innerText.trim(),
-          weight: weightIdx,
-          data: currentQuiz[qIdx]
-        };
+        userAnswers[qIdx] = { q: currentQuiz[qIdx].q, a: el.innerText, weight: weightIdx, data: currentQuiz[qIdx] };
       }
 
-      /**
-       * 提交前校验及进入确认清单页
-       */
+      // 确认清单页逻辑（修改版：增加淡红色高亮特效）
       function showReview() {
-        // 1. 查找未完成题号
-        const unanswered = [];
+        // 1. 找出所有未做的题目序号
+        let unanswered = [];
         for (let i = 0; i < 40; i++) {
-          if (!userAnswers[i]) unanswered.push(i + 1);
+          if (!userAnswers[i]) {
+            unanswered.push(i + 1);
+          }
         }
 
-        // 2. 漏题拦截逻辑
+        // 2. 如果有未做的题目，弹出具体题号并拦截
         if (unanswered.length > 0) {
-          alert(`请完成所有题目后再提交。\n\n未完成题号：${unanswered.join('、')}`);
+          const listStr = unanswered.join('、');
+          alert("请完成所有题目后再提交。\n\n未完成题号：" + listStr);
 
-          const firstMissIdx = unanswered[0] - 1;
-          const target = document.getElementById(`q-${firstMissIdx}`);
+          // 自动滚动到第一道没做的题
+          const firstMiss = unanswered[0] - 1;
+          const target = document.querySelector(`[data-qidx="${firstMiss}"]`) || document.getElementById(`q-${firstMiss}`);
 
           if (target) {
-            target.style.transition = "background-color 0.5s";
-            target.style.backgroundColor = "#fff1f0";
+            // 【新增高亮效果】
+            target.style.transition = "background-color 0.5s"; // 设置颜色变换的过渡时间
+            target.style.backgroundColor = "#fff1f0";         // 设置为淡红色
+
+            // 执行滚动
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-            // 闪烁提醒后恢复
-            setTimeout(() => { target.style.backgroundColor = ""; }, 2000);
+            // 2秒后自动恢复原背景色，形成一个“闪烁提醒”的效果
+            setTimeout(() => {
+              target.style.backgroundColor = "";
+            }, 2000);
           }
-          return; // 拦截，不继续向下执行
+
+          return;
+          setTimeout(() => {
+            window.scrollTo(0, 0); // 强制回到顶部
+            // 有时微信需要这一句来重新触发布局计算
+            document.body.style.width = '100vw';
+          }, 100);
         }
 
-        // 3. 进入清单页
-        switchSection('review');
+        // 3. 如果全部完成，进入确认清单页
+        document.getElementById('quiz-section').classList.remove('active');
+        document.getElementById('review-section').classList.add('active');
+        window.scrollTo(0, 0);
 
-        const listContainer = document.getElementById('review-list');
-        if (listContainer) {
-          listContainer.innerHTML = currentQuiz.map((qData, i) => `
-        <div class="review-item">
-          <div class="review-q">${i + 1}. ${qData.q}</div>
-          <div class="review-a">选择：${userAnswers[i].a}</div>
-        </div>
-      `).join('');
-        }
+        const list = document.getElementById('review-list');
+        list.innerHTML = currentQuiz.map((qData, i) => `
+            <div class="review-item">
+              <div class="review-q">${i + 1}. ${qData.q}</div>
+              <div class="review-a">选择：${userAnswers[i].a}</div>
+            </div>
+        `).join('');
       }
 
       function backToQuiz() {
-        switchSection('quiz');
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('quiz-section').classList.add('active');
       }
 
-      /**
-       * 生成最终报告
-       */
+      // 生成结果报告
       function generateReport() {
-        // 1. 分数统计 (加权逻辑保持原样)
+        // --- 1. 分数统计逻辑 (保持不变) ---
         let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
         userAnswers.forEach(ans => {
           const w = ans.weight;
-          const [A, B] = ans.data.side;
+          const A = ans.data.side[0];
+          const B = ans.data.side[1];
           if (w === 0) scores[A] += 1.5;
           else if (w === 1) scores[A] += 0.5;
           else if (w === 2) { scores[A] += 0.2; scores[B] += 0.2; }
@@ -654,101 +633,125 @@
           else if (w === 4) scores[B] += 1.5;
         });
 
-        // 2. 维度判定
+        // --- 2. 判定维度逻辑 (保持不变) ---
         const getDim = (a, b) => {
           const net = scores[a] - scores[b];
+          // 差值在 2 分以内判定为 X (混合型)
           return Math.abs(net) <= 2 ? 'X' : (net > 0 ? a : b);
         };
 
+        // 生成 Key (代号)，如 "M-I-C-G"
         const code = `${getDim('M', 'S')}-${getDim('I', 'R')}-${getDim('C', 'O')}-${getDim('G', 'D')}`;
 
-        // 3. 页面切换
-        switchSection('result');
+        // --- 3. 页面切换逻辑 ---
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('result-section').classList.add('active');
+        window.scrollTo(0, 0);
 
-        // 4. UI 渲染与文案填充
+        // --- 4. 核心：获取并显示整段文案 ---
+
+        // 获取代号显示容器并设置样式（居中）
         const resCodeElem = document.getElementById('res-code');
         if (resCodeElem) {
           resCodeElem.innerText = code;
-          // 样式在 JS 中统一设置，确保视觉一致性
-          Object.assign(resCodeElem.style, {
-            textAlign: 'center',
-            display: 'block',
-            fontSize: '24px',
-            letterSpacing: '3px',
-            margin: '20px 0'
-          });
+          resCodeElem.style.textAlign = 'center';
+          resCodeElem.style.display = 'block';
+          resCodeElem.style.fontSize = '24px';    // 稍微大一点，更有冲击力
+          resCodeElem.style.letterSpacing = '3px'; // 字母间距，看起来更专业
+          resCodeElem.style.margin = '20px 0';    // 增加上下间距
         }
 
+        // 隐藏旧的 res-tag 容器（因为它现在和内容里的 ### 标题重复了）
         const tagElem = document.getElementById('res-tag');
         if (tagElem) tagElem.style.display = 'none';
 
+        // 从数据库中提取内容
+        const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
         const descElem = document.getElementById('res-desc');
-        if (descElem) {
-          const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
-          descElem.innerHTML = fullContent ? marked.parse(fullContent) : "抱歉，未找到对应的结果文案。";
+
+        if (fullContent && descElem) {
+          // 使用 marked 解析 Markdown 并填充
+          descElem.innerHTML = marked.parse(fullContent);
+        } else if (descElem) {
+          descElem.innerHTML = "抱歉，未找到对应的结果文案。";
         }
 
-        // 5. 绘制图表
+        // --- 5. 绘制雷达图 ---
         drawRadar(scores);
       }
 
-      /**
-       * 绘制雷达图
-       */
       function drawRadar(s) {
         const ctx = document.getElementById('radarChart');
-        if (!ctx) return;
 
-        // 销毁旧实例防止重叠
-        if (myChart) myChart.destroy();
+        // --- 优化1：销毁旧图表 (关键) ---
+        // 如果之前已经生成过图表，先销毁它，否则多次测试时图表会重叠、闪烁
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
 
-        myChart = new Chart(ctx, {
+        // --- 优化2：配置图表数据与样式 ---
+        window.myChart = new Chart(ctx, {
           type: 'radar',
           data: {
+            // 维度标签，增加了一些间距感
             labels: ['掌控感(M)', '主导力(I)', '认知博弈(C)', '探索深度(D)', '配合度(S)', '响应度(R)', '本能驱动(O)', '情绪边界(G)'],
             datasets: [{
               label: '倾向值',
               data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
-              backgroundColor: 'rgba(197, 160, 89, 0.2)',
-              borderColor: 'rgba(197, 160, 89, 1)',
+              backgroundColor: 'rgba(197, 160, 89, 0.2)', // 填充颜色（金棕色）
+              borderColor: 'rgba(197, 160, 89, 1)',     // 线条颜色
               borderWidth: 1,
-              pointBackgroundColor: '#1a1a1a',
-              pointRadius: 3
+              pointBackgroundColor: '#1a1a1a',          // 点的颜色
+              pointRadius: 3                            // 点的大小
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: { padding: 5 },
+            responsive: true,           // 开启响应式
+            maintainAspectRatio: false,  // 关闭强制比例，使其适配父容器高度
+            layout: {
+              padding: 5 // 把这个值调小（比如 5 或 10），图形会瞬间胀大
+            },
             scales: {
               r: {
                 min: 0,
-                max: 15,
+                max: 15,            // 根据你的评分标准调整最大值
                 beginAtZero: true,
-                ticks: { display: false, stepSize: 3 },
-                grid: { color: '#cccccc' },
-                angleLines: { color: '#cccccc' },
+                ticks: {
+                  display: false, // 隐藏刻度数字，保持干净
+                  stepSize: 3
+                },
+                grid: {
+                  color: '#cccccc', // 网格线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
+                angleLines: {
+                  color: '#cccccc', // 射线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
                 pointLabels: {
-                  padding: 10,
-                  font: { size: 12, family: 'PingFang SC' },
+                  padding: 10,   // 标签离图形的距离，越小图越大
+                  font: {
+                    size: 12,           // 缩小标签字体，防止溢出
+                    family: 'PingFang SC'
+                  },
                   color: '#666'
                 }
               }
             },
             plugins: {
-              legend: { display: false },
-              tooltip: { enabled: true }
+              legend: {
+                display: false // 隐藏顶部的图例
+              },
+              tooltip: {
+                enabled: true // 开启鼠标悬停显示数值
+              }
             }
           }
         });
       }
 
-      /**
-       * 图片下载功能
-       */
       function downloadImage(id, name) {
         const element = document.getElementById(id);
-        if (!element) return;
         html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
           const link = document.createElement('a');
           link.download = `${name}.png`;
@@ -757,13 +760,13 @@
         });
       }
 
-      /**
-       * 【调试专用】根据代号跳转
-       */
-      function debugCustomCode() {
-        let input = document.getElementById('debug-input')?.value.trim().toUpperCase() || "";
+      window.onload = initQuiz;
 
-        // 自动补齐横杠：MICG -> M-I-C-G
+      // 【测试专用】根据输入代号强制跳转结果页
+      function debugCustomCode() {
+        let input = document.getElementById('debug-input').value.trim().toUpperCase();
+
+        // 1. 格式处理：如果用户输入 MICG，自动转为 M-I-C-G
         if (input.length === 4 && !input.includes('-')) {
           input = input.split('').join('-');
         }
@@ -773,27 +776,52 @@
           return;
         }
 
-        // 模拟数据填充
+        console.log("正在调试生成代号报告:", input);
+
+        // 2. 模拟题目答案数据 (mock data)
+        // 逻辑：如果是代号包含的字母，我们就给该维度满分（weight: 0 或 4）
         userAnswers = [];
-        const parts = input.split('-');
-        const dimensions = [['M', 'S'], ['I', 'R'], ['C', 'O'], ['G', 'D']];
+        const parts = input.split('-'); // [M, I, C, G]
 
         for (let i = 0; i < 40; i++) {
-          const dimIdx = Math.floor(i / 10);
-          const [sideA, sideB] = dimensions[dimIdx];
+          let side = [];
           let weight = 2; // 默认中立
 
-          if (parts[dimIdx] === sideA) weight = 0; // 偏向左侧
-          else if (parts[dimIdx] === sideB) weight = 4; // 偏向右侧
+          if (i < 10) {
+            side = ['M', 'S'];
+            if (parts[0] === 'M') weight = 0; else if (parts[0] === 'S') weight = 4;
+          } else if (i < 20) {
+            side = ['I', 'R'];
+            if (parts[1] === 'I') weight = 0; else if (parts[1] === 'R') weight = 4;
+          } else if (i < 30) {
+            side = ['C', 'O'];
+            if (parts[2] === 'C') weight = 0; else if (parts[2] === 'O') weight = 4;
+          } else {
+            side = ['G', 'D'];
+            if (parts[3] === 'G') weight = 0; else if (parts[3] === 'D') weight = 4;
+          }
 
-          userAnswers.push({ weight: weight, data: { side: [sideA, sideB] } });
+          userAnswers.push({ weight: weight, data: { side: side } });
         }
 
-        // 执行报告生成
-        generateReport();
-      }
+        // 3. 切换页面状态
+        const intro = document.getElementById('intro-section');
+        const quiz = document.getElementById('quiz-section');
+        const result = document.getElementById('result-section');
 
-      window.onload = initQuiz;
+        if (intro) intro.classList.remove('active');
+        if (quiz) quiz.classList.remove('active');
+        if (result) result.classList.add('active');
+
+        // 4. 执行原有的报告生成逻辑
+        // 这样可以确保雷达图、Markdown 渲染、DOM 填充全部跑一遍
+        if (typeof generateReport === "function") {
+          generateReport();
+        } else {
+          // 如果你的提交函数叫 showReview，请根据实际情况改名
+          showReview();
+        }
+      }
     </script>
 
     <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
