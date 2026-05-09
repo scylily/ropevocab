@@ -517,272 +517,284 @@
         { d: 'GD', q: "你希望未来的自己能够变成：", opts: ["心态平和且稳健，生活没有太多的大起大落", "变成一个性格温柔、知足常乐的人", "事业有成且家庭美满，过上标准的生活", "阅历丰富且内心坚韧，能够应对各种挑战", "灵魂厚重，曾触达过极限，从此无惧未知"], side: ['G', 'D'] }
       ];
 
+      let currentQuiz = [];
+      let userAnswers = [];
+      let myChart = null;
+
+      // --- 常用 DOM 节点缓存 (优化性能) ---
+      const sections = {
+        intro: document.getElementById('intro-section'),
+        quiz: document.getElementById('quiz-section'),
+        review: document.getElementById('review-section'),
+        result: document.getElementById('result-section')
+      };
+
       /**
-   * --- 1. 全局变量声明 ---
-   */
-  let currentQuiz = [];
-  let userAnswers = [];
-  let myChart = null;
-  let resizeTimer = null; // 用于防抖处理
+       * 通用：页面切换器
+       */
+      function switchSection(targetKey) {
+        Object.values(sections).forEach(sec => sec?.classList.remove('active'));
+        if (sections[targetKey]) {
+          sections[targetKey].classList.add('active');
+          window.scrollTo(0, 0);
+        }
+      }
 
-  // 缓存常用的 Section 容器
-  const sections = {
-    intro: document.getElementById('intro-section'),
-    quiz: document.getElementById('quiz-section'),
-    review: document.getElementById('review-section'),
-    result: document.getElementById('result-section')
-  };
+      /**
+       * 初始化：渲染题目
+       */
+      function initQuiz() {
+        // 题目顺序：如需乱序取消注释 .sort()
+        currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx }));
+        // .sort(() => Math.random() - 0.5);
 
-  /**
-   * --- 2. 通用功能函数 ---
-   */
+        const container = document.getElementById('quiz-container');
+        if (!container) return;
+        container.innerHTML = '';
 
-  // 页面切换器
-  function switchSection(targetKey) {
-    Object.values(sections).forEach(sec => sec?.classList.remove('active'));
-    if (sections[targetKey]) {
-      sections[targetKey].classList.add('active');
-      window.scrollTo(0, 0);
-    }
-  }
+        currentQuiz.forEach((q, qIdx) => {
+          const div = document.createElement('div');
+          div.className = 'q-item';
+          div.id = `q-${qIdx}`;
 
-  // 窗口缩放监听：解决 F12 切换导致的雷达图缩成一团的问题
-  window.addEventListener('resize', () => {
-    if (myChart) {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        myChart.resize(); // 强制图表重新获取容器宽度
-        myChart.update();
-      }, 200); // 延迟200ms确保浏览器布局已稳定
-    }
-  });
+          // 选项顺序：如需乱序取消注释 .sort()
+          const optIdxs = [0, 1, 2, 3, 4];
+          // .sort(() => Math.random() - 0.5);
 
-  /**
-   * --- 3. 业务逻辑函数 ---
-   */
-
-  // 初始化：渲染题目
-  function initQuiz() {
-    // 题目数据准备 (如需乱序取消 .sort 的注释)
-    currentQuiz = rawQuestions.map((item, idx) => ({ ...item, id: idx }));
-    // .sort(() => Math.random() - 0.5);
-
-    const container = document.getElementById('quiz-container');
-    if (!container) return;
-    container.innerHTML = '';
-
-    currentQuiz.forEach((q, qIdx) => {
-      const div = document.createElement('div');
-      div.className = 'q-item';
-      div.id = `q-${qIdx}`;
-
-      // 选项索引 (目前固定顺序)
-      const optIdxs = [0, 1, 2, 3, 4];
-
-      const optionsHtml = optIdxs.map(i => `
+          const optionsHtml = optIdxs.map(i => `
         <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${i})">
           <input type="radio" name="q${qIdx}" value="${i}"> ${q.opts[i]}
         </label>
       `).join('');
 
-      div.innerHTML = `
+          div.innerHTML = `
         <span class="q-title">${qIdx + 1}. ${q.q}</span>
         <div class="options-list">${optionsHtml}</div>
       `;
-      container.appendChild(div);
-    });
-  }
-
-  // 选项点击处理
-  function selectOpt(el, qIdx, weightIdx) {
-    const parent = el.parentElement;
-    parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
-    el.classList.add('selected');
-    
-    userAnswers[qIdx] = { 
-      q: currentQuiz[qIdx].q, 
-      a: el.innerText.trim(), 
-      weight: weightIdx, 
-      data: currentQuiz[qIdx] 
-    };
-  }
-
-  // 检查漏题并进入确认页
-  function showReview() {
-    let unanswered = [];
-    // 假设固定 40 道题，或者改为 currentQuiz.length
-    for (let i = 0; i < 40; i++) {
-      if (!userAnswers[i]) unanswered.push(i + 1);
-    }
-
-    if (unanswered.length > 0) {
-      alert("请完成所有题目后再提交。\n\n未完成题号：" + unanswered.join('、'));
-      
-      const firstMiss = unanswered[0] - 1;
-      const target = document.getElementById(`q-${firstMiss}`);
-
-      if (target) {
-        target.style.transition = "background-color 0.5s";
-        target.style.backgroundColor = "#fff1f0"; // 淡红色高亮
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => { target.style.backgroundColor = ""; }, 2000);
+          container.appendChild(div);
+        });
       }
-      return; 
-    }
 
-    // 全部完成，进入确认页
-    switchSection('review');
+      /**
+       * 选项点击处理
+       */
+      function selectOpt(el, qIdx, weightIdx) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
+        el.classList.add('selected');
 
-    const list = document.getElementById('review-list');
-    if (list) {
-      list.innerHTML = currentQuiz.map((qData, i) => `
+        // 存储答案数据
+        userAnswers[qIdx] = {
+          q: currentQuiz[qIdx].q,
+          a: el.innerText.trim(),
+          weight: weightIdx,
+          data: currentQuiz[qIdx]
+        };
+      }
+
+      /**
+       * 提交前校验及进入确认清单页
+       */
+      function showReview() {
+        // 1. 查找未完成题号
+        const unanswered = [];
+        for (let i = 0; i < 40; i++) {
+          if (!userAnswers[i]) unanswered.push(i + 1);
+        }
+
+        // 2. 漏题拦截逻辑
+        if (unanswered.length > 0) {
+          alert(`请完成所有题目后再提交。\n\n未完成题号：${unanswered.join('、')}`);
+
+          const firstMissIdx = unanswered[0] - 1;
+          const target = document.getElementById(`q-${firstMissIdx}`);
+
+          if (target) {
+            target.style.transition = "background-color 0.5s";
+            target.style.backgroundColor = "#fff1f0";
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // 闪烁提醒后恢复
+            setTimeout(() => { target.style.backgroundColor = ""; }, 2000);
+          }
+          return; // 拦截，不继续向下执行
+        }
+
+        // 3. 进入清单页
+        switchSection('review');
+
+        const listContainer = document.getElementById('review-list');
+        if (listContainer) {
+          listContainer.innerHTML = currentQuiz.map((qData, i) => `
         <div class="review-item">
           <div class="review-q">${i + 1}. ${qData.q}</div>
           <div class="review-a">选择：${userAnswers[i].a}</div>
         </div>
       `).join('');
-    }
-  }
-
-  function backToQuiz() {
-    switchSection('quiz');
-  }
-
-  // 生成最终报告
-  function generateReport() {
-    // 1. 计分逻辑
-    let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
-    userAnswers.forEach(ans => {
-      const w = ans.weight;
-      const [A, B] = ans.data.side;
-      if (w === 0) scores[A] += 1.5;
-      else if (w === 1) scores[A] += 0.5;
-      else if (w === 2) { scores[A] += 0.2; scores[B] += 0.2; }
-      else if (w === 3) scores[B] += 0.5;
-      else if (w === 4) scores[B] += 1.5;
-    });
-
-    // 2. 维度判定 (差值 <= 2 判定为 X)
-    const getDim = (a, b) => {
-      const net = scores[a] - scores[b];
-      return Math.abs(net) <= 2 ? 'X' : (net > 0 ? a : b);
-    };
-
-    const code = `${getDim('M', 'S')}-${getDim('I', 'R')}-${getDim('C', 'O')}-${getDim('G', 'D')}`;
-
-    // 3. 页面渲染
-    switchSection('result');
-
-    const resCodeElem = document.getElementById('res-code');
-    if (resCodeElem) {
-      resCodeElem.innerText = code;
-      Object.assign(resCodeElem.style, {
-        textAlign: 'center', display: 'block', fontSize: '24px', letterSpacing: '3px', margin: '20px 0'
-      });
-    }
-
-    const tagElem = document.getElementById('res-tag');
-    if (tagElem) tagElem.style.display = 'none';
-
-    const descElem = document.getElementById('res-desc');
-    if (descElem) {
-      const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
-      descElem.innerHTML = fullContent ? marked.parse(fullContent) : "抱歉，未找到对应的结果文案。";
-    }
-
-    // 4. 绘制雷达图
-    drawRadar(scores);
-  }
-
-  // 绘制雷达图核心函数
-  function drawRadar(s) {
-    const ctx = document.getElementById('radarChart');
-    if (!ctx) return;
-
-    if (myChart) myChart.destroy(); // 关键：销毁旧图表
-
-    myChart = new Chart(ctx, {
-      type: 'radar',
-      data: {
-        labels: ['掌控感(M)', '主导力(I)', '认知博弈(C)', '探索深度(D)', '配合度(S)', '响应度(R)', '本能驱动(O)', '情绪边界(G)'],
-        datasets: [{
-          label: '倾向值',
-          data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
-          backgroundColor: 'rgba(197, 160, 89, 0.2)',
-          borderColor: 'rgba(197, 160, 89, 1)',
-          borderWidth: 1,
-          pointBackgroundColor: '#1a1a1a',
-          pointRadius: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: { padding: 5 },
-        scales: {
-          r: {
-            min: 0, max: 15, beginAtZero: true,
-            ticks: { display: false, stepSize: 3 },
-            grid: { color: '#cccccc' },
-            angleLines: { color: '#cccccc' },
-            pointLabels: {
-              padding: 10,
-              font: { size: 12, family: 'PingFang SC' },
-              color: '#666'
-            }
-          }
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: true }
         }
       }
-    });
-  }
 
-  // 下载图片
-  function downloadImage(id, name) {
-    const element = document.getElementById(id);
-    if (!element) return;
-    html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = `${name}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  }
+      function backToQuiz() {
+        switchSection('quiz');
+      }
 
-  /**
-   * --- 4. 调试与初始化 ---
-   */
+      /**
+       * 生成最终报告
+       */
+      function generateReport() {
+        // 1. 分数统计 (加权逻辑保持原样)
+        let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+        userAnswers.forEach(ans => {
+          const w = ans.weight;
+          const [A, B] = ans.data.side;
+          if (w === 0) scores[A] += 1.5;
+          else if (w === 1) scores[A] += 0.5;
+          else if (w === 2) { scores[A] += 0.2; scores[B] += 0.2; }
+          else if (w === 3) scores[B] += 0.5;
+          else if (w === 4) scores[B] += 1.5;
+        });
 
-  function debugCustomCode() {
-    let input = document.getElementById('debug-input')?.value.trim().toUpperCase() || "";
-    if (input.length === 4 && !input.includes('-')) input = input.split('').join('-');
+        // 2. 维度判定
+        const getDim = (a, b) => {
+          const net = scores[a] - scores[b];
+          return Math.abs(net) <= 2 ? 'X' : (net > 0 ? a : b);
+        };
 
-    if (!input || input.split('-').length !== 4) {
-      alert("请输入正确的四维代号，例如: M-I-C-G");
-      return;
-    }
+        const code = `${getDim('M', 'S')}-${getDim('I', 'R')}-${getDim('C', 'O')}-${getDim('G', 'D')}`;
 
-    userAnswers = [];
-    const parts = input.split('-');
-    const dims = [['M', 'S'], ['I', 'R'], ['C', 'O'], ['G', 'D']];
+        // 3. 页面切换
+        switchSection('result');
 
-    for (let i = 0; i < 40; i++) {
-      const dIdx = Math.floor(i / 10);
-      const [A, B] = dims[dIdx];
-      let w = 2; // 中立
-      if (parts[dIdx] === A) w = 0;
-      else if (parts[dIdx] === B) w = 4;
-      userAnswers.push({ weight: w, data: { side: [A, B] } });
-    }
+        // 4. UI 渲染与文案填充
+        const resCodeElem = document.getElementById('res-code');
+        if (resCodeElem) {
+          resCodeElem.innerText = code;
+          // 样式在 JS 中统一设置，确保视觉一致性
+          Object.assign(resCodeElem.style, {
+            textAlign: 'center',
+            display: 'block',
+            fontSize: '24px',
+            letterSpacing: '3px',
+            margin: '20px 0'
+          });
+        }
 
-    generateReport();
-  }
+        const tagElem = document.getElementById('res-tag');
+        if (tagElem) tagElem.style.display = 'none';
 
-  window.onload = initQuiz;
-</script>
+        const descElem = document.getElementById('res-desc');
+        if (descElem) {
+          const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
+          descElem.innerHTML = fullContent ? marked.parse(fullContent) : "抱歉，未找到对应的结果文案。";
+        }
+
+        // 5. 绘制图表
+        drawRadar(scores);
+      }
+
+      /**
+       * 绘制雷达图
+       */
+      function drawRadar(s) {
+        const ctx = document.getElementById('radarChart');
+        if (!ctx) return;
+
+        // 销毁旧实例防止重叠
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: ['掌控感(M)', '主导力(I)', '认知博弈(C)', '探索深度(D)', '配合度(S)', '响应度(R)', '本能驱动(O)', '情绪边界(G)'],
+            datasets: [{
+              label: '倾向值',
+              data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
+              backgroundColor: 'rgba(197, 160, 89, 0.2)',
+              borderColor: 'rgba(197, 160, 89, 1)',
+              borderWidth: 1,
+              pointBackgroundColor: '#1a1a1a',
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: 5 },
+            scales: {
+              r: {
+                min: 0,
+                max: 15,
+                beginAtZero: true,
+                ticks: { display: false, stepSize: 3 },
+                grid: { color: '#cccccc' },
+                angleLines: { color: '#cccccc' },
+                pointLabels: {
+                  padding: 10,
+                  font: { size: 12, family: 'PingFang SC' },
+                  color: '#666'
+                }
+              }
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: { enabled: true }
+            }
+          }
+        });
+      }
+
+      /**
+       * 图片下载功能
+       */
+      function downloadImage(id, name) {
+        const element = document.getElementById(id);
+        if (!element) return;
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = `${name}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        });
+      }
+
+      /**
+       * 【调试专用】根据代号跳转
+       */
+      function debugCustomCode() {
+        let input = document.getElementById('debug-input')?.value.trim().toUpperCase() || "";
+
+        // 自动补齐横杠：MICG -> M-I-C-G
+        if (input.length === 4 && !input.includes('-')) {
+          input = input.split('').join('-');
+        }
+
+        if (!input || input.split('-').length !== 4) {
+          alert("请输入正确的四维代号，例如: M-I-C-G");
+          return;
+        }
+
+        // 模拟数据填充
+        userAnswers = [];
+        const parts = input.split('-');
+        const dimensions = [['M', 'S'], ['I', 'R'], ['C', 'O'], ['G', 'D']];
+
+        for (let i = 0; i < 40; i++) {
+          const dimIdx = Math.floor(i / 10);
+          const [sideA, sideB] = dimensions[dimIdx];
+          let weight = 2; // 默认中立
+
+          if (parts[dimIdx] === sideA) weight = 0; // 偏向左侧
+          else if (parts[dimIdx] === sideB) weight = 4; // 偏向右侧
+
+          userAnswers.push({ weight: weight, data: { side: [sideA, sideB] } });
+        }
+
+        // 执行报告生成
+        generateReport();
+      }
+
+      window.onload = initQuiz;
+    </script>
 
     <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
       <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
