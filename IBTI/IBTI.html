@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>IBTI 潜向行为性格指标测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="ibti_data.js"></script>
+    <script src="ibti_questions.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      /* ============================================================
+       1. 全局配置与变量 (CSS Variables)
+       ============================================================ */
+      :root {
+        --primary: #1a1a1a;
+        --accent: #c5a059;
+        --bg: #ffffff;
+        --option-bg: #f9f9f9;
+        --border: #eeeeee;
+        --text-main: #333;
+        --text-muted: #888;
+      }
+
+      * {
+        box-sizing: border-box;
+        /* 如果需要调试布局，请取消下面一行的注释 */
+        /* outline: 1px solid rgba(255, 0, 0, 0.2); */
+      }
+
+      html {
+        font-size: 16px;
+        /* 量化基准：1rem = 16px */
+      }
+
+      body {
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        background-color: #f5f5f5;
+        color: var(--text-main);
+        margin: 0;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* ============================================================
+       2. 基础布局结构 (Layout)
+       ============================================================ */
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background: var(--bg);
+        padding: 40px 30px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 20px;
+      }
+
+      h1 {
+        margin: 0;
+        letter-spacing: 6px;
+        font-size: 2.2em;
+      }
+
+      .sub-title {
+        color: var(--text-muted);
+        font-size: 0.85em;
+        margin-top: 10px;
+        letter-spacing: 2px;
+      }
+
+      .section {
+        display: none;
+      }
+
+      .active {
+        display: block;
+      }
+
+      /* ============================================================
+       3. 答题区组件 (Quiz Components)
+       ============================================================ */
+      .q-item {
+        margin-bottom: 50px;
+      }
+
+      .q-title {
+        font-weight: bold;
+        font-size: 1.15em;
+        margin-bottom: 20px;
+        display: block;
+        color: var(--primary);
+        line-height: 1.5;
+      }
+
+      .options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* 选项容器 */
+      .option-label {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px 15px 42px;
+        background: var(--option-bg);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 6px;
+        font-size: 0.95em;
+        line-height: 1.4;
+        position: relative;
+        color: #444;
+      }
+
+      .option-label:hover {
+        background: #fdfaf2;
+        border-color: var(--accent);
+      }
+
+      .option-label input {
+        display: none;
+      }
+
+      /* 左侧复选框小方框 (伪元素实现) */
+      .option-label::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 1.5px solid #ccc;
+        border-radius: 3px;
+        background: #fff;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+      }
+
+      /* 选中状态样式 */
+      .option-label.selected {
+        background: #fffdf5;
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .option-label.selected::before {
+        background-color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* 选中后的打钩符号 */
+      .option-label.selected::after {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 46%;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: translateY(-50%) rotate(45deg);
+        transition: all 0.2s ease;
+      }
+
+      /* ============================================================
+       4. 按钮与操作区 (Actions)
+       ============================================================ */
+      .btn-group {
+        margin-top: 30px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 20px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        font-size: 1.1em;
+        letter-spacing: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 10px;
+        transition: opacity 0.2s;
+      }
+
+      .btn:active {
+        opacity: 0.8;
+      }
+
+      .btn-gold {
+        background: var(--accent);
+      }
+
+      .btn-outline {
+        background: #fff;
+        color: #666;
+        border: 1px solid #ddd;
+      }
+
+      /* ============================================================
+       5. 结果页与确认页 (Result & Review)
+       ============================================================ */
+      #result-screen {
+        text-align: center;
+      }
+
+      #capture-area {
+        background: white;
+        padding: 20px;
+      }
+
+      .res-code {
+        font-size: 4em;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: 12px;
+        margin: 20px 0;
+      }
+
+      .res-tag {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      /* 雷达图容器 */
+      .chart-box {
+        max-width: 450px;
+        margin: 30px auto;
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        /* 掐掉任何冒出来的边角 */
+        aspect-ratio: 1 / 1;
+        /* 锁定 1:1 比例 */
+      }
+
+      #radarChart {
+        width: 100%;
+        height: 100%;
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* 结果文案描述区 */
+      .desc-box {
+        text-align: left;
+        background: #fafafa;
+        padding: 30px;
+        border-top: 3px solid var(--primary);
+        line-height: 2;
+        margin-top: 30px;
+      }
+
+      /* 确认页清单 */
+      .review-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 0.9em;
+      }
+
+      .review-q {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .review-a {
+        color: var(--accent);
+        margin-top: 5px;
+      }
+
+      /* ============================================================
+       6. 调试工具面板 (Debug Tool)
+       ============================================================ */
+      #debug-panel {
+        touch-action: manipulation;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      /* ============================================================
+       7. 手机端量化自适应补丁 (Responsive)
+       ============================================================ */
+      @media (max-width: 600px) {
+
+        html,
+        body {
+          width: 100%;
+          overflow-x: hidden;
+          /* 严禁横向溢出 */
+          position: relative;
+          -webkit-text-size-adjust: 100%;
+          /* 禁止微信自动调整字体大小 */
+        }
+
+        body {
+          padding: 0.5rem !important;
+        }
+
+        .container {
+          padding: 0.8rem 0.4rem !important;
+          box-shadow: none;
+          border-radius: 0;
+          width: 100% !important;
+          max-width: 100vw !important;
+          /* 强制容器不超过屏幕宽 */
+          overflow: hidden;
+          /* 内部溢出直接切掉，不准撑开页面 */
+          box-sizing: border-box;
+          /* 确保 padding 不增加宽度 */
+        }
+
+        header h1 {
+          font-size: 1.2rem;
+          margin-bottom: 0.5rem !important;
+        }
+
+        /* 强制拉满宽度，解除内边距限制 */
+        #result-screen,
+        .section,
+        #capture-area {
+          padding-left: 1 !important;
+          padding-right: 1 !important;
+          width: 100% !important;
+        }
+
+        #capture-area {
+          padding: 1rem 10px !important;
+        }
+
+        #res-code {
+          font-size: 1.8rem !important;
+          margin: 0.8rem 0 !important;
+        }
+
+        .chart-box {
+          width: 100%;
+          height: auto;
+          max-width: 90vw;
+          /* 比屏幕窄一点，留出缓冲 */
+          margin: 0 auto;
+          position: relative;
+          /* 核心：确保 canvas 不会瞬间撑大 */
+          margin-bottom: 0.5rem;
+        }
+
+        #radarChart {
+          width: 100% !important;
+          height: auto !important;
+        }
+
+        /* 描述框移动端深度优化 */
+        .desc-box {
+          padding: 1.2rem 0.6rem !important;
+          border-top: 1px solid #eee !important;
+          margin-top: 1rem !important;
+          margin-left: 0rem;
+          margin-right: 0rem;
+          width: auto;
+        }
+
+        /* Markdown 文案细节调整 */
+        #res-desc {
+          font-size: 0.85rem !important;
+          line-height: 1.6;
+          text-align: justify !important;
+        }
+
+        #res-desc h3 {
+          font-size: 1.0rem !important;
+          margin-top: 1.0rem !important;
+          border-bottom: 0.05rem solid #eee;
+          padding-bottom: 0.2rem;
+        }
+
+        #res-desc ul,
+        #res-desc ol {
+          padding-left: 1.2rem !important;
+          margin: 0.4rem 0;
+        }
+
+        #res-desc blockquote {
+          margin: 0.5rem 0 !important;
+          padding: 0.3rem 0.3rem !important;
+          font-size: 0.8rem !important;
+          border-left: 1.2px solid #ddd;
+        }
+
+        /* 移动端调试面板定位 */
+        #debug-panel {
+          top: auto !important;
+          bottom: 20px !important;
+          right: -10px;
+          transform: scale(0.65);
+          transform-origin: right bottom;
+          opacity: 0.9;
+        }
+      }
+
+      /* 解决 Markdown 渲染后的样式问题 */
+      #res-desc {
+        text-align: left !important;
+        /* 确保内容左对齐 */
+        line-height: 1.6;
+      }
+
+      #res-desc h3,
+      #res-desc h4 {
+        margin-top: 20px !important;
+        margin-bottom: 10px !important;
+        display: block !important;
+        color: #c5a059;
+        /* 匹配你的金色主题 */
+      }
+
+      #res-desc ul {
+        list-style-type: disc !important;
+        /* 强制显示圆点 */
+        padding-left: 25px !important;
+        /* 强制留出缩进空间 */
+        margin: 15px 0 !important;
+      }
+
+      #res-desc li {
+        display: list-item !important;
+        /* 确保是列表项格式 */
+        margin-bottom: 8px !important;
+      }
+
+      #res-desc strong {
+        color: #1a1a1a;
+        font-weight: bold;
+      }
+
+      /* 确认清单增强样式 */
+      .core-tag {
+        background: #c5a059;
+        /* 经典的金色 */
+        color: white;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        margin-left: 10px;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      .score-badge {
+        color: #888;
+        font-size: 0.85rem;
+        margin-left: 12px;
+        font-family: 'Courier New', Courier, monospace;
+        /* 使用等宽字体显得专业 */
+        background: #f0f0f0;
+        padding: 1px 5px;
+        border-radius: 4px;
+      }
+
+      .review-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      .review-q {
+        font-size: 1rem;
+        margin-bottom: 6px;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="container" id="main-container">
+
+      <div id="quiz-section" class="section active">
+        <header>
+          <h1>IBTI
+            <p>潜向行为性格指标测试
+          </h1>
+          <div class="sub-title">Inclination Behavior Type Indicator
+          </div>
+        </header>
+        <div id="quiz-container"></div>
+        <div class="btn-group">
+          <button class="btn" onclick="showReview()">核对选择并继续</button>
+        </div>
+      </div>
+
+      <div id="review-section" class="section">
+        <header>
+          <h1>确认清单</h1>
+          <div class="sub-title">请核对您的倾向选择</div>
+        </header>
+        <div id="review-list"></div>
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="downloadImage('review-section', 'IBTI确认清单')">保存清单长图</button>
+          <button class="btn btn-gold" onclick="generateReport()">确认无误，生成报告</button>
+          <button class="btn btn-outline" onclick="backToQuiz()">返回修改</button>
+
+        </div>
+      </div>
+
+      <div id="result-section" class="section">
+        <div id="capture-area">
+          <header>
+            <h1>IBTI 结果报告</h1>
+            <div class="sub-title">Personal Inclination Mapping</div>
+          </header>
+
+          <div class="res-code" id="res-code"></div>
+          <div class="res-tag" id="res-tag"></div>
+          <div class="chart-box">
+            <canvas id="radarChart"></canvas>
+          </div>
+
+          <div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
+
+          <div class="desc-box" id="res-desc"></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存映射全案长图</button>
+          <button class="btn btn-outline" onclick="location.reload()">重新测试</button>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      // 定义核心动力题的原始索引 (对应原始题库 1-40 的编号)
+      const coreIndices = [0, 5, 8, 11, 12, 18, 20, 28, 29, 30, 33, 35];
+
+      let currentQuiz = [];
+      let userAnswers = [];
+
+      function initQuiz() {
+        // 1. 【配置与核心定义】
+        const dimensions = ['MS', 'IR', 'CO', 'GD'];
+        const questionsPerDimension = 5;
+        let sampledQuestions = [];
+
+        // 给原始题库标上原始题号并拷贝
+        const poolWithId = rawQuestions.map((item, idx) => ({
+          ...item,
+          originalId: idx
+        }));
+
+        // 2. 【核心优先分层抽样逻辑】
+        dimensions.forEach(dim => {
+          // 过滤出该维度的所有题目
+          const dimPool = poolWithId.filter(q => q.d === dim);
+
+          // --- 核心改动开始 ---
+          // 1. 挑出该维度池子里的核心题
+          const coreInDim = dimPool.filter(q => coreIndices.includes(q.originalId));
+          // 2. 挑出该维度池子里的非核心题
+          const nonCoreInDim = dimPool.filter(q => !coreIndices.includes(q.originalId));
+
+          // 3. 将非核心题洗牌
+          const shuffledNonCore = nonCoreInDim.sort(() => Math.random() - 0.5);
+
+          // 4. 组合：必选核心题 + 抽取的非核心题（补齐到5道）
+          const needed = questionsPerDimension - coreInDim.length;
+          const selectedForDim = coreInDim.concat(shuffledNonCore.slice(0, needed));
+
+          sampledQuestions = sampledQuestions.concat(selectedForDim);
+          // --- 核心改动结束 ---
+        });
+
+        // 将抽样出的 20 道题进行最后一次全局乱序，打破维度聚集感
+        currentQuiz = sampledQuestions.sort(() => Math.random() - 0.5);
+
+        // 3. 【UI 渲染逻辑】 (保持您原来的代码不变)
+        const container = document.getElementById('quiz-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        currentQuiz.forEach((q, qIdx) => {
+          const div = document.createElement('div');
+          const visualNum = qIdx + 1;
+          div.className = 'q-item';
+          div.id = 'q-' + qIdx;
+
+          // 选项乱序处理
+          let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
+
+          let optionsHtml = optIdxs.map(originalWeight => {
+            return `
+                <label class="option-label" onclick="selectOpt(this, ${qIdx}, ${originalWeight})">
+                    <input type="radio" name="q${qIdx}" value="${originalWeight}">
+                    ${q.opts[originalWeight]}
+                </label>
+            `;
+          }).join('');
+
+          div.innerHTML = `
+            <span class="q-title">${visualNum}. ${q.q}</span>
+            <div class="options-list">${optionsHtml}</div>
+        `;
+          container.appendChild(div);
+        });
+
+        console.log("抽样完成，包含 12 道必选核心动力题，总题数：" + currentQuiz.length);
+      }
+
+      function selectOpt(el, qIdx, weightIdx) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
+        el.classList.add('selected');
+        userAnswers[qIdx] = { q: currentQuiz[qIdx].q, a: el.innerText, weight: weightIdx, data: currentQuiz[qIdx] };
+      }
+
+      // 确认清单页逻辑（修改版：增加淡红色高亮特效）
+      function showReview() {
+        // 1. 找出所有未做的题目序号
+        let unanswered = [];
+        for (let i = 0; i < currentQuiz.length; i++) {
+          if (!userAnswers[i]) {
+            unanswered.push(i + 1);
+          }
+        }
+
+        // 2. 如果有未做的题目，弹出具体题号并拦截
+        if (unanswered.length > 0) {
+          const listStr = unanswered.join('、');
+          alert("请完成所有题目后再提交。\n\n未完成题号：" + listStr);
+
+          // 自动滚动到第一道没做的题
+          const firstMiss = unanswered[0] - 1;
+          const target = document.querySelector(`[data-qidx="${firstMiss}"]`) || document.getElementById(`q-${firstMiss}`);
+
+          if (target) {
+            // 【新增高亮效果】
+            target.style.transition = "background-color 0.5s"; // 设置颜色变换的过渡时间
+            target.style.backgroundColor = "#fff1f0";         // 设置为淡红色
+
+            // 执行滚动
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // 2秒后自动恢复原背景色，形成一个“闪烁提醒”的效果
+            setTimeout(() => {
+              target.style.backgroundColor = "";
+            }, 2000);
+          }
+
+          return;
+          setTimeout(() => {
+            window.scrollTo(0, 0); // 强制回到顶部
+            // 有时微信需要这一句来重新触发布局计算
+            document.body.style.width = '100vw';
+          }, 100);
+        }
+
+        // 3. 如果全部完成，进入确认清单页
+        document.getElementById('quiz-section').classList.remove('active');
+        document.getElementById('review-section').classList.add('active');
+        window.scrollTo(0, 0);
+
+        // 4. 渲染确认清单（整合分值与核心动力功能）
+        const list = document.getElementById('review-list');
+
+        list.innerHTML = currentQuiz.map((qData, i) => {
+          // A. 判定是否为核心动力题 (假设你已定义 coreIndices)
+          const isCore = typeof coreIndices !== 'undefined' && coreIndices.includes(qData.originalId);
+          const multiplier = isCore ? 2.0 : 1.0; // 核心题权重翻倍
+
+          // B. 获取该题对应的属性侧（如 M vs S）
+          const sideA = qData.side[0];
+          const sideB = qData.side[1];
+
+          // C. 模拟计分逻辑，生成分值标注 [ 仅在 weight 存在时计算 ]
+          let scoreLabel = "";
+          if (userAnswers[i] && userAnswers[i].weight !== undefined) {
+            const w = userAnswers[i].weight;
+            if (w === 0) scoreLabel = `${sideA} +${(1.5 * multiplier).toFixed(1)}`;
+            else if (w === 1) scoreLabel = `${sideA} +${(0.5 * multiplier).toFixed(1)}`;
+            else if (w === 2) scoreLabel = `${sideA}/${sideB} 各+${(0.2 * multiplier).toFixed(1)}`;
+            else if (w === 3) scoreLabel = `${sideB} +${(0.5 * multiplier).toFixed(1)}`;
+            else if (w === 4) scoreLabel = `${sideB} +${(1.5 * multiplier).toFixed(1)}`;
+          }
+
+          // D. 返回 HTML 字符串（保持你的 class：review-item, review-q, review-a）
+          return `
+      <div class="review-item">
+        <div class="review-q">
+          ${i + 1}. ${qData.q}
+          ${isCore ? '<span class="core-tag">核心动力</span>' : ''}
+        </div>
+        <div class="review-a">
+          你的答案：${userAnswers[i].a}
+          <span class="score-hint">[ 指向: ${scoreLabel} ]</span>
+        </div>
+      </div>
+    `;
+        }).join('');
+      }
+
+      function backToQuiz() {
+        document.getElementById('review-section').classList.remove('active');
+        document.getElementById('quiz-section').classList.add('active');
+      }
+
+      // 生成结果报告
+      function generateReport() {
+        // 1. 定义核心动力题的原始 ID 清单 (0-indexed)
+        const coreIndices = [0, 5, 8, 11, 12, 18, 20, 28, 29, 30, 33, 35];
+
+        // 2. 初始化各维度得分
+        let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+
+        // 3. 遍历用户答案进行计分
+        userAnswers.forEach((ans, i) => {
+          if (!ans) return;
+
+          const w = ans.weight;          // 选项权重 (0-4)
+          const A = ans.data.side[0];    // 维度 A (如 M)
+          const B = ans.data.side[1];    // 维度 B (如 S)
+          const qId = currentQuiz[i].id; // 获取该题在原始题库中的 ID
+
+          // --- 核心逻辑：判定是否为核心动力题，若是则权重翻倍 ---
+          let multiplier = coreIndices.includes(qId) ? 2.0 : 1.0;
+
+          // 根据选项权重分配分数，并乘以倍率
+          if (w === 0) {
+            scores[A] += 1.5 * multiplier;
+          } else if (w === 1) {
+            scores[A] += 0.5 * multiplier;
+          } else if (w === 2) {
+            scores[A] += 0.2 * multiplier;
+            scores[B] += 0.2 * multiplier;
+          } else if (w === 3) {
+            scores[B] += 0.5 * multiplier;
+          } else if (w === 4) {
+            scores[B] += 1.5 * multiplier;
+          }
+        });
+
+        // --- 2. 判定维度逻辑 ---
+        const getDim = (a, b) => {
+          const scoreA = scores[a];
+          const scoreB = scores[b];
+          const sum = scoreA + scoreB; // 该维度的总得分
+          const diff = Math.abs(scoreA - scoreB); // 两极分差
+
+          // --- 安全处理 ---
+          // 如果该维度完全没得分（理论上不会，除非没做完题），默认判定为 X
+          if (sum === 0) return 'X';
+
+          // --- 百分比判定核心逻辑 ---
+          // 计算分差占该维度总分的比例
+          // 建议阈值设定在 15% (0.15) 到 20% (0.2) 之间
+          // 15% 意味着：如果双方差距很小（不足总分的15%），则认为该特质不明显，判定为 X
+          const gapRatio = diff / sum;
+
+          if (gapRatio <= 0.15) {
+            return 'X';
+          } else {
+            // 超过阈值，谁分高就判定为谁
+            return scoreA > scoreB ? a : b;
+          }
+        };
+
+        // 新增：将 8 项数值转化为直观的文字显示
+        const scoreSummaryElem = document.getElementById('score-summary');
+        if (scoreSummaryElem) {
+          // 定义中文名称映射
+          const nameMap = {
+            M: '掌控感', S: '配合度', I: '主导力', R: '响应度',
+            C: '认知博弈', O: '本能驱动', G: '情绪边界', D: '探索深度'
+          };
+
+          // 构造显示字符串
+          let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
+          summaryText += `<strong>各维度原始分值参考：</strong><br>`;
+          summaryText += `
+            ${nameMap.M}(M):${scores.M.toFixed(1)} | ${nameMap.S}(S):${scores.S.toFixed(1)} <br>
+            ${nameMap.I}(I):${scores.I.toFixed(1)} | ${nameMap.R}(R):${scores.R.toFixed(1)} <br>
+            ${nameMap.C}(C):${scores.C.toFixed(1)} | ${nameMap.O}(O):${scores.O.toFixed(1)} <br>
+            ${nameMap.G}(G):${scores.G.toFixed(1)} | ${nameMap.D}(D):${scores.D.toFixed(1)}
+        `;
+          summaryText += `</div>`;
+
+          scoreSummaryElem.innerHTML = summaryText;
+        }
+
+        // 生成 Key (代号)，如 "M-I-C-G"
+        const code = [
+          getDim('M', 'S'),
+          getDim('I', 'R'),
+          getDim('C', 'O'),
+          getDim('G', 'D')
+        ].join('-');
+
+        // --- 修复后的页面切换逻辑 ---
+
+        // 1. 定义所有可能出现的页面 ID
+        const allSections = ['quiz-section', 'review-section', 'intro-section'];
+
+        // 2. 循环遍历，把它们统统隐藏（移除 active）
+        allSections.forEach(id => {
+          const sect = document.getElementById(id);
+          if (sect) sect.classList.remove('active');
+        });
+
+        // 3. 显式开启结果页
+        const resSect = document.getElementById('result-section');
+        if (resSect) {
+          resSect.classList.add('active');
+        } else {
+          console.error("未找到 result-section，请检查 HTML 中的 ID 是否拼写正确");
+        }
+
+        // 4. 回到顶部
+        window.scrollTo(0, 0);
+
+        // --- 4. 获取并显示内容 ---
+
+        // A. 代号显示
+        const resCodeElem = document.getElementById('res-code');
+        if (resCodeElem) {
+          resCodeElem.innerText = code;
+          resCodeElem.style.textAlign = 'center';
+          resCodeElem.style.display = 'block';
+          resCodeElem.style.fontSize = '24px';    // 稍微大一点，更有冲击力
+          resCodeElem.style.letterSpacing = '3px'; // 字母间距，看起来更专业
+          resCodeElem.style.margin = '20px 0';    // 增加上下间距
+        }
+
+        // 隐藏旧的 res-tag 容器（因为它现在和内容里的 ### 标题重复了）
+        const tagElem = document.getElementById('res-tag');
+        if (tagElem) tagElem.style.display = 'none';
+
+        // B. Markdown 文案渲染 (核心修复点)
+        const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
+        const descElem = document.getElementById('res-desc');
+
+        if (fullContent && descElem) {
+          // 【修正】清洗 Markdown 内容：去掉每行开头可能存在的空格或缩进
+          // 这能防止服务器环境下 Markdown 列表符号（-）被错误解析成代码块
+          const cleanContent = fullContent.split('\n')
+            .map(line => line.trim())
+            .join('\n');
+
+          // 【核心修复】只保留这一句解析逻辑，不要再被后面的原内容覆盖
+          descElem.innerHTML = marked.parse(cleanContent);
+
+        } else if (descElem) {
+          descElem.innerHTML = "<p style='text-align:center;'>抱歉，未找到对应的结果文案。</p>";
+        }
+
+        // --- 5. 绘制雷达图 ---
+        // 增加一个微小的延迟，确保 CSS 动画和容器完全显示后再绘图，防止 Chart.js 获取不到正确的宽度
+        setTimeout(() => {
+          drawRadar(scores);
+        }, 50);
+      }
+
+      function drawRadar(s) {
+        const ctx = document.getElementById('radarChart');
+
+        // --- 优化1：销毁旧图表 (关键) ---
+        // 如果之前已经生成过图表，先销毁它，否则多次测试时图表会重叠、闪烁
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+
+        // --- 优化2：配置图表数据与样式 ---
+        window.myChart = new Chart(ctx, {
+          type: 'radar',
+          data: {
+            // 维度标签，增加了一些间距感
+            labels: ['掌控感(M)', '主导力(I)', '认知博弈(C)', '探索深度(D)', '配合度(S)', '响应度(R)', '本能驱动(O)', '情绪边界(G)'],
+            datasets: [{
+              label: '倾向值',
+              data: [s.M, s.I, s.C, s.D, s.S, s.R, s.O, s.G],
+              backgroundColor: 'rgba(197, 160, 89, 0.2)', // 填充颜色（金棕色）
+              borderColor: 'rgba(197, 160, 89, 1)',     // 线条颜色
+              borderWidth: 1,
+              pointBackgroundColor: '#1a1a1a',          // 点的颜色
+              pointRadius: 3                            // 点的大小
+            }]
+          },
+          options: {
+            responsive: true,           // 开启响应式
+            maintainAspectRatio: false,  // 关闭强制比例，使其适配父容器高度
+            layout: {
+              padding: 5 // 把这个值调小（比如 5 或 10），图形会瞬间胀大
+            },
+            scales: {
+              r: {
+                min: 0,
+                max: 7.5,            // 根据你的评分标准调整最大值
+                beginAtZero: true,
+                ticks: {
+                  display: false, // 隐藏刻度数字，保持干净
+                  stepSize: 2
+                },
+                grid: {
+                  color: '#cccccc', // 网格线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
+                angleLines: {
+                  color: '#cccccc', // 射线颜色
+                  lineWidth: 1        // 也可以增加粗细，默认是 1
+                },
+                pointLabels: {
+                  padding: 10,   // 标签离图形的距离，越小图越大
+                  font: {
+                    size: 12,           // 缩小标签字体，防止溢出
+                    family: 'PingFang SC'
+                  },
+                  color: '#666'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                display: false // 隐藏顶部的图例
+              },
+              tooltip: {
+                enabled: true // 开启鼠标悬停显示数值
+              }
+            }
+          }
+        });
+      }
+
+      function downloadImage(id, name) {
+        const element = document.getElementById(id);
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = `${name}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        });
+      }
+
+      window.onload = initQuiz;
+
+      // 【测试专用】根据输入代号强制跳转结果页
+      function debugCustomCode() {
+        let input = document.getElementById('debug-input').value.trim().toUpperCase();
+
+        // 1. 格式处理：如果用户输入 MICG，自动转为 M-I-C-G
+        if (input.length === 4 && !input.includes('-')) {
+          input = input.split('').join('-');
+        }
+
+        if (!input || input.split('-').length !== 4) {
+          alert("请输入正确的四维代号，例如: M-I-C-G");
+          return;
+        }
+
+        console.log("正在调试生成代号报告:", input);
+
+        // 2. 模拟题目答案数据 (mock data)
+        // 逻辑：如果是代号包含的字母，我们就给该维度满分（weight: 0 或 4）
+        userAnswers = [];
+        const parts = input.split('-'); // [M, I, C, G]
+
+        // 【关键改动】：动态计算每个维度的步长
+        // 40题版 step 就是 10；20题版 step 就是 5
+        const step = currentQuiz.length / 4;
+
+        for (let i = 0; i < currentQuiz.length; i++) {
+          let side = [];
+          let weight = 2; // 默认中立
+
+          if (i < step) {
+            side = ['M', 'S'];
+            if (parts[0] === 'M') weight = 0; else if (parts[0] === 'S') weight = 4;
+          } else if (i < step * 2) {
+            side = ['I', 'R'];
+            if (parts[1] === 'I') weight = 0; else if (parts[1] === 'R') weight = 4;
+          } else if (i < step * 3) {
+            side = ['C', 'O'];
+            if (parts[2] === 'C') weight = 0; else if (parts[2] === 'O') weight = 4;
+          } else {
+            side = ['G', 'D'];
+            if (parts[3] === 'G') weight = 0; else if (parts[3] === 'D') weight = 4;
+          }
+
+          userAnswers.push({ weight: weight, data: { side: side } });
+        }
+
+        // 3. 切换页面状态
+        const intro = document.getElementById('intro-section');
+        const quiz = document.getElementById('quiz-section');
+        const result = document.getElementById('result-section');
+
+        if (intro) intro.classList.remove('active');
+        if (quiz) quiz.classList.remove('active');
+        if (result) result.classList.add('active');
+
+        // 4. 执行原有的报告生成逻辑
+        // 这样可以确保雷达图、Markdown 渲染、DOM 填充全部跑一遍
+        if (typeof generateReport === "function") {
+          generateReport();
+        } else {
+          // 如果你的提交函数叫 showReview，请根据实际情况改名
+          showReview();
+        }
+      }
+    </script>
+
+    <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+      <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
+      <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
+      <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
+      <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 支持带横杠或不带横杠格式</div>
+    </div>
+
+  </body>
+
+</html>
