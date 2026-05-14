@@ -540,19 +540,16 @@
     </div>
 
     <script>
-      // 定义核心动力题的原始索引 (对应原始题库 1-40 的编号)
-      const coreIndices = [0, 5, 8, 11, 12, 18, 20, 28, 29, 30, 33, 35];
-
       let currentQuiz = [];
       let userAnswers = [];
 
       function initQuiz() {
         // 1. 【配置与核心定义】
         const dimensions = ['MS', 'IR', 'CO', 'GD'];
-        const questionsPerDimension = 5;
+        const questionsPerDimension = 5; // 每个维度抽 5 题
         let sampledQuestions = [];
 
-        // 给原始题库标上原始题号并拷贝
+        // 给原始题库标上原始题号（originalId），方便结果页核对，并保留所有属性（包括 isCore）
         const poolWithId = rawQuestions.map((item, idx) => ({
           ...item,
           originalId: idx
@@ -560,30 +557,31 @@
 
         // 2. 【核心优先分层抽样逻辑】
         dimensions.forEach(dim => {
-          // 过滤出该维度的所有题目
+          // 过滤出该维度的所有题目池
           const dimPool = poolWithId.filter(q => q.d === dim);
 
-          // --- 核心改动开始 ---
-          // 1. 挑出该维度池子里的核心题
-          const coreInDim = dimPool.filter(q => coreIndices.includes(q.originalId));
-          // 2. 挑出该维度池子里的非核心题
-          const nonCoreInDim = dimPool.filter(q => !coreIndices.includes(q.originalId));
+          // --- 优化后的逻辑开始 ---
+          // 1. 直接通过属性挑出核心题
+          const coreInDim = dimPool.filter(q => q.isCore === true);
+          // 2. 挑出该维度里的非核心题
+          const nonCoreInDim = dimPool.filter(q => !q.isCore);
 
-          // 3. 将非核心题洗牌
+          // 3. 将非核心题洗牌（增加随机性）
           const shuffledNonCore = nonCoreInDim.sort(() => Math.random() - 0.5);
 
-          // 4. 组合：必选核心题 + 抽取的非核心题（补齐到5道）
+          // 4. 组合：必选该维度的核心题 + 抽取的非核心题（补齐到 5 道）
           const needed = questionsPerDimension - coreInDim.length;
-          const selectedForDim = coreInDim.concat(shuffledNonCore.slice(0, needed));
+          // 如果核心题不够或刚好，就用非核心题补齐；如果核心题多了，这段逻辑依然稳健
+          const selectedForDim = coreInDim.concat(shuffledNonCore.slice(0, Math.max(0, needed)));
 
           sampledQuestions = sampledQuestions.concat(selectedForDim);
-          // --- 核心改动结束 ---
+          // --- 优化后的逻辑结束 ---
         });
 
-        // 将抽样出的 20 道题进行最后一次全局乱序，打破维度聚集感
+        // 将抽样出的 20 道题进行最后一次全局乱序，打破维度聚集感（让 MS/IR 等题交替出现）
         currentQuiz = sampledQuestions.sort(() => Math.random() - 0.5);
 
-        // 3. 【UI 渲染逻辑】 (保持您原来的代码不变)
+        // 3. 【UI 渲染逻辑】
         const container = document.getElementById('quiz-container');
         if (!container) return;
         container.innerHTML = '';
@@ -594,7 +592,7 @@
           div.className = 'q-item';
           div.id = 'q-' + qIdx;
 
-          // 选项乱序处理
+          // 选项乱序处理：确保每次测试选项顺序不同
           let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
 
           let optionsHtml = optIdxs.map(originalWeight => {
@@ -613,14 +611,21 @@
           container.appendChild(div);
         });
 
-        console.log("抽样完成，包含 12 道必选核心动力题，总题数：" + currentQuiz.length);
+        console.log("抽样完成，自动识别核心动力题。总题数：" + currentQuiz.length);
       }
 
+      // 选项点击函数保持不变
       function selectOpt(el, qIdx, weightIdx) {
         const parent = el.parentElement;
         parent.querySelectorAll('.option-label').forEach(child => child.classList.remove('selected'));
         el.classList.add('selected');
-        userAnswers[qIdx] = { q: currentQuiz[qIdx].q, a: el.innerText, weight: weightIdx, data: currentQuiz[qIdx] };
+        // 存储答案，并把题目对象完整带入，方便评分函数判断 isCore
+        userAnswers[qIdx] = {
+          q: currentQuiz[qIdx].q,
+          weight: weightIdx,
+          isCore: currentQuiz[qIdx].isCore, // 这里直接存入标记
+          data: currentQuiz[qIdx]
+        };
       }
 
       // 确认清单页逻辑（修改版：增加淡红色高亮特效）
@@ -674,7 +679,7 @@
 
         list.innerHTML = currentQuiz.map((qData, i) => {
           // A. 判定是否为核心动力题 (假设你已定义 coreIndices)
-          const isCore = typeof coreIndices !== 'undefined' && coreIndices.includes(qData.originalId);
+          const isCore = qData.isCore === true;
           const multiplier = isCore ? 2.0 : 1.0; // 核心题权重翻倍
 
           // B. 获取该题对应的属性侧（如 M vs S）
@@ -694,14 +699,15 @@
 
           // D. 返回 HTML 字符串（保持你的 class：review-item, review-q, review-a）
           return `
-      <div class="review-item">
+
+<div class="review-item">
         <div class="review-q">
           ${i + 1}. ${qData.q}
-          ${isCore ? '<span class="core-tag">核心动力</span>' : ''}
+          ${isCore ? '<span class="core-tag" style="color:gold; font-weight:bold;">核心动力</span>' : ''}
         </div>
         <div class="review-a">
-          你的答案：${userAnswers[i].a}
-          <span class="score-hint">[ 指向: ${scoreLabel} ]</span>
+          你的答案：${qData.opts[userAnswers[i].weight]}
+          <span class="score-hint" style="color:#888; font-size:0.8em;"> [ 指向: ${scoreLabel} ]</span>
         </div>
       </div>
     `;
@@ -714,159 +720,126 @@
       }
 
       // 生成结果报告
-      function generateReport() {
-        // 1. 定义核心动力题的原始 ID 清单 (0-indexed)
-        const coreIndices = [0, 5, 8, 11, 12, 18, 20, 28, 29, 30, 33, 35];
+        function generateReport() {
+            // 1. 初始化数据
+            // rawScores 用于存储累加的原始权重分
+            let rawScores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+            // dimMaxPotential 用于记录本次测试中每个维度的理论最高分（用于归一化）
+            let dimMaxPotential = { MS: 0, IR: 0, CO: 0, GD: 0 };
 
-        // 2. 初始化各维度得分
-        let scores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+            // 2. 遍历用户答案进行计分
+            userAnswers.forEach((ans, i) => {
+              if (!ans) return;
 
-        // 3. 遍历用户答案进行计分
-        userAnswers.forEach((ans, i) => {
-          if (!ans) return;
+              const q = currentQuiz[i];
+              const w = ans.weight;           // 选项权重 (0-4)
+              const A = q.side[0];            // 维度 A (如 M)
+              const B = q.side[1];            // 维度 B (如 S)
+              const dimKey = q.d;             // 维度键 (如 MS)
 
-          const w = ans.weight;          // 选项权重 (0-4)
-          const A = ans.data.side[0];    // 维度 A (如 M)
-          const B = ans.data.side[1];    // 维度 B (如 S)
-          const qId = currentQuiz[i].id; // 获取该题在原始题库中的 ID
+              // --- 核心动力判定 ---
+              const isCore = q.isCore === true || (typeof coreIndices !== 'undefined' && coreIndices.includes(q.originalId));
+              const multiplier = isCore ? 2.0 : 1.0;
 
-          // --- 核心逻辑：判定是否为核心动力题，若是则权重翻倍 ---
-          let multiplier = coreIndices.includes(qId) ? 2.0 : 1.0;
+              // 累加该维度本次随机抽题的理论最高上限 (单题最高 1.5 * 倍率)
+              dimMaxPotential[dimKey] += 1.5 * multiplier;
 
-          // 根据选项权重分配分数，并乘以倍率
-          if (w === 0) {
-            scores[A] += 1.5 * multiplier;
-          } else if (w === 1) {
-            scores[A] += 0.5 * multiplier;
-          } else if (w === 2) {
-            scores[A] += 0.2 * multiplier;
-            scores[B] += 0.2 * multiplier;
-          } else if (w === 3) {
-            scores[B] += 0.5 * multiplier;
-          } else if (w === 4) {
-            scores[B] += 1.5 * multiplier;
-          }
-        });
+              // 原始加权计分逻辑
+              if (w === 0) rawScores[A] += 1.5 * multiplier;
+              else if (w === 1) rawScores[A] += 0.5 * multiplier;
+              else if (w === 2) {
+                rawScores[A] += 0.2 * multiplier;
+                rawScores[B] += 0.2 * multiplier;
+              }
+              else if (w === 3) rawScores[B] += 0.5 * multiplier;
+              else if (w === 4) rawScores[B] += 1.5 * multiplier;
+            });
 
-        // --- 2. 判定维度逻辑 ---
-        const getDim = (a, b) => {
-          const scoreA = scores[a];
-          const scoreB = scores[b];
-          const sum = scoreA + scoreB; // 该维度的总得分
-          const diff = Math.abs(scoreA - scoreB); // 两极分差
+            // 3. 动态归一化处理 (将得分统一缩放到 0 - 7.5 之间)
+            const TARGET_MAX = 7.5;
+            let finalScores = {}; // 最终用于显示和绘图的分数
 
-          // --- 安全处理 ---
-          // 如果该维度完全没得分（理论上不会，除非没做完题），默认判定为 X
-          if (sum === 0) return 'X';
+            ['MS', 'IR', 'CO', 'GD'].forEach(dim => {
+              const sideA = dim[0];
+              const sideB = dim[1];
+              const maxP = dimMaxPotential[dim] || 1; // 防止除以0
 
-          // --- 百分比判定核心逻辑 ---
-          // 计算分差占该维度总分的比例
-          // 建议阈值设定在 15% (0.15) 到 20% (0.2) 之间
-          // 15% 意味着：如果双方差距很小（不足总分的15%），则认为该特质不明显，判定为 X
-          const gapRatio = diff / sum;
+              // 公式：(原始得分 / 该维度总上限) * 7.5
+              finalScores[sideA] = (rawScores[sideA] / maxP) * TARGET_MAX;
+              finalScores[sideB] = (rawScores[sideB] / maxP) * TARGET_MAX;
+            });
 
-          if (gapRatio <= 0.15) {
-            return 'X';
-          } else {
-            // 超过阈值，谁分高就判定为谁
-            return scoreA > scoreB ? a : b;
-          }
-        };
+            // 4. 判定维度代码 (判定 X 的阈值基于归一化后的 7.5 分制)
+            // 建议分差小于 1.0 判定为 X（约占总权重的 13.3%）
+            const getDim = (a, b) => {
+              const net = finalScores[a] - finalScores[b];
+              return Math.abs(net) < 1.0 ? 'X' : (net > 0 ? a : b);
+            };
 
-        // 新增：将 8 项数值转化为直观的文字显示
-        const scoreSummaryElem = document.getElementById('score-summary');
-        if (scoreSummaryElem) {
-          // 定义中文名称映射
-          const nameMap = {
-            M: '掌控感', S: '配合度', I: '主导力', R: '响应度',
-            C: '认知博弈', O: '本能驱动', G: '情绪边界', D: '探索深度'
-          };
+            const code = [
+              getDim('M', 'S'),
+              getDim('I', 'R'),
+              getDim('C', 'O'),
+              getDim('G', 'D')
+            ].join('-');
 
-          // 构造显示字符串
-          let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
-          summaryText += `<strong>各维度权重指标参考：</strong><br>`;
-          summaryText += `
-            ${nameMap.M}(M):${scores.M.toFixed(1)} | ${nameMap.S}(S):${scores.S.toFixed(1)} <br>
-            ${nameMap.I}(I):${scores.I.toFixed(1)} | ${nameMap.R}(R):${scores.R.toFixed(1)} <br>
-            ${nameMap.C}(C):${scores.C.toFixed(1)} | ${nameMap.O}(O):${scores.O.toFixed(1)} <br>
-            ${nameMap.G}(G):${scores.G.toFixed(1)} | ${nameMap.D}(D):${scores.D.toFixed(1)}
+            // 5. 将数值转化为直观的文字显示 (使用归一化后的 finalScores)
+            const scoreSummaryElem = document.getElementById('score-summary');
+            if (scoreSummaryElem) {
+              const nameMap = {
+                M: '掌控感', S: '配合度', I: '主导力', R: '响应度',
+                C: '认知博弈', O: '本能驱动', G: '情绪边界', D: '探索深度'
+              };
+
+              let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
+              summaryText += `<strong>各维度权重指标参考：</strong><br>`;
+              summaryText += `
+            ${nameMap.M}(M):${finalScores.M.toFixed(1)} | ${nameMap.S}(S):${finalScores.S.toFixed(1)} <br>
+            ${nameMap.I}(I):${finalScores.I.toFixed(1)} | ${nameMap.R}(R):${finalScores.R.toFixed(1)} <br>
+            ${nameMap.C}(C):${finalScores.C.toFixed(1)} | ${nameMap.O}(O):${finalScores.O.toFixed(1)} <br>
+            ${nameMap.G}(G):${finalScores.G.toFixed(1)} | ${nameMap.D}(D):${finalScores.D.toFixed(1)}
         `;
-          summaryText += `</div>`;
+              summaryText += `</div>`;
+              scoreSummaryElem.innerHTML = summaryText;
+            }
 
-          scoreSummaryElem.innerHTML = summaryText;
-        }
+            // 6. 界面切换与内容渲染
+            const allSections = ['quiz-section', 'review-section', 'intro-section'];
+            allSections.forEach(id => {
+              const sect = document.getElementById(id);
+              if (sect) sect.classList.remove('active');
+            });
 
-        // 生成 Key (代号)，如 "M-I-C-G"
-        const code = [
-          getDim('M', 'S'),
-          getDim('I', 'R'),
-          getDim('C', 'O'),
-          getDim('G', 'D')
-        ].join('-');
+            const resSect = document.getElementById('result-section');
+            if (resSect) resSect.classList.add('active');
+            window.scrollTo(0, 0);
 
-        // --- 修复后的页面切换逻辑 ---
+            // A. 代号显示
+            const resCodeElem = document.getElementById('res-code');
+            if (resCodeElem) {
+              resCodeElem.innerText = code;
+              resCodeElem.style.textAlign = 'center';
+              resCodeElem.style.display = 'block';
+              resCodeElem.style.fontSize = '24px';
+              resCodeElem.style.letterSpacing = '3px';
+              resCodeElem.style.margin = '20px 0';
+            }
 
-        // 1. 定义所有可能出现的页面 ID
-        const allSections = ['quiz-section', 'review-section', 'intro-section'];
+            // B. Markdown 文案渲染
+            const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
+            const descElem = document.getElementById('res-desc');
+            if (fullContent && descElem) {
+              const cleanContent = fullContent.split('\n').map(line => line.trim()).join('\n');
+              descElem.innerHTML = marked.parse(cleanContent);
+            }
 
-        // 2. 循环遍历，把它们统统隐藏（移除 active）
-        allSections.forEach(id => {
-          const sect = document.getElementById(id);
-          if (sect) sect.classList.remove('active');
-        });
-
-        // 3. 显式开启结果页
-        const resSect = document.getElementById('result-section');
-        if (resSect) {
-          resSect.classList.add('active');
-        } else {
-          console.error("未找到 result-section，请检查 HTML 中的 ID 是否拼写正确");
-        }
-
-        // 4. 回到顶部
-        window.scrollTo(0, 0);
-
-        // --- 4. 获取并显示内容 ---
-
-        // A. 代号显示
-        const resCodeElem = document.getElementById('res-code');
-        if (resCodeElem) {
-          resCodeElem.innerText = code;
-          resCodeElem.style.textAlign = 'center';
-          resCodeElem.style.display = 'block';
-          resCodeElem.style.fontSize = '24px';    // 稍微大一点，更有冲击力
-          resCodeElem.style.letterSpacing = '3px'; // 字母间距，看起来更专业
-          resCodeElem.style.margin = '20px 0';    // 增加上下间距
-        }
-
-        // 隐藏旧的 res-tag 容器（因为它现在和内容里的 ### 标题重复了）
-        const tagElem = document.getElementById('res-tag');
-        if (tagElem) tagElem.style.display = 'none';
-
-        // B. Markdown 文案渲染 (核心修复点)
-        const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
-        const descElem = document.getElementById('res-desc');
-
-        if (fullContent && descElem) {
-          // 【修正】清洗 Markdown 内容：去掉每行开头可能存在的空格或缩进
-          // 这能防止服务器环境下 Markdown 列表符号（-）被错误解析成代码块
-          const cleanContent = fullContent.split('\n')
-            .map(line => line.trim())
-            .join('\n');
-
-          // 【核心修复】只保留这一句解析逻辑，不要再被后面的原内容覆盖
-          descElem.innerHTML = marked.parse(cleanContent);
-
-        } else if (descElem) {
-          descElem.innerHTML = "<p style='text-align:center;'>抱歉，未找到对应的结果文案。</p>";
-        }
-
-        // --- 5. 绘制雷达图 ---
-        // 增加一个微小的延迟，确保 CSS 动画和容器完全显示后再绘图，防止 Chart.js 获取不到正确的宽度
-        setTimeout(() => {
-          drawRadar(scores);
-        }, 50);
-      }
+            // 7. 绘制雷达图 (使用归一化后的 finalScores)
+            setTimeout(() => {
+              if (typeof drawRadar === "function") {
+                drawRadar(finalScores);
+              }
+            }, 50);
+          }
 
       function drawRadar(s) {
         const ctx = document.getElementById('radarChart');
