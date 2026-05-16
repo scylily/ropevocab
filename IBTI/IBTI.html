@@ -479,6 +479,81 @@
         margin-bottom: 6px;
         color: #333;
       }
+
+      /* ==========================================
+   新增：弹窗 (Modal) 核心样式
+   ========================================== */
+      .modal-btn {
+        width: 100%;
+        padding: 15px;
+        background: var(--option-bg);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .modal-btn:hover {
+        background: #fffaf0;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: none;
+        /* 初始隐藏 */
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+        animation: fadeIn 0.3s ease forwards;
+      }
+
+      .modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 600px;
+        max-height: 85vh;
+        border-radius: 15px;
+        padding: 25px;
+        position: relative;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      #modal-close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
     </style>
   </head>
 
@@ -493,6 +568,12 @@
           </h1>
           <div class="sub-title">Inclination Behavior Type Indicator
           </div>
+
+          <p><button class="modal-btn" onclick="openIntroModal()">
+              📖 查看测试说明与维度解析
+            </button>
+          </p>
+
         </header>
         <div id="quiz-container"></div>
         <div class="btn-group">
@@ -502,7 +583,7 @@
 
       <div id="review-section" class="section">
         <header>
-          <h1>确认清单</h1>
+          <h1>所选内容确认清单</h1>
           <div class="sub-title">请核对您的倾向选择</div>
         </header>
         <div id="review-list"></div>
@@ -518,7 +599,14 @@
         <div id="capture-area">
           <header>
             <h1>IBTI 结果报告</h1>
-            <div class="sub-title">Personal Inclination Mapping</div>
+            <div class="sub-title">Personal Inclination Mapping
+            </div>
+
+            <p><button class="modal-btn" onclick="openIntroModal()">
+                📖 查看测试说明与维度解析
+              </button>
+            </p>
+
           </header>
 
           <div class="res-code" id="res-code"></div>
@@ -526,20 +614,33 @@
           <div class="chart-box">
             <canvas id="radarChart"></canvas>
           </div>
-
           <div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
 
           <div class="desc-box" id="res-desc"></div>
         </div>
         <div class="btn-group">
-          <button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存映射全案长图</button>
+          <button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存结果报告全案长图</button>
           <button class="btn btn-outline" onclick="location.reload()">重新测试</button>
         </div>
       </div>
-
+      <!-- 底部版权页脚 -->
+      <div style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #bbb;">
+        &copy; 2024 IBTI Project. All Rights Reserved.
+      </div>
     </div>
 
     <script>
+
+      function openIntroModal() {
+        const modal = document.getElementById("intro-modal");
+        if (modal) modal.style.display = "flex";
+      }
+
+      function closeIntroModal() {
+        const modal = document.getElementById("intro-modal");
+        if (modal) modal.style.display = "none";
+      }
+
       let currentQuiz = [];
       let userAnswers = [];
 
@@ -720,126 +821,126 @@
       }
 
       // 生成结果报告
-        function generateReport() {
-            // 1. 初始化数据
-            // rawScores 用于存储累加的原始权重分
-            let rawScores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
-            // dimMaxPotential 用于记录本次测试中每个维度的理论最高分（用于归一化）
-            let dimMaxPotential = { MS: 0, IR: 0, CO: 0, GD: 0 };
+      function generateReport() {
+        // 1. 初始化数据
+        // rawScores 用于存储累加的原始权重分
+        let rawScores = { M: 0, S: 0, I: 0, R: 0, C: 0, O: 0, G: 0, D: 0 };
+        // dimMaxPotential 用于记录本次测试中每个维度的理论最高分（用于归一化）
+        let dimMaxPotential = { MS: 0, IR: 0, CO: 0, GD: 0 };
 
-            // 2. 遍历用户答案进行计分
-            userAnswers.forEach((ans, i) => {
-              if (!ans) return;
+        // 2. 遍历用户答案进行计分
+        userAnswers.forEach((ans, i) => {
+          if (!ans) return;
 
-              const q = currentQuiz[i];
-              const w = ans.weight;           // 选项权重 (0-4)
-              const A = q.side[0];            // 维度 A (如 M)
-              const B = q.side[1];            // 维度 B (如 S)
-              const dimKey = q.d;             // 维度键 (如 MS)
+          const q = currentQuiz[i];
+          const w = ans.weight;           // 选项权重 (0-4)
+          const A = q.side[0];            // 维度 A (如 M)
+          const B = q.side[1];            // 维度 B (如 S)
+          const dimKey = q.d;             // 维度键 (如 MS)
 
-              // --- 核心动力判定 ---
-              const isCore = q.isCore === true || (typeof coreIndices !== 'undefined' && coreIndices.includes(q.originalId));
-              const multiplier = isCore ? 2.0 : 1.0;
+          // --- 核心动力判定 ---
+          const isCore = q.isCore === true || (typeof coreIndices !== 'undefined' && coreIndices.includes(q.originalId));
+          const multiplier = isCore ? 2.0 : 1.0;
 
-              // 累加该维度本次随机抽题的理论最高上限 (单题最高 1.5 * 倍率)
-              dimMaxPotential[dimKey] += 1.5 * multiplier;
+          // 累加该维度本次随机抽题的理论最高上限 (单题最高 1.5 * 倍率)
+          dimMaxPotential[dimKey] += 1.5 * multiplier;
 
-              // 原始加权计分逻辑
-              if (w === 0) rawScores[A] += 1.5 * multiplier;
-              else if (w === 1) rawScores[A] += 0.5 * multiplier;
-              else if (w === 2) {
-                rawScores[A] += 0.2 * multiplier;
-                rawScores[B] += 0.2 * multiplier;
-              }
-              else if (w === 3) rawScores[B] += 0.5 * multiplier;
-              else if (w === 4) rawScores[B] += 1.5 * multiplier;
-            });
+          // 原始加权计分逻辑
+          if (w === 0) rawScores[A] += 1.5 * multiplier;
+          else if (w === 1) rawScores[A] += 0.5 * multiplier;
+          else if (w === 2) {
+            rawScores[A] += 0.2 * multiplier;
+            rawScores[B] += 0.2 * multiplier;
+          }
+          else if (w === 3) rawScores[B] += 0.5 * multiplier;
+          else if (w === 4) rawScores[B] += 1.5 * multiplier;
+        });
 
-            // 3. 动态归一化处理 (将得分统一缩放到 0 - 7.5 之间)
-            const TARGET_MAX = 7.5;
-            let finalScores = {}; // 最终用于显示和绘图的分数
+        // 3. 动态归一化处理 (将得分统一缩放到 0 - 7.5 之间)
+        const TARGET_MAX = 7.5;
+        let finalScores = {}; // 最终用于显示和绘图的分数
 
-            ['MS', 'IR', 'CO', 'GD'].forEach(dim => {
-              const sideA = dim[0];
-              const sideB = dim[1];
-              const maxP = dimMaxPotential[dim] || 1; // 防止除以0
+        ['MS', 'IR', 'CO', 'GD'].forEach(dim => {
+          const sideA = dim[0];
+          const sideB = dim[1];
+          const maxP = dimMaxPotential[dim] || 1; // 防止除以0
 
-              // 公式：(原始得分 / 该维度总上限) * 7.5
-              finalScores[sideA] = (rawScores[sideA] / maxP) * TARGET_MAX;
-              finalScores[sideB] = (rawScores[sideB] / maxP) * TARGET_MAX;
-            });
+          // 公式：(原始得分 / 该维度总上限) * 7.5
+          finalScores[sideA] = (rawScores[sideA] / maxP) * TARGET_MAX;
+          finalScores[sideB] = (rawScores[sideB] / maxP) * TARGET_MAX;
+        });
 
-            // 4. 判定维度代码 (判定 X 的阈值基于归一化后的 7.5 分制)
-            // 建议分差小于 1.0 判定为 X（约占总权重的 13.3%）
-            const getDim = (a, b) => {
-              const net = finalScores[a] - finalScores[b];
-              return Math.abs(net) < 1.0 ? 'X' : (net > 0 ? a : b);
-            };
+        // 4. 判定维度代码 (判定 X 的阈值基于归一化后的 7.5 分制)
+        // 建议分差小于 1.0 判定为 X（约占总权重的 13.3%）
+        const getDim = (a, b) => {
+          const net = finalScores[a] - finalScores[b];
+          return Math.abs(net) < 1.0 ? 'X' : (net > 0 ? a : b);
+        };
 
-            const code = [
-              getDim('M', 'S'),
-              getDim('I', 'R'),
-              getDim('C', 'O'),
-              getDim('G', 'D')
-            ].join('-');
+        const code = [
+          getDim('M', 'S'),
+          getDim('I', 'R'),
+          getDim('C', 'O'),
+          getDim('G', 'D')
+        ].join('-');
 
-            // 5. 将数值转化为直观的文字显示 (使用归一化后的 finalScores)
-            const scoreSummaryElem = document.getElementById('score-summary');
-            if (scoreSummaryElem) {
-              const nameMap = {
-                M: '掌控感', S: '配合度', I: '主导力', R: '响应度',
-                C: '认知博弈', O: '本能驱动', G: '情绪边界', D: '探索深度'
-              };
+        // 5. 将数值转化为直观的文字显示 (使用归一化后的 finalScores)
+        const scoreSummaryElem = document.getElementById('score-summary');
+        if (scoreSummaryElem) {
+          const nameMap = {
+            M: '掌控感', S: '配合度', I: '主导力', R: '响应度',
+            C: '认知博弈', O: '本能驱动', G: '情绪边界', D: '探索深度'
+          };
 
-              let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
-              summaryText += `<strong>各维度权重指标参考：</strong><br>`;
-              summaryText += `
+          let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
+          summaryText += `<strong>各维度权重指标参考：</strong><br>`;
+          summaryText += `
             ${nameMap.M}(M):${finalScores.M.toFixed(1)} | ${nameMap.S}(S):${finalScores.S.toFixed(1)} <br>
             ${nameMap.I}(I):${finalScores.I.toFixed(1)} | ${nameMap.R}(R):${finalScores.R.toFixed(1)} <br>
             ${nameMap.C}(C):${finalScores.C.toFixed(1)} | ${nameMap.O}(O):${finalScores.O.toFixed(1)} <br>
             ${nameMap.G}(G):${finalScores.G.toFixed(1)} | ${nameMap.D}(D):${finalScores.D.toFixed(1)}
         `;
-              summaryText += `</div>`;
-              scoreSummaryElem.innerHTML = summaryText;
-            }
+          summaryText += `</div>`;
+          scoreSummaryElem.innerHTML = summaryText;
+        }
 
-            // 6. 界面切换与内容渲染
-            const allSections = ['quiz-section', 'review-section', 'intro-section'];
-            allSections.forEach(id => {
-              const sect = document.getElementById(id);
-              if (sect) sect.classList.remove('active');
-            });
+        // 6. 界面切换与内容渲染
+        const allSections = ['quiz-section', 'review-section', 'intro-section'];
+        allSections.forEach(id => {
+          const sect = document.getElementById(id);
+          if (sect) sect.classList.remove('active');
+        });
 
-            const resSect = document.getElementById('result-section');
-            if (resSect) resSect.classList.add('active');
-            window.scrollTo(0, 0);
+        const resSect = document.getElementById('result-section');
+        if (resSect) resSect.classList.add('active');
+        window.scrollTo(0, 0);
 
-            // A. 代号显示
-            const resCodeElem = document.getElementById('res-code');
-            if (resCodeElem) {
-              resCodeElem.innerText = code;
-              resCodeElem.style.textAlign = 'center';
-              resCodeElem.style.display = 'block';
-              resCodeElem.style.fontSize = '24px';
-              resCodeElem.style.letterSpacing = '3px';
-              resCodeElem.style.margin = '20px 0';
-            }
+        // A. 代号显示
+        const resCodeElem = document.getElementById('res-code');
+        if (resCodeElem) {
+          resCodeElem.innerText = code;
+          resCodeElem.style.textAlign = 'center';
+          resCodeElem.style.display = 'block';
+          resCodeElem.style.fontSize = '24px';
+          resCodeElem.style.letterSpacing = '3px';
+          resCodeElem.style.margin = '20px 0';
+        }
 
-            // B. Markdown 文案渲染
-            const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
-            const descElem = document.getElementById('res-desc');
-            if (fullContent && descElem) {
-              const cleanContent = fullContent.split('\n').map(line => line.trim()).join('\n');
-              descElem.innerHTML = marked.parse(cleanContent);
-            }
+        // B. Markdown 文案渲染
+        const fullContent = IBTI_DATA[code] || IBTI_DATA["X-X-X-X"];
+        const descElem = document.getElementById('res-desc');
+        if (fullContent && descElem) {
+          const cleanContent = fullContent.split('\n').map(line => line.trim()).join('\n');
+          descElem.innerHTML = marked.parse(cleanContent);
+        }
 
-            // 7. 绘制雷达图 (使用归一化后的 finalScores)
-            setTimeout(() => {
-              if (typeof drawRadar === "function") {
-                drawRadar(finalScores);
-              }
-            }, 50);
+        // 7. 绘制雷达图 (使用归一化后的 finalScores)
+        setTimeout(() => {
+          if (typeof drawRadar === "function") {
+            drawRadar(finalScores);
           }
+        }, 50);
+      }
 
       function drawRadar(s) {
         const ctx = document.getElementById('radarChart');
@@ -987,6 +1088,23 @@
           showReview();
         }
       }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        // 绑定点击叉号关闭
+        const closeBtn = document.getElementById("modal-close-btn");
+        if (closeBtn) {
+          closeBtn.onclick = closeIntroModal;
+        }
+
+        // 绑定点击阴影处关闭
+        const modal = document.getElementById("intro-modal");
+        window.onclick = function (event) {
+          if (event.target === modal) {
+            closeIntroModal();
+          }
+        };
+      });
+
     </script>
 
     <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
@@ -994,6 +1112,33 @@
       <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
       <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
       <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 支持带横杠或不带横杠格式</div>
+    </div>
+
+    <div id="intro-modal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="modal-close" id="modal-close-btn">&times;</span>
+        <h2 style="margin-top:0; text-align:center; color: var(--text-main);">关于 IBTI 测试</h2>
+        <div class="modal-body">
+          <p>IBTI (Inclination Behavior Type Indicator) 潜向行为性格指标测试，旨在通过场景化的选择，探寻你底层的心理原动力与互动偏好。</p>
+
+          <h3>🧬 四大核心维度解析</h3>
+          <p><strong>1. 控制域 (Manager vs Supporter)</strong><br>
+            代表你在互动中对秩序和权力的倾向。M 倾向于主导和构建秩序，S 倾向于交付信任与被接管。</p>
+
+          <p><strong>2. 能量域 (Initiator vs Responsive)</strong><br>
+            代表你能量释放的方式。I 倾向于主动发起、推进进程，R 倾向于反射回应、提供共鸣。</p>
+
+          <p><strong>3. 感知域 (Cognitive vs Organic)</strong><br>
+            代表你获取快感与体验的通道。C 偏重于智力层面的博弈和心理拉扯，O 则更沉浸于纯粹的躯体和物理实感。</p>
+
+          <p><strong>4. 强度域 (Gentle vs Deep)</strong><br>
+            代表你对体验深度的耐受与追求。G 追求温和、安全且具备滋养感的边界，D 追求极致、打破常规的深渊探索。</p>
+
+          <p style="margin-top: 25px; font-size: 0.85rem; color: #999; border-top: 1px solid #eee; padding-top: 15px; text-align: center;">
+            * 郑重提示：测试结果仅代表你当前的心理倾向。<br>所有的实践都必须建立在知情同意（SSC / RACK）和安全的前提下。
+          </p>
+        </div>
+      </div>
     </div>
 
   </body>
