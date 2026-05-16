@@ -600,6 +600,74 @@
           opacity: 1;
         }
       }
+
+      /* 图片下载预览层 */
+      #image-download-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        /* 深色背景增加高级感 */
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        /* 确保在最顶层 */
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .overlay-content {
+        background: #fff;
+        width: 100%;
+        max-width: 400px;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        animation: modalFadeIn 0.3s ease;
+      }
+
+      .overlay-content p {
+        margin: 5px 0;
+        color: #333;
+        font-size: 14px;
+      }
+
+      #generated-image {
+        width: 100%;
+        max-height: 60vh;
+        /* 限制高度，防止太长看不全 */
+        object-fit: contain;
+        margin: 15px 0;
+        border: 1px solid #eee;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .overlay-content button {
+        background: #d4af37;
+        /* 延用你的金色主题 */
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
     </style>
   </head>
 
@@ -1060,11 +1128,40 @@
 
       function downloadImage(id, name) {
         const element = document.getElementById(id);
-        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
-          const link = document.createElement('a');
-          link.download = `${name}.png`;
-          link.href = canvas.toDataURL();
-          link.click();
+
+        // 显示加载提示（可选，因为生成长图可能需要 1-2 秒）
+        const loadingToast = alert("正在生成图片，请稍候片刻并点击确定按钮");
+
+        html2canvas(element, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+          useCORS: true // 开启跨域，防止图片（如雷达图）丢失
+        }).then(canvas => {
+          const imageData = canvas.toDataURL("image/png");
+
+          // 找到或创建用于展示图片的容器
+          let overlay = document.getElementById('image-download-overlay');
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'image-download-overlay';
+            overlay.innerHTML = `
+                <div class="overlay-content">
+                    <p>温馨提示：图片已生成</p>
+                    <p><strong>请长按下方图片保存到相册</strong></p>
+                    <img id="generated-image" src="" />
+                    <button onclick="document.getElementById('image-download-overlay').style.display='none'">关闭预览</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+          }
+
+          // 将生成的图片填入预览框并显示
+          const imgDisplay = document.getElementById('generated-image');
+          imgDisplay.src = imageData;
+          overlay.style.display = 'flex';
+
+          // 移除加载提示
+          console.log("图片生成成功");
         });
       }
 
