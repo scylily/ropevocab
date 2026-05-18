@@ -480,127 +480,6 @@
         color: #333;
       }
 
-      /* ==========================================
-   新增：弹窗 (Modal) 核心样式
-   ========================================== */
-      .modal-btn {
-        width: 100%;
-        padding: 15px;
-        background: var(--option-bg);
-        border: 1px solid var(--accent);
-        color: var(--accent);
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .modal-btn:hover {
-        background: #fffaf0;
-      }
-
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(8px);
-        display: none;
-        /* 初始隐藏 */
-        z-index: 2000;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .modal-overlay.show {
-        display: flex;
-        animation: fadeIn 0.3s ease forwards;
-      }
-
-      .modal-content {
-        background: #fff;
-        width: 90%;
-        max-width: 500px;
-        height: auto;
-        max-height: 92vh;
-        border-radius: 20px;
-        padding: 1.5rem;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        /* 强制关闭滚动条（注意：如果内容实在太多，下方文字会被截断） */
-        overflow: hidden;
-        /* 动态字体：根据屏幕宽度自动缩放，最小 12px，最大 16px */
-        font-size: clamp(12px, 3.5vw, 16px);
-        line-height: 1.4;
-        overflow-y: auto;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      }
-
-      /* 3. 内部排版：缩小间距以节省空间 */
-      .modal-content h3 {
-        margin-top: 0;
-        margin-bottom: 0.8rem;
-        font-size: 1.2rem;
-        text-align: center;
-      }
-
-      .modal-content p,
-      .modal-content li {
-        margin-bottom: 0.5rem;
-        /* 针对超小屏幕进一步压缩字间距 */
-        letter-spacing: -0.2px;
-      }
-
-      #modal-close-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 24px;
-        color: #999;
-        cursor: pointer;
-      }
-
-      /* 针对结果描述区域的特殊处理 */
-      .modal-body {
-        flex: 1;
-        display: flex;
-        font-size: 0.8rem;
-        flex-direction: column;
-        justify-content: space-around;
-        /* 让内容均匀分布在一屏内 */
-      }
-
-      /* 响应式微调：针对屏幕高度非常小的手机（如部分旧款安卓） */
-      @media (max-height: 600px) {
-        .modal-content {
-          padding: 1rem;
-          font-size: 11px;
-          /* 极限缩小 */
-        }
-
-        .modal-content h3 {
-          font-size: 1rem;
-        }
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-
-        to {
-          opacity: 1;
-        }
-      }
-
       /* 图片下载预览层 */
       #image-download-overlay {
         position: fixed;
@@ -668,7 +547,299 @@
           transform: scale(1);
         }
       }
+
+      /* 全局页脚样式 */
+      .site-footer {
+        width: 100%;
+        background: #ffffff99;
+        /* 半透明背景 */
+        backdrop-filter: blur(5px);
+        /* 磨砂玻璃效果 */
+        border-top: 1px solid #eee;
+        padding: 2rem 1rem;
+        margin-top: 3rem;
+        /* 与上方内容保持距离 */
+        color: #bbb;
+        /* 浅灰色文字，不干扰主内容 */
+        font-size: 0.8rem;
+        line-height: 1.6;
+      }
+
+      .footer-container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+        /* 默认居中对齐 */
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .footer-section p {
+        margin: 0.3rem 0;
+      }
+
+      /* 免责声明框：稍微弱化颜色 */
+      .disclaimer-box {
+        font-size: 0.75rem;
+        color: #bbb;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* 导航链接样式 */
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+
+      .footer-links a {
+        color: var(--accent-color, #d4af37);
+        /* 使用您的金色强调色 */
+        text-decoration: none;
+        transition: opacity 0.3s;
+      }
+
+      .footer-links a:hover {
+        opacity: 0.7;
+      }
+
+      .version {
+        font-weight: bold;
+        color: #bdc3c7;
+      }
+
+      /* 响应式适配：手机端优化 */
+      @media (max-width: 600px) {
+        .site-footer {
+          padding: 1.5rem 1rem;
+        }
+
+        .footer-links {
+          gap: 1rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      .modal-btn {
+        width: 100%;
+        padding: 15px;
+        background: var(--option-bg);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .modal-btn:hover {
+        background: #fffaf0;
+      }
+
+      /* 弹窗遮罩层统一 */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.4);
+        /* 背景略深增强对比 */
+        backdrop-filter: blur(8px);
+        /* 磨砂玻璃效果 */
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-overlay.show {
+        display: flex;
+        animation: fadeIn 0.3s ease forwards;
+      }
+
+      /* 弹窗主体统一 */
+      .modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 500px;
+        height: auto;
+        max-height: 92vh;
+        border-radius: 20px;
+        padding: 1.5rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        /* 强制关闭滚动条（注意：如果内容实在太多，下方文字会被截断） */
+        overflow: hidden;
+        /* 动态字体：根据屏幕宽度自动缩放，最小 12px，最大 16px */
+        font-size: clamp(12px, 3.5vw, 16px);
+        line-height: 1.4;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      /* 3. 内部排版：缩小间距以节省空间 */
+      .modal-content h3 {
+        margin-top: 0;
+        margin-bottom: 0.8rem;
+        font-size: 1.2rem;
+        text-align: center;
+      }
+
+      .modal-content p,
+      .modal-content li {
+        margin-bottom: 0.5rem;
+        /* 针对超小屏幕进一步压缩字间距 */
+        letter-spacing: -0.2px;
+      }
+
+      #modal-close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+      }
+
+      /* 针对结果描述区域的特殊处理 */
+      .modal-body {
+        flex: 1;
+        display: flex;
+        font-size: 0.8rem;
+        flex-direction: column;
+        justify-content: space-around;
+        /* 让内容均匀分布在一屏内 */
+      }
+
+      /* 统一关闭按钮 */
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 28px;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+        transition: color 0.2s;
+      }
+
+      .modal-close:hover {
+        color: var(--accent-color, #d4af37);
+      }
+
+      /* 统一标题样式 */
+      .modal-header {
+        font-size: 1rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 0px;
+        color: var(--text-main, #333);
+      }
+
+      /* 针对介绍弹窗的微调 */
+      .dim-item {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+        color: #555;
+      }
+
+      .modal-notice {
+        margin-top: 25px;
+        font-size: 0.75rem;
+        color: #999;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        text-align: center;
+      }
+
+      /* 针对社交媒体弹窗的微调 */
+      .contact-hint {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #666;
+      }
+
+      .social-container {
+        display: flex;
+        justify-content: space-around;
+        padding-bottom: 10px;
+      }
+
+      .social-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #666;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      .icon-box svg {
+        width: 32px;
+        height: 32px;
+        fill: #666;
+        transition: 0.3s;
+      }
+
+      /* 微信二维码弹窗样式保持 */
+      .qr-popup {
+        display: none;
+        position: absolute;
+        bottom: 80px;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        text-align: center;
+        transition: opacity 0.3s;
+      }
+
+      .qr-popup img {
+        width: 120px;
+        height: 120px;
+      }
+
+      .qr-popup.active {
+        display: block;
+        opacity: 1;
+      }
+
+      /* 响应式微调：针对屏幕高度非常小的手机（如部分旧款安卓） */
+      @media (max-height: 600px) {
+        .modal-content {
+          padding: 1rem;
+          font-size: 11px;
+          /* 极限缩小 */
+        }
+
+        .modal-content h3 {
+          font-size: 1rem;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
     </style>
+
   </head>
 
   <body>
@@ -737,11 +908,28 @@
           <button class="btn btn-outline" onclick="location.reload()">重新测试</button>
         </div>
       </div>
+
       <!-- 底部版权页脚 -->
-      <div style="text-align: center; margin-top: 40px; font-size: 0.8rem; color: #bbb;">
-        &copy; 2024 IBTI Project. All Rights Reserved.
-      </div>
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-section">
+            <p class="copyright">© 2024 IBTI Project. All Rights Reserved.</p>
+            <p class="creator">Designed by [您的名字/团队名] | <span class="version">Version 7.1 Plus</span></p>
+          </div>
+
+          <div class="footer-section disclaimer-box">
+            <p><strong>免责声明：</strong>本测试结果仅供娱乐与自我探索参考，不作为专业心理诊断建议。我们尊重并保护您的隐私，答题数据仅用于本地结果生成。</p>
+          </div>
+
+          <div class="footer-links">
+            <a href="javascript:void(0)" onclick="openContactModal()">联系我们</a>
+          </div>
+
+        </div>
+      </footer>
+
     </div>
+
 
     <script>
 
@@ -1167,7 +1355,7 @@
 
       window.onload = initQuiz;
 
-      /*       // 【测试专用】根据输入代号强制跳转结果页
+      /*    // 【测试专用】根据输入代号强制跳转结果页
             function debugCustomCode() {
               let input = document.getElementById('debug-input').value.trim().toUpperCase();
 
@@ -1232,37 +1420,102 @@
               }
             } */
 
-      document.addEventListener('DOMContentLoaded', function () {
-        // 绑定点击叉号关闭
-        const closeBtn = document.getElementById("modal-close-btn");
-        if (closeBtn) {
-          closeBtn.onclick = closeIntroModal;
-        }
+      // --- 1. 核心弹窗控制函数 ---
 
-        // 绑定点击阴影处关闭
-        const modal = document.getElementById("intro-modal");
+      /**
+       * 打开指定 ID 的弹窗
+       * @param {string} modalId - 弹窗容器的 ID
+       */
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = "flex";
+          // 防止页面背景滚动 (可选优化)
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      /**
+       * 关闭指定 ID 的弹窗
+       * @param {string} modalId - 弹窗容器的 ID
+       */
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = "none";
+          // 恢复页面滚动
+          document.body.style.overflow = 'auto';
+
+          // 如果关闭的是联系弹窗，额外重置微信二维码
+          if (modalId === 'contact-modal') {
+            const qrPopup = document.getElementById('wechat-qr-popup');
+            if (qrPopup) qrPopup.classList.remove('active');
+          }
+        }
+      }
+
+      /**
+       * 微信二维码切换显示/隐藏
+       */
+      function toggleWeChatQR() {
+        const qr = document.getElementById('wechat-qr-popup');
+        if (qr) {
+          qr.classList.toggle('active');
+        }
+      }
+
+      // 为了保持与您旧代码中函数名的兼容性，保留以下别名
+      function openIntroModal() { openModal('intro-modal'); }
+      function closeIntroModal() { closeModal('intro-modal'); }
+      function openContactModal() { openModal('contact-modal'); }
+      function closeContactModal() { closeModal('contact-modal'); }
+
+
+      // --- 2. 事件监听与自动绑定 ---
+
+      document.addEventListener('DOMContentLoaded', function () {
+
+        /**
+         * [优化逻辑] 点击遮罩层关闭
+         * 虽然 HTML 中已写了 onclick="closeModal(...)"，
+         * 但这里的 window.onclick 提供了对动态 ID 的全局支持。
+         */
         window.onclick = function (event) {
-          if (event.target === modal) {
-            closeIntroModal();
+          // 检查点击的对象是否带有 modal-overlay 类
+          if (event.target.classList.contains('modal-overlay')) {
+            closeModal(event.target.id);
           }
         };
+
+        /**
+         * [键盘支持] 按 ESC 键关闭当前打开的弹窗
+         */
+        document.addEventListener('keydown', function (event) {
+          if (event.key === "Escape") {
+            const openModals = document.querySelectorAll('.modal-overlay[style*="display: flex"]');
+            openModals.forEach(modal => closeModal(modal.id));
+          }
+        });
+
+        // 可以在此添加 console 调试，确认脚本加载成功
+        console.log("IBTI Modal System Initialized.");
       });
 
     </script>
 
-    <!--
-    <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+
+    <!-- <div id="debug-panel" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 8px; color: white; font-family: monospace; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
       <div style="margin-bottom: 8px; font-weight: bold; color: #ff4757; font-size: 12px;">IBTI 结果页调试器</div>
       <input type="text" id="debug-input" placeholder="输入代号 如 M-I-C-G" style="width: 140px; padding: 5px; border: none; border-radius: 4px; outline: none;">
       <button onclick="debugCustomCode()" style="padding: 5px 10px; background: #2ed573; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px;">生成</button>
       <div style="font-size: 10px; color: #ccc; margin-top: 8px;">* 支持带横杠或不带横杠格式</div>
-    </div>
-  -->
+    </div> -->
 
-    <div id="intro-modal" class="modal-overlay">
-      <div class="modal-content">
-        <span class="modal-close" id="modal-close-btn">&times;</span>
-        <strong style="font-size:1rem; margin-top:0; text-align:center; color: var(--text-main);">关于 IBTI 测试</strong>
+
+    <div id="intro-modal" class="modal-overlay" onclick="closeModal('intro-modal')">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="modal-close" onclick="closeModal('intro-modal')">&times;</span>
+        <div class="modal-header">关于 IBTI 测试</div>
         <div class="modal-body">
           <p>IBTI (Inclination Behavior Type Indicator) 潜向行为性格指标测试，旨在通过场景化的选择，探寻你底层的心理原动力与互动偏好。</p>
           <p><strong style="font-size:0.9rem;">🧬 四大核心维度解析</strong></p>
@@ -1279,6 +1532,48 @@
           <p style="margin-top: 25px; font-size: 0.75rem; color: #999; border-top: 1px solid #eee; padding-top: 15px; text-align: center;">
             * 郑重提示：测试结果仅代表你当前的心理倾向。所有的实践都必须建立在知情同意（SSC / RACK）和安全的前提下。
           </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="contact-modal" class="modal-overlay" onclick="closeModal('contact-modal')">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="modal-close" onclick="closeModal('contact-modal')">&times;</span>
+        <div class="modal-header">我们</div>
+        <div class="modal-body">
+          <p class="contact-hint">欢迎通过以下平台与我们交流</p>
+          <div class="social-container">
+            <a href="您的微博链接" target="_blank" class="social-item weibo">
+              <div class="icon-box">
+                <svg viewBox="0 0 1024 1024">
+                  <path d="M411.3 723.3c-100.8-11.8-176.7-65.2-169.5-119.2 7.2-54 86.4-88.2 187.2-76.5 100.8 11.8 176.7 65.2 169.5 119.2-7.2 54-86.4 88.2-187.2 76.5z"></path>
+                  <path d="M848.4 430.4c-22.3-33-64.8-44.6-101.4-31.1-13.8 5.1-19.1 20.6-12 33.2 7.1 12.6 22.4 17.1 35.8 11 11.1-5.1 24.3-1.4 31.2 8.7s7.6 24.4-1.3 33.4c-9.1 9.2-8.5 24.1 1.3 32.5 9.8 8.4 24.8 7.3 33.3-2.6 26.6-31.1 29.5-76.3 13.1-105.1z"></path>
+                </svg>
+              </div>
+              <span>微博</span>
+            </a>
+            <a href="您的B站链接" target="_blank" class="social-item bilibili">
+              <div class="icon-box">
+                <svg viewBox="0 0 1024 1024">
+                  <path d="M777.6 153.6l-51.2 51.2h-448l-51.2-51.2c-12.8-12.8-32-12.8-44.8 0s-12.8 32 0 44.8l70.4 70.4C179.2 300.8 128 396.8 128 512c0 211.2 172.8 384 384 384s384-172.8 384-384c0-115.2-51.2-211.2-128-243.2l70.4-70.4c12.8-12.8 12.8-32 0-44.8s-32-12.8-44.8 0zM512 832c-179.2 0-320-140.8-320-320s140.8-320 320-320 320 140.8 320 320-140.8 320-320 320z"></path>
+                </svg>
+              </div>
+              <span>Bilibili</span>
+            </a>
+            <div class="social-item wechat" onclick="toggleWeChatQR()">
+              <div class="icon-box">
+                <svg viewBox="0 0 1024 1024">
+                  <path d="M661.1 538c20.3 0 36.8-14.8 36.8-33.1s-16.5-33.1-36.8-33.1c-20.3 0-36.8 14.8-36.8 33.1s16.5 33.1 36.8 33.1z m-261.2 0c20.3 0 36.8-14.8 36.8-33.1s-16.5-33.1-36.8-33.1c-20.3 0-36.8 14.8-36.8 33.1s16.5 33.1 36.8 33.1z"></path>
+                  <path d="M1024 570.6c0-147.2-154.5-266.6-345.1-266.6s-345.1 119.4-345.1 266.6 154.5 266.6 345.1 266.6c41 0 80.3-5.5 116.8-15.7l108.9 57.6-28.9-97.1c86.5-50.5 143.4-129.2 143.4-211.4z"></path>
+                </svg>
+              </div>
+              <span>微信</span>
+              <div id="wechat-qr-popup" class="qr-popup">
+                <img src="您的二维码图片地址" alt="微信二维码">
+                <p>长按保存二维码</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
