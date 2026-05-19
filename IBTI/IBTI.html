@@ -10,6 +10,8 @@
     <script src="ibti_data.js"></script>
     <script src="ibti_questions.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
     <style>
       /* ============================================================
        1. 全局配置与变量 (CSS Variables)
@@ -838,6 +840,174 @@
           opacity: 1;
         }
       }
+
+      /* 社交媒体关注区样式 */
+      .social-media-section {
+        padding: 10px 0;
+        background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+        margin: 10px 0;
+        border-radius: 12px;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2rem;
+        color: #667eea;
+      }
+
+      .section-subtitle {
+        text-align: left;
+        color: #666;
+        margin-bottom: 40px;
+        margin-left: 20px;
+        margin-right: 20px;
+        font-size: 1.1rem;
+      }
+
+      .social-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .social-category {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .social-category h3 {
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* 1. 默认样式（用于电脑端等大屏幕）：一排 3 个 */
+      .social-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        /* 电脑端 3 列 */
+        gap: 15px;
+        width: 100%;
+      }
+
+      /* 2. 媒体查询：当屏幕宽度小于 600 像素时（手机端），自动切换为一排 2 个 */
+      @media (max-width: 600px) {
+        .social-buttons {
+          grid-template-columns: repeat(2, 1fr);
+          /* 手机端自动变成 2 列 */
+          gap: 10px;
+          /* 手机端间距稍微缩小一点，更省空间 */
+        }
+
+        /* 可选优化：手机端文字太长时，缩小一点按钮内的字号和间距 */
+        .social-buttons .social-btn {
+          padding: 12px 10px;
+          /* 缩小按钮内边距 */
+          font-size: 0.9rem;
+          /* 字体稍微变小一点 */
+          gap: 8px;
+          /* 图标和文字靠得更近 */
+        }
+      }
+
+      .social-btn {
+        display: flex;
+        align-items: center;
+        /* 垂直居中 */
+        justify-content: center;
+        /* 水平居中 */
+        padding: 15px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        position: relative;
+        /* 辅助微调 */
+      }
+
+      /* 核心修改：针对按钮内部的图标 */
+      .social-btn i {
+        font-size: 1.3rem;
+        margin-right: auto;
+        /* 💡 核心：利用自动外边距，把图标死死顶在最左边 */
+      }
+
+      /* 核心修改：为了让文字绝对居中，需要消除图标占位带来的轻微偏差 */
+      .social-btn span {
+        position: absolute;
+        /* 💡 开启绝对定位 */
+        left: 50%;
+        /* 移动到按钮水平中间 */
+        transform: translateX(-50%);
+        /* 往左回拉自身的一半，实现彻底的物理居中 */
+      }
+
+      .social-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      /* 各平台按钮颜色 */
+      .instagram {
+        background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d);
+      }
+
+      .twitter {
+        background: linear-gradient(45deg, #1da1f2, #14171a);
+      }
+
+      .telegram {
+        background: linear-gradient(45deg, #0088cc, #2aabee);
+      }
+
+      .weibo {
+        background: linear-gradient(45deg, #ff8200, #d52c2b, #e79115);
+      }
+
+      .qq {
+        background: linear-gradient(45deg, #12b7f5, #1f9be0);
+      }
+
+      .wechat {
+        background: linear-gradient(45deg, #07c160, #09bb07);
+      }
+
+      .qr-container {
+        margin: 25px 0;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        display: inline-block;
+      }
+
+      .qr-code {
+        width: 200px;
+        height: 200px;
+        border-radius: 6px;
+      }
+
+      .qr-tip {
+        color: #333;
+        margin: 15px 0;
+        font-size: 1.1rem;
+      }
+
+      .qr-tip-small {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 10px;
+      }
     </style>
 
   </head>
@@ -912,12 +1082,12 @@
       <!-- 底部版权页脚 -->
       <footer class="site-footer">
         <div class="footer-container">
+          <div class="footer-links">
+            <a href="javascript:void(0)" onclick="openContactModal()">联系我们</a>
+          </div>
           <div class="footer-section">
             <p class="copyright">© 2026 IBTI Project. All Rights Reserved.</p>
             <p class="creator">Designed by 绳声蛮&绳声点点 | <span class="version">Version v1.0</span></p>
-          </div>
-          <div class="footer-links">
-            <a href="javascript:void(0)" onclick="openContactModal()">联系我们</a>
           </div>
           <div class="footer-section disclaimer-box">
             <strong>免责声明：</strong>本测试结果仅供娱乐与自我探索参考，不作为专业心理诊断建议。我们尊重并保护您的隐私，答题数据仅用于本地结果生成。
@@ -1537,38 +1707,38 @@
     <div id="contact-modal" class="modal-overlay" onclick="closeModal('contact-modal')">
       <div class="modal-content" onclick="event.stopPropagation()">
         <span class="modal-close" onclick="closeModal('contact-modal')">&times;</span>
-        <div class="modal-header">联系我们</div>
+        <div class="modal-header">欢迎通过以下平台与我们交流</div>
         <div class="modal-body">
-          <p class="contact-hint">欢迎通过以下平台与我们交流</p>
-          <div class="social-container">
-            <a href="您的微博链接" target="_blank" class="social-item weibo">
-              <div class="icon-box">
-                <svg viewBox="0 0 1024 1024">
-                  <path d="M411.3 723.3c-100.8-11.8-176.7-65.2-169.5-119.2 7.2-54 86.4-88.2 187.2-76.5 100.8 11.8 176.7 65.2 169.5 119.2-7.2 54-86.4 88.2-187.2 76.5z"></path>
-                  <path d="M848.4 430.4c-22.3-33-64.8-44.6-101.4-31.1-13.8 5.1-19.1 20.6-12 33.2 7.1 12.6 22.4 17.1 35.8 11 11.1-5.1 24.3-1.4 31.2 8.7s7.6 24.4-1.3 33.4c-9.1 9.2-8.5 24.1 1.3 32.5 9.8 8.4 24.8 7.3 33.3-2.6 26.6-31.1 29.5-76.3 13.1-105.1z"></path>
-                </svg>
-              </div>
+          <p class="contact-hint"></p>
+          <div class="social-buttons">
+            <a href="https://www.instagram.com/reompoen" target="_blank" class="social-btn instagram">
+              <i class="fab fa-instagram"></i>
+              <span>Instagram</span>
+            </a>
+            <a href="https://x.com/Ropeart_Emon" target="_blank" class="social-btn twitter">
+              <i class="fab fa-x-twitter"></i>
+              <span>Twitter</span>
+            </a>
+            <a href="https://t.me/你的频道" target="_blank" class="social-btn telegram">
+              <i class="fab fa-telegram"></i>
+              <span>Telegram</span>
+            </a>
+            <a href="https://weibo.com/u/6438214421" target="_blank" class="social-btn weibo">
+              <i class="fab fa-weibo"></i>
               <span>微博</span>
             </a>
-            <a href="您的B站链接" target="_blank" class="social-item bilibili">
-              <div class="icon-box">
-                <svg viewBox="0 0 1024 1024">
-                  <path d="M777.6 153.6l-51.2 51.2h-448l-51.2-51.2c-12.8-12.8-32-12.8-44.8 0s-12.8 32 0 44.8l70.4 70.4C179.2 300.8 128 396.8 128 512c0 211.2 172.8 384 384 384s384-172.8 384-384c0-115.2-51.2-211.2-128-243.2l70.4-70.4c12.8-12.8 12.8-32 0-44.8s-32-12.8-44.8 0zM512 832c-179.2 0-320-140.8-320-320s140.8-320 320-320 320 140.8 320 320-140.8 320-320 320z"></path>
-                </svg>
-              </div>
-              <span>Bilibili</span>
+            <!-- QQ群链接 -->
+            <a href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群密钥" target="_blank" class="social-btn qq">
+              <i class="fab fa-qq"></i>
+              <span>QQ群</span>
             </a>
-            <div class="social-item wechat" onclick="toggleWeChatQR()">
-              <div class="icon-box">
-                <svg viewBox="0 0 1024 1024">
-                  <path d="M661.1 538c20.3 0 36.8-14.8 36.8-33.1s-16.5-33.1-36.8-33.1c-20.3 0-36.8 14.8-36.8 33.1s16.5 33.1 36.8 33.1z m-261.2 0c20.3 0 36.8-14.8 36.8-33.1s-16.5-33.1-36.8-33.1c-20.3 0-36.8 14.8-36.8 33.1s16.5 33.1 36.8 33.1z"></path>
-                  <path d="M1024 570.6c0-147.2-154.5-266.6-345.1-266.6s-345.1 119.4-345.1 266.6 154.5 266.6 345.1 266.6c41 0 80.3-5.5 116.8-15.7l108.9 57.6-28.9-97.1c86.5-50.5 143.4-129.2 143.4-211.4z"></path>
-                </svg>
-              </div>
-              <span>微信</span>
+            <div class="social-btn wechat" onclick="toggleWeChatQR()">
+              <i class="fab fa-weixin"></i>
+              <span>微信群</span>
               <div id="wechat-qr-popup" class="qr-popup">
-                <img src="您的二维码图片地址" alt="微信二维码">
-                <p>长按保存二维码</p>
+                <img src="favicon.ico" alt="微信群二维码" class="qr-code" />
+                <p class="qr-tip">请使用微信扫描二维码加入群聊</p>
+                <p class="qr-tip-small">或添加微信号: <code>rope_art</code></p>
               </div>
             </div>
           </div>
