@@ -1,0 +1,956 @@
+:root {
+        --primary: #8b5cf6;
+        --primary-dark: #7c3aed;
+        --secondary: #f8fafc;
+        --text: #334155;
+        --border: #e2e8f0;
+        --danger: #ef4444;
+        --success: #10b981;
+
+        /* 添加情感多选时新增的 */
+        --base-color: #4a6fa5;
+        --light-color: #edf2f7;
+        --hover-color: #f0f0f0;
+        --text-dark: #333;
+        --text-medium: #666;
+        --text-light: #888; /* 去除重复，保留最终覆盖值 */
+        --border-color: #ddd;
+        --level1-color: #7cb342;
+        --level2-color: #ffb74d;
+        --level3-color: #ff7043;
+        --level4-color: #e53935;
+        --safety-bg: #fff0f0;
+        --safety-text: #c62828;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      }
+
+      body {
+        background: #f9f9f9; /* 后者覆盖前者的 linear-gradient */
+        color: var(--text-dark); /* 后者覆盖前者的 var(--text) */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 后者覆盖 */
+        line-height: 1.6;
+        padding: 20px; /* 后者覆盖前者的 clamp 边距 */
+        max-width: 1000px;
+        margin: 0 auto;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: min(90vw, 1000px);
+        margin: 0 auto;
+        background: white;
+        border-radius: clamp(0.75rem, 2vw, 1rem);
+        box-shadow: 0 clamp(0.375rem, 1vw, 0.625rem) clamp(0.9375rem, 2.5vw, 1.5625rem) rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        border: 0.0625rem solid var(--border);
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: clamp(0.5rem, 1vw, 0.625rem);
+        letter-spacing: -0.03125rem;
+      }
+
+      .header p {
+        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        opacity: 0.9;
+        max-width: min(90%, 700px);
+        margin: 0 auto;
+        line-height: 1.4;
+      }
+
+      .status-bar {
+        display: flex;
+        background: var(--secondary);
+        padding: clamp(0.75rem, 2vw, 0.9375rem) clamp(1.5rem, 4vw, 2.5rem);
+        border-bottom: 0.0625rem solid var(--border);
+        gap: clamp(1rem, 3vw, 1.875rem);
+        justify-content: space-around;
+      }
+
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.5rem, 1.5vw, 0.625rem);
+        color: var(--text-light);
+        font-size: clamp(0.8rem, 2vw, 1rem);
+      }
+
+      .status-item.active {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .status-item i {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+      }
+
+      .content {
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+      }
+
+      .form-section {
+        margin-bottom: clamp(2rem, 5vw, 3.125rem);
+        padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+        border-bottom: 0.125rem dashed var(--border);
+      }
+
+      .form-section:last-child {
+        border-bottom: none;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+        padding-bottom: clamp(0.75rem, 2vw, 0.9375rem);
+        border-bottom: 0.125rem solid var(--border);
+      }
+
+      .section-title i {
+        color: var(--primary);
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+      }
+
+      .section-title h2 {
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+        color: var(--text);
+      }
+
+      .warning-box {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 0.3125rem solid #f59e0b;
+        padding: clamp(1rem, 3vw, 1.25rem);
+        border-radius: 0.5rem;
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+      }
+
+      .warning-box h3 {
+        color: #92400e;
+        margin-bottom: 0.625rem;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+      }
+
+      .warning-box p {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+      }
+
+      /* 整合合并后的表单组基础配置 */
+      .form-group {
+        margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.625rem;
+        color: var(--text);
+        font-size: clamp(1rem, 2.5vw, 1.1rem);
+      }
+
+      .form-label-comm {
+        display: block;
+        font-weight: 350;
+        margin-bottom: 0.625rem;
+        color: var(--text);
+      }
+
+      .form-help {
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        color: var(--text-light);
+        margin-top: 0.3125rem;
+        margin-bottom: 0.9375rem;
+        line-height: 1.4;
+      }
+
+      .feeling-options {
+        margin-top: 15px;
+      }
+
+      .feeling-option {
+        position: relative;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+      }
+
+      .feeling-option:hover {
+        transform: translateX(5px);
+      }
+
+      .feeling-option input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+      }
+
+      .feeling-option label {
+        display: block;
+        padding: 18px 20px;
+        background: #f8f8f8;
+        border-radius: 10px;
+        border-left: 6px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .feeling-option input[type="checkbox"]:checked+label {
+        background: var(--light-color);
+        box-shadow: 0 2px 8px rgba(74, 111, 165, 0.15);
+      }
+
+      .feeling-option:hover label {
+        background: var(--hover-color);
+      }
+
+      .option-title {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+      }
+
+      .option-title i {
+        margin-right: 10px;
+        font-size: 18px;
+        width: 24px;
+        text-align: center;
+      }
+
+      .option-desc {
+        display: block;
+        font-size: 14px;
+        color: var(--text-medium);
+        line-height: 1.6;
+        padding-left: 34px;
+      }
+
+      .safety-note {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 6px 10px;
+        background: var(--safety-bg);
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--safety-text);
+        line-height: 1.4;
+      }
+
+      .safety-note i {
+        margin-right: 5px;
+      }
+
+      /* 强度级别样式 */
+      .level-1 input[type="checkbox"]:checked+label { border-left-color: var(--level1-color); }
+      .level-2 input[type="checkbox"]:checked+label { border-left-color: var(--level2-color); }
+      .level-3 input[type="checkbox"]:checked+label { border-left-color: var(--level3-color); }
+      .level-4 input[type="checkbox"]:checked+label { border-left-color: var(--level4-color); }
+
+      /* 强度标签 */
+      .intensity-label, .intensity-label-comm {
+        display: inline-block;
+        border-radius: 10px;
+        font-weight: normal;
+      }
+      .intensity-label {
+        margin-left: 10px;
+        font-size: 0.7em;
+      }
+      .intensity-label-comm {
+        font-size: 0.8em;
+      }
+
+      .level-1 .intensity-label { background-color: #7cb34226; color: var(--level1-color); }
+      .level-2 .intensity-label { background-color: #ffb74d26; color: var(--level2-color); }
+      .level-3 .intensity-label { background-color: #ff704326; color: var(--level3-color); }
+      .level-4 .intensity-label { background-color: #e5393526; color: var(--level4-color); }
+
+      .input-text {
+        width: 100%;
+        padding: 0.875rem;
+        border: 0.125rem solid var(--border);
+        border-radius: 0.625rem;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        transition: all 0.3s;
+      }
+
+      .input-text:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.1875rem rgba(139, 92, 246, 0.1);
+      }
+
+      .radio-group, .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(0.5rem, 2vw, 1.25rem);
+        margin-top: 0.625rem;
+      }
+
+      .radio-label, .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.625rem 0.9375rem;
+        border-radius: 0.5rem;
+        border: 0.125rem solid var(--border);
+        transition: all 0.2s;
+        user-select: none;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+      }
+
+      .radio-label:hover, .checkbox-label:hover {
+        border-color: var(--primary);
+      }
+
+      input[type="radio"], input[type="checkbox"] {
+        width: 1.125rem;
+        height: 1.125rem;
+        accent-color: var(--primary);
+      }
+
+      .body-part-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(120px, 30vw), 1fr));
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-top: 0.9375rem;
+      }
+
+      .body-part-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.9375rem 0.625rem;
+        border: 0.125rem solid var(--border);
+        border-radius: 0.625rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+      }
+
+      .body-part-item:hover {
+        border-color: var(--primary);
+        transform: translateY(-0.125rem);
+      }
+
+      .body-part-item.selected {
+        background-color: rgba(139, 92, 246, 0.1);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .body-part-item i {
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        margin-bottom: 0.5rem;
+      }
+
+      .feeling-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(0.5rem, 1.5vw, 0.75rem);
+        margin-top: 0.9375rem;
+      }
+
+      .feeling-tag {
+        padding: 0.625rem 1.125rem;
+        background: var(--secondary);
+        border-radius: 3.125rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 0.125rem solid var(--border);
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+      }
+
+      .feeling-tag:hover {
+        transform: translateY(-0.125rem);
+      }
+
+      .feeling-tag.selected {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .btn-submit {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        border: none;
+        padding: clamp(1rem, 3vw, 1.125rem) clamp(1.5rem, 5vw, 2.5rem);
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        font-weight: 600;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        margin-top: clamp(1.5rem, 4vw, 1.875rem);
+        letter-spacing: 0.03125rem;
+      }
+
+      .btn-submit:hover {
+        transform: translateY(-0.1875rem);
+        box-shadow: 0 0.625rem 1.25rem rgba(139, 92, 246, 0.3);
+      }
+
+      .btn-submit:active {
+        transform: translateY(-0.0625rem);
+      }
+
+      .footer {
+        text-align: center;
+        padding: clamp(1rem, 3vw, 1.875rem);
+        color: var(--text-light);
+        font-size: clamp(0.8rem, 2vw, 0.9rem);
+        border-top: 0.0625rem solid var(--border);
+        background: var(--secondary);
+      }
+
+      .privacy-note {
+        background: rgba(139, 92, 246, 0.05);
+        padding: 0.9375rem;
+        border-radius: 0.5rem;
+        margin-top: 1.25rem;
+        border-left: 0.25rem solid var(--primary);
+      }
+
+      .success-message {
+        text-align: center;
+        padding: clamp(2rem, 8vw, 3.75rem) clamp(1.5rem, 4vw, 2.5rem);
+        display: none;
+      }
+
+      .success-message i {
+        font-size: clamp(2.5rem, 10vw, 4rem);
+        color: var(--success);
+        margin-bottom: 1.25rem;
+      }
+
+      .success-message h2 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        margin-bottom: 1rem;
+      }
+
+      .success-message p {
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        margin-bottom: 0.5rem;
+      }
+
+      /* 确认页面样式 */
+      .confirmation-page {
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        display: none;
+        background: white;
+      }
+
+      .confirmation-section {
+        margin-bottom: clamp(0.5rem, 2vw, 0.625rem);
+        padding-bottom: 1.25rem;
+        border-bottom: 0rem dashed var(--border);
+      }
+
+      .confirmation-section:last-child {
+        border-bottom: none;
+      }
+
+      .confirmation-item {
+        margin-bottom: 1.25rem;
+        padding: 0.9375rem;
+        background: var(--secondary);
+        border-radius: 0.625rem;
+        border-left: 0.25rem solid var(--primary);
+      }
+
+      .confirmation-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+      }
+
+      .confirmation-label i {
+        color: var(--primary);
+      }
+
+      .confirmation-value {
+        color: var(--text-light);
+        padding-left: 1.625rem;
+        font-size: clamp(0.85rem, 2vw, 0.95rem);
+      }
+
+      .confirmation-value ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .confirmation-value li {
+        padding: 0.3125rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .confirmation-value li i {
+        color: var(--primary);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 0.9375rem;
+        margin-top: clamp(1.5rem, 4vw, 1.875rem);
+        justify-content: center;
+      }
+
+      .btn-action {
+        padding: clamp(0.75rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 1.875rem);
+        border-radius: 0.625rem;
+        border: none;
+        font-size: clamp(0.9rem, 2.5vw, 1rem);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+      }
+
+      .btn-secondary {
+        background: var(--secondary);
+        color: var(--text);
+        border: 0.125rem solid var(--border);
+      }
+
+      .btn-action:hover {
+        transform: translateY(-0.125rem);
+        box-shadow: 0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1);
+      }
+
+      /* ==========================================================================
+         平板与中屏设备响应式设计 (max-width: 768px)
+         ========================================================================== */
+      @media (max-width: 768px) {
+        body {
+          padding: 0.75rem;
+        }
+
+        .container {
+          max-width: 95vw;
+        }
+
+        .header, .content, .confirmation-page {
+          padding: clamp(1rem, 3vw, 1.5625rem);
+        }
+
+        .header h1 {
+          font-size: clamp(1.3rem, 4vw, 2rem);
+        }
+
+        .status-bar {
+          padding: 0.75rem clamp(0.5rem, 2vw, 1rem);
+          flex-direction: row;
+          gap: clamp(0.5rem, 2vw, 1rem);
+          justify-content: space-between;
+          flex-wrap: wrap;
+        }
+
+        .status-item {
+          flex: 1;
+          min-width: 80px;
+          justify-content: center;
+          text-align: center;
+          padding: 0.5rem 0.25rem;
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        .status-item i {
+          font-size: clamp(0.9rem, 2.5vw, 1rem);
+          margin: 0 auto;
+        }
+
+        .status-item span {
+          font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+          line-height: 1.2;
+        }
+
+        .body-part-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 0.5rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .btn-action {
+          width: 100%;
+          justify-content: center;
+          padding: 0.75rem 1rem;
+        }
+
+        .radio-group, .checkbox-group {
+          gap: 0.75rem;
+        }
+
+        .radio-label, .checkbox-label {
+          padding: 0.5rem 0.75rem;
+        }
+
+        .form-group {
+          padding: 15px;
+        }
+
+        .feeling-option label {
+          padding: 15px;
+        }
+
+        .option-title {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0.1rem;
+        }
+
+        .option-title i {
+          margin-right: 0;
+          margin-bottom: 0.2rem;
+          font-size: 1rem;
+          width: auto;
+        }
+
+        .option-desc {
+          font-size: 13px;
+          padding-left: 0;
+          padding-top: 0.3rem;
+          text-align: justify;
+        }
+
+        .section-title {
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          flex-wrap: nowrap !important;
+          white-space: nowrap !important;
+        }
+
+        .section-title i {
+          flex-shrink: 0 !important;
+          margin-top: 0.2rem !important;
+        }
+
+        .section-title h2 {
+          flex: 1;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+
+        .warning-box h3 {
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .warning-box h3 i {
+          flex-shrink: 0 !important;
+          margin-top: 0.1rem !important;
+        }
+      }
+
+      /* ==========================================================================
+         手机端专用超细化响应式设计 (max-width: 480px)
+         ========================================================================== */
+      @media (max-width: 480px) {
+        body {
+          padding: 10px;
+          background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        .container {
+          max-width: 100%;
+          border-radius: 12px;
+          margin: 0;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+          padding: 20px 15px;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+          line-height: 1.3;
+          margin-bottom: 8px;
+        }
+
+        .header p {
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+
+        .status-bar {
+          padding: 0.5rem 0.25rem;
+          gap: 0.25rem;
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .status-item {
+          min-width: 70px;
+          padding: 0.4rem 0.2rem;
+          flex-direction: column;
+          flex-shrink: 1;
+        }
+
+        .status-item i {
+          font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+        }
+
+        .status-item span {
+          font-size: clamp(0.65rem, 1.6vw, 0.75rem);
+        }
+
+        .content {
+          padding: 20px 15px;
+        }
+
+        .form-section {
+          margin-bottom: 25px;
+          padding-bottom: 20px;
+        }
+
+        .section-title {
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          gap: 8px;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+          flex-wrap: nowrap !important;
+          white-space: nowrap !important;
+        }
+
+        .section-title i {
+          flex-shrink: 0 !important;
+          margin-top: 0.2rem !important;
+        }
+
+        .section-title h2 {
+          font-size: 1.3rem;
+          line-height: 1.4;
+          flex: 1;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+
+        .warning-box {
+          padding: 15px;
+          margin-bottom: 20px;
+        }
+
+        .warning-box h3 {
+          font-size: 1rem;
+          flex-direction: row !important;
+          align-items: flex-start !important;
+          flex-wrap: nowrap !important;
+        }
+
+        .warning-box h3 i {
+          flex-shrink: 0 !important;
+          margin-top: 0.1rem !important;
+        }
+
+        .warning-box p {
+          font-size: 0.85rem;
+          line-height: 1.5;
+        }
+
+        .form-group {
+          margin-bottom: 25px;
+        }
+
+        .form-label {
+          font-size: 1rem;
+          margin-bottom: 8px;
+          line-height: 1.4;
+        }
+
+        .form-help {
+          font-size: 0.8rem;
+          margin-bottom: 12px;
+        }
+
+        .input-text {
+          padding: 14px;
+          font-size: 0.95rem;
+          border-radius: 8px;
+        }
+
+        .radio-group, .checkbox-group {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .radio-label, .checkbox-label {
+          width: 100%;
+          padding: 12px 15px;
+          justify-content: flex-start;
+          font-size: 0.95rem;
+        }
+
+        .body-part-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+        }
+
+        .body-part-item {
+          padding: 12px 8px;
+          font-size: 0.85rem;
+          min-height: 80px;
+          text-align: center;
+        }
+
+        .body-part-item i {
+          font-size: 1.4rem;
+          margin-bottom: 6px;
+        }
+
+        .feeling-options {
+          margin-top: 10px;
+        }
+
+        .feeling-option {
+          margin-bottom: 12px;
+        }
+
+        .feeling-option label {
+          padding: 16px;
+          border-left-width: 4px;
+        }
+
+        .option-title {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0.1rem;
+          font-size: 0.9rem;
+          margin-bottom: 4px;
+        }
+
+        .option-title i {
+          font-size: 1rem;
+          margin-right: 0;
+          margin-bottom: 0.2rem;
+          width: auto;
+        }
+
+        .option-desc {
+          font-size: 0.8rem;
+          padding-left: 0;
+          padding-top: 0.2rem;
+          text-align: justify;
+          line-height: 1.4;
+        }
+
+        .intensity-label {
+          font-size: 11px;
+          padding: 2px 6px;
+          margin-left: 8px;
+        }
+
+        .safety-note {
+          font-size: 0.75rem;
+          padding: 5px 8px;
+          margin-top: 8px;
+        }
+
+        .btn-submit {
+          padding: 16px 20px;
+          font-size: 1.1rem;
+          border-radius: 10px;
+          margin-top: 25px;
+          position: relative;
+        }
+
+        .btn-submit:active {
+          transform: scale(0.98);
+        }
+
+        .confirmation-page {
+          padding: 20px 15px;
+        }
+
+        .confirmation-item {
+          padding: 12px;
+          margin-bottom: 15px;
+        }
+
+        .confirmation-label {
+          font-size: 0.95rem;
+        }
+
+        .confirmation-value {
+          padding-left: 0;
+          font-size: 0.9rem;
+          margin-top: 5px;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        .btn-action {
+          width: 100%;
+          padding: 14px 20px;
+          justify-content: center;
+          font-size: 1rem;
+        }
+
+        .footer {
+          padding: 15px;
+          font-size: 0.8rem;
+        }
+
+        .privacy-note {
+          padding: 12px;
+          margin-top: 15px;
+        }
+
+        .success-message {
+          padding: 30px 20px;
+        }
+
+        .success-message h2 {
+          font-size: 1.5rem;
+        }
+
+        .success-message p {
+          font-size: 0.95rem;
+        }
+      }
