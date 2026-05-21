@@ -1,15 +1,17 @@
-
-      /* 基础重置 */
+/* 基础重置 */
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
 
+      /* 👉 【修改】让 HTML 和 BODY 撑满整个屏幕高度 */
       html {
         font-size: 16px;
+        height: 100%;
       }
 
+      /* 👉 【修改】将 body 设为垂直 Flex 布局，确保可以控制子元素高度的分配 */
       body {
         font-family: "Noto Sans SC", "微软雅黑", sans-serif;
         line-height: 1.5;
@@ -19,6 +21,15 @@
         -ms-text-size-adjust: 100%;
         text-size-adjust: 100%;
         background: #f8f9fa;
+        height: 100%;        /* 撑满高度 */
+        display: flex;       /* 开启 Flex 布局 */
+        flex-direction: column; /* 让页面元素从上往下排 */
+      }
+
+      /* 👉 【新增】页面主要内容区域。它会自动拉伸，把页脚顶到最下面 */
+      /* 提示：请确保你 HTML 里的主要内容用 <main> 包裹，或者在外层加上 class="main-content" */
+      main, .main-content {
+        flex: 1 0 auto; /* 1 代表自动拉伸撑满剩余空间，0 代表空间不足时不缩小，auto 为基础大小 */
       }
 
       .container {
@@ -74,7 +85,6 @@
       .breadcrumb {
         background: #f5f5f5;
         padding: 12px 0;
-        margin-bottom: 25px;
         font-size: 0.85rem;
       }
 
@@ -209,7 +219,7 @@
         height: 200px;
         object-fit: cover;
         display: block;
-      }
+        }
 
       .image-caption {
         padding: 15px;
@@ -266,13 +276,14 @@
         transform: translateX(-3px);
       }
 
-      /* 页脚 */
+      /* 👉 【修改】页脚样式优化 */
       .footer {
         background: #333;
         color: white;
         text-align: center;
         padding: 25px 0;
-        margin-top: 40px;
+        /* margin-top: 40px; */ /* 移除固定的外边距，交给 flex 自动顶开 */
+        flex-shrink: 0;          /* 防止页脚在空间不足时被无情挤压变形 */
       }
 
       .footer-links {
@@ -614,4 +625,3 @@
           font-size: 0.85rem;
         }
       }
-    
