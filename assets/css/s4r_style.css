@@ -1014,3 +1014,32 @@ input[type="checkbox"] {
     font-size: 0.95rem;
   }
 }
+/* 全屏长图预览遮罩层 */
+#image-download-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75); /* 半透明黑底 */
+  z-index: 10000; /* 确保在所有元素最上层 */
+  display: none; /* 默认隐藏，由 JS 改为 flex 显示 */
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 遮罩层内部的白色卡片 */
+#image-download-overlay .overlay-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px; /* 适配手机端宽度 */
+  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
