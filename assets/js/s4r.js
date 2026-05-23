@@ -362,212 +362,47 @@
         sections.forEach(section => observer.observe(section));
       });
 
-      // 截图功能实现
-      document.addEventListener('DOMContentLoaded', function () {
-        const saveAsImageBtn = document.getElementById('saveAsImageBtn');
+/**
+ * 适配微信与移动端的精简版长图生成与预览功能（参照 IBTI 方案）
+ * @param {string} id - 需要截取的页面容器元素 ID
+ */
+function downloadS4RImage(id) {
+  const element = document.getElementById(id) || document.body;
 
-        if (saveAsImageBtn) {
-          saveAsImageBtn.addEventListener('click', function () {
-            // 获取确认页元素
-            const confirmationPage = document.querySelector('.confirmation-page');
+  // 1. 使用原生最简单的弹窗拦截，提示用户正在处理
+  alert("正在生成精致长图，请稍候片刻并在点击[确定]后等待预览");
 
-            // 显示加载提示
-            const originalText = saveAsImageBtn.innerHTML;
-            saveAsImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>正在生成图片...</span>';
-            saveAsImageBtn.disabled = true;
+  // 2. 调用 html2canvas 渲染页面（确保页面已引入 html2canvas.min.js）
+  html2canvas(element, {
+    scale: 2,                  // 提升2倍清晰度，防止长图模糊
+    backgroundColor: "#ffffff",// 强制白底，防止暗色模式或透明背景导致黑图
+    useCORS: true              // 开启跨域图片支持
+  }).then(canvas => {
+    const imageData = canvas.toDataURL("image/png");
 
-            // 使用 html2canvas 截图
-            html2canvas(confirmationPage, {
-              scale: 2, // 提高图片质量
-              useCORS: true,
-              backgroundColor: '#ffffff',
-              logging: false,
-              allowTaint: true
-            }).then(canvas => {
-              // 将 canvas 转换为图片
-              const image = canvas.toDataURL('image/png');
-
-              // 创建下载链接
-              const link = document.createElement('a');
-              link.download = '绳缚体验确认单.png';
-              link.href = image;
-
-              // 触发下载
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-
-              // 在移动端，尝试使用其他方式保存
-              if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // 移动端可能无法直接下载，尝试显示图片让用户长按保存
-                showMobileSaveOption(image);
-              }
-
-              // 恢复按钮状态
-              saveAsImageBtn.innerHTML = originalText;
-              saveAsImageBtn.disabled = false;
-
-              // 显示成功提示
-              showSuccessToast('图片已生成，请保存到相册');
-            }).catch(error => {
-              console.error('截图失败:', error);
-
-              // 恢复按钮状态
-              saveAsImageBtn.innerHTML = originalText;
-              saveAsImageBtn.disabled = false;
-
-              // 显示错误提示
-              showErrorToast('截图失败，请重试');
-            });
-          });
-        }
-
-        // 移动端显示保存选项
-        function showMobileSaveOption(imageUrl) {
-          // 创建一个全屏的图片预览
-          const overlay = document.createElement('div');
-          overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    `;
-
-          // 创建图片
-          const img = document.createElement('img');
-          img.src = imageUrl;
-          img.style.cssText = `
-      max-width: 100%;
-      max-height: 80%;
-      border-radius: 10px;
-    `;
-
-          // 创建提示文字
-          const hint = document.createElement('div');
-          hint.textContent = '长按图片保存到相册';
-          hint.style.cssText = `
-      color: white;
-      margin-top: 20px;
-      font-size: 16px;
-      text-align: center;
-      background: rgba(139, 92, 246, 0.5);
-      padding: 10px 20px;
-      border-radius: 20px;
-    `;
-
-          // 创建关闭按钮
-          const closeBtn = document.createElement('button');
-          closeBtn.innerHTML = '<i class="fas fa-times"></i> 关闭';
-          closeBtn.style.cssText = `
-      margin-top: 20px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    `;
-
-          // 点击关闭
-          closeBtn.addEventListener('click', function () {
-            document.body.removeChild(overlay);
-          });
-
-          // 点击背景关闭
-          overlay.addEventListener('click', function (e) {
-            if (e.target === overlay) {
-              document.body.removeChild(overlay);
-            }
-          });
-
-          // 添加到页面
-          overlay.appendChild(img);
-          overlay.appendChild(hint);
-          overlay.appendChild(closeBtn);
-          document.body.appendChild(overlay);
-        }
-
-        // 显示成功提示
-        function showSuccessToast(message) {
-          const toast = document.createElement('div');
-          toast.textContent = message;
-          toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--success);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 10000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideIn 0.3s ease-out;
-    `;
-
-          // 添加动画样式
-          if (!document.querySelector('#toast-styles')) {
-            const style = document.createElement('style');
-            style.id = 'toast-styles';
-            style.textContent = `
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
+    // 3. 检查或一次性注入全屏遮罩及预览框（包含内联关闭逻辑）
+    let overlay = document.getElementById('image-download-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'image-download-overlay';
+      overlay.innerHTML = `
+        <div class="overlay-content">
+          <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
+          <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
+          <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
+          <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭预览</button>
+        </div>
       `;
-            document.head.appendChild(style);
-          }
+      document.body.appendChild(overlay);
+    }
 
-          document.body.appendChild(toast);
+    // 4. 将生成的图片数据塞入预览图，并将遮罩层显示出来
+    const imgDisplay = document.getElementById('generated-image');
+    imgDisplay.src = imageData;
+    overlay.style.display = 'flex';
 
-          // 3秒后自动消失
-          setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
-            setTimeout(() => {
-              if (toast.parentNode) {
-                document.body.removeChild(toast);
-              }
-            }, 300);
-          }, 3000);
-        }
-
-        // 显示错误提示
-        function showErrorToast(message) {
-          const toast = document.createElement('div');
-          toast.textContent = message;
-          toast.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--danger);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      z-index: 10000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      animation: slideIn 0.3s ease-out;
-    `;
-
-          document.body.appendChild(toast);
-
-          // 3秒后自动消失
-          setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
-            setTimeout(() => {
-              if (toast.parentNode) {
-                document.body.removeChild(toast);
-              }
-            }, 300);
-          }, 3000);
-        }
-      });
+    console.log("S4R 长图生成成功");
+  }).catch(err => {
+    console.error("生成长图失败:", err);
+  });
+}
