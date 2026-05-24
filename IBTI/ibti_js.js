@@ -380,44 +380,94 @@
         });
       }
 
-      function downloadImage(id, name) {
-        const element = document.getElementById(id);
+/**
+ * IBTI 专属长图生成与移动端优化预览功能
+ * 移除了原生阻断 alert，引入无感延迟跳转，并完美防止截图中包含提示框
+ * @param {string} id - 需要截取的页面容器元素 ID
+ * @param {string} name - 保存图片的预设名称（虽然后续主要通过长按保存，但保留参数防错）
+ */
+function downloadImage(id, name) {
+  const element = document.getElementById(id);
+  if (!element) {
+    console.error(`未找到ID为 '${id}' 的截取容器`);
+    return;
+  }
 
-        // 显示加载提示（可选，因为生成长图可能需要 1-2 秒）
-        const loadingToast = alert("正在生成图片，请稍候片刻并点击确定按钮");
+  // 1. 创建或获取一个“正在处理”的轻量化遮罩提示框
+  let processToast = document.getElementById('image-processing-toast');
+  if (!processToast) {
+    processToast = document.createElement('div');
+    processToast.id = 'image-processing-toast';
+    // 采用优雅的移动端全屏居中黑底透白设计
+    processToast.innerHTML = `
+      <div style="background: rgba(0,0,0,0.8); color: white; padding: 15px 25px; border-radius: 8px; text-align: center; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10001;">
+        <span id="toast-text">正在生成长图，请稍候片刻...</span>
+      </div>
+    `;
+    // 设置全屏遮罩样式，提供轻微磨砂过渡感
+    Object.assign(processToast.style, {
+      position: 'fixed',
+      top: 0, left: 0, width: '100vw', height: '100vh',
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+      zIndex: '10000'
+    });
+    document.body.appendChild(processToast);
+  } else {
+    // 每次多次点击生成时，重新初始化文本和显示状态
+    document.getElementById('toast-text').innerText = "正在生成长图，请稍候片刻...";
+    processToast.style.display = 'flex';
+  }
 
-        html2canvas(element, {
-          scale: 2,
-          backgroundColor: "#ffffff",
-          useCORS: true // 开启跨域，防止图片（如雷达图）丢失
-        }).then(canvas => {
-          const imageData = canvas.toDataURL("image/png");
+  // 2. 引入延迟 1.5 秒后再执行长图渲染，给浏览器留出渲染空间并给用户无感过渡期
+  setTimeout(() => {
 
-          // 找到或创建用于展示图片的容器
-          let overlay = document.getElementById('image-download-overlay');
-          if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'image-download-overlay';
-            overlay.innerHTML = `
-                <div class="overlay-content">
-                    <p>温馨提示：图片已生成</p>
-                    <p><strong>请长按下方图片保存到相册</strong></p>
-                    <img id="generated-image" src="" />
-                    <button onclick="document.getElementById('image-download-overlay').style.display='none'">关闭预览</button>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-          }
-
-          // 将生成的图片填入预览框并显示
-          const imgDisplay = document.getElementById('generated-image');
-          imgDisplay.src = imageData;
-          overlay.style.display = 'flex';
-
-          // 移除加载提示
-          console.log("图片生成成功");
-        });
+    html2canvas(element, {
+      scale: 2,                  // 提升2倍清晰度，防止高清屏下长图文字模糊
+      backgroundColor: "#ffffff",// 强制白底，防止暗色模式或透明背景导致黑图
+      useCORS: true,              // 开启跨域图片支持，防止雷达图等外部图片丢失
+      // 【核心修复】：配置忽略元素，确保“提示框”与“已存在的预览层”绝不参与截图拍照
+      ignoreElements: (el) => {
+        return el.id === 'image-processing-toast' || el.id === 'image-download-overlay';
       }
+    }).then(canvas => {
+      const imageData = canvas.toDataURL("image/png");
+
+      // 3. 检查或一次性注入全屏遮罩及长按预览框
+      let overlay = document.getElementById('image-download-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'image-download-overlay';
+        overlay.innerHTML = `
+          <div class="overlay-content">
+            <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
+            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
+            <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
+            <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">关闭预览</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+      }
+
+      // 4. 将生成的图片数据塞入预览图，并将预览遮罩层显示出来
+      const imgDisplay = document.getElementById('generated-image');
+      imgDisplay.src = imageData;
+
+      // 5. 丝滑关闭“正在处理”的提示，并拉起“长图预览区”
+      processToast.style.display = 'none';
+      overlay.style.display = 'flex';
+
+      console.log(` [${name}] 生成成功`);
+    }).catch(err => {
+      console.error("生成长图失败:", err);
+      // 容错处理：若失败则在提示框中反馈，并在 1.5 秒后自动消失
+      const toastText = document.getElementById('toast-text');
+      if (toastText) toastText.innerText = "生成失败，请刷新页面重试";
+      setTimeout(() => { processToast.style.display = 'none'; }, 1500);
+    });
+
+  }, 1500); // 1.5 秒等待时间
+}
 
       window.onload = initQuiz;
 
