@@ -471,7 +471,7 @@ function downloadImage(id, name) {
 
       window.onload = initQuiz;
 
-      /*    // 【测试专用】根据输入代号强制跳转结果页
+// 【测试专用】根据输入代号强制跳转结果页
             function debugCustomCode() {
               let input = document.getElementById('debug-input').value.trim().toUpperCase();
 
@@ -534,7 +534,7 @@ function downloadImage(id, name) {
                 // 如果你的提交函数叫 showReview，请根据实际情况改名
                 showReview();
               }
-            } */
+            } 
 
       // --- 1. 核心弹窗控制函数 ---
 
