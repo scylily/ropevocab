@@ -270,15 +270,6 @@
       }
 
       /* ============================================================
-       6. 调试工具面板 (Debug Tool)
-       ============================================================ */
-      #debug-panel {
-        touch-action: manipulation;
-        -webkit-user-select: none;
-        user-select: none;
-      }
-
-      /* ============================================================
        7. 手机端量化自适应补丁 (Responsive)
        ============================================================ */
       @media (max-width: 600px) {
@@ -386,15 +377,6 @@
           border-left: 1.2px solid #ddd;
         }
 
-        /* 移动端调试面板定位 */
-        #debug-panel {
-          top: auto !important;
-          bottom: 20px !important;
-          right: -10px;
-          transform: scale(0.65);
-          transform-origin: right bottom;
-          opacity: 0.9;
-        }
       }
 
       /* 解决 Markdown 渲染后的样式问题 */
