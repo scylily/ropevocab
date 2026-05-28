@@ -1,183 +1,166 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
-
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <link rel="stylesheet" href="ibti_style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
-    <title>IBTI 潜向行为性格指标测试</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="ibti_data.js"></script>
-    <script src="ibti_questions.js"></script>
-    <script src="ibti_js.js"></script>
-    <style>
-    </style>
-  </head>
-
-  <body>
-    <div class="container" id="main-container">
-      <div id="quiz-section" class="section active">
-        <header>
-          <h1>IBTI
-            <p>潜向行为性格指标测试
-          </h1>
-          <div class="sub-title">Inclination Behavior Type Indicator
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" name="viewport"/>
+<link href="ibti_style.css" rel="stylesheet"/>
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" referrerpolicy="no-referrer" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<title>IBTI 潜向行为性格指标测试</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="ibti_data.js"></script>
+<script src="ibti_questions.js"></script>
+<script src="ibti_js.js"></script>
+<style>
+</style>
+</link></head>
+<body>
+<div class="container" id="main-container">
+<div class="section active" id="quiz-section">
+<header>
+<h1 class="safe-text" data-safe="SUJUSQogICAgICAgICAgICA8cD7mvZzlkJHooYzkuLrmgKfmoLzmjIfmoIfmtYvor5UKICAgICAgICAgIDwvcD4=">加载中...</h1>
+<div class="sub-title">Inclination Behavior Type Indicator
           </div>
-
-          <p><button class="modal-btn" onclick="openIntroModal()">
-              📖 查看测试说明与维度解析
-            </button>
-          </p>
-
-        </header>
-        <div id="quiz-container"></div>
-        <div class="btn-group">
-          <button class="btn" onclick="showReview()">核对选择并继续</button>
-        </div>
-      </div>
-
-      <div id="review-section" class="section">
-        <header>
-          <h1>所选内容确认清单</h1>
-          <div class="sub-title">请核对您的倾向选择</div>
-        </header>
-        <div id="review-list"></div>
-        <div class="btn-group">
-          <button class="btn btn-outline" onclick="downloadImage('review-section', 'IBTI确认清单')">保存清单长图</button>
-          <button class="btn btn-gold" onclick="generateReport()">确认无误，生成报告</button>
-          <button class="btn btn-outline" onclick="backToQuiz()">返回修改</button>
-
-        </div>
-      </div>
-
-      <div id="result-section" class="section">
-        <div id="capture-area">
-          <header>
-            <h1>IBTI 结果报告</h1>
-            <div class="sub-title">Personal Inclination Mapping
+<p class="safe-text" data-safe="PGJ1dHRvbiBjbGFzcz0ibW9kYWwtYnRuIiBvbmNsaWNrPSJvcGVuSW50cm9Nb2RhbCgpIj4KICAgICAgICAgICAgICDwn5OWIOafpeeci+a1i+ivleivtOaYjuS4jue7tOW6puino+aekAogICAgICAgICAgICA8L2J1dHRvbj4K">加载中...</p>
+</header>
+<div id="quiz-container"></div>
+<div class="btn-group">
+<button class="btn safe-text" data-safe="5qC45a+56YCJ5oup5bm257un57ut" onclick="showReview()">加载中...</button>
+</div>
+</div>
+<div class="section" id="review-section">
+<header>
+<h1 class="safe-text" data-safe="5omA6YCJ5YaF5a6556Gu6K6k5riF5Y2V">加载中...</h1>
+<div class="sub-title safe-text" data-safe="6K+35qC45a+55oKo55qE5YC+5ZCR6YCJ5oup">加载中...</div>
+</header>
+<div id="review-list"></div>
+<!-- 仅在生成长图时显示的分享二维码区域 -->
+<div class="share-qr-footer">
+<div class="share-qr-container">
+<img alt="网站二维码" class="share-qr-img" src="website_qr.jpg"/>
+<div class="share-qr-text safe-text" data-safe="5omr56CB6L+b6KGMIElCVEkg5r2c5ZCR6KGM5Li65oCn5qC85rWL6K+V">加载中...</div>
+<div class="share-qr-subtext safe-text" data-safe="5o6i57Si5L2g5bqV5bGC55qE5b+D55CG5Y6f5Yqo5Yqb5LiO5LqS5Yqo5YGP5aW9">加载中...</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="btn btn-outline safe-text" data-safe="5L+d5a2Y5riF5Y2V6ZW/5Zu+" onclick="downloadImage('review-section', 'IBTI确认清单')">加载中...</button>
+<button class="btn btn-gold safe-text" data-safe="56Gu6K6k5peg6K+v77yM55Sf5oiQ5oql5ZGK" onclick="generateReport()">加载中...</button>
+<button class="btn btn-outline safe-text" data-safe="6L+U5Zue5L+u5pS5" onclick="backToQuiz()">加载中...</button>
+</div>
+</div>
+<div class="section" id="result-section">
+<div id="capture-area">
+<header>
+<h1 class="safe-text" data-safe="SUJUSSDnu5PmnpzmiqXlkYo=">加载中...</h1>
+<div class="sub-title">Personal Inclination Mapping
             </div>
+<p class="safe-text" data-safe="PGJ1dHRvbiBjbGFzcz0ibW9kYWwtYnRuIiBvbmNsaWNrPSJvcGVuSW50cm9Nb2RhbCgpIj4KICAgICAgICAgICAgICAgIPCfk5Yg5p+l55yL5rWL6K+V6K+05piO5LiO57u05bqm6Kej5p6QCiAgICAgICAgICAgICAgPC9idXR0b24+Cg==">加载中...</p>
+</header>
+<div class="res-code" id="res-code"></div>
+<div class="res-tag" id="res-tag"></div>
+<div class="chart-box">
+<canvas id="radarChart"></canvas>
+</div>
+<div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
+<div class="desc-box" id="res-desc"></div>
+<!-- 仅在生成长图时显示的分享二维码区域 -->
+<div class="share-qr-footer">
+<div class="share-qr-container">
+<img alt="网站二维码" class="share-qr-img" src="website_qr.jpg"/>
+<div class="share-qr-text safe-text" data-safe="5omr56CB6L+b6KGMIElCVEkg5r2c5ZCR6KGM5Li65oCn5qC85rWL6K+V">加载中...</div>
+<div class="share-qr-subtext safe-text" data-safe="5o6i57Si5L2g5bqV5bGC55qE5b+D55CG5Y6f5Yqo5Yqb5LiO5LqS5Yqo5YGP5aW9">加载中...</div>
+</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="btn btn-gold safe-text" data-safe="5L+d5a2Y57uT5p6c5oql5ZGK5YWo5qGI6ZW/5Zu+" onclick="downloadImage('capture-area', 'IBTI结果报告')">加载中...</button>
+<button class="btn btn-outline safe-text" data-safe="6YeN5paw5rWL6K+V" onclick="location.reload()">加载中...</button>
+</div>
+</div>
+<!-- 底部版权页脚 -->
+<footer class="site-footer">
+<div class="footer-container">
+<div class="footer-links safe-text" data-safe="CjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0ib3BlbkNvbnRhY3RNb2RhbCgpIj7ogZTns7vmiJHku6w8L2E+Cg==">加载中...</div>
+<div class="footer-section safe-text" data-safe="CjxwIGNsYXNzPSJjb3B5cmlnaHQiPsKpIDIwMjYgSUJUSSBQcm9qZWN0LiBBbGwgUmlnaHRzIFJlc2VydmVkLjwvcD4KPHAgY2xhc3M9ImNyZWF0b3IiPkRlc2lnbmVkIGJ5IOe7s+WjsOibriZhbXA757uz5aOw54K554K5IHwgPHNwYW4gY2xhc3M9InZlcnNpb24iPlZlcnNpb24gdjEuMDwvc3Bhbj48L3A+Cg==">加载中...</div>
+<div class="footer-section disclaimer-box safe-text" data-safe="CjxzdHJvbmc+5YWN6LSj5aOw5piO77yaPC9zdHJvbmc+5pys5rWL6K+V57uT5p6c5LuF5L6b5aix5LmQ5LiO6Ieq5oiR5o6i57Si5Y+C6ICD77yM5LiN5L2c5Li65LiT5Lia5b+D55CG6K+K5pat5bu66K6u44CC5oiR5Lus5bCK6YeN5bm25L+d5oqk5oKo55qE6ZqQ56eB77yM562U6aKY5pWw5o2u5LuF55So5LqO5pys5Zyw57uT5p6c55Sf5oiQ44CCCiAgICAgICAgICA=">加载中...</div>
+</div>
+</footer>
+</div>
+<div class="modal-overlay" id="intro-modal" onclick="closeModal('intro-modal')">
+<div class="modal-content" onclick="event.stopPropagation()">
+<span class="modal-close" onclick="closeModal('intro-modal')">×</span>
+<div class="modal-header safe-text" data-safe="5YWz5LqOIElCVEkg5rWL6K+V">加载中...</div>
+<div class="modal-body safe-text" data-safe="CjxwPklCVEkgKEluY2xpbmF0aW9uIEJlaGF2aW9yIFR5cGUgSW5kaWNhdG9yKSDmvZzlkJHooYzkuLrmgKfmoLzmjIfmoIfmtYvor5XvvIzml6jlnKjpgJrov4flnLrmma/ljJbnmoTpgInmi6nvvIzmjqLlr7vkvaDlupXlsYLnmoTlv4PnkIbljp/liqjlipvkuI7kupLliqjlgY/lpb3jgII8L3A+CjxwPjxzdHJvbmcgc3R5bGU9ImZvbnQtc2l6ZTowLjlyZW07Ij7wn6esIOaguOW/g+e7tOW6puino+aekDwvc3Ryb25nPjwvcD4KPHA+PHN0cm9uZz4xLiDmjqfliLbln586IE0gKE1hbmFnZXIpIHZzIFMgKFN1cHBvcnRlcik8L3N0cm9uZz48L3A+CiAgICAgICAgICDku6PooajkvaDlnKjkupLliqjkuK3lr7nnp6nluo/lkozmnYPlipvnmoTlgL7lkJHjgIJNIOWAvuWQkeS6juS4u+WvvOWSjOaehOW7uuenqeW6j++8jFMg5YC+5ZCR5LqO5Lqk5LuY5L+h5Lu75LiO6KKr5o6l566h44CCCiAgICAgICAgICA8cD48c3Ryb25nPjIuIOiDvemHj+WfnzogSSAoSW5pdGlhdG9yKSB2cyBSIChSZXNwb25zaXZlKTwvc3Ryb25nPjwvcD4KICAgICAgICAgIOS7o+ihqOS9oOiDvemHj+mHiuaUvueahOaWueW8j+OAgkkg5YC+5ZCR5LqO5Li75Yqo5Y+R6LW344CB5o6o6L+b6L+b56iL77yMUiDlgL7lkJHkuo7lj43lsITlm57lupTjgIHmj5DkvpvlhbHpuKPjgIIKICAgICAgICAgIDxwPjxzdHJvbmc+My4g5oSf55+l5Z+fOiBDIChDb2duaXRpdmUpIHZzIE8gKE9yZ2FuaWMpPC9zdHJvbmc+PC9wPgogICAgICAgICAg5Luj6KGo5L2g6I635Y+W5b+r5oSf5LiO5L2T6aqM55qE6YCa6YGT44CCQyDlgY/ph43kuo7mmbrlipvlsYLpnaLnmoTljZrlvIjlkozlv4PnkIbmi4nmia/vvIxPIOWImeabtOayiea1uOS6jue6r+eyueeahOi6r+S9k+WSjOeJqeeQhuWunuaEn+OAggogICAgICAgICAgPHA+PHN0cm9uZz40LiDlvLrluqbln586IEcgKEdlbnRsZSkgdnMgRCAoRGVlcCk8L3N0cm9uZz48L3A+CiAgICAgICAgICDku6PooajkvaDlr7nkvZPpqozmt7HluqbnmoTogJDlj5fkuI7ov73msYLjgIJHIOi/veaxgua4qeWSjOOAgeWuieWFqOS4lOWFt+Wkh+a7i+WFu+aEn+eahOi+ueeVjO+8jEQg6L+95rGC5p6B6Ie044CB5omT56C05bi46KeE55qE5rex5riK5o6i57Si44CCCiAgICAgICAgICA8cD48c3Ryb25nPjUuIOWPjOWQkeWFvOWuuTogWCAoRmxleGlibGUpPC9zdHJvbmc+PC9wPgogICAgICAgICAg5Luj6KGo5L2g5Zyo5p+Q5LiA57u05bqm5LiN6KKr5Y2V5LiA5YC+5ZCR5Yi75p2/5qCH562+5omA6ZSa5a6a77yM5YW35aSH5Y+M5ZCR5YW85a6555qE6Leo5bqm6YCC6YWN54m55oCn44CCCiAgICAgICAgICA8cCBzdHlsZT0ibWFyZ2luLXRvcDogMjVweDsgZm9udC1zaXplOiAwLjc1cmVtOyBjb2xvcjogIzk5OTsgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlZWU7IHBhZGRpbmctdG9wOiAxNXB4OyB0ZXh0LWFsaWduOiBjZW50ZXI7Ij4KICAgICAgICAgICAgKiDpg5Hph43mj5DnpLrvvJrmtYvor5Xnu5Pmnpzku4Xku6PooajkvaDlvZPliY3nmoTlv4PnkIblgL7lkJHjgILmiYDmnInnmoTlrp7ot7Xpg73lv4Xpobvlu7rnq4vlnKjnn6Xmg4XlkIzmhI/vvIhTU0MgLyBSQUNL77yJ5ZKM5a6J5YWo55qE5YmN5o+Q5LiL44CCCiAgICAgICAgICA8L3A+Cg==">加载中...</div>
+</div>
+</div>
+<div class="modal-overlay" id="contact-modal" onclick="closeModal('contact-modal')">
+<div class="modal-content" onclick="event.stopPropagation()">
+<span class="modal-close" onclick="closeModal('contact-modal')">×</span>
+<div class="modal-header safe-text" data-safe="5qyi6L+O6YCa6L+H5Lul5LiL5bmz5Y+w5LiO5oiR5Lus5Lqk5rWB">加载中...</div>
+<div class="modal-body">
+<p class="contact-hint"></p>
+<!-- 社交按钮网格 -->
+<div class="social-buttons">
+<a class="social-btn instagram" href="https://www.instagram.com/reompoen" target="_blank">
+<i class="fab fa-instagram"></i>
+<span>Instagram</span>
+</a>
+<a class="social-btn twitter" href="https://x.com/Ropeart_Emon" target="_blank">
+<i class="fab fa-x-twitter"></i>
+<span>Twitter</span>
+</a>
+<a class="social-btn telegram" href="https://t.me/你的频道" target="_blank">
+<i class="fab fa-telegram"></i>
+<span>Telegram</span>
+</a>
+<a class="social-btn weibo safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtd2VpYm8iPjwvaT4KPHNwYW4+5b6u5Y2aPC9zcGFuPgo=" href="https://weibo.com/u/6438214421" target="_blank">加载中...</a>
+<a class="social-btn qq safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtcXEiPjwvaT4KPHNwYW4+UVHnvqQ8L3NwYW4+Cg==" href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群密钥" target="_blank">加载中...</a>
+<!-- 微信群按钮（内部已清空二维码结构） -->
+<div class="social-btn wechat safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtd2VpeGluIj48L2k+CjxzcGFuPuW+ruS/oee+pDwvc3Bhbj4K" onclick="toggleWeChatQR()">加载中...</div>
+</div>
+<!-- 二维码容器 -->
+<div class="qr-popup" id="wechat-qr-popup">
+<img alt="微信群二维码" class="qr-code" src="wcqr.jpg"/>
+<p class="qr-tip safe-text" data-safe="6K+35L2/55So5b6u5L+h5omr5o+P5LqM57u056CB5Yqg5YWl576k6IGK">加载中...</p>
+<p class="qr-tip-small safe-text" data-safe="5oiW5re75Yqg5b6u5L+h5Y+3OiA8Y29kZT5yb3BlX2FydDwvY29kZT4=">加载中...</p>
+</div>
+</div>
+</div>
+</div>
 
-            <p><button class="modal-btn" onclick="openIntroModal()">
-                📖 查看测试说明与维度解析
-              </button>
-            </p>
+<script>
+(function() {
+    function decodeBase64Utf8(base64Str) {
+        try {
+            const binaryString = window.atob(base64Str);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new TextDecoder().decode(bytes);
+        } catch (e) {
+            return "加载失败";
+        }
+    }
+    // 还原普通的 HTML 文本
+    document.querySelectorAll('.safe-text').forEach(el => {
+        const encrypted = el.getAttribute('data-safe');
+        if (encrypted) {
+            el.innerHTML = decodeBase64Utf8(encrypted);
+        }
+    });
+    // 还原输入框的 Placeholder
+    document.querySelectorAll('[data-safe-placeholder]').forEach(el => {
+        const encrypted = el.getAttribute('data-safe-placeholder');
+        if (encrypted) {
+            el.setAttribute('placeholder', decodeBase64Utf8(encrypted));
+        }
+    });
+})();
+</script>
 
-          </header>
-
-          <div class="res-code" id="res-code"></div>
-          <div class="res-tag" id="res-tag"></div>
-          <div class="chart-box">
-            <canvas id="radarChart"></canvas>
-          </div>
-          <div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
-
-          <div class="desc-box" id="res-desc"></div>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存结果报告全案长图</button>
-          <button class="btn btn-outline" onclick="location.reload()">重新测试</button>
-        </div>
-      </div>
-
-      <!-- 底部版权页脚 -->
-      <footer class="site-footer">
-        <div class="footer-container">
-          <div class="footer-links">
-            <a href="javascript:void(0)" onclick="openContactModal()">联系我们</a>
-          </div>
-          <div class="footer-section">
-            <p class="copyright">© 2026 IBTI Project. All Rights Reserved.</p>
-            <p class="creator">Designed by 绳声蛮&绳声点点 | <span class="version">Version v1.0</span></p>
-          </div>
-          <div class="footer-section disclaimer-box">
-            <strong>免责声明：</strong>本测试结果仅供娱乐与自我探索参考，不作为专业心理诊断建议。我们尊重并保护您的隐私，答题数据仅用于本地结果生成。
-          </div>
-
-        </div>
-      </footer>
-
-    </div>
-
-    <div id="intro-modal" class="modal-overlay" onclick="closeModal('intro-modal')">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="modal-close" onclick="closeModal('intro-modal')">&times;</span>
-        <div class="modal-header">关于 IBTI 测试</div>
-        <div class="modal-body">
-          <p>IBTI (Inclination Behavior Type Indicator) 潜向行为性格指标测试，旨在通过场景化的选择，探寻你底层的心理原动力与互动偏好。</p>
-          <p><strong style="font-size:0.9rem;">🧬 核心维度解析</strong></p>
-          <p><strong>1. 控制域: M (Manager) vs S (Supporter)</strong></p>
-          代表你在互动中对秩序和权力的倾向。M 倾向于主导和构建秩序，S 倾向于交付信任与被接管。
-          <p><strong>2. 能量域: I (Initiator) vs R (Responsive)</strong></p>
-          代表你能量释放的方式。I 倾向于主动发起、推进进程，R 倾向于反射回应、提供共鸣。
-          <p><strong>3. 感知域: C (Cognitive) vs O (Organic)</strong></p>
-          代表你获取快感与体验的通道。C 偏重于智力层面的博弈和心理拉扯，O 则更沉浸于纯粹的躯体和物理实感。
-          <p><strong>4. 强度域: G (Gentle) vs D (Deep)</strong></p>
-          代表你对体验深度的耐受与追求。G 追求温和、安全且具备滋养感的边界，D 追求极致、打破常规的深渊探索。
-          <p><strong>5. 双向兼容: X (Flexible)</strong></p>
-          代表你在某一维度不被单一倾向刻板标签所锚定，具备双向兼容的跨度适配特性。
-          <p style="margin-top: 25px; font-size: 0.75rem; color: #999; border-top: 1px solid #eee; padding-top: 15px; text-align: center;">
-            * 郑重提示：测试结果仅代表你当前的心理倾向。所有的实践都必须建立在知情同意（SSC / RACK）和安全的前提下。
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div id="contact-modal" class="modal-overlay" onclick="closeModal('contact-modal')">
-      <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="modal-close" onclick="closeModal('contact-modal')">&times;</span>
-        <div class="modal-header">欢迎通过以下平台与我们交流</div>
-        <div class="modal-body">
-          <p class="contact-hint"></p>
-
-          <!-- 社交按钮网格 -->
-          <div class="social-buttons">
-            <a href="https://www.instagram.com/reompoen" target="_blank" class="social-btn instagram">
-              <i class="fab fa-instagram"></i>
-              <span>Instagram</span>
-            </a>
-            <a href="https://x.com/Ropeart_Emon" target="_blank" class="social-btn twitter">
-              <i class="fab fa-x-twitter"></i>
-              <span>Twitter</span>
-            </a>
-            <a href="https://t.me/你的频道" target="_blank" class="social-btn telegram">
-              <i class="fab fa-telegram"></i>
-              <span>Telegram</span>
-            </a>
-            <a href="https://weibo.com/u/6438214421" target="_blank" class="social-btn weibo">
-              <i class="fab fa-weibo"></i>
-              <span>微博</span>
-            </a>
-            <a href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群密钥" target="_blank" class="social-btn qq">
-              <i class="fab fa-qq"></i>
-              <span>QQ群</span>
-            </a>
-            <!-- 微信群按钮（内部已清空二维码结构） -->
-            <div class="social-btn wechat" onclick="toggleWeChatQR()">
-              <i class="fab fa-weixin"></i>
-              <span>微信群</span>
-            </div>
-          </div>
-
-          <!-- 💡 核心修改：将二维码容器移到按钮外部，作为独立的板块 -->
-          <div id="wechat-qr-popup" class="qr-popup">
-            <img src="../IBTI/wcqr.jpg" alt="微信群二维码" class="qr-code" />
-            <p class="qr-tip">请使用微信扫描二维码加入群聊</p>
-            <p class="qr-tip-small">或添加微信号: <code>rope_art</code></p>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    </div>
-    </div>
-    </div>
-    </div>
-
-  </body>
-
+</body>
 </html>
