@@ -1,977 +1,1019 @@
 /* ============================================================
        1. 全局配置与变量 (CSS Variables)
        ============================================================ */
-      :root {
-        --primary: #1a1a1a;
-        --accent: #c5a059;
-        --bg: #ffffff;
-        --option-bg: #f9f9f9;
-        --border: #eeeeee;
-        --text-main: #333;
-        --text-muted: #888;
-      }
+:root {
+  --primary: #1a1a1a;
+  --accent: #c5a059;
+  --bg: #ffffff;
+  --option-bg: #f9f9f9;
+  --border: #eeeeee;
+  --text-main: #333;
+  --text-muted: #888;
+}
 
-      * {
-        box-sizing: border-box;
-        /* 如果需要调试布局，请取消下面一行的注释 */
-        /* outline: 1px solid rgba(255, 0, 0, 0.2); */
-      }
+* {
+  box-sizing: border-box;
+  /* 如果需要调试布局，请取消下面一行的注释 */
+  /* outline: 1px solid rgba(255, 0, 0, 0.2); */
+}
 
-      html {
-        font-size: 16px;
-        /* 量化基准：1rem = 16px */
-      }
+html {
+  font-size: 16px;
+  /* 量化基准：1rem = 16px */
+}
 
-      body {
-        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        background-color: #f5f5f5;
-        color: var(--text-main);
-        margin: 0;
-        padding: 10px;
-        display: flex;
-        justify-content: center;
-      }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  background-color: #f5f5f5;
+  color: var(--text-main);
+  margin: 0;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
 
-      /* ============================================================
+/* ============================================================
        2. 基础布局结构 (Layout)
        ============================================================ */
-      .container {
-        max-width: 800px;
-        width: 100%;
-        background: var(--bg);
-        padding: 40px 30px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-        min-height: 100vh;
-      }
+.container {
+  max-width: 800px;
+  width: 100%;
+  background: var(--bg);
+  padding: 40px 30px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  min-height: 100vh;
+}
 
-      header {
-        text-align: center;
-        margin-bottom: 50px;
-        border-bottom: 2px solid var(--primary);
-        padding-bottom: 20px;
-      }
+header {
+  text-align: center;
+  margin-bottom: 50px;
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 20px;
+}
 
-      h1 {
-        margin: 0;
-        letter-spacing: 6px;
-        font-size: 2.2em;
-      }
+h1 {
+  margin: 0;
+  letter-spacing: 6px;
+  font-size: 2.2em;
+}
 
-      .sub-title {
-        color: var(--text-muted);
-        font-size: 0.85em;
-        margin-top: 10px;
-        letter-spacing: 2px;
-      }
+.sub-title {
+  color: var(--text-muted);
+  font-size: 0.85em;
+  margin-top: 10px;
+  letter-spacing: 2px;
+}
 
-      .section {
-        display: none;
-      }
+.section {
+  display: none;
+}
 
-      .active {
-        display: block;
-      }
+.active {
+  display: block;
+}
 
-      /* ============================================================
+/* ============================================================
        3. 答题区组件 (Quiz Components)
        ============================================================ */
-      .q-item {
-        margin-bottom: 50px;
-      }
+.q-item {
+  margin-bottom: 50px;
+}
 
-      .q-title {
-        font-weight: bold;
-        font-size: 1.15em;
-        margin-bottom: 20px;
-        display: block;
-        color: var(--primary);
-        line-height: 1.5;
-      }
+.q-title {
+  font-weight: bold;
+  font-size: 1.15em;
+  margin-bottom: 20px;
+  display: block;
+  color: var(--primary);
+  line-height: 1.5;
+}
 
-      .options-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-      /* 选项容器 */
-      .option-label {
-        display: flex;
-        align-items: center;
-        padding: 15px 20px 15px 42px;
-        background: var(--option-bg);
-        border: 1px solid var(--border);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border-radius: 6px;
-        font-size: 0.95em;
-        line-height: 1.4;
-        position: relative;
-        color: #444;
-      }
+/* 选项容器 */
+.option-label {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px 15px 42px;
+  background: var(--option-bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  font-size: 0.95em;
+  line-height: 1.4;
+  position: relative;
+  color: #444;
+}
 
-      .option-label:hover {
-        background: #fdfaf2;
-        border-color: var(--accent);
-      }
+.option-label:hover {
+  background: #fdfaf2;
+  border-color: var(--accent);
+}
 
-      .option-label input {
-        display: none;
-      }
+.option-label input {
+  display: none;
+}
 
-      /* 左侧复选框小方框 (伪元素实现) */
-      .option-label::before {
-        content: "";
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-        border: 1.5px solid #ccc;
-        border-radius: 3px;
-        background: #fff;
-        box-sizing: border-box;
-        transition: all 0.2s ease;
-      }
+/* 左侧复选框小方框 (伪元素实现) */
+.option-label::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
 
-      /* 选中状态样式 */
-      .option-label.selected {
-        background: #fffdf5;
-        border-color: var(--accent);
-        color: var(--accent);
-      }
+/* 选中状态样式 */
+.option-label.selected {
+  background: #fffdf5;
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
-      .option-label.selected::before {
-        background-color: var(--accent);
-        border-color: var(--accent);
-      }
+.option-label.selected::before {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
 
-      /* 选中后的打钩符号 */
-      .option-label.selected::after {
-        content: "";
-        position: absolute;
-        left: 20px;
-        top: 46%;
-        width: 4px;
-        height: 8px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: translateY(-50%) rotate(45deg);
-        transition: all 0.2s ease;
-      }
+/* 选中后的打钩符号 */
+.option-label.selected::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 46%;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translateY(-50%) rotate(45deg);
+  transition: all 0.2s ease;
+}
 
-      /* ============================================================
+/* ============================================================
        4. 按钮与操作区 (Actions)
        ============================================================ */
-      .btn-group {
-        margin-top: 30px;
-      }
+.btn-group {
+  margin-top: 30px;
+}
 
-      .btn {
-        width: 100%;
-        padding: 20px;
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        font-size: 1.1em;
-        letter-spacing: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-bottom: 10px;
-        transition: opacity 0.2s;
-      }
+.btn {
+  width: 100%;
+  padding: 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-size: 1.1em;
+  letter-spacing: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: opacity 0.2s;
+}
 
-      .btn:active {
-        opacity: 0.8;
-      }
+.btn:active {
+  opacity: 0.8;
+}
 
-      .btn-gold {
-        background: var(--accent);
-      }
+.btn-gold {
+  background: var(--accent);
+}
 
-      .btn-outline {
-        background: #fff;
-        color: #666;
-        border: 1px solid #ddd;
-      }
+.btn-outline {
+  background: #fff;
+  color: #666;
+  border: 1px solid #ddd;
+}
 
-      /* ============================================================
+/* ============================================================
        5. 结果页与确认页 (Result & Review)
        ============================================================ */
-      #result-screen {
-        text-align: center;
-      }
+#result-screen {
+  text-align: center;
+}
 
-      #capture-area {
-        background: white;
-        padding: 20px;
-      }
+#capture-area {
+  background: white;
+  padding: 20px;
+}
 
-      .res-code {
-        font-size: 4em;
-        font-weight: 800;
-        color: var(--accent);
-        letter-spacing: 12px;
-        margin: 20px 0;
-      }
+.res-code {
+  font-size: 4em;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 12px;
+  margin: 20px 0;
+}
 
-      .res-tag {
-        font-size: 2em;
-        font-weight: bold;
-        margin-bottom: 30px;
-      }
+.res-tag {
+  font-size: 2em;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
 
-      /* 雷达图容器 */
-      .chart-box {
-        max-width: 450px;
-        margin: 30px auto;
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-        /* 掐掉任何冒出来的边角 */
-        aspect-ratio: 1 / 1;
-        /* 锁定 1:1 比例 */
-      }
+/* 雷达图容器 */
+.chart-box {
+  max-width: 450px;
+  margin: 30px auto;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  /* 掐掉任何冒出来的边角 */
+  aspect-ratio: 1 / 1;
+  /* 锁定 1:1 比例 */
+}
 
-      #radarChart {
-        width: 100%;
-        height: 100%;
-        display: block;
-        margin: 0 auto;
-      }
+#radarChart {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+}
 
-      /* 结果文案描述区 */
-      .desc-box {
-        text-align: left;
-        background: #fafafa;
-        padding: 30px;
-        border-top: 3px solid var(--primary);
-        line-height: 2;
-        margin-top: 30px;
-      }
+/* 结果文案描述区 */
+.desc-box {
+  text-align: left;
+  background: #fafafa;
+  padding: 30px;
+  border-top: 3px solid var(--primary);
+  line-height: 2;
+  margin-top: 30px;
+}
 
-      /* 确认页清单 */
-      .review-item {
-        padding: 15px;
-        border-bottom: 1px solid #eee;
-        text-align: left;
-        font-size: 0.9em;
-      }
+/* 确认页清单 */
+.review-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 0.9em;
+}
 
-      .review-q {
-        font-weight: bold;
-        color: #555;
-      }
+.review-q {
+  font-weight: bold;
+  color: #555;
+}
 
-      .review-a {
-        color: var(--accent);
-        margin-top: 5px;
-      }
+.review-a {
+  color: var(--accent);
+  margin-top: 5px;
+}
 
-      /* ============================================================
+/* ============================================================
        7. 手机端量化自适应补丁 (Responsive)
        ============================================================ */
-      @media (max-width: 600px) {
-
-        html,
-        body {
-          width: 100%;
-          overflow-x: hidden;
-          /* 严禁横向溢出 */
-          position: relative;
-          -webkit-text-size-adjust: 100%;
-          /* 禁止微信自动调整字体大小 */
-        }
-
-        body {
-          padding: 0.5rem !important;
-        }
-
-        .container {
-          padding: 0.8rem 0.4rem !important;
-          box-shadow: none;
-          border-radius: 0;
-          width: 100% !important;
-          max-width: 100vw !important;
-          /* 强制容器不超过屏幕宽 */
-          overflow: hidden;
-          /* 内部溢出直接切掉，不准撑开页面 */
-          box-sizing: border-box;
-          /* 确保 padding 不增加宽度 */
-        }
-
-        header h1 {
-          font-size: 1.2rem;
-          margin-bottom: 0.5rem !important;
-        }
-
-        /* 强制拉满宽度，解除内边距限制 */
-        #result-screen,
-        .section,
-        #capture-area {
-          padding-left: 1 !important;
-          padding-right: 1 !important;
-          width: 100% !important;
-        }
-
-        #capture-area {
-          padding: 1rem 10px !important;
-        }
-
-        #res-code {
-          font-size: 1.8rem !important;
-          margin: 0.8rem 0 !important;
-        }
-
-        .chart-box {
-          width: 100%;
-          height: auto;
-          max-width: 90vw;
-          /* 比屏幕窄一点，留出缓冲 */
-          margin: 0 auto;
-          position: relative;
-          /* 核心：确保 canvas 不会瞬间撑大 */
-          margin-bottom: 0.5rem;
-        }
-
-        #radarChart {
-          width: 100% !important;
-          height: auto !important;
-        }
-
-        /* 描述框移动端深度优化 */
-        .desc-box {
-          padding: 1.2rem 0.6rem !important;
-          border-top: 1px solid #eee !important;
-          margin-top: 1rem !important;
-          margin-left: 0rem;
-          margin-right: 0rem;
-          width: auto;
-        }
-
-        /* Markdown 文案细节调整 */
-        #res-desc {
-          font-size: 0.85rem !important;
-          line-height: 1.6;
-          text-align: justify !important;
-        }
-
-        #res-desc h3 {
-          font-size: 1.0rem !important;
-          margin-top: 1.0rem !important;
-          border-bottom: 0.05rem solid #eee;
-          padding-bottom: 0.2rem;
-        }
-
-        #res-desc ul,
-        #res-desc ol {
-          padding-left: 1.2rem !important;
-          margin: 0.4rem 0;
-        }
-
-        #res-desc blockquote {
-          margin: 0.5rem 0 !important;
-          padding: 0.3rem 0.3rem !important;
-          font-size: 0.8rem !important;
-          border-left: 1.2px solid #ddd;
-        }
-
-      }
-
-      /* 解决 Markdown 渲染后的样式问题 */
-      #res-desc {
-        text-align: left !important;
-        /* 确保内容左对齐 */
-        line-height: 1.6;
-      }
-
-      #res-desc h3,
-      #res-desc h4 {
-        margin-top: 20px !important;
-        margin-bottom: 10px !important;
-        display: block !important;
-        color: #c5a059;
-        /* 匹配你的金色主题 */
-      }
-
-      #res-desc ul {
-        list-style-type: disc !important;
-        /* 强制显示圆点 */
-        padding-left: 25px !important;
-        /* 强制留出缩进空间 */
-        margin: 15px 0 !important;
-      }
-
-      #res-desc li {
-        display: list-item !important;
-        /* 确保是列表项格式 */
-        margin-bottom: 8px !important;
-      }
-
-      #res-desc strong {
-        color: #1a1a1a;
-        font-weight: bold;
-      }
-
-      /* 确认清单增强样式 */
-      .core-tag {
-        background: #c5a059;
-        /* 经典的金色 */
-        color: white;
-        font-size: 11px;
-        padding: 2px 6px;
-        border-radius: 3px;
-        margin-left: 10px;
-        font-weight: bold;
-        display: inline-block;
-      }
-
-      .score-badge {
-        color: #888;
-        font-size: 0.85rem;
-        margin-left: 12px;
-        font-family: 'Courier New', Courier, monospace;
-        /* 使用等宽字体显得专业 */
-        background: #f0f0f0;
-        padding: 1px 5px;
-        border-radius: 4px;
-      }
-
-      .review-item {
-        padding: 15px 0;
-        border-bottom: 1px solid #f0f0f0;
-      }
-
-      .review-q {
-        font-size: 1rem;
-        margin-bottom: 6px;
-        color: #333;
-      }
-
-      /* 图片下载预览层 */
-      #image-download-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        /* 深色背景增加高级感 */
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        /* 确保在最顶层 */
-        padding: 20px;
-        box-sizing: border-box;
-      }
-
-      .overlay-content {
-        background: #fff;
-        width: 100%;
-        max-width: 400px;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        animation: modalFadeIn 0.3s ease;
-      }
-
-      .overlay-content p {
-        margin: 5px 0;
-        color: #333;
-        font-size: 14px;
-      }
-
-      #generated-image {
-        width: 100%;
-        max-height: 60vh;
-        /* 限制高度，防止太长看不全 */
-        object-fit: contain;
-        margin: 15px 0;
-        border: 1px solid #eee;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      .overlay-content button {
-        background: #d4af37;
-        /* 延用你的金色主题 */
-        color: white;
-        border: none;
-        padding: 10px 30px;
-        border-radius: 20px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-
-      @keyframes modalFadeIn {
-        from {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
-      /* 全局页脚样式 */
-      .site-footer {
-        width: 100%;
-        background: #ffffff99;
-        /* 半透明背景 */
-        backdrop-filter: blur(5px);
-        /* 磨砂玻璃效果 */
-        border-top: 1px solid #eee;
-        padding: 2rem 1rem;
-        margin-top: 3rem;
-        /* 与上方内容保持距离 */
-        color: #bbb;
-        /* 浅灰色文字，不干扰主内容 */
-        font-size: 0.8rem;
-        line-height: 1.6;
-      }
-
-      .footer-container {
-        max-width: 800px;
-        margin: 0 auto;
-        text-align: center;
-        /* 默认居中对齐 */
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-      }
-
-      .footer-section p {
-        margin: 0rem 0;
-      }
-
-      /* 免责声明框：稍微弱化颜色 */
-      .disclaimer-box {
-        font-size: 0.75rem;
-        color: #bbb;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      /* 导航链接样式 */
-      .footer-links {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-      }
-
-      .footer-links a {
-        color: var(--accent-color, #d4af37);
-        /* 使用您的金色强调色 */
-        text-decoration: none;
-        transition: opacity 0.3s;
-      }
-
-      .footer-links a:hover {
-        opacity: 0.7;
-      }
-
-      .version {
-        font-weight: bold;
-        color: #bdc3c7;
-      }
-
-      /* 响应式适配：手机端优化 */
-      @media (max-width: 600px) {
-        .site-footer {
-          padding: 1.5rem 1rem;
-        }
-
-        .footer-links {
-          gap: 0.5rem;
-          font-size: 0.8rem;
-        }
-      }
-
-      .modal-btn {
-        width: 100%;
-        padding: 15px;
-        background: var(--option-bg);
-        border: 1px solid var(--accent);
-        color: var(--accent);
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-
-      .modal-btn:hover {
-        background: #fffaf0;
-      }
-
-      /* 弹窗遮罩层统一 */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.4);
-        /* 背景略深增强对比 */
-        backdrop-filter: blur(8px);
-        /* 磨砂玻璃效果 */
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-        animation: fadeIn 0.3s ease;
-      }
-
-      .modal-overlay.show {
-        display: flex;
-        animation: fadeIn 0.3s ease forwards;
-      }
-
-      /* 弹窗主体统一 */
-      .modal-content {
-        background: #fff;
-        width: 90%;
-        max-width: 500px;
-        height: auto;
-        max-height: 92vh;
-        border-radius: 20px;
-        padding: 1.5rem;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        /* 强制关闭滚动条（注意：如果内容实在太多，下方文字会被截断） */
-        overflow: hidden;
-        /* 动态字体：根据屏幕宽度自动缩放，最小 12px，最大 16px */
-        font-size: clamp(12px, 3.5vw, 16px);
-        line-height: 1.4;
-        overflow-y: auto;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      }
-
-      /* 3. 内部排版：缩小间距以节省空间 */
-      .modal-content h3 {
-        margin-top: 0;
-        margin-bottom: 0.8rem;
-        font-size: 1.2rem;
-        text-align: center;
-      }
-
-      .modal-content p,
-      .modal-content li {
-        margin-bottom: 0.5rem;
-        /* 针对超小屏幕进一步压缩字间距 */
-        letter-spacing: -0.2px;
-      }
-
-      #modal-close-btn {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        font-size: 24px;
-        color: #999;
-        cursor: pointer;
-      }
-
-      /* 针对结果描述区域的特殊处理 */
-      .modal-body {
-        flex: 1;
-        display: flex;
-        font-size: 0.8rem;
-        flex-direction: column;
-        justify-content: space-around;
-        /* 让内容均匀分布在一屏内 */
-      }
-
-      /* 统一关闭按钮 */
-      .modal-close {
-        position: absolute;
-        top: 15px;
-        right: 20px;
-        font-size: 28px;
-        color: #999;
-        cursor: pointer;
-        line-height: 1;
-        transition: color 0.2s;
-      }
-
-      .modal-close:hover {
-        color: var(--accent-color, #d4af37);
-      }
-
-      /* 统一标题样式 */
-      .modal-header {
-        font-size: 1rem;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 0px;
-        color: var(--text-main, #333);
-      }
-
-      /* 针对介绍弹窗的微调 */
-      .dim-item {
-        font-size: 0.85rem;
-        margin-bottom: 12px;
-        color: #555;
-      }
-
-      .modal-notice {
-        margin-top: 25px;
-        font-size: 0.75rem;
-        color: #999;
-        border-top: 1px solid #eee;
-        padding-top: 15px;
-        text-align: center;
-      }
-
-      /* 针对社交媒体弹窗的微调 */
-      .contact-hint {
-        text-align: center;
-        margin-bottom: 25px;
-        color: #666;
-      }
-
-      .social-container {
-        display: flex;
-        justify-content: space-around;
-        padding-bottom: 10px;
-      }
-
-      .social-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-decoration: none;
-        color: #666;
-        font-size: 0.8rem;
-        cursor: pointer;
-      }
-
-      .icon-box svg {
-        width: 32px;
-        height: 32px;
-        fill: #666;
-        transition: 0.3s;
-      }
-
-      /* 微信二维码弹窗样式保持 */
-      .qr-popup {
-        display: none;
-        position: absolute;
-        bottom: 80px;
-        background: white;
-        padding: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        text-align: center;
-        transition: opacity 0.3s;
-      }
-
-      .qr-popup img {
-        width: 120px;
-        height: 120px;
-      }
-
-      .qr-popup.active {
-        display: block;
-        opacity: 1;
-      }
-
-      /* 响应式微调：针对屏幕高度非常小的手机（如部分旧款安卓） */
-      @media (max-height: 600px) {
-        .modal-content {
-          padding: 1rem;
-          font-size: 11px;
-          /* 极限缩小 */
-        }
-
-        .modal-content h3 {
-          font-size: 1rem;
-        }
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-
-        to {
-          opacity: 1;
-        }
-      }
-
-      /* 社交媒体关注区样式 */
-      .social-media-section {
-        padding: 10px 0;
-        background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
-        margin: 10px 0;
-        border-radius: 12px;
-      }
-
-      .section-title {
-        text-align: center;
-        font-size: 2rem;
-        color: #667eea;
-      }
-
-      .section-subtitle {
-        text-align: left;
-        color: #666;
-        margin-bottom: 40px;
-        margin-left: 20px;
-        margin-right: 20px;
-        font-size: 1.1rem;
-      }
-
-      .social-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 40px;
-        max-width: 900px;
-        margin: 0 auto;
-      }
-
-      .social-category {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-      }
-
-      .social-category h3 {
-        font-size: 1.4rem;
-        color: #333;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      /* 1. 默认样式（用于电脑端等大屏幕）：一排 3 个 */
-      .social-buttons {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        /* 电脑端 3 列 */
-        gap: 15px;
-        width: 100%;
-      }
-
-      /* 2. 媒体查询：当屏幕宽度小于 600 像素时（手机端），自动切换为一排 2 个 */
-      @media (max-width: 600px) {
-        .social-buttons {
-          grid-template-columns: repeat(2, 1fr);
-          /* 手机端自动变成 2 列 */
-          gap: 10px;
-          /* 手机端间距稍微缩小一点，更省空间 */
-        }
-
-        /* 可选优化：手机端文字太长时，缩小一点按钮内的字号和间距 */
-        .social-buttons .social-btn {
-          padding: 12px 10px;
-          /* 缩小按钮内边距 */
-          font-size: 0.9rem;
-          /* 字体稍微变小一点 */
-          gap: 8px;
-          /* 图标和文字靠得更近 */
-        }
-      }
-
-      .social-btn {
-        display: flex;
-        align-items: center;
-        /* 垂直居中 */
-        justify-content: center;
-        /* 水平居中 */
-        padding: 15px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        color: white;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        position: relative;
-        /* 辅助微调 */
-      }
-
-      /* 核心修改：针对按钮内部的图标 */
-      .social-btn i {
-        font-size: 1.3rem;
-        margin-right: auto;
-        /* 💡 核心：利用自动外边距，把图标死死顶在最左边 */
-      }
-
-      /* 核心修改：为了让文字绝对居中，需要消除图标占位带来的轻微偏差 */
-      .social-btn span {
-        position: absolute;
-        /* 💡 开启绝对定位 */
-        left: 50%;
-        /* 移动到按钮水平中间 */
-        transform: translateX(-50%);
-        /* 往左回拉自身的一半，实现彻底的物理居中 */
-      }
-
-      .social-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-      }
-
-      /* 各平台按钮颜色 */
-      .instagram {
-        background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d);
-      }
-
-      .twitter {
-        background: linear-gradient(45deg, #1da1f2, #14171a);
-      }
-
-      .telegram {
-        background: linear-gradient(45deg, #0088cc, #2aabee);
-      }
-
-      .weibo {
-        background: linear-gradient(45deg, #ff8200, #d52c2b, #e79115);
-      }
-
-      .qq {
-        background: linear-gradient(45deg, #12b7f5, #1f9be0);
-      }
-
-      .wechat {
-        background: linear-gradient(45deg, #07c160, #09bb07);
-      }
-
-      .qr-container {
-        margin: 25px 0;
-        padding: 20px;
-        background: #f9f9f9;
-        border-radius: 8px;
-        display: inline-block;
-      }
-
-      .qr-code {
-        width: 200px;
-        height: 200px;
-        border-radius: 6px;
-      }
-
-      .qr-tip {
-        color: #333;
-        margin: 15px 0;
-        font-size: 1.1rem;
-      }
-
-      .qr-tip-small {
-        color: #666;
-        font-size: 0.9rem;
-        margin-top: 10px;
-      }
+@media (max-width: 600px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+    /* 严禁横向溢出 */
+    position: relative;
+    -webkit-text-size-adjust: 100%;
+    /* 禁止微信自动调整字体大小 */
+  }
+
+  body {
+    padding: 0.5rem !important;
+  }
+
+  .container {
+    padding: 0.8rem 0.4rem !important;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100% !important;
+    max-width: 100vw !important;
+    /* 强制容器不超过屏幕宽 */
+    overflow: hidden;
+    /* 内部溢出直接切掉，不准撑开页面 */
+    box-sizing: border-box;
+    /* 确保 padding 不增加宽度 */
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* 强制拉满宽度，解除内边距限制 */
+  #result-screen,
+  .section,
+  #capture-area {
+    padding-left: 1 !important;
+    padding-right: 1 !important;
+    width: 100% !important;
+  }
+
+  #capture-area {
+    padding: 1rem 10px !important;
+  }
+
+  #res-code {
+    font-size: 1.8rem !important;
+    margin: 0.8rem 0 !important;
+  }
+
+  .chart-box {
+    width: 100%;
+    height: auto;
+    max-width: 90vw;
+    /* 比屏幕窄一点，留出缓冲 */
+    margin: 0 auto;
+    position: relative;
+    /* 核心：确保 canvas 不会瞬间撑大 */
+    margin-bottom: 0.5rem;
+  }
+
+  #radarChart {
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  /* 描述框移动端深度优化 */
+  .desc-box {
+    padding: 1.2rem 0.6rem !important;
+    border-top: 1px solid #eee !important;
+    margin-top: 1rem !important;
+    margin-left: 0rem;
+    margin-right: 0rem;
+    width: auto;
+  }
+
+  /* Markdown 文案细节调整 */
+  #res-desc {
+    font-size: 0.85rem !important;
+    line-height: 1.6;
+    text-align: justify !important;
+  }
+
+  #res-desc h3 {
+    font-size: 1rem !important;
+    margin-top: 1rem !important;
+    border-bottom: 0.05rem solid #eee;
+    padding-bottom: 0.2rem;
+  }
+
+  #res-desc ul,
+  #res-desc ol {
+    padding-left: 1.2rem !important;
+    margin: 0.4rem 0;
+  }
+
+  #res-desc blockquote {
+    margin: 0.5rem 0 !important;
+    padding: 0.3rem 0.3rem !important;
+    font-size: 0.8rem !important;
+    border-left: 1.2px solid #ddd;
+  }
+}
+
+/* 解决 Markdown 渲染后的样式问题 */
+#res-desc {
+  text-align: left !important;
+  /* 确保内容左对齐 */
+  line-height: 1.6;
+}
+
+#res-desc h3,
+#res-desc h4 {
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+  display: block !important;
+  color: #c5a059;
+  /* 匹配你的金色主题 */
+}
+
+#res-desc ul {
+  list-style-type: disc !important;
+  /* 强制显示圆点 */
+  padding-left: 25px !important;
+  /* 强制留出缩进空间 */
+  margin: 15px 0 !important;
+}
+
+#res-desc li {
+  display: list-item !important;
+  /* 确保是列表项格式 */
+  margin-bottom: 8px !important;
+}
+
+#res-desc strong {
+  color: #1a1a1a;
+  font-weight: bold;
+}
+
+/* 确认清单增强样式 */
+.core-tag {
+  background: #c5a059;
+  /* 经典的金色 */
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 10px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.score-badge {
+  color: #888;
+  font-size: 0.85rem;
+  margin-left: 12px;
+  font-family: "Courier New", Courier, monospace;
+  /* 使用等宽字体显得专业 */
+  background: #f0f0f0;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.review-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.review-q {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+/* 图片下载预览层 */
+#image-download-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  /* 深色背景增加高级感 */
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  /* 确保在最顶层 */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.overlay-content {
+  background: #fff;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  animation: modalFadeIn 0.3s ease;
+}
+
+.overlay-content p {
+  margin: 5px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+#generated-image {
+  width: 100%;
+  max-height: 60vh;
+  /* 限制高度，防止太长看不全 */
+  object-fit: contain;
+  margin: 15px 0;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.overlay-content button {
+  background: #d4af37;
+  /* 延用你的金色主题 */
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 全局页脚样式 */
+.site-footer {
+  width: 100%;
+  background: #ffffff99;
+  /* 半透明背景 */
+  backdrop-filter: blur(5px);
+  /* 磨砂玻璃效果 */
+  border-top: 1px solid #eee;
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+  /* 与上方内容保持距离 */
+  color: #bbb;
+  /* 浅灰色文字，不干扰主内容 */
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.footer-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  /* 默认居中对齐 */
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.footer-section p {
+  margin: 0rem 0;
+}
+
+/* 免责声明框：稍微弱化颜色 */
+.disclaimer-box {
+  font-size: 0.75rem;
+  color: #bbb;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 导航链接样式 */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-links a {
+  color: var(--accent-color, #d4af37);
+  /* 使用您的金色强调色 */
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.footer-links a:hover {
+  opacity: 0.7;
+}
+
+.version {
+  font-weight: bold;
+  color: #bdc3c7;
+}
+
+/* 响应式适配：手机端优化 */
+@media (max-width: 600px) {
+  .site-footer {
+    padding: 1.5rem 1rem;
+  }
+
+  .footer-links {
+    gap: 0.5rem;
+    font-size: 0.8rem;
+  }
+}
+
+.modal-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--option-bg);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.modal-btn:hover {
+  background: #fffaf0;
+}
+
+/* 弹窗遮罩层统一 */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  /* 背景略深增强对比 */
+  backdrop-filter: blur(8px);
+  /* 磨砂玻璃效果 */
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-overlay.show {
+  display: flex;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* 弹窗主体统一 */
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 500px;
+  height: auto;
+  max-height: 92vh;
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* 强制关闭滚动条（注意：如果内容实在太多，下方文字会被截断） */
+  overflow: hidden;
+  /* 动态字体：根据屏幕宽度自动缩放，最小 12px，最大 16px */
+  font-size: clamp(12px, 3.5vw, 16px);
+  line-height: 1.4;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* 3. 内部排版：缩小间距以节省空间 */
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.modal-content p,
+.modal-content li {
+  margin-bottom: 0.5rem;
+  /* 针对超小屏幕进一步压缩字间距 */
+  letter-spacing: -0.2px;
+}
+
+#modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+/* 针对结果描述区域的特殊处理 */
+.modal-body {
+  flex: 1;
+  display: flex;
+  font-size: 0.8rem;
+  flex-direction: column;
+  justify-content: space-around;
+  /* 让内容均匀分布在一屏内 */
+}
+
+/* 统一关闭按钮 */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: var(--accent-color, #d4af37);
+}
+
+/* 统一标题样式 */
+.modal-header {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0px;
+  color: var(--text-main, #333);
+}
+
+/* 针对介绍弹窗的微调 */
+.dim-item {
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.modal-notice {
+  margin-top: 25px;
+  font-size: 0.75rem;
+  color: #999;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  text-align: center;
+}
+
+/* 针对社交媒体弹窗的微调 */
+.contact-hint {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #666;
+}
+
+.social-container {
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 10px;
+}
+
+.social-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.icon-box svg {
+  width: 32px;
+  height: 32px;
+  fill: #666;
+  transition: 0.3s;
+}
+
+/* ============================================================
+   微信二维码区域重构（移除绝对定位，改为自适应折叠板）
+   ============================================================ */
+.qr-popup {
+  display: none; /* 默认隐藏 */
+  margin-top: 20px; /* 与上方按钮网格保持合适间距 */
+  padding: 20px 15px;
+  background: #f9f9f9;
+  border: 1px dashed #07c160; /* 微信绿虚线边框，视觉引导更强 */
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.02);
+  /* 触发显示时的动画 */
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+/* 激活状态 */
+.qr-popup.active {
+  display: block;
+}
+
+/* 统一并限制二维码图片大小，防止多处样式冲突 */
+.qr-popup .qr-code {
+  width: 160px !important;
+  height: 160px !important;
+  border-radius: 8px;
+  margin: 0 auto !important;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 提示文字微调 */
+.qr-popup .qr-tip {
+  color: #333;
+  margin: 12px 0 4px 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.qr-popup .qr-tip-small {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* 顺滑的展开动画 */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.qr-popup img {
+  width: 120px;
+  height: 120px;
+}
+
+.qr-popup.active {
+  display: block;
+  opacity: 1;
+}
+
+/* 响应式微调：针对屏幕高度非常小的手机（如部分旧款安卓） */
+@media (max-height: 600px) {
+  .modal-content {
+    padding: 1rem;
+    font-size: 11px;
+    /* 极限缩小 */
+  }
+
+  .modal-content h3 {
+    font-size: 1rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* 社交媒体关注区样式 */
+.social-media-section {
+  padding: 10px 0;
+  background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+  margin: 10px 0;
+  border-radius: 12px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #667eea;
+}
+
+.section-subtitle {
+  text-align: left;
+  color: #666;
+  margin-bottom: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+  font-size: 1.1rem;
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.social-category {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.social-category h3 {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 1. 默认样式（用于电脑端等大屏幕）：一排 3 个 */
+.social-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  /* 电脑端 3 列 */
+  gap: 15px;
+  width: 100%;
+}
+
+/* 2. 媒体查询：当屏幕宽度小于 600 像素时（手机端），自动切换为一排 2 个 */
+@media (max-width: 600px) {
+  .social-buttons {
+    grid-template-columns: repeat(2, 1fr);
+    /* 手机端自动变成 2 列 */
+    gap: 10px;
+    /* 手机端间距稍微缩小一点，更省空间 */
+  }
+
+  /* 可选优化：手机端文字太长时，缩小一点按钮内的字号和间距 */
+  .social-buttons .social-btn {
+    padding: 12px 10px;
+    /* 缩小按钮内边距 */
+    font-size: 0.9rem;
+    /* 字体稍微变小一点 */
+    gap: 8px;
+    /* 图标和文字靠得更近 */
+  }
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  padding: 15px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  position: relative;
+  /* 辅助微调 */
+}
+
+/* 核心修改：针对按钮内部的图标 */
+.social-btn i {
+  font-size: 1.3rem;
+  margin-right: auto;
+  /* 💡 核心：利用自动外边距，把图标死死顶在最左边 */
+}
+
+/* 核心修改：为了让文字绝对居中，需要消除图标占位带来的轻微偏差 */
+.social-btn span {
+  position: absolute;
+  /* 💡 开启绝对定位 */
+  left: 50%;
+  /* 移动到按钮水平中间 */
+  transform: translateX(-50%);
+  /* 往左回拉自身的一半，实现彻底的物理居中 */
+}
+
+.social-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* 各平台按钮颜色 */
+.instagram {
+  background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d);
+}
+
+.twitter {
+  background: linear-gradient(45deg, #1da1f2, #14171a);
+}
+
+.telegram {
+  background: linear-gradient(45deg, #0088cc, #2aabee);
+}
+
+.weibo {
+  background: linear-gradient(45deg, #ff8200, #d52c2b, #e79115);
+}
+
+.qq {
+  background: linear-gradient(45deg, #12b7f5, #1f9be0);
+}
+
+.wechat {
+  background: linear-gradient(45deg, #07c160, #09bb07);
+}
+
+.qr-container {
+  margin: 25px 0;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.qr-code {
+  width: 200px;
+  height: 200px;
+  border-radius: 6px;
+}
+
+.qr-tip {
+  color: #333;
+  margin: 15px 0;
+  font-size: 1.1rem;
+}
+
+.qr-tip-small {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}

@@ -132,6 +132,8 @@
         <div class="modal-header">欢迎通过以下平台与我们交流</div>
         <div class="modal-body">
           <p class="contact-hint"></p>
+
+          <!-- 社交按钮网格 -->
           <div class="social-buttons">
             <a href="https://www.instagram.com/reompoen" target="_blank" class="social-btn instagram">
               <i class="fab fa-instagram"></i>
@@ -149,23 +151,31 @@
               <i class="fab fa-weibo"></i>
               <span>微博</span>
             </a>
-            <!-- QQ群链接 -->
             <a href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群密钥" target="_blank" class="social-btn qq">
               <i class="fab fa-qq"></i>
               <span>QQ群</span>
             </a>
+            <!-- 微信群按钮（内部已清空二维码结构） -->
             <div class="social-btn wechat" onclick="toggleWeChatQR()">
               <i class="fab fa-weixin"></i>
               <span>微信群</span>
-              <div id="wechat-qr-popup" class="qr-popup">
-                <img src="favicon.ico" alt="微信群二维码" class="qr-code" />
-                <p class="qr-tip">请使用微信扫描二维码加入群聊</p>
-                <p class="qr-tip-small">或添加微信号: <code>rope_art</code></p>
-              </div>
             </div>
           </div>
+
+          <!-- 💡 核心修改：将二维码容器移到按钮外部，作为独立的板块 -->
+          <div id="wechat-qr-popup" class="qr-popup">
+            <img src="../IBTI/wcgroup.jpg" alt="微信群二维码" class="qr-code" />
+            <p class="qr-tip">请使用微信扫描二维码加入群聊</p>
+            <p class="qr-tip-small">或添加微信号: <code>rope_art</code></p>
+          </div>
+
         </div>
       </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
     </div>
 
   </body>
