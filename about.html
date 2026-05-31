@@ -27,12 +27,12 @@
     </nav>
 
     <main>
-      <!-- 面包屑导航 -->
+
       <div class="breadcrumb">
         <div class="container"><a href="index.html">首页</a> &gt; 关于我们</div>
       </div>
 
-      <!-- 关于我们内容以及社交媒体关注区 -->
+
       <section class="social-media-section">
         <div class="container">
           <h2 class="section-title"><i class="fas fa-users"></i> 关于我们</h2>
@@ -45,7 +45,7 @@
           </p>
 
           <div class="social-grid">
-            <!-- 国际社交媒体 -->
+
             <div class="social-category">
               <h3><i class="fas fa-globe"></i> 国际平台</h3>
               <div class="social-buttons">
@@ -64,7 +64,7 @@
               </div>
             </div>
 
-            <!-- 国内社交媒体 -->
+
             <div class="social-category">
               <h3><i class="fas fa-flag"></i> 国内平台</h3>
               <div class="social-buttons">
@@ -72,12 +72,12 @@
                   <i class="fab fa-weibo"></i>
                   <span>微博</span>
                 </a>
-                <!-- QQ群链接 -->
-                <a href="https://qm.qq.com/cgi-bin/qm/qr?k=你的QQ群密钥" target="_blank" class="social-btn qq">
+
+                <a href="https://qm.qq.com/q/Lgue9w8y8G" target="_blank" class="social-btn qq">
                   <i class="fab fa-qq"></i>
                   <span>QQ群</span>
                 </a>
-                <!-- 微信群二维码（点击弹出） -->
+
                 <button class="social-btn wechat" onclick="showWechatQR()">
                   <i class="fab fa-weixin"></i>
                   <span>微信群</span>
@@ -86,7 +86,7 @@
             </div>
           </div>
 
-          <!-- 微信群二维码弹窗 -->
+
           <div id="wechat-qr-modal" class="modal">
             <div class="modal-content">
               <span class="close" onclick="hideWechatQR()">&times;</span>
@@ -102,17 +102,15 @@
       </section>
 
       <script>
-        // 显示微信群二维码弹窗
+
         function showWechatQR() {
           document.getElementById("wechat-qr-modal").style.display = "block";
         }
 
-        // 隐藏微信群二维码弹窗
         function hideWechatQR() {
           document.getElementById("wechat-qr-modal").style.display = "none";
         }
 
-        // 点击弹窗外部关闭
         window.onclick = function (event) {
           const modal = document.getElementById("wechat-qr-modal");
           if (event.target == modal) {
@@ -120,13 +118,12 @@
           }
         };
 
-        // 为QQ群链接生成二维码（可选）
         function generateQQGroupLink(groupNumber, groupKey) {
-          // 替换成你自己的QQ群号
+
           return `https://qm.qq.com/cgi-bin/qm/qr?k=${groupKey}&jump_from=webapi&authKey=你的authKey`;
         }
       </script>
-            <!-- 返回按钮 -->
+
             <div class="container" style="text-align: center">
               <a href="index.html" class="back-button">
                 <i class="fas fa-arrow-left"></i> 返回首页
