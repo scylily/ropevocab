@@ -38,7 +38,6 @@
 <div class="sub-title safe-text" data-safe="6K+35qC45a+55oKo55qE5YC+5ZCR6YCJ5oup">加载中...</div>
 </header>
 <div id="review-list"></div>
-<!-- 仅在生成长图时显示的分享二维码区域 -->
 <div class="share-qr-footer">
 <div class="share-qr-container">
 <img alt="网站二维码" class="share-qr-img" src="../assets/images/website_qr.jpg"/>
@@ -67,7 +66,6 @@
 </div>
 <div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
 <div class="desc-box" id="res-desc"></div>
-<!-- 仅在生成长图时显示的分享二维码区域 -->
 <div class="share-qr-footer">
 <div class="share-qr-container">
 <img alt="网站二维码" class="share-qr-img" src="../assets/images/website_qr.jpg"/>
@@ -82,7 +80,6 @@
 <button class="btn btn-outline safe-text" data-safe="CjxpIGNsYXNzPSJmYXMgZmEtaG9tZSI+PC9pPiDov5Tlm57or43msYflupPpppbpobUgPGkgY2xhc3M9ImZhcyBmYS1ob21lIj48L2k+Cg==" onclick="window.location.href='../index.html'">加载中...</button>
 </div>
 </div>
-<!-- 底部版权页脚 -->
 <footer class="site-footer">
 <div class="footer-container">
 <div class="footer-links safe-text" data-safe="CjxhIGhyZWY9ImphdmFzY3JpcHQ6dm9pZCgwKSIgb25jbGljaz0ib3BlbkNvbnRhY3RNb2RhbCgpIj7ogZTns7vmiJHku6w8L2E+Cg==">加载中...</div>
@@ -104,7 +101,6 @@
 <div class="modal-header safe-text" data-safe="5qyi6L+O6YCa6L+H5Lul5LiL5bmz5Y+w5LiO5oiR5Lus5Lqk5rWB">加载中...</div>
 <div class="modal-body">
 <p class="contact-hint"></p>
-<!-- 社交按钮网格 -->
 <div class="social-buttons">
 <a class="social-btn instagram" href="https://www.instagram.com/reompoen" target="_blank">
 <i class="fab fa-instagram"></i>
@@ -114,16 +110,14 @@
 <i class="fab fa-x-twitter"></i>
 <span>Twitter</span>
 </a>
-<a class="social-btn telegram" href="https://t.me/你的频道" target="_blank">
+<a class="social-btn telegram" href="https://t.me/mychannel" target="_blank">
 <i class="fab fa-telegram"></i>
 <span>Telegram</span>
 </a>
 <a class="social-btn weibo safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtd2VpYm8iPjwvaT4KPHNwYW4+5b6u5Y2aPC9zcGFuPgo=" href="https://weibo.com/u/6438214421" target="_blank">加载中...</a>
 <a class="social-btn qq safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtcXEiPjwvaT4KPHNwYW4+UVHnvqQ8L3NwYW4+Cg==" href="https://qm.qq.com/q/Lgue9w8y8G" target="_blank">加载中...</a>
-<!-- 微信群按钮（内部已清空二维码结构） -->
 <div class="social-btn wechat safe-text" data-safe="CjxpIGNsYXNzPSJmYWIgZmEtd2VpeGluIj48L2k+CjxzcGFuPuW+ruS/oee+pDwvc3Bhbj4K" onclick="toggleWeChatQR()">加载中...</div>
 </div>
-<!-- 二维码容器 -->
 <div class="qr-popup" id="wechat-qr-popup">
 <img alt="微信群二维码" class="qr-code" src="../assets/images/wcqr.jpg"/>
 <p class="qr-tip safe-text" data-safe="6K+35L2/55So5b6u5L+h5omr5o+P5LqM57u056CB5Yqg5YWl576k6IGK">加载中...</p>
@@ -147,14 +141,12 @@
             return "加载失败";
         }
     }
-    // 还原普通的 HTML 文本
     document.querySelectorAll('.safe-text').forEach(el => {
         const encrypted = el.getAttribute('data-safe');
         if (encrypted) {
             el.innerHTML = decodeBase64Utf8(encrypted);
         }
     });
-    // 还原输入框的 Placeholder
     document.querySelectorAll('[data-safe-placeholder]').forEach(el => {
         const encrypted = el.getAttribute('data-safe-placeholder');
         if (encrypted) {
