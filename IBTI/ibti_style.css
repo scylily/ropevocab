@@ -957,8 +957,8 @@ h1 {
 }
 
 .share-qr-img {
-  width: auto !important;
-  height: 120px !important;
+  width: 160px !important;
+  height: auto !important;
   margin-bottom: 12px !important;
   border: 1px solid #eee;
   padding: 4px;
