@@ -81,7 +81,7 @@
       text-transform: uppercase;
     }
 
-    /* Navigation tabs with horizontal scrolling on mobile */
+    /* Desktop Navigation tabs */
     .nav-tabs {
       display: flex;
       gap: 8px;
@@ -103,6 +103,7 @@
       cursor: pointer;
       transition: var(--transition);
       font-weight: 500;
+      text-align: center;
     }
     .tab-btn.active, .tab-btn:hover {
       background: var(--gold-primary);
@@ -489,14 +490,78 @@
       margin-bottom: 2px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ==========================================================================
+       Mobile-First Adaptive Media Queries (Screens < 768px)
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .markdown-body {
+        padding: 24px 14px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        padding-bottom: 0.5em;
+      }
+
+      p, li {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      blockquote {
+        margin: 16px 0;
+        padding: 10px 14px;
+      }
+
+      /*
+         Reconstruction: 3 Columns x 2 Rows Grid Layout for Mobile.
+         Eliminates horizontal scrolling overflow completely.
+      */
+      .nav-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 8px;
+        overflow-x: visible;
+        padding-bottom: 0;
+        margin-bottom: 24px;
+      }
+
+      .tab-btn {
+        width: 100%;
+        text-align: center;
+        font-size: 0.8rem; /* Keeps text fitting neatly within standard phone width */
+        padding: 8px 4px;
+        white-space: normal; /* Safe wrap in case of extreme narrow widths */
+        border-radius: 12px; /* Square-circle hybrid for grids */
+      }
+
+      .markview-code-block-wrapper {
+        padding: 10px;
+        margin: 16px 0;
+      }
+
+      .markview-code-block-wrapper code {
+        font-size: 12px !important;
+      }
     }
 
-    @keyframes pulseGold {
-      0% { box-shadow: 0 0 5px rgba(223, 186, 115, 0.1); }
-      100% { box-shadow: 0 0 15px rgba(223, 186, 115, 0.25); }
+    /* Print styles */
+    @media print {
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      #markview-container .markview-print-toc {
+        border: none !important;
+        background: white !important;
+        color: black !important;
+      }
+      h1, h2, h3, a {
+        color: black !important;
+        text-shadow: none !important;
+      }
     }
   </style>
 </head>
@@ -508,7 +573,7 @@
       <p>Rigger Safety Console & Master Manual</p>
     </header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs (Dynamic 3x2 Grid on Mobile) -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchSection('prepare')">物理整备</button>
       <button class="tab-btn" onclick="switchSection('dialogue')">沟通维度</button>
@@ -524,7 +589,7 @@
         <div class="card-title">🩺 撤离整备与核心工具</div>
         <div class="timeline">
           <div class="timeline-item">
-            <div class="timeline-title">EMT 医疗级安全急救剪</div>
+            <div class="timeline-title">EMT 医疗级安全急急救剪</div>
             <div class="timeline-desc">必须存放于绳师<strong>触手可及、无障碍且单手可拿取</strong>的固定位置。确保在发生紧急生理危险时，能在 <strong>3秒内</strong> 剪断任何承重绳。普通剪刀极易戳伤或割伤皮肤，必须采用<strong>带圆头</strong>的专业医疗剪。</div>
           </div>
           <div class="timeline-item">
@@ -871,7 +936,7 @@
             <div class="accordion-body">
               <div class="accordion-content">
                 <p><strong>易受压部位：</strong><strong>锁骨上方、腋下、肩膀根部</strong></p>
-                <p><strong>涉及经典缚式：</strong>各种胸缚（如五工缚）、悬吊</p>
+                <p><strong>涉及经典缚式：</strong>各种胸缚、悬吊</p>
                 <p><strong>损伤生理指征：</strong>整个手臂突然失去知觉、麻木，肩膀无力，<span class="highlight-red">无法抬起手臂</span>。</p>
               </div>
             </div>
