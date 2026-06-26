@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>绳手Guide-ROM | 全功能互动安全控制台</title>
+  <style>
+    /* ==========================================================================
+       Premium Black & Gold Interactivity Framework
+       ========================================================================== */
+    :root {
+      --bg-dark: #080808;
+      --bg-card: #12100d;
+      --gold-primary: #dfba73;
+      --gold-glowing: #ffdf7a;
+      --gold-dark: #5a4827;
+      --text-main: #ece8df;
+      --text-muted: #9e9587;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Unified Font Stack for a clean, cohesive layout on all devices */
+    body, h1, h2, h3, h4, h5, h6, input, button, select, textarea {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.7;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(223, 186, 115, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(90, 72, 39, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .app-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 24px 16px 100px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding: 40px 16px 20px;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      width: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      text-shadow: 0 4px 12px rgba(223, 186, 115, 0.15);
+    }
+
+    header p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Navigation tabs with horizontal scrolling on mobile */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: #1a1611;
+      border: 1px solid var(--gold-dark);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+      border-color: var(--gold-primary);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(223, 186, 115, 0.2);
+    }
+
+    /* Content Cards and Panels */
+    .content-section {
+      display: none;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    .content-section.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(223, 186, 115, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+    }
+    .card:hover {
+      border-color: rgba(223, 186, 115, 0.25);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Styled emphasis typography */
+    strong {
+      font-weight: 700;
+      color: var(--gold-glowing); /* Pops crucial metrics and triggers in warm gold */
+    }
+
+    .highlight-red {
+      color: #ff6b6b; /* Danger/injury signals */
+      font-weight: 700;
+    }
+
+    .highlight-yellow {
+      color: #ffd000;
+      font-weight: 700;
+    }
+
+    /* Standardized Lists */
+    .detail-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+    .detail-list li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+    .detail-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: var(--gold-primary);
+      font-size: 0.8rem;
+    }
+
+    /* Callout & Warnings */
+    .callout {
+      background: rgba(223, 186, 115, 0.04);
+      border-left: 3px solid var(--gold-primary);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    .alert-card {
+      background: rgba(215, 58, 73, 0.08);
+      border: 1px solid #d73a49;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .alert-card-title {
+      color: #ff6b6b;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Collapsible Node Framework */
+    .accordion-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .accordion-node {
+      background: #181511;
+      border: 1px solid rgba(223, 186, 115, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .accordion-header {
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .accordion-header .title-text {
+      font-weight: 700;
+      color: var(--gold-primary);
+      font-size: 0.95rem;
+    }
+
+    .accordion-header .indicator {
+      font-size: 0.75rem;
+      color: var(--gold-primary);
+      background: rgba(223, 186, 115, 0.08);
+      padding: 2px 10px;
+      border-radius: 12px;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .accordion-content {
+      padding: 16px;
+      border-top: 1px solid rgba(223, 186, 115, 0.05);
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .accordion-node.active {
+      border-color: var(--gold-primary);
+    }
+    .accordion-node.active .accordion-body {
+      max-height: 2000px;
+    }
+    .accordion-node.active .indicator {
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+    }
+
+    /* Sub-panels inside accordions */
+    .sub-panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin: 12px 0 6px 0;
+      border-bottom: 1px dashed rgba(223, 186, 115, 0.15);
+      padding-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Dialogue Bubbles */
+    .chat-bubble-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .chat-bubble {
+      max-width: 90%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+    .chat-bubble.rigger {
+      align-self: flex-start;
+      background: #1f1a14;
+      border: 1px solid var(--gold-dark);
+      color: var(--text-main);
+      border-top-left-radius: 2px;
+    }
+    .chat-bubble.sub {
+      align-self: flex-end;
+      background: #222;
+      color: #dfdfdf;
+      border-top-right-radius: 2px;
+    }
+    .chat-bubble .speaker-tag {
+      font-size: 0.7rem;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    /* Timeline Stepper for Checks & Processes */
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+      border-left: 2px solid var(--gold-dark);
+      margin: 20px 10px;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--gold-primary);
+      border: 3px solid var(--bg-dark);
+      transition: var(--transition);
+    }
+
+    .timeline-title {
+      font-weight: 700;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .timeline-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Gauge and checklist dashboard styles */
+    .dashboard-gauge {
+      background: linear-gradient(135deg, #1c1813 0%, #12100d 100%);
+      border: 1px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .gauge-circle {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: #2c251a;
+      stroke-width: 8;
+    }
+
+    .gauge-progress {
+      fill: none;
+      stroke: var(--gold-primary);
+      stroke-width: 8;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gauge-text {
+      position: absolute;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--gold-primary);
+    }
+
+    .checklist-control {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .check-label {
+      background: #151310;
+      border: 1px solid rgba(223, 186, 115, 0.05);
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .check-label:hover {
+      border-color: rgba(223, 186, 115, 0.15);
+      background: #191612;
+    }
+
+    .check-label input {
+      margin-top: 4px;
+      accent-color: var(--gold-primary);
+      transform: scale(1.2);
+    }
+
+    .check-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .check-title {
+      font-weight: 700;
+      color: #dfba73;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .check-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .check-label.checked {
+      border-color: var(--gold-primary);
+      background: rgba(223, 186, 115, 0.03);
+      box-shadow: inset 0 0 10px rgba(223, 186, 115, 0.05);
+    }
+
+    .status-alert {
+      display: none;
+      background: rgba(223, 186, 115, 0.1);
+      border: 1px dashed var(--gold-primary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+      text-align: center;
+      color: var(--gold-glowing);
+      animation: pulseGold 2s infinite alternate;
+      font-weight: 700;
+    }
+
+    /* Simple Step Stepper */
+    .step-box {
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(223, 186, 115, 0.05);
+      margin-bottom: 8px;
+    }
+    .step-num {
+      color: var(--gold-primary);
+      font-weight: bold;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulseGold {
+      0% { box-shadow: 0 0 5px rgba(223, 186, 115, 0.1); }
+      100% { box-shadow: 0 0 15px rgba(223, 186, 115, 0.25); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>绳手安全控制台</h1>
+      <p>Rigger Safety Console & Master Manual</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchSection('prepare')">物理整备</button>
+      <button class="tab-btn" onclick="switchSection('dialogue')">沟通维度</button>
+      <button class="tab-btn" onclick="switchSection('anatomy')">解剖安全</button>
+      <button class="tab-btn" onclick="switchSection('signs')">体征监测</button>
+      <button class="tab-btn" onclick="switchSection('aftercare')">善后抚慰</button>
+      <button class="tab-btn" onclick="switchSection('dashboard')">自检考核</button>
+    </div>
+
+    <!-- TAB 1: PREPARATION & ENVIRONMENT -->
+    <div id="prepare" class="content-section active">
+      <div class="card">
+        <div class="card-title">🩺 撤离整备与核心工具</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-title">EMT 医疗级安全急救剪</div>
+            <div class="timeline-desc">必须存放于绳师<strong>触手可及、无障碍且单手可拿取</strong>的固定位置。确保在发生紧急生理危险时，能在 <strong>3秒内</strong> 剪断任何承重绳。普通剪刀极易戳伤或割伤皮肤，必须采用<strong>带圆头</strong>的专业医疗剪。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">多源独立应急照明</div>
+            <div class="timeline-desc">工作灯及应急手电必须随手备用。一旦发生<strong>突发停电</strong>，须确保能<strong>立刻看清</strong>受缚者身上的承绳节点，以便实施安全解缚。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">关节保护及骨骼缓冲衬垫</div>
+            <div class="timeline-desc">
+              <strong>关节保护软垫：</strong>用于跪姿或俯卧时垫在膝盖、踝关节下方，<strong>减少长时间硬质地面压迫</strong>带来的血流受限及酸痛。<br>
+              <strong>高弹性抗压海绵/羊毛垫：</strong>用于绳子与人体骨骼突出处（如<strong>锁骨、盆骨、肋骨、肩胛骨</strong>）之间的缓冲，降低皮肤坏死与皮下出血风险。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌡️ 物理参数控制</div>
+        <p style="font-size: 0.9rem; margin-bottom: 12px;">受缚者在限制行动、痛感刺激或性高潮过后，受植物神经调节影响，血管剧烈舒张且缺乏自主运动，体温会急剧流失。<span class="highlight-red">失温会导致肌肉抽搐和血压骤降</span>。</p>
+        <div style="display: flex; justify-content: space-between; background: #1a1611; padding: 12px; border-radius: 8px; border: 1px solid var(--gold-dark); margin-bottom: 12px;">
+          <span style="font-size: 0.85rem;">室温温控标准：</span>
+          <span style="color: var(--gold-primary); font-weight: bold;">25°C - 27°C (严防失温)</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; background: #1a1611; padding: 12px; border-radius: 8px; border: 1px solid var(--gold-dark);">
+          <span style="font-size: 0.85rem;">悬吊底座防坠垫厚度：</span>
+          <span style="color: var(--gold-primary); font-weight: bold;">≥ 5cm (攀岩抱石垫级别)</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧶 绳索日常维护标准</div>
+        <div class="accordion-panel">
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">麻绳日常维护 (黄麻/剑麻)</span>
+              <span class="indicator">点击查看</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p style="margin-bottom: 8px;"><strong>纤维完整性检查：</strong>每次开局前，绳师必须顺着绳体通体触摸，检查是否有<span class="highlight-red">纤维断裂、霉变、内部结节或绳芯变空、发软</span>的情况，如有磨损严重应立即淘汰。</p>
+                <p><strong>清洁与锁水：</strong>麻绳需<strong>定期加水煮沸、过火烧去杂毛</strong>，并在阴干后涂抹天然植物油（如山茶花油）。锁住植物纤维的水分，保持柔韧度，最大化降低<span class="highlight-yellow">绳烧 (Rope Burn)</span>对受缚者皮肤造成的擦伤损害。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">棉绳与真丝绳日常维护</span>
+              <span class="indicator">点击查看</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p style="margin-bottom: 8px;"><strong>纤维完整性检查：</strong>手感排查有无<span class="highlight-red">股线抽丝、发毛</span>、或承重层断裂引起的局部结块不均。</p>
+                <p><strong>清洁与干燥：</strong>定期使用中性温和洗涤剂手洗（温水），<strong>自然悬挂阴干</strong>，<span class="highlight-red">严禁在强光下长时间暴晒</span>或使用高温烘干机，以免纤维变脆，造成突发承重崩断。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: DEEP COMMUNICATION DIMENSIONS -->
+    <div id="dialogue" class="content-section">
+      <div class="card">
+        <div class="card-title">💬 深度沟通六大核心维度</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">知情同意并非单次的形式，而是贯穿体验始终的“动态认知”。点击展开各维度的核心机制、话术和极端案例：</p>
+
+        <div class="accordion-panel">
+          <!-- Dimension 1 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 1：经验背景与心智预期 (Experience & Mental)</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>评估对方的 BDSM 认知阶梯，判断其是对身体禁锢感、挣扎、疼痛还是精神臣服更敏感。<br>
+                <strong>· 新手的<span class="highlight-yellow">“黄色幻想”</span>：</strong>受成人影片影响，脑中只有高潮和唯美画面，下意识忽视了重力作用及受限带来的肌肉酸痛、束缚疲劳和心理重压。<br>
+                <strong>· 老手的<span class="highlight-red">“顺从者陷阱”</span>：</strong>有经验的受缚者常有极强的<strong>“迎合心理”</strong>（Pleaser 倾向），为了取悦绳师或维持场景不中断，常会<strong>下意识隐瞒身体神经受压后的麻木不适</strong>。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">“你以前有过被绳子束缚的经验吗？大概体验过几次？是什么类型的绑缚？在以前的体验中，最让你感到享受或解脱（Freeing）的是哪个部分？”</div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（针对新手）</div>
+                    许多在网上看起来唯美的姿势，现实中需要你的肌肉和关节承受很大的拉力，就像做高强度瑜伽。你平时有运动习惯吗？今天我们先从<strong>最基础、最舒服的地面平躺姿势</strong>开始，让你先适应绳子贴紧皮肤的感觉，我们慢慢来。
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（针对老手）</div>
+                    我知道你以前经验丰富。但在我这里，我<strong>不需要你为了‘表现好’而硬撑</strong>。对我来说，能<strong>及时反馈身体麻木感</strong>的受缚者才是最优秀的合作伙伴。今天有任何不舒服请直接告诉我，调整绳子并不代表你‘不耐操’，而是为了我们能更安全地玩下去。
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>体验者强烈要求“想要体验极度挣扎，想要被绑得死死的，越痛苦越好”。<br>
+                <strong>策略：</strong>绳师切勿直接满足其极限要求。应采用<strong>“递进限制法”</strong>。先用较松的<strong>软棉绳进行局部限制</strong>，观察其在挣扎时的呼吸频率和情绪波动，如果其心率和呼吸稳定，再在后续场次中逐步使用麻绳并加力。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimension 2 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 2：绝对底线与衍生项目限制 (Hard Limits)</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>明确排查绳缚以外的衍生感官剥夺或痛感刺激项目的边界，切勿主观臆测对方的承受力。<br>
+                <strong>· <span class="highlight-yellow">条件性同意 (Conditional Consent)</span>：</strong>受缚者的“同意”通常带前提条件。例如“可以打屁股，但不能用藤条，只能用手”；或者“可以蒙眼，但不能用不透光的黑色面罩，可以用半透光的真丝眼罩”。<br>
+                <strong>· 感官剥夺的恐慌诱导：</strong>蒙眼或堵嘴会放大内心的不安全感，对于有创伤后应激障碍（PTSD）历史的人，极易诱发<span class="highlight-red">急性恐慌发作 (Panic Attack)</span>。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">“今天我们的主要体验是绳缚。除了绳子，你对以下项目有绝对排斥（Hard Limits）吗？例如：言语羞辱、打屁股/大腿等击打、乳头调教、低温蜡烛、或者蒙眼？如果有，请直接告诉我，我们今天绝对不碰。你平时有憋气或窒息的爱好吗？今天如果涉及到喉部的绳子走线，你对此会有焦虑感吗？”</div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（探索模糊地带）</div>
+                    有些项目你可能不排斥，但也不确定今天想不想玩。比如低温蜡烛、或者散鞭。我们今天可以把它列为‘尝试项目’，如果过程中我准备用它们，我会提前口头询问你：‘我现在要用散鞭了，你可以接受吗？’ 如果你点头，我们再继续；如果你摇头，我们就跳过。
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（探查感官剥夺耐受度）</div>
+                    今天你介意我遮住你的眼睛或者堵住嘴吗？有些人在看不见、说不出话的时候，内心会产生不理智的恐慌。如果蒙眼让你觉得焦虑，我们可以选择不蒙眼，或者只用薄纱稍微遮挡光线。
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>调教中途，受缚者口头表示“没事，继续，我还能承受”，但其身体已经出现生理性抗拒（如大口喘气、眼球震颤、肌肉痉挛）。<br>
+                <strong>策略：</strong><strong>身体的诚实度永远高于语言。</strong> 此时绳师应<strong>果断暂停动作</strong>，喂其喝水并抚摸背部使其平复，不能盲目听信其口头上的“我还能行”。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimension 3 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 3：生理健康与关节骨骼排查 (Physiological)</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>提前排查受缚者的骨骼和肌肉旧疾，避免拉伤或慢性神经及韧带损伤。<br>
+                <strong>· <span class="highlight-red">隐藏性关节僵硬</span>：</strong>现代人由于久坐，<strong>肩袖肌群（Rotator Cuff）</strong>和髋关节极度紧绷。在进行“后挽缚”或“猪蹄缚”时，这些紧绷的韧带在绳子拉力下极易发生撕裂。<br>
+                <strong>· <span class="highlight-yellow">体位性低血压</span>：</strong>长期跪姿或双腿被捆绑受压，在突然解缚、站立时，血液迅速下涌，极易导致脑部瞬间缺血而晕厥（俗称“断电”）。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">“你的肩膀、手腕、手肘或膝盖以前受过伤吗？有习惯性脱臼或韧带拉伤吗？你的腰椎或颈椎平时有酸痛或间盘突出吗？把你的双臂尝试往后挽到这个位置，肩胛骨这里会有卡住的感觉或者刺痛感吗？你有没有糖尿病、低血糖、心脏病，或者容易肢体发麻、手脚冰冷的血管循环问题？”</div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（肩袖关节排查）</div>
+                    请你尝试把双手放在背后，像戴手铐一样并拢，然后试着把肩膀往后张。在这个姿势下，你的<strong>锁骨或者肩膀前侧会有针刺一样的疼痛吗？</strong>如果有，我们今天绝对不做任何高强度的后挽拉扯。
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（关节过度活动症 Hypermobility 排查）</div>
+                    你的身体关节平时比普通人更软吗？比如大拇指能轻易贴到前臂？如果是这样，今天你在绳子上的<strong>安全活动范围其实比常人要小</strong>，因为你的神经可能在关节过度弯曲时更早受到压迫，我会格外注意不让你的关节达到平时极限角度。
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>悬吊中途，受缚者突然表示“手有一点点木，但不严重，我可以坚持”。<br>
+                <strong>策略：</strong><span class="highlight-red">指尖开始发麻是神经压迫的红线，绝对不能妥协。</span> 绳师必须<strong>立刻将受缚者着陆</strong>，解开手臂上的主承重绳，协助其活动手指直至知觉完全恢复。如果强行坚持 10 分钟以上，可能导致长达数周甚至数月的手臂无法抬起（<strong>垂腕症</strong>）。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimension 4 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 4：留痕接受度与社会角色平衡 (Marking)</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>将受缚者的现实社会生活（如工作、社交、家庭）纳入安全考量。<br>
+                <strong>· 绳痕的社会学属性：</strong>绳缚产生的红印和淤青在圈内常被视为“勋章”，但在主流社会中容易被误解为家庭暴力或自残行为。受缚者面临着极大的社交舆论压力。<br>
+                <strong>· 物理损伤差异：</strong>粗糙的黄麻绳在皮肤娇嫩处拉扯极易造成<span class="highlight-red">“绳烧”（类似擦伤皮损）</span>，这种伤口愈合慢且容易留下色素沉着；而高品质的软棉绳或真丝绳则几乎不伤表皮。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">“由于绳子勒紧和摩擦，皮肤在 24 小时内出现红印是正常现象。但如果力度较大，可能会产生皮下轻微出血点或轻度淤青，这在你的工作、家庭和社交圈中会造成困扰吗？如果是，今天我会严格控制力度，将留痕降到最低。”</div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（边界化留痕沟通）</div>
+                    由于你的工作原因（如医生、教师、柜台客服），我们需要把所有的绳痕和击打痕迹控制在<strong>‘衣服能遮盖’的区域</strong>。你平时上班会穿短袖、裙子或者低领衣服吗？我们今天的走线需要严格限制在背部和臀部等衣物覆盖区吗？
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（材质与手法选择）</div>
+                    我们今天有粗麻绳和细棉绳两种选择。粗麻绳的触感更粗粝，束缚感更强，但容易在摩擦时红肿；细棉绳非常温柔，几乎不伤皮肤。针对你的皮肤耐受度，你更倾向于哪一种？
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>体验者在体验后第三天发微信恐慌地表示：“我大腿上打出的淤青还没退，明天要和家人去游泳，怎么办？”<br>
+                <strong>策略：</strong>绳师不应流露不耐烦。应给予安抚并提供实操方案：“别慌，这是皮下出血的正常代谢过程。<strong>24小时内冷敷，现在你可以进行热敷</strong>，涂抹喜辽妥（外用凝胶）或者云南白药，能加速淤青消退。游泳时可以使用防水遮瑕膏或肉色贴纸遮盖。”</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimension 5 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 5：安全信号与紧急终止方案 (Safe Words)</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>赋予受缚者绝对的控制权，建立“可逆同意”的信心。<br>
+                <strong>· <span class="highlight-red">潜意识抵抗 (Tonic Immobility)</span>：</strong>当疼痛或恐惧达到极点时，人类会触发“假死/冻结”反应。此时受缚者大脑一片空白，明明极度痛苦，却<strong>失去了喊出“红色”安全词的能力</strong>。<br>
+                <strong>· <span class="highlight-yellow">坠持物测试 (Drop Test)</span>：</strong>绳师不能被动等待安全词，必须主动测试对方的意识活跃度。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">
+                  “我们今天严格采用交通灯安全词系统：<br>
+                  <strong>· 红色 (Red)：</strong>代表‘<strong>立刻解开绳子，无条件终止</strong>’。听到这个词我会在 <strong>3 秒内</strong>用最安全的方式让你着陆并松绑。<br>
+                  <strong>· 黄色 (Yellow)：</strong>代表‘我很难受，但我想坚持，请你降低力度、调整绳结或放慢节奏’。<br>
+                  请你向我重复一遍这两个词的意思。如果稍后你的嘴被堵住了，或者你说不出话来，请发出连续的‘唔唔唔’哼声，并直视我的眼睛；或者我会在你手里塞一个钥匙扣/网球，一旦你<strong>松手让它掉落</strong>，我会立刻视为‘红色’处理。”
+                </div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（建立主动测试默契）</div>
+                    有时候玩到深处，你可能会舒服或痛苦到忘记安全词。所以今天我会用主动的方式测试你的意识。我会时不时捏一下你的指尖或者问你一句：‘现在还好吗？’ 如果你觉得很好，请用力<strong>回捏我两下</strong>，或者清晰地回答我。如果你没有反应，我会立刻视同你触发了安全词，我会马上停手降落。
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（撤回同意无压机制）</div>
+                    请记住，在我这里，喊‘红色’并不是一件丢脸的事情。相反，知道自己的极限并及时喊停，是非常勇敢且对彼此负责的表现。即使我们刚开局 2 分钟你就喊了红色，我也会高高兴兴地为你解开，明白吗？
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>悬吊在半空中，受缚者突然不再发出声音，双眼闭合。绳师叫她，她也没有任何反应。<br>
+                <strong>策略：</strong><span class="highlight-red">立刻默认为最高级别险情。</span>绳师切勿以为她只是“太爽了进入了梦乡”。必须在 <strong>3 秒内</strong>将受缚者降落到防坠垫上，平卧，迅速解开所有限制胸腔呼吸和大腿根部动脉的绳索。检查呼吸、脉搏，掐人中或使用冷毛巾唤醒。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dimension 6 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">维度 6：情绪空间、Sub-space与哭泣预案</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="sub-panel-title">核心目的与深层机制</div>
+                <p>绳缚能带来深度精神放空（Sub-space），有时会伴随情绪决堤。必须提前达成“如何处理流泪”的默契。<br>
+                <strong>· 化学风暴与脑功能波动：</strong>长时间的绳缚限制与疼痛刺激会促使大脑分泌大量的内啡肽（Endorphin）和多巴胺。当绳子解开的刹那，这些化学物质浓度骤降，人体会产生类似于戒断反应的空虚感。<br>
+                <strong>· <span class="highlight-yellow">宣泄性哭泣</span> vs <span class="highlight-red">心理创伤触发 (Trigger)</span>：</strong>前者是安全的（哭完觉得轻松），后者是危险的（伴随浑身颤抖、惊恐、呼吸过度）。</p>
+
+                <div class="sub-panel-title">标准基础问询话术</div>
+                <div class="callout">“在绳缚、疼痛或高潮过后，人体内的内啡肽会剧烈波动，有时人会不受控制地流泪。这在我们的世界里非常正常。如果我们中途遇到了你流泪的情况，只要你觉得精神状态（headspace）是安全的，我们不需要立刻停止，我会陪着你让你发泄出来。但如果你感到害怕，请直接使用安全词，这完全没有问题。这样处理可以吗？”</div>
+
+                <div class="sub-panel-title">情境化引导话术</div>
+                <div class="chat-bubble-group">
+                  <div class="chat-bubble rigger">
+                    <div class="speaker-tag">绳师（探查情绪“地雷区”）</div>
+                    有些词汇、语气或者特定的动作（比如粗暴地扯头发、高高在上的命令语气），可能会触发你过去不好的记忆。你在心理上有什么绝对不希望出现的场景或语气吗？我会在今天的整个调教中保持温和、中立的沟通风格。
+                  </div>
+                  <div class="chat-bubble rigger" style="margin-top: 6px;">
+                    <div class="speaker-tag">绳师（确认情绪哭泣状态）</div>
+                    如果你现在想哭，不用压抑，这里是非常安全的空间，你可以尽情哭出来。但我需要确认：你现在的哭泣是因为身体得到了放松、情绪得到了宣泄，还是因为哪里受了伤或者想停止？请你用点头或摇头告诉我。
+                  </div>
+                </div>
+
+                <div class="sub-panel-title">边缘/极端案例与应对</div>
+                <p><strong>案例：</strong>体验结束后，受缚者解开绳子，躺在毛毯里不停地抽泣、发抖，眼神空洞，拒绝绳师的物理触碰。<br>
+                <strong>策略：</strong>这是严重的 <span class="highlight-yellow">Sub-drop（身心坠落）</span>：<br>
+                1. <em>物理保暖：</em>用厚毛毯紧紧包裹她，不要强行抱她（如果她表现出抗拒），但要待在她身边，保持在她的视线范围内。<br>
+                2. <em>能量补充：</em>给她一杯热糖水，或者巧克力，低血糖会加剧抑郁感。<br>
+                3. <em>言语确认：</em>保持声音温柔而坚定：“你现在很安全，今天的调教已经结束了。慢慢呼吸，我会一直在这里陪着你，直到你觉得好起来。”</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ANATOMICAL SAFETY -->
+    <div id="anatomy" class="content-section">
+      <div class="card">
+        <div class="card-title">🧠 神经安全区排查 (避开小屏横滚)</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">神经压迫在极短时间内即可造成不可逆损伤。以下为移动端适配的交互卡片：</p>
+
+        <div class="accordion-panel">
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">1. 桡神经 (Radial Nerve)</span>
+              <span class="indicator">查看详情</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>易受压部位：</strong><strong>手腕大拇指侧、上臂外侧</strong></p>
+                <p><strong>涉及经典缚式：</strong>手腕并拢缚、束臂缚、后挽缚</p>
+                <p><strong>损伤生理指征：</strong>大拇指和食指背侧发麻；无法做“抬起手腕”（伸腕）的动作，呈典型<span class="highlight-red">“垂腕”状态</span>。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">2. 尺神经 (Ulnar Nerve)</span>
+              <span class="indicator">查看详情</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>易受压部位：</strong><strong>肘关节内侧、手腕小指侧</strong></p>
+                <p><strong>涉及经典缚式：</strong>后折臂、肘部交叉缚</p>
+                <p><strong>损伤生理指征：</strong>小拇指和无名指一半发麻；<span class="highlight-red">手指无法并拢或张开</span>。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">3. 正中神经 (Median Nerve)</span>
+              <span class="indicator">查看详情</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>易受压部位：</strong><strong>手腕正中、前臂内侧</strong></p>
+                <p><strong>涉及经典缚式：</strong>各种前臂合并缚、手套缚</p>
+                <p><strong>损伤生理指征：</strong>食指、中指及大拇指掌侧发麻、刺痛，<span class="highlight-red">无法做“大拇指对捏”动作</span>。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">4. 臂丛神经 (Brachial Plexus)</span>
+              <span class="indicator">查看详情</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>易受压部位：</strong><strong>锁骨上方、腋下、肩膀根部</strong></p>
+                <p><strong>涉及经典缚式：</strong>各种胸缚（如五工缚）、悬吊</p>
+                <p><strong>损伤生理指征：</strong>整个手臂突然失去知觉、麻木，肩膀无力，<span class="highlight-red">无法抬起手臂</span>。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔍 神经压迫排查三步法（绳上定期自检）</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">在绳缚持续超过 10 分钟或进行悬吊期间，绳师必须<strong>每隔 3-5 分钟</strong>主动进行一次排查：</p>
+        <div class="step-box">
+          <div class="step-num">Step 1: 触觉测试 (Pinprick)</div>
+          <p style="font-size: 0.85rem;">用手指甲轻捏受缚者的食指尖和小指尖，询问：“能感觉到捏你吗？<strong>两边指尖的感觉是对称的吗？</strong>”</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">Step 2: 运动测试 (Mobility)</div>
+          <p style="font-size: 0.85rem;">命令受缚者：“试着动一动你的五个手指/脚趾，<strong>能用力张开再合拢吗？</strong>”</p>
+        </div>
+        <div class="step-box">
+          <div class="step-num">Step 3: 温度与颜色 (Color & Temp)</div>
+          <p style="font-size: 0.85rem;">触摸其指尖，观察指甲床。如果<span class="highlight-red">指甲床呈青紫色，或指尖冰冷</span>，说明静脉回流严重受阻，<strong>必须立刻调整或松缚</strong>。</p>
+        </div>
+      </div>
+
+      <div class="alert-card">
+        <div class="alert-card-title">🚨 骨筋膜室综合征（Compartment Syndrome）</div>
+        <p style="font-size: 0.85rem; color: #ffbcbc; margin-bottom: 6px;"><strong>病理：</strong>长期处于高拉力、紧绷包裹（如长达 1 小时以上的重度肢体缠绕）下，肢体局部肌肉间隙压力急剧增高，导致<span class="highlight-red">肌肉及神经缺血缺氧坏死</span>。</p>
+        <p style="font-size: 0.85rem; color: #ffbcbc; margin-bottom: 6px;"><strong>指征：</strong>受缚者感到被绑肢体出现异常剧烈的胀痛、<strong>被动牵拉时极度剧痛</strong>。</p>
+        <p style="font-size: 0.85rem; color: #ffbcbc;"><strong>预防：</strong>单一部位高压缠绕束缚原则上不建议连续超过 <strong>40 分钟</strong>。如必须长时间维持，需每隔 <strong>20 分钟</strong>降低一次整体张力。</p>
+      </div>
+    </div>
+
+    <!-- TAB 4: PHYSIOLOGICAL MONITORING MATRIX -->
+    <div id="signs" class="content-section">
+      <div class="card">
+        <div class="card-title">🩺 绳上动态生理体征观察与实时干预矩阵</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">绳师必须具备“不依赖言语，仅通过肉眼观察受缚者生理指征”来判断危险并干预的能力。点击查看干预方案：</p>
+
+        <div class="accordion-panel">
+          <!-- Sign 1 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text" style="color: #ff6b6b;">🔔 呼吸急促且浅，伴随无意识憋气</span>
+              <span class="indicator">查看干预</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>生理状态：</strong>极度焦虑、恐慌、或疼痛过载</p>
+                <p><strong>潜在风险：</strong><span class="highlight-red">换气过度综合征</span>、惊恐发作（过度排出CO2引发碱中毒、肌肉抽搐）</p>
+                <p><strong>应对措施：</strong>主动拍打受缚者肩膀，大声且温柔地命令：“<strong>呼吸，看着我，跟我一起做深呼吸。</strong>”暂时停止所有痛感刺激。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sign 2 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text" style="color: #ffaa40;">💅 指甲床发青/发白，肢体末梢冰冷</span>
+              <span class="indicator">查看干预</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>生理状态：</strong>局部或大面积血液循环严重受阻</p>
+                <p><strong>潜在风险：</strong>肢体急性缺血、<span class="highlight-red">局部肌肉坏死</span></p>
+                <p><strong>应对措施：</strong><strong>立刻解开或放松</strong>受压迫处的绳结，轻柔按摩肢体促进静脉血液回流，检查温度与血色是否恢复。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sign 3 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text" style="color: #f06292;">👁️ 瞳孔极度放大，双眼无焦，反应迟钝</span>
+              <span class="indicator">查看干预</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>生理状态：</strong>脑部供血不足，或处于极深度的 Sub-space</p>
+                <p><strong>潜在风险：</strong>脑缺氧、体位性低血压、<span class="highlight-red">晕厥、休克前兆</span></p>
+                <p><strong>应对措施：</strong>抚摸其脸颊，高频确认其意识：“听得到我说话吗？如果能听到，握一下我的手。”<strong>如无积极回应，立刻无条件终止并安全着陆。</strong></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sign 4 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">🥶 身体无规律剧烈颤抖，伴随皮肤起鸡皮疙瘩</span>
+              <span class="indicator">查看干预</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>生理状态：</strong>失温，或中枢神经系统由于高潮/痛感高度兴奋</p>
+                <p><strong>潜在风险：</strong>血管剧烈收缩、血压骤降、<span class="highlight-red">失温症、神经性休克</span></p>
+                <p><strong>应对措施：</strong><strong>立即暂停调教</strong>，用干燥的保暖毛毯将其包裹，调高空调室温，<strong>提供温热甜水</strong>（红糖水或热巧克力）。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sign 5 -->
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">🦶 脚趾极度蜷缩，伴随身体异常紧绷</span>
+              <span class="indicator">查看干预</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>生理状态：</strong>高度兴奋（如高潮或强力拉扯）或极度忍痛</p>
+                <p><strong>潜在风险：</strong>局部肌肉痉挛、关节急性拉伤</p>
+                <p><strong>应对措施：</strong>主动抚慰伴侣，温柔发问：“你的脚趾抠得很紧，是觉得享受，还是有哪里拉扯得太疼了？请明确告诉我。”并<strong>适当释放绳子负荷</strong>。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Part 5: Suspension Safety -->
+      <div class="card">
+        <div class="card-title">🪂 悬吊体验（Suspension）专有安全协议</div>
+        <div class="accordion-panel">
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">1. 悬吊综合征 (Suspension Syndrome) 应对</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>成因：</strong>受缚者垂直静止悬吊时间过长（<strong>通常超过 10 分钟</strong>），血液由于重力滞留在下肢，缺乏下肢肌肉收缩的“肌肉泵”作用返回心脏，导致<strong>脑部急性缺血</strong>。</p>
+                <p><strong>前兆指征：</strong>突然的<span class="highlight-red">面色苍白、出冷汗、头晕、恶心、呼吸困难、视力模糊</span>。</p>
+                <p style="margin-bottom: 10px;"><strong>急救处理（国际最新复苏医学共识）：</strong></p>
+                <div class="step-box">
+                  <div class="step-num">动作一：秒级着陆</div>
+                  <p style="font-size: 0.85rem;">一旦出现上述前兆，在 <strong>5-10 秒内安全降落到地面</strong>，并剪断或迅速解开所有压迫大腿根部和腹股沟的重力绳索。</p>
+                </div>
+                <div class="step-box">
+                  <div class="step-num">动作二：体位安置</div>
+                  <p style="font-size: 0.85rem;">将其<strong>平卧（或侧卧于复苏体位）</strong>。老旧指南（救援死假说）曾建议半坐姿，但现代医学共识表明，<strong>平卧能最快恢复大脑供血并降低缺氧风险</strong>。如伴有呕吐倾向则必须侧卧，确保气道通畅。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">2. 悬吊核心承重安全守则</span>
+              <span class="indicator">展开</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p style="margin-bottom: 8px;"><strong>双重挂点（Redundancy）：</strong>悬吊时，承重的主绳和天花板挂吊点必须有<strong>双重物理备份</strong>。严禁依赖单一挂钩或单一绳结作为全部重力支撑。</p>
+                <p><strong>大腿与腹股沟压力分担：</strong>臀部/骨盆悬吊时，承重走线必须<strong>避开腹股沟处的股动脉</strong>。使用足够宽度的护垫、大面积缠绕或多股绳索平摊压强，防止急性缺血。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: AFTERCARE & DROP -->
+    <div id="aftercare" class="content-section">
+      <div class="card">
+        <div class="card-title">🩹 完备的善后抚慰与身心反弹管理</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">绳缚体验完成后的照料（Aftercare）对Bottom的身心重建至关重要，占满意度的 <strong>50%</strong>。</p>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-title">1. 安全解缚，物理身体检查</div>
+            <div class="timeline-desc">轻柔安全地松解所有绳子。检查关节受力部位，触摸指尖发麻恢复情况及体表皮温。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">2. 物理温度与能量重建</div>
+            <div class="timeline-desc">迅速使用厚毛毯等进行<strong>物理保温</strong>，<strong>补充温水、高糖分温热食物</strong>（如巧克力、红糖水、热可可）防止低血糖及失温。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">3. 心理安抚与亲密构建</div>
+            <div class="timeline-desc">温和对话、<strong>非性欲紧密拥抱</strong>，口头肯定并真诚赞赏对方在绳子上的表现，消解被虐后的遗留不安全感。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">4. 深度体验复盘 (Debrief)</div>
+            <div class="timeline-desc">双方客观探讨本次体验中最难受/功能受限的部分（如足底鞭笞或高拉手腕）以及最享受的部分，以便优化下次方案。</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-title">5. 离场身心反弹预警 (Drop Prevention)</div>
+            <div class="timeline-desc">向对方普及 <strong>24-48 小时内</strong>内啡肽、多巴胺水平回落的自然生理学规律。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧴 常见绳伤护理规范</div>
+        <div class="accordion-panel">
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">红肿与绳烧 (Rope Burn) 护理</span>
+              <span class="indicator">查看</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>成因：</strong>绳索拉扯或大张力滑动时造成的表皮灼伤或擦皮损。</p>
+                <p><strong>处理：</strong>保持伤口清洁，轻微发红可用芦荟胶冷敷降温。若出现破口，应用<strong>生理盐水清洗创口</strong>，涂抹<strong>红霉素软膏</strong>或百多邦进行消炎封包，避免沾水防止感染。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-node">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              <span class="title-text">肌肉与关节酸痛护理</span>
+              <span class="indicator">查看</span>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p><strong>成因：</strong>关节极限拉伸、局部承重或挣扎过度引起的微小肌肉纤维断裂。</p>
+                <p><strong>处理：</strong><strong>24 小时内进行冷敷</strong>减少微血管渗出和局部肿胀；<strong>24 小时后改用热敷</strong>，配合轻微非负重拉伸，加速乳酸与炎性因子代谢。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📉 身心反弹（Sub-drop）危机预防</div>
+        <p style="font-size: 0.9rem; margin-bottom: 12px;"><strong>什么是 Drop：</strong>体验结束后 <strong>24-48 小时内</strong>，由于体内神经递质（多巴胺、内啡肽、肾上腺素）的高位瞬间暴跌，受缚者可能会产生强烈的<span class="highlight-red">空虚、忧郁、无力感、沮丧</span>，甚至毫无缘由的落泪与自我怀疑。</p>
+        <p style="font-size: 0.9rem; margin-bottom: 8px;"><strong>绳师的危机预防职责：</strong></p>
+        <ul class="detail-list">
+          <li><strong>行前接种：</strong>在体验离场前，主动向对方说明这是<strong>正常的生理化学风暴阶段</strong>，不要产生自我怀疑。</li>
+          <li><strong>次日主动追踪：</strong>体验结束后的第二天，<strong>主动发送问候信息</strong>，确认其身心和关节健康情况。</li>
+          <li><strong>搭建倾听避风港：</strong>对方出现反弹时，<strong>保持耐心、陪伴和无条件接纳</strong>，不作说教，协助其身心重返社会生活轨道。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TAB 6: RIGGER CHECKLIST DASHBOARD -->
+    <div id="dashboard" class="content-section">
+      <div class="dashboard-gauge">
+        <div class="gauge-circle">
+          <svg class="gauge-svg">
+            <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+            <circle class="gauge-progress" id="progress-circle" cx="50" cy="50" r="45"></circle>
+          </svg>
+          <div class="gauge-text" id="gauge-percent">0%</div>
+        </div>
+        <div style="font-weight: 700; font-size: 0.95rem; color: var(--gold-primary); margin-bottom: 4px;">安全整备就绪指数</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0;">开始动绳前，请在心中默念确认并手动勾选以下 5 项指标：</p>
+      </div>
+
+      <div class="checklist-control">
+        <label class="check-label" id="label-1">
+          <input type="checkbox" onchange="updateChecklist(this, 'label-1')">
+          <div class="check-text">
+            <span class="check-title">1. 剪刀在手 (Emergency Cutters)</span>
+            <span class="check-desc">确认我的<strong>圆头医疗级紧急剪刀</strong>，已放在无需移动身体、在 <strong>3 秒内</strong>便能盲操抓取并下剪的挂载点。</span>
+          </div>
+        </label>
+
+        <label class="check-label" id="label-2">
+          <input type="checkbox" onchange="updateChecklist(this, 'label-2')">
+          <div class="check-text">
+            <span class="check-title">2. 物理环境 (Physical Environment)</span>
+            <span class="check-desc">房间内部目前的温控已达 <strong>25℃ 以上</strong>。悬吊绳索有<strong>双重物理备份</strong>，下方地面高防护防坠垫已铺设完毕。</span>
+          </div>
+        </label>
+
+        <label class="check-label" id="label-3">
+          <input type="checkbox" onchange="updateChecklist(this, 'label-3')">
+          <div class="check-text">
+            <span class="check-title">3. 身体档案 (Anatomy & Boundaries)</span>
+            <span class="check-desc">我已完全明确了对方的<strong>关节及韧带受伤史</strong>、习惯性发麻部位，以及坚守的<strong>绝对物理与精神底线</strong>（Hard limits）。</span>
+          </div>
+        </label>
+
+        <label class="check-label" id="label-4">
+          <input type="checkbox" onchange="updateChecklist(this, 'label-4')">
+          <div class="check-text">
+            <span class="check-title">4. 安全信号 (Safe Words Alignment)</span>
+            <span class="check-desc">对方已清晰记忆并向我重复了<strong>“红色”与“黄色”</strong>的使用机制，同时针对嘴部被堵或失声时的<strong>手势/坠物警报</strong>达成一致。</span>
+          </div>
+        </label>
+
+        <label class="check-label" id="label-5">
+          <input type="checkbox" onchange="updateChecklist(this, 'label-5')">
+          <div class="check-text">
+            <span class="check-title">5. 心态复位 (Psychological Alignment)</span>
+            <span class="check-desc">我目前的心态是<strong>平静、专注且充满敬畏</strong>的。没有带有炫技表现、强迫性意图或负面急躁情绪。</span>
+          </div>
+        </label>
+      </div>
+
+      <div class="status-alert" id="success-banner">
+        🛡️ 安全控制台：整套自检程序已100%通过。动绳请务必轻柔、专注，保持对伴侣动态的实时关注。
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Tab switching mechanism
+    function switchSection(sectionId) {
+      document.querySelectorAll('.content-section').forEach(sec => {
+        sec.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      document.getElementById(sectionId).classList.add('active');
+
+      const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => {
+        return btn.getAttribute('onclick').includes(sectionId);
+      });
+      if (clickedBtn) clickedBtn.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Dynamic Collapsible Nodes
+    function toggleAccordion(headerElement) {
+      const node = headerElement.parentElement;
+      const isActive = node.classList.contains('active');
+
+      if (isActive) {
+        node.classList.remove('active');
+      } else {
+        node.classList.add('active');
+      }
+    }
+
+    // Dynamic Gauge Dashboard control
+    let checkedCount = 0;
+    const totalChecks = 5;
+    const progressCircle = document.getElementById('progress-circle');
+    const gaugePercent = document.getElementById('gauge-percent');
+    const successBanner = document.getElementById('success-banner');
+
+    function updateChecklist(checkbox, labelId) {
+      const label = document.getElementById(labelId);
+      if (checkbox.checked) {
+        label.classList.add('checked');
+        checkedCount++;
+      } else {
+        label.classList.remove('checked');
+        checkedCount--;
+      }
+
+      const percent = Math.round((checkedCount / totalChecks) * 100);
+      gaugePercent.innerText = percent + '%';
+
+      // Circumference = ~283
+      const offset = 283 - (283 * (checkedCount / totalChecks));
+      progressCircle.style.strokeDashoffset = offset;
+
+      if (checkedCount === totalChecks) {
+        successBanner.style.display = 'block';
+      } else {
+        successBanner.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
