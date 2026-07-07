@@ -89,6 +89,9 @@
       padding-bottom: 8px;
       margin-bottom: 24px;
       scrollbar-width: none;
+      /* 新增以下两行核心对齐属性 */
+      align-items: center;       /* 强制所有按钮在垂直方向上绝对居中对齐，消除上下起伏 */
+      justify-content: center;   /* 确保在大屏幕（电脑端）下，整排选项能够水平居中对称 */
     }
     .nav-tabs::-webkit-scrollbar { display: none; }
 
@@ -526,6 +529,8 @@
         overflow-x: visible;
         padding-bottom: 0;
         margin-bottom: 24px;
+        /* 确保网格内按钮也垂直居中 */
+        align-items: center;         
       }
 
       .tab-btn {
