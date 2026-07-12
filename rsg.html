@@ -913,13 +913,13 @@
             联系 X (Twitter)：<a href="https://x.com/Ropeart_Emon" target="_blank" rel="noopener noreferrer" class="hover:text-red-700 dark:hover:text-red-400 transition font-semibold">@Ropeart_Emon</a> <a href="https://x.com/Rdooprea" target="_blank" rel="noopener noreferrer" class="hover:text-red-700 dark:hover:text-red-400 transition font-semibold">@Rdooprea</a>
           </p>
           <p class="text-xs">
-            参考资料：Marta Tenshiko , Prof. Mo Imam , 李炎諭醫師
+            参考资料：Marta , Prof. Mo Imam , 李炎諭醫師
           </p>
         </div>
       </div>
 
       <div class="max-w-7xl mx-auto px-4 mt-6 pt-6 border-t border-gray-100 dark:border-zinc-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-400">
-        <p>© 2026 v4rope • Creative Commons 署名-非商业性使用-相同方式共享 4.0 许可协议 • CC BY-NC-SA 4.0</p>
+        <p>© 2026 v4rope • 采用 CC BY-NC-SA 4.0 许可</p>
         <p class="font-medium">安全第一 • 理智探索 • 互相尊重</p>
       </div>
     </footer>
@@ -935,6 +935,13 @@
     </div>
 
     <script>
+      // 强制每次刷新后，页面都重新加载并定位到最顶端
+      if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+      }
+      window.addEventListener('load', () => {
+        window.scrollTo(0, 0);
+      });
       // Theme switching logic
       const themeToggleBtn = document.getElementById('themeToggle');
       const themeIcon = document.getElementById('themeIcon');
