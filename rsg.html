@@ -583,7 +583,7 @@
                 <!-- 2. 中部：医学图展示区 -->
                 <div class="flex flex-col justify-center items-center bg-white dark:bg-zinc-950 rounded-xl p-3 border border-gray-100 dark:border-zinc-800 shadow-sm max-w-xl mx-auto w-full">
                   <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox()">
-                    <img id="detailNerveDisplayImg" src="image/nerves/桡神经支配和损伤表现.jpg" alt="Anatomy Diagram" class="max-h-64 object-contain transition-all duration-300 opacity-100">
+                    <img id="detailNerveDisplayImg" src="image/nerves/桡神经支配和损伤表现.webp" alt="Anatomy Diagram" class="max-h-64 object-contain transition-all duration-300 opacity-100">
                   </div>
                   <span id="detailNerveCaption" class="text-[10px] text-gray-400 mt-2 text-center block font-medium">桡神经 (点击图片放大)</span>
                 </div>
@@ -598,7 +598,7 @@
               <div id="anatomyLightbox" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden transition-opacity animate-fade-in" onclick="closeAnatomyLightbox()">
                 <div class="relative max-w-2xl max-h-full" onclick="event.stopPropagation()">
                   <button class="absolute -top-10 right-0 text-white hover:text-red-500 font-bold text-sm p-2 transition" onclick="closeAnatomyLightbox()">✕ 关闭窗口</button>
-                  <img id="lightboxImg" src="image/nerves/桡神经支配和损伤表现.jpg" alt="Anatomy Diagram Full" class="max-h-[85vh] w-auto rounded-lg border border-zinc-800 shadow-2xl">
+                  <img id="lightboxImg" src="image/nerves/桡神经支配和损伤表现.webp" alt="Anatomy Diagram Full" class="max-h-[85vh] w-auto rounded-lg border border-zinc-800 shadow-2xl">
                 </div>
               </div>
 
@@ -1259,7 +1259,7 @@
       // Standardized Image & Description Map (Format unified across Radial, Median, and Ulnar)
       const detailNerveMap = {
         radial: {
-          img: "image/nerves/桡神经支配和损伤表现.jpg",
+          img: "image/nerves/桡神经支配和损伤表现.webp",
           caption: "桡神经 (点击图片放大)",
           detail: `
                     <div class="space-y-3 text-xs md:text-sm animate-fade-in text-gray-600 dark:text-gray-300">
@@ -1282,7 +1282,7 @@
                     </div>`
         },
         median: {
-          img: "image/nerves/正中神经支配和损伤表现.jpg",
+          img: "image/nerves/正中神经支配和损伤表现.webp",
           caption: "正中神经 (点击图片放大)",
           detail: `
                     <div class="space-y-3 text-xs md:text-sm animate-fade-in text-gray-600 dark:text-gray-300">
@@ -1306,7 +1306,7 @@
                     </div>`
         },
         ulnar: {
-          img: "image/nerves/尺神经支配和损伤表现.jpg",
+          img: "image/nerves/尺神经支配和损伤表现.webp",
           caption: "尺神经 (点击图片放大)",
           detail: `
                     <div class="space-y-3 text-xs md:text-sm animate-fade-in text-gray-600 dark:text-gray-300">
