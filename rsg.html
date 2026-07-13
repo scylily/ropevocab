@@ -1142,8 +1142,22 @@
         });
       });
 
+      // 预加载所有神经解剖图，利用浏览器缓存防止首次点击时出现画面滞后
+      function preloadNerveImages() {
+        if (typeof detailNerveMap !== 'undefined') {
+          Object.keys(detailNerveMap).forEach(key => {
+            const imgPath = detailNerveMap[key].img;
+            if (imgPath) {
+              const tempImg = new Image();
+              tempImg.src = imgPath; // 触发浏览器在后台静默下载并缓存该图片
+            }
+          });
+        }
+      }
+
       // Re-initialize the first detail block inner content
       document.addEventListener("DOMContentLoaded", () => {
+        preloadNerveImages(); // 页面加载后立即启动后台预加载
         switchNerveDashboard('radial', document.querySelector('.nerve-tab-btn'));
       });
 
