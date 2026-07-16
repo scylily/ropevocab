@@ -219,7 +219,7 @@
               <span class="text-xs text-gray-400 group-open:rotate-180 transition-transform">▼</span>
             </summary>
             <div class="px-4 md:px-5 pb-5 pt-2 border-t border-gray-100 dark:border-zinc-900 space-y-4 leading-relaxed text-gray-600 dark:text-gray-300">
-              <p>本指南主要为被缚者提供安全建议，但对缚手也同样适用。写下这些，是希望帮助大家在绳缚实践中，做出更理智、更安全的选择。</p>
+              <p>本指南主要为被缚者提供安全建议，但对缚手也同样适用。制作本指南，是希望帮助大家在绳缚实践中，能做出更理智、更安全的选择。</p>
               <p>
                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] md:text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 mr-1.5 shrink-0 select-none">📢 共同</span>
                 切记，绳缚虽然有趣且能带来愉悦，但也伴随着极大的风险。只有不断精进技术并建立双方的自我觉察，才能最大限度地降低风险。双方都必须完全清楚并专注于自己的能力边界。请务必记住：<strong class="text-red-600 dark:text-red-400">风险只能降低，无法彻底消除</strong>。
@@ -554,6 +554,46 @@
                 </div>
               </div>
 
+              <!-- 3.1.4 绳缚姿势与宏观神经解剖投影（全新独立模块） -->
+              <span class="text-xs md:text-sm font-bold uppercase tracking-wider text-red-800 dark:text-red-400 block mt-6 mb-2">3.1.4 绳缚姿势与宏观神经解剖投影</span>
+              <p class="text-[13px] md:text-[14px] leading-relaxed text-gray-600 dark:text-gray-300">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] md:text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 mr-1.5 shrink-0 select-none">📢 共同</span>
+                不同于局部微观的神经损伤自查，在实际捆绑过程中，绳索的走向会直接穿过身体的各大神经通道。以下图示直观地展现了在不同绳缚位姿（直立、合臂、日式高手小手缚等）下，绳索走行与全身主要神经走行的宏观交集、以及易受伤的神经节点。
+              </p>
+
+              <!-- 姿势大图控制板 -->
+              <div class="border border-gray-200 dark:border-zinc-800 bg-stone-50 dark:bg-zinc-900 rounded-xl p-4 md:p-5 space-y-4 animate-fade-in">
+                <!-- 顶部：姿势选择按钮群（已改造成：移动端双列网格，PC端自动横排） -->
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center border-b border-gray-200 dark:border-zinc-800 pb-2 gap-1.5 select-none">
+                  <button onclick="switchPostureDashboard('upright', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-red-500/10 text-red-900 dark:text-red-400 border border-red-200 dark:border-red-900/50 interactive-btn w-full sm:w-auto sm:flex-none text-center font-bold">
+                    直立状态
+                  </button>
+                  <button onclick="switchPostureDashboard('waist', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                    直立腰胯缚
+                  </button>
+                  <button onclick="switchPostureDashboard('arms_close', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                    上臂合拢
+                  </button>
+                  <button onclick="switchPostureDashboard('tk', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                    高手小手缚
+                  </button>
+                  <button onclick="switchPostureDashboard('strappado_parallel', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                    直臂并手
+                  </button>
+                  <button onclick="switchPostureDashboard('strappado_bound', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                    直臂并手缚
+                  </button>
+                </div>
+
+                <!-- 中部：拓宽型大图展示区 (最大宽度 max-w-2xl，高度限制 500px，保证全身图细节比例完美) -->
+                <div class="flex flex-col justify-center items-center bg-white dark:bg-zinc-950 rounded-xl p-3 border border-gray-100 dark:border-zinc-800 shadow-sm max-w-2xl mx-auto w-full">
+                  <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox()">
+                    <img id="detailPostureDisplayImg" src="image/nerves/直立状态.webp" alt="Posture Anatomy Diagram" class="max-h-[500px] object-contain transition-all duration-300 opacity-100">
+                  </div>
+                  <span id="detailPostureCaption" class="text-[10px] text-gray-400 mt-2 text-center block font-medium">紧缚中可能涉及的神经 - 直立状态 (点击图片放大)</span>
+                </div>
+              </div>
+
               <p>当把双手绑在背后时，要肩颈区域构建稳固的承重结构，是一项需要精细力学控制的工作，极其考验缚手对骨骼特征的熟悉度。</p>
 
               <p class="p-4 bg-red-100/30 dark:bg-red-950/20 border-l-4 border-red-600 text-red-700 dark:text-red-400 font-semibold rounded-r-lg">特别警告：尽量避开肘关节附近。肘部是一个极度脆弱的盲区，这些部位的神经位置极为浅表，缺乏肌肉软组织的缓冲，直接暴露在紧贴皮肤表面的位置，绳子稍有压迫就极易造成损伤。</p>
@@ -833,7 +873,7 @@
             联系 X (Twitter)：<a href="https://x.com/Ropeart_Emon" target="_blank" rel="noopener noreferrer" class="hover:text-red-700 dark:hover:text-red-400 transition font-semibold">@Ropeart_Emon</a> <a href="https://x.com/Rdooprea" target="_blank" rel="noopener noreferrer" class="hover:text-red-700 dark:hover:text-red-400 transition font-semibold">@Rdooprea</a>
           </p>
           <p class="text-xs">
-            资料参考：Clover , Marta , Prof. Mo Imam , 李炎諭醫師
+            资料参考：Clover , Marta , Prof. Mo Imam , 李炎諭醫師 , rvarope.com
           </p>
         </div>
       </div>
@@ -1062,14 +1102,24 @@
         });
       });
 
-      // 预加载所有神经解剖图，利用浏览器缓存防止首次点击时出现画面滞后
+      // 预加载所有微观与宏观神经解剖图，利用浏览器缓存防止首次点击时出现画面滞后
       function preloadNerveImages() {
         if (typeof detailNerveMap !== 'undefined') {
           Object.keys(detailNerveMap).forEach(key => {
             const imgPath = detailNerveMap[key].img;
             if (imgPath) {
               const tempImg = new Image();
-              tempImg.src = imgPath; // 触发浏览器在后台静默下载并缓存该图片
+              tempImg.src = imgPath;
+            }
+          });
+        }
+        // 同步预加载姿势大图
+        if (typeof postureNerveMap !== 'undefined') {
+          Object.keys(postureNerveMap).forEach(key => {
+            const imgPath = postureNerveMap[key].img;
+            if (imgPath) {
+              const tempImg = new Image();
+              tempImg.src = imgPath;
             }
           });
         }
@@ -1077,8 +1127,9 @@
 
       // Re-initialize the first detail block inner content
       document.addEventListener("DOMContentLoaded", () => {
-        preloadNerveImages(); // 页面加载后立即启动后台预加载
-        switchNerveDashboard('radial', document.querySelector('.nerve-tab-btn'));
+        preloadNerveImages(); // 启动两组图片的后台静默预加载
+        switchNerveDashboard('radial', document.querySelector('.nerve-tab-btn')); // 初始化微观图
+        switchPostureDashboard('upright', document.querySelector('.posture-tab-btn')); // 初始化宏观姿势图
       });
 
       // Search text functionality with auto-expanding details & sections
@@ -1300,6 +1351,60 @@
           }, 150);
         }
       }
+
+      // 2. 追加宏观姿势板的独立控制函数
+      function switchPostureDashboard(postureType, tabElement) {
+        // 重置所有姿势按钮样式为未激活状态
+        document.querySelectorAll('.posture-tab-btn').forEach(btn => {
+          btn.className = "posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn flex-1 sm:flex-none text-center";
+        });
+
+        // 设置当前点击的姿势按钮高亮
+        tabElement.className = "posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-red-500/10 text-red-900 dark:text-red-400 border border-red-200 dark:border-red-900/50 interactive-btn flex-1 sm:flex-none text-center";
+
+        const imgEl = document.getElementById('detailPostureDisplayImg');
+        const lightboxImg = document.getElementById('lightboxImg'); // 复用原灯箱
+        const captionEl = document.getElementById('detailPostureCaption');
+        const data = postureNerveMap[postureType];
+
+        if (imgEl && data) {
+          imgEl.style.opacity = '0';
+          setTimeout(() => {
+            imgEl.src = data.img;
+            lightboxImg.src = data.img;
+            if (captionEl) captionEl.innerText = data.caption;
+            imgEl.style.opacity = '1';
+          }, 150);
+        }
+      }
+
+      // 宏观姿势图的路径映射字典（全新独立结构，防止干扰微观图）
+      const postureNerveMap = {
+        upright: {
+          img: "image/nerves/直立状态.webp",
+          caption: "紧缚中可能涉及的神经 - 直立状态"
+        },
+        waist: {
+          img: "image/nerves/腰胯缚.webp",
+          caption: "紧缚中可能涉及的神经 - 直立腰胯缚"
+        },
+        arms_close: {
+          img: "image/nerves/上臂合拢.webp",
+          caption: "紧缚中可能涉及的神经 - 上臂合拢"
+        },
+        tk: {
+          img: "image/nerves/日式高手小手缚.webp",
+          caption: "紧缚中可能涉及的神经 - 日式高手小手缚"
+        },
+        strappado_parallel: {
+          img: "image/nerves/上臂直臂并手.webp",
+          caption: "紧缚中可能涉及的神经 - 上臂直臂并手"
+        },
+        strappado_bound: {
+          img: "image/nerves/上臂直臂并手缚.webp",
+          caption: "紧缚中可能涉及的神经 - 上臂直臂并手缚"
+        }
+      };
 
     </script>
   </body>
