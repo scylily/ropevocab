@@ -534,7 +534,7 @@
 
                 <!-- 2. 中部：医学图展示区 -->
                 <div class="flex flex-col justify-center items-center bg-white dark:bg-zinc-950 rounded-xl p-3 border border-gray-100 dark:border-zinc-800 shadow-sm max-w-xl mx-auto w-full">
-                  <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox()">
+                  <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox(this, 'nerve')">
                     <img id="detailNerveDisplayImg" src="image/nerves/桡神经支配和损伤表现.webp" alt="Anatomy Diagram" class="max-h-64 object-contain transition-all duration-300 opacity-100">
                   </div>
                   <span id="detailNerveCaption" class="text-[10px] text-gray-400 mt-2 text-center block font-medium">桡神经 (点击图片放大)</span>
@@ -546,11 +546,31 @@
                 </div>
               </div>
 
-              <!-- Anatomy Lightbox overlay -->
+              <!-- Anatomy Lightbox overlay（已加入自适应左右翻页按钮） -->
               <div id="anatomyLightbox" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden transition-opacity animate-fade-in" onclick="closeAnatomyLightbox()">
                 <div class="relative max-w-2xl max-h-full" onclick="event.stopPropagation()">
                   <button class="absolute -top-10 right-0 text-white hover:text-red-500 font-bold text-sm p-2 transition" onclick="closeAnatomyLightbox()">✕ 关闭窗口</button>
+
+                  <!-- 1. 桌面端左翻页按钮（追加了 style="display: none;" 初始隐藏） -->
+                  <button id="lightboxPrevBtn" onclick="navigateLightbox(-1)" class="absolute -left-16 top-1/2 -translate-y-1/2 text-white hover:text-red-500 bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition text-sm font-bold select-none z-50 hidden md:flex" style="display: none;">
+                    ◀
+                  </button>
+
                   <img id="lightboxImg" src="image/nerves/桡神经支配和损伤表现.webp" alt="Anatomy Diagram Full" class="max-h-[85vh] w-auto rounded-lg border border-zinc-800 shadow-2xl">
+
+                  <!-- 2. 桌面端右翻页按钮（追加了 style="display: none;" 初始隐藏） -->
+                  <button id="lightboxNextBtn" onclick="navigateLightbox(1)" class="absolute -right-16 top-1/2 -translate-y-1/2 text-white hover:text-red-500 bg-black/40 hover:bg-black/60 rounded-full w-10 h-10 flex items-center justify-center transition text-sm font-bold select-none z-50 hidden md:flex" style="display: none;">
+                    ▶
+                  </button>
+
+                  <!-- 3. 移动端左翻页按钮（移除了类名中的 hidden，追加了 style="display: none;" 初始隐藏） -->
+                  <button id="lightboxPrevBtnMobile" onclick="navigateLightbox(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 text-white hover:text-red-500 bg-black/30 active:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition text-[10px] font-bold select-none z-50 md:hidden" style="display: none;">
+                    ◀
+                  </button>
+                  <!-- 4. 移动端右翻页按钮（移除了类名中的 hidden，追加了 style="display: none;" 初始隐藏） -->
+                  <button id="lightboxNextBtnMobile" onclick="navigateLightbox(1)" class="absolute right-2 top-1/2 -translate-y-1/2 text-white hover:text-red-500 bg-black/30 active:bg-black/50 rounded-full w-8 h-8 flex items-center justify-center transition text-[10px] font-bold select-none z-50 md:hidden" style="display: none;">
+                    ▶
+                  </button>
                 </div>
               </div>
 
@@ -563,31 +583,31 @@
 
               <!-- 姿势大图控制板 -->
               <div class="border border-gray-200 dark:border-zinc-800 bg-stone-50 dark:bg-zinc-900 rounded-xl p-4 md:p-5 space-y-4 animate-fade-in">
-                <!-- 顶部：姿势选择按钮群（已改造成：移动端双列网格，PC端自动横排） -->
+                <!-- 顶部：姿势选择按钮群（已为每个按钮追加对应 ID，用于关闭灯箱时的精准联动） -->
                 <div class="grid grid-cols-2 sm:flex sm:flex-wrap justify-center border-b border-gray-200 dark:border-zinc-800 pb-2 gap-1.5 select-none">
-                  <button onclick="switchPostureDashboard('upright', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-red-500/10 text-red-900 dark:text-red-400 border border-red-200 dark:border-red-900/50 interactive-btn w-full sm:w-auto sm:flex-none text-center font-bold">
+                  <button id="btn-upright" onclick="switchPostureDashboard('upright', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-red-500/10 text-red-900 dark:text-red-400 border border-red-200 dark:border-red-900/50 interactive-btn w-full sm:w-auto sm:flex-none text-center font-bold">
                     直立状态
                   </button>
-                  <button onclick="switchPostureDashboard('waist', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                  <button id="btn-waist" onclick="switchPostureDashboard('waist', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
                     直立腰胯缚
                   </button>
-                  <button onclick="switchPostureDashboard('arms_close', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                  <button id="btn-arms_close" onclick="switchPostureDashboard('arms_close', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
                     上臂合拢
                   </button>
-                  <button onclick="switchPostureDashboard('tk', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                  <button id="btn-tk" onclick="switchPostureDashboard('tk', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
                     高手小手缚
                   </button>
-                  <button onclick="switchPostureDashboard('strappado_parallel', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                  <button id="btn-strappado_parallel" onclick="switchPostureDashboard('strappado_parallel', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
                     直臂并手
                   </button>
-                  <button onclick="switchPostureDashboard('strappado_bound', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
+                  <button id="btn-strappado_bound" onclick="switchPostureDashboard('strappado_bound', this)" class="posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn w-full sm:w-auto sm:flex-none text-center">
                     直臂并手缚
                   </button>
                 </div>
 
                 <!-- 中部：拓宽型大图展示区 (最大宽度 max-w-2xl，高度限制 500px，保证全身图细节比例完美) -->
                 <div class="flex flex-col justify-center items-center bg-white dark:bg-zinc-950 rounded-xl p-3 border border-gray-100 dark:border-zinc-800 shadow-sm max-w-2xl mx-auto w-full">
-                  <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox()">
+                  <div class="relative cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-zinc-800 w-full flex justify-center items-center" onclick="openAnatomyLightbox(this, 'posture')">
                     <img id="detailPostureDisplayImg" src="image/nerves/直立状态.webp" alt="Posture Anatomy Diagram" class="max-h-[500px] object-contain transition-all duration-300 opacity-100">
                   </div>
                   <span id="detailPostureCaption" class="text-[10px] text-gray-400 mt-2 text-center block font-medium">紧缚中可能涉及的神经 - 直立状态 (点击图片放大)</span>
@@ -1125,12 +1145,39 @@
         }
       }
 
+      // 声明宏观姿势图的顺序队列（用于计算上一张/下一张的循环逻辑）
+      const postureKeys = ['upright', 'waist', 'arms_close', 'tk', 'strappado_parallel', 'strappado_bound',];
+      let currentPostureKey = 'upright'; // 用于实时追踪当前大图显示的 Key
+      let isViewingPostureInLightbox = false; // 标记当前灯箱开启的是否为“姿势图”
+
       // Re-initialize the first detail block inner content
       document.addEventListener("DOMContentLoaded", () => {
         preloadNerveImages(); // 启动两组图片的后台静默预加载
         switchNerveDashboard('radial', document.querySelector('.nerve-tab-btn')); // 初始化微观图
         switchPostureDashboard('upright', document.querySelector('.posture-tab-btn')); // 初始化宏观姿势图
       });
+
+      // 预加载所有微观与宏观神经解剖图，利用浏览器缓存防止首次点击时出现画面滞后
+      function preloadNerveImages() {
+        if (typeof detailNerveMap !== 'undefined') {
+          Object.keys(detailNerveMap).forEach(key => {
+            const imgPath = detailNerveMap[key].img;
+            if (imgPath) {
+              const tempImg = new Image();
+              tempImg.src = imgPath;
+            }
+          });
+        }
+        if (typeof postureNerveMap !== 'undefined') {
+          Object.keys(postureNerveMap).forEach(key => {
+            const imgPath = postureNerveMap[key].img;
+            if (imgPath) {
+              const tempImg = new Image();
+              tempImg.src = imgPath;
+            }
+          });
+        }
+      }
 
       // Search text functionality with auto-expanding details & sections
       const searchInput = document.getElementById('searchInput');
@@ -1318,12 +1365,80 @@
         }
       };
 
-      // Lightbox overlay toggle
-      function openAnatomyLightbox() {
+      // 修改后的灯箱开启函数（支持按类型开启/隐藏左右按钮）
+      // 完美修复样式层级冲突的灯箱开启函数
+      function openAnatomyLightbox(containerElement, type) {
+        if (containerElement) {
+          const sourceImg = containerElement.querySelector('img');
+          const lightboxImg = document.getElementById('lightboxImg');
+          if (sourceImg && lightboxImg) {
+            lightboxImg.src = sourceImg.src;
+          }
+        }
+
+        // 绑定左右翻页按钮的控制变量
+        const prevBtn = document.getElementById('lightboxPrevBtn');
+        const nextBtn = document.getElementById('lightboxNextBtn');
+        const prevBtnMobile = document.getElementById('lightboxPrevBtnMobile');
+        const nextBtnMobile = document.getElementById('lightboxNextBtnMobile');
+
+        if (type === 'posture') {
+          isViewingPostureInLightbox = true;
+          // 1. 恢复翻页按钮默认的 Tailwind 响应式布局样式
+          if (prevBtn) prevBtn.style.display = '';
+          if (nextBtn) nextBtn.style.display = '';
+          if (prevBtnMobile) prevBtnMobile.style.display = '';
+          if (nextBtnMobile) nextBtnMobile.style.display = '';
+        } else {
+          isViewingPostureInLightbox = false;
+          // 2. 微观解剖图状态：强制通过 inline 样式隐藏翻页按钮，完美覆盖并击穿 md:flex 类名
+          if (prevBtn) prevBtn.style.display = 'none';
+          if (nextBtn) nextBtn.style.display = 'none';
+          if (prevBtnMobile) prevBtnMobile.style.display = 'none';
+          if (nextBtnMobile) nextBtnMobile.style.display = 'none';
+        }
+
         document.getElementById('anatomyLightbox').classList.remove('hidden');
       }
+
+      // 智能关闭联动函数
       function closeAnatomyLightbox() {
         document.getElementById('anatomyLightbox').classList.add('hidden');
+
+        // 【核心联动】：如果关闭灯箱时正处于“姿势大图”状态下，自动将底层的网页按钮和小图同步为最新浏览的对象
+        if (isViewingPostureInLightbox) {
+          const activeBtn = document.getElementById('btn-' + currentPostureKey);
+          if (activeBtn) {
+            switchPostureDashboard(currentPostureKey, activeBtn);
+          }
+        }
+      }
+
+      // 新增：灯箱内左右翻页控制函数（支持死循环首尾无缝相接）
+      function navigateLightbox(direction) {
+        if (!isViewingPostureInLightbox) return;
+
+        // 获取当前图片在姿势队列中的索引
+        let idx = postureKeys.indexOf(currentPostureKey);
+        if (idx === -1) return;
+
+        // 根据方向计算新索引（循环逻辑）
+        idx += direction;
+        if (idx < 0) {
+          idx = postureKeys.length - 1; // 走到尾部，闭合循环
+        } else if (idx >= postureKeys.length) {
+          idx = 0; // 回到头部，闭合循环
+        }
+
+        // 更新当前全局 Key
+        currentPostureKey = postureKeys[idx];
+        const data = postureNerveMap[currentPostureKey];
+
+        // 平滑切换灯箱图片
+        const lightboxImg = document.getElementById('lightboxImg');
+        if (lightboxImg && data) {
+          lightboxImg.src = data.img;
+        }
       }
 
       // Vertical Nerve Dashboard Switcher
@@ -1344,7 +1459,7 @@
           imgEl.style.opacity = '0';
           setTimeout(() => {
             imgEl.src = data.img;
-            lightboxImg.src = data.img;
+            // lightboxImg.src = data.img;
             if (captionEl) captionEl.innerText = data.caption;
             detailBox.innerHTML = data.detail;
             imgEl.style.opacity = '1';
@@ -1354,6 +1469,7 @@
 
       // 2. 追加宏观姿势板的独立控制函数
       function switchPostureDashboard(postureType, tabElement) {
+        currentPostureKey = postureType; // 【核心追加】：切换时在全局记录当前的 Key
         // 重置所有姿势按钮样式为未激活状态
         document.querySelectorAll('.posture-tab-btn').forEach(btn => {
           btn.className = "posture-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 border border-transparent interactive-btn flex-1 sm:flex-none text-center";
@@ -1371,7 +1487,7 @@
           imgEl.style.opacity = '0';
           setTimeout(() => {
             imgEl.src = data.img;
-            lightboxImg.src = data.img;
+            // lightboxImg.src = data.img;
             if (captionEl) captionEl.innerText = data.caption;
             imgEl.style.opacity = '1';
           }, 150);
