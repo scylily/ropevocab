@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《张力与感官》系统绳缚私教大纲系统</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              jute: {
+                50: "#fef3c7", 100: "#fde68a", 500: "#f59e0b", 600: "#d97706",
+                750: "#b45309", 900: "#78350f", 950: "#451a03"
+              },
+              shibariBg: { light: "#fafaf9", dark: "#09090b" },
+              shibariCard: { light: "#ffffff", dark: "#18181b" },
+              shibariBorder: { light: "#e7e5e4", dark: "#27272a" }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .lesson-card {
+        scroll-margin-top: 6rem;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #b45309;
+        border-radius: 4px;
+      }
+
+      .dark ::-webkit-scrollbar-thumb {
+        background: #d97706;
+      }
+
+      .edit-active [contenteditable="true"] {
+        outline: 1px dashed rgba(180, 83, 9, 0.4);
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+
+      .edit-active [contenteditable="true"]:focus {
+        outline: 2px solid #b45309;
+      }
+    </style>
+  </head>
+
+  <body class="bg-shibariBg-light dark:bg-shibariBg-dark text-stone-800 dark:text-stone-200 min-h-screen transition-colors duration-200 flex flex-col">
+
+    <!-- 顶部导航控制栏 -->
+    <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-md border-b border-stone-800">
+      <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-col md:flex-row items-center justify-between gap-3">
+
+        <!-- 品牌与快捷返回首页 -->
+        <div class="flex items-center justify-between w-full md:w-auto">
+          <div onclick="switchTab('home')" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" title="点击返回课程导览首页">
+            <span class="text-jute-500 text-xl font-black tracking-wider">张力与感官</span>
+            <div class="h-5 w-[1px] bg-stone-700"></div>
+            <span class="text-xs font-semibold text-stone-300">绳缚入门到精通</span>
+            <span id="role-badge" class="ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-stone-800 text-stone-400 border border-stone-700">
+              👁️ 游客
+            </span>
+          </div>
+          <button onclick="toggleTheme()" class="md:hidden p-1.5 text-stone-400 hover:text-white">🌓</button>
+        </div>
+
+        <!-- 标签页导航 (Tabs) -->
+        <nav class="flex items-center gap-1 overflow-x-auto w-full md:w-auto py-1 text-xs font-bold border-t md:border-t-0 border-stone-800">
+          <button onclick="switchTab('home')" id="tab-home" class="tab-btn px-3 py-1.5 rounded transition-colors bg-jute-750 text-white">
+            🏠 课程导览
+          </button>
+          <button onclick="switchTab('stage-0')" id="tab-stage-0" class="tab-btn px-3 py-1.5 rounded transition-colors text-stone-300 hover:bg-stone-800">
+            🟢 初级阶段
+          </button>
+          <button onclick="switchTab('stage-1')" id="tab-stage-1" class="tab-btn px-3 py-1.5 rounded transition-colors text-stone-300 hover:bg-stone-800">
+            🟡 提高阶段
+          </button>
+          <button onclick="switchTab('stage-2')" id="tab-stage-2" class="tab-btn px-3 py-1.5 rounded transition-colors text-stone-300 hover:bg-stone-800">
+            🔴 熟练阶段
+          </button>
+        </nav>
+
+        <!-- 工具与解锁/状态控制 -->
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end" id="header-tools">
+          <button id="btn-login" onclick="openPasscodeModal()" class="px-2.5 py-1.5 bg-jute-750 hover:bg-jute-900 text-white rounded text-xs font-bold transition-colors">
+            🔑 学员口令解锁
+          </button>
+          <button id="btn-logout" onclick="logout()" class="hidden px-2.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded text-xs font-bold border border-stone-700">
+            🚪 退出登录
+          </button>
+          <button id="btn-safety-pledge" onclick="openSafetyModal()" class="hidden px-2.5 py-1.5 bg-stone-800 hover:bg-stone-700 text-amber-400 rounded text-xs font-bold transition-colors border border-amber-500/30">
+            📜 安全防线承诺
+          </button>
+
+          <!-- 教师专用面板 -->
+          <div id="teacher-tools" class="hidden flex items-center gap-2">
+            <button id="btn-toggle-edit" onclick="toggleEditMode()" class="px-2.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded text-xs font-bold transition-colors">
+              ⚙️ 编辑重排
+            </button>
+          </div>
+
+          <button onclick="toggleTheme()" class="hidden md:block p-1.5 text-stone-400 hover:text-white" title="切换主题">🌓</button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- 主体视图区域 -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
+
+      <!-- ================= 首页视图 (Home View) ================= -->
+      <div id="view-home" class="space-y-8">
+        <!-- 核心理念介绍 -->
+        <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl p-6 shadow-sm space-y-4">
+          <div class="border-b border-jute-500/30 pb-3">
+            <h2 class="text-2xl font-black text-jute-750 dark:text-jute-600 tracking-wide">核心内容</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-stone-700 dark:text-stone-300 leading-relaxed">
+            <div class="p-4 bg-stone-50 dark:bg-zinc-900/50 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+              <h3 class="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5 text-base">⚙️ 物理力学与解剖安全</h3>
+            </div>
+            <div class="p-4 bg-stone-50 dark:bg-zinc-900/50 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+              <h3 class="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5 text-base">🙆 呼吸律动与双向觉察</h3>
+            </div>
+            <div class="p-4 bg-stone-50 dark:bg-zinc-900/50 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+              <h3 class="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5 text-base">🤹‍♀️ 多维玩法与高空悬吊</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- 三大阶段路线图 -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-bold text-stone-800 dark:text-stone-200">🚩 系统三阶段学习路线图</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div onclick="switchTab('stage-0')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-jute-500 rounded-xl p-5 shadow-sm transition-all hover:-translate-y-1 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold px-2 py-1 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded">阶段一</span>
+                  <span id="badge-stage-0-status" class="text-xs font-bold text-emerald-600">已开放预览</span>
+                </div>
+                <h4 class="text-lg font-black text-stone-900 dark:text-stone-100">🟢 初级阶段：地面控制与感知基础</h4>
+                <p class="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。掌握绳索特性、结扣、单/双柱缚、单绳控感、下肢/躯干绑定、安全口枷、地面困境及经典 2TK 结构。</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-xs font-bold text-jute-750">
+                <span>进入阶段一学习 ➔</span>
+              </div>
+            </div>
+
+            <div onclick="switchTab('stage-1')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-amber-500 rounded-xl p-5 shadow-sm transition-all hover:-translate-y-1 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold px-2 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded">阶段二</span>
+                  <span id="badge-stage-1-status" class="text-xs font-bold text-stone-400">🔒 需口令解锁</span>
+                </div>
+                <h4 class="text-lg font-black text-stone-900 dark:text-stone-100">🟡 提高阶段：躯干限制与半吊过渡</h4>
+                <p class="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。进阶 3TK 奈加流分流、腰胯重心固定、铁炮/提篮重心破坏、直臂反剪、定点束缚、呼吸控制与痛觉辨识。</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-xs font-bold text-amber-600">
+                <span>查看阶段二 ➔</span>
+              </div>
+            </div>
+
+            <div onclick="switchTab('stage-2')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-red-500 rounded-xl p-5 shadow-sm transition-all hover:-translate-y-1 flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold px-2 py-1 bg-red-500/10 text-red-600 dark:text-red-400 rounded">阶段三</span>
+                  <span id="badge-stage-2-status" class="text-xs font-bold text-stone-400">🔒 需口令解锁</span>
+                </div>
+                <h4 class="text-lg font-black text-stone-900 dark:text-stone-100">🔴 熟练阶段：完全悬吊与高空控制</h4>
+                <p class="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 10 课时。竹竿吊点锁定、面朝下平吊、高空承重分力、倒吊/侧吊、重心转移、加挂重物、责绳玩法、急救与毕业演练。</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-xs font-bold text-red-600">
+                <span>查看阶段三 ➔</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 阶段一：独立页面 ================= -->
+      <div id="view-stage-0" class="stage-view hidden space-y-6">
+        <div class="border-b border-emerald-500/30 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-black text-emerald-600 dark:text-emerald-400">🟢 阶段一：地面控制与感知基础 (8课时)</h2>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">面向初级学员。重点建立双人安全沟通底线、认知绳索物理特性、熟悉四大神经解剖走向，并熟练掌握地面肢体限制。</p>
+          </div>
+          <div class="flex items-center gap-2 self-start md:self-auto flex-wrap">
+            <button onclick="expandAllLessonsInStage(0)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              ↕️ 全部展开
+            </button>
+            <button onclick="collapseAllLessonsInStage(0)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              💤 全部折叠
+            </button>
+            <button onclick="switchTab('home')" class="px-3.5 py-1.5 bg-stone-200 dark:bg-zinc-800 hover:bg-stone-300 dark:hover:bg-zinc-700 text-stone-800 dark:text-stone-200 rounded-lg text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
+              <span>⬅️ 返回课程导览首页</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
+          <aside id="sidebar-toc-0" class="hidden lg:block lg:col-span-1 space-y-3 transition-all duration-300">
+            <div class="sticky top-20 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
+              <div class="flex items-center justify-between border-b border-shibariBorder-light dark:border-shibariBorder-dark pb-2 mb-2">
+                <span class="font-bold text-stone-800 dark:text-stone-100">📖 本阶段目录</span>
+                <button onclick="toggleSidebarToc(0)" class="text-stone-400 hover:text-jute-750 font-bold text-[11px] flex items-center gap-0.5">
+                  ◀ 收起
+                </button>
+              </div>
+              <ul id="toc-list-0" class="space-y-1.5 overflow-y-auto max-h-[calc(100vh-12rem)]"></ul>
+            </div>
+          </aside>
+
+          <!-- 展开小按钮 (仅大屏折叠时显示) -->
+          <button id="btn-expand-toc-0" onclick="toggleSidebarToc(0)" class="hidden hidden lg:hidden fixed left-0 top-32 z-30 bg-jute-750 hover:bg-jute-900 text-white px-2 py-3 rounded-r-lg text-xs font-bold shadow-xl transition-all">
+            ▶<br>目<br>录
+          </button>
+
+          <!-- 右侧卡片容器 -->
+          <div id="container-stage-0" class="col-span-1 lg:col-span-3 space-y-4 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- ================= 阶段二：独立页面 ================= -->
+      <div id="view-stage-1" class="stage-view hidden space-y-6">
+        <div class="border-b border-amber-500/30 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-black text-amber-600 dark:text-amber-400">🟡 阶段二：躯干限制与半吊过渡 (8课时)</h2>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">面向提高学员。引进 3TK 重力分流、腰胯重心固定、不对称限制、呼吸控制、半吊起拉与痛觉辨识。</p>
+          </div>
+          <div class="flex items-center gap-2 self-start md:self-auto flex-wrap">
+            <button onclick="expandAllLessonsInStage(1)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              ↕️ 全部展开
+            </button>
+            <button onclick="collapseAllLessonsInStage(1)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              💤 全部折叠
+            </button>
+            <button onclick="switchTab('home')" class="px-3.5 py-1.5 bg-stone-200 dark:bg-zinc-800 hover:bg-stone-300 dark:hover:bg-zinc-700 text-stone-800 dark:text-stone-200 rounded-lg text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
+              <span>⬅️ 返回课程导览首页</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
+          <aside id="sidebar-toc-1" class="hidden lg:block lg:col-span-1 space-y-3 transition-all duration-300">
+            <div class="sticky top-20 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
+              <div class="flex items-center justify-between border-b border-shibariBorder-light dark:border-shibariBorder-dark pb-2 mb-2">
+                <span class="font-bold text-stone-800 dark:text-stone-100">📖 本阶段目录</span>
+                <button onclick="toggleSidebarToc(1)" class="text-stone-400 hover:text-jute-750 font-bold text-[11px] flex items-center gap-0.5">
+                  ◀ 收起
+                </button>
+              </div>
+              <ul id="toc-list-1" class="space-y-1.5 overflow-y-auto max-h-[calc(100vh-12rem)]"></ul>
+            </div>
+          </aside>
+
+          <button id="btn-expand-toc-1" onclick="toggleSidebarToc(1)" class="hidden hidden lg:hidden fixed left-0 top-32 z-30 bg-jute-750 hover:bg-jute-900 text-white px-2 py-3 rounded-r-lg text-xs font-bold shadow-xl transition-all">
+            ▶<br>目<br>录
+          </button>
+
+          <div id="container-stage-1" class="col-span-1 lg:col-span-3 space-y-4 transition-all duration-300"></div>
+        </div>
+      </div>
+
+      <!-- ================= 阶段三：独立页面 ================= -->
+      <div id="view-stage-2" class="stage-view hidden space-y-6">
+        <div class="border-b border-red-500/30 pb-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-black text-red-600 dark:text-red-400">🔴 阶段三：完全悬吊与高空控制 (10课时)</h2>
+            <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">面向熟练学员。攻克竹竿吊点构建、面朝下平吊、高空承重分力、倒吊/侧吊、加挂重物、责绳玩法、急救与 L10 毕业演练。</p>
+          </div>
+          <div class="flex items-center gap-2 self-start md:self-auto flex-wrap">
+            <button onclick="expandAllLessonsInStage(2)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              ↕️ 全部展开
+            </button>
+            <button onclick="collapseAllLessonsInStage(2)" class="px-2.5 py-1.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark transition-colors">
+              💤 全部折叠
+            </button>
+            <button onclick="switchTab('home')" class="px-3.5 py-1.5 bg-stone-200 dark:bg-zinc-800 hover:bg-stone-300 dark:hover:bg-zinc-700 text-stone-800 dark:text-stone-200 rounded-lg text-xs font-bold border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
+              <span>⬅️ 返回课程导览首页</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
+          <aside id="sidebar-toc-2" class="hidden lg:block lg:col-span-1 space-y-3 transition-all duration-300">
+            <div class="sticky top-20 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
+              <div class="flex items-center justify-between border-b border-shibariBorder-light dark:border-shibariBorder-dark pb-2 mb-2">
+                <span class="font-bold text-stone-800 dark:text-stone-100">📖 本阶段目录</span>
+                <button onclick="toggleSidebarToc(2)" class="text-stone-400 hover:text-jute-750 font-bold text-[11px] flex items-center gap-0.5">
+                  ◀ 收起
+                </button>
+              </div>
+              <ul id="toc-list-2" class="space-y-1.5 overflow-y-auto max-h-[calc(100vh-12rem)]"></ul>
+            </div>
+          </aside>
+
+          <button id="btn-expand-toc-2" onclick="toggleSidebarToc(2)" class="hidden hidden lg:hidden fixed left-0 top-32 z-30 bg-jute-750 hover:bg-jute-900 text-white px-2 py-3 rounded-r-lg text-xs font-bold shadow-xl transition-all">
+            ▶<br>目<br>录
+          </button>
+
+          <div id="container-stage-2" class="col-span-1 lg:col-span-3 space-y-4 transition-all duration-300"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- 📱 手机端专用悬浮目录按钮 (仅在小屏 lg:hidden 并且非首页时显示) -->
+    <div id="btn-mobile-toc-wrapper" class="hidden fixed bottom-6 left-6 z-40 lg:hidden">
+      <button onclick="toggleMobileToc()" class="flex items-center gap-2 bg-stone-900 text-white px-4 py-3 rounded-full shadow-2xl hover:bg-stone-800 transition-colors border border-stone-700 text-xs font-bold">
+        <span>📖 本阶段目录</span>
+      </button>
+    </div>
+
+    <!-- 📱 手机端侧滑目录抽屉 Drawer -->
+    <div id="mobile-toc-drawer" class="fixed top-0 left-0 h-full w-full max-w-xs bg-stone-50 dark:bg-zinc-950 shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out border-r border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col hidden">
+      <div class="p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
+        <h3 class="text-sm font-bold text-stone-800 dark:text-stone-100">📖 阶段目录导航</h3>
+        <button onclick="closeMobileToc()" class="text-stone-400 hover:text-stone-600 font-bold p-1">✕</button>
+      </div>
+      <div class="p-4 flex-1 overflow-y-auto">
+        <ul id="mobile-toc-list" class="space-y-2 text-xs"></ul>
+      </div>
+    </div>
+
+    <!-- 🩺 神经自检面板 (仅认证学员及教师可见) -->
+    <div id="btn-nerve-wrapper" class="hidden fixed bottom-6 right-6 z-40">
+      <button onclick="toggleNerveDrawer()" class="flex items-center gap-2 bg-jute-750 text-white px-4 py-3 rounded-full shadow-xl hover:bg-jute-900 transition-colors border border-amber-600/30 text-xs font-bold">
+        <span>🩺 神经自检面板</span>
+      </button>
+    </div>
+
+    <div id="nerve-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-stone-50 dark:bg-zinc-950 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col hidden">
+      <div class="p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
+        <h3 class="text-sm font-bold text-stone-800 dark:text-stone-100">🩺 身体神经安全自检面板</h3>
+        <button onclick="toggleNerveDrawer()" class="text-stone-400 hover:text-stone-600 font-bold p-1">✕</button>
+      </div>
+      <div class="p-3 flex gap-1 border-b border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900/50">
+        <button onclick="switchNerveDashboard('radial')" id="btn-radial" class="flex-1 py-1.5 text-xs font-bold rounded bg-jute-750 text-white">桡神经</button>
+        <button onclick="switchNerveDashboard('median')" id="btn-median" class="flex-1 py-1.5 text-xs font-bold rounded bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300">正中神经</button>
+        <button onclick="switchNerveDashboard('ulnar')" id="btn-ulnar" class="flex-1 py-1.5 text-xs font-bold rounded bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300">尺神经</button>
+      </div>
+      <div id="nerve-content" class="flex-1 p-5 overflow-y-auto space-y-4"></div>
+    </div>
+
+    <!-- 🔑 口令激活弹窗 -->
+    <div id="modal-passcode" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center border-b border-shibariBorder-light dark:border-shibariBorder-dark pb-2">
+          <h3 class="font-black text-stone-900 dark:text-stone-100 text-base">🔑 学员身份口令解锁</h3>
+          <button onclick="closePasscodeModal()" class="text-stone-400 hover:text-stone-600">✕</button>
+        </div>
+        <p class="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+          请输入您的私教解锁口令（如 base12、adv202、power3030 或教师口令）：
+        </p>
+        <input type="text" id="input-passcode" placeholder="输入口令..." class="w-full px-3 py-2 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500">
+        <div id="passcode-error" class="text-xs font-bold text-red-500 hidden">❌ 口令不匹配，请重新输入或联系导师</div>
+        <div class="flex gap-2 justify-end">
+          <button onclick="closePasscodeModal()" class="px-3 py-1.5 rounded text-xs bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300">取消</button>
+          <button onclick="verifyPasscode()" class="px-4 py-1.5 rounded text-xs font-bold bg-jute-750 text-white hover:bg-jute-900">核验口令 ➔</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📜 完整版《安全防护承诺书》弹窗 -->
+    <div id="modal-safety-pledge" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 hidden">
+      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+
+        <div class="p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
+          <h3 class="font-black text-stone-900 dark:text-stone-100 text-base flex items-center gap-2">
+            <span>🛡️</span> 《张力与感官》绳缚安全与解剖红线承诺书
+          </h3>
+          <button onclick="closeSafetyModal()" class="text-stone-400 hover:text-stone-600">✕</button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-4 text-xs leading-relaxed text-stone-700 dark:text-stone-300">
+          <p class="font-bold text-stone-900 dark:text-stone-100 border-l-2 border-jute-750 pl-2">
+            绳缚是一项建立在相互信任、冷静克制与严谨解剖安全基础上的感官实践。任何超越安全红线的冒险行为，都可能造成不可逆的生理伤害。在开启深度实践前，必须认真阅读并承诺遵守以下规则：
+          </p>
+
+          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-sm">一、 敬畏解剖禁区与神经避让</h4>
+            <p>1. <strong>上肢四大神经避让</strong>：清晰掌握臂丛神经（锁骨上窝）、桡神经（大臂外侧中下 1/3 桡神经沟）、尺神经（肘内侧尺神经沟）及正中神经（前臂至手腕正中）的走向。持绳与走绳时，严禁在神经沟或血管浅表区打死结或强行紧箍加压。</p>
+            <p>2. <strong>下肢腓总神经避让</strong>：折腿（Futomomo）与下肢绑定时，绳索绝对避开膝关节外侧下缘（腓骨小头下方），严禁在此区域交叉叠压，防止引发“垂足症”（Foot Drop）。</p>
+          </div>
+
+          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-sm">二、 严守气道与颈部绝对铁律</h4>
+            <p>1. <strong>颈部绝不承重</strong>：必须明确“呼吸限制来自胸腹部压迫，绝对严禁来自颈部加压”。无论使用 2TK、3TK 或颈胸锁定，颈圈仅作为感官封禁，必须保持气道 100% 通畅，严禁压迫颈动脉窦与正面气管。</p>
+            <p>2. <strong>吞咽与发音自检</strong>：任何涉及颈部或口枷的绑定，下绳后必须强制执行吞咽测试与发音检查，一旦出现梗阻感必须立刻解脱重拆。</p>
+          </div>
+
+          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-sm">三、 区分痛觉性质与无条件叫停</h4>
+            <p>1. <strong>绝不靠硬撑</strong>：清晰区分“好的疼痛”（韧带安全拉开感、大面积肌肉钝痛）与“坏的疼痛”（神经发麻、触电感、针刺痛、关节卡顿与旧疾割裂痛）。</p>
+            <p>2. <strong>最高叫停权</strong>：“坏的疼痛”是身体发出的危险警报。一旦出现坏的疼痛或被缚者喊停，持绳者必须无条件立刻卸载张力或松解降绳。</p>
+          </div>
+
+          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2">
+            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-sm">四、 高空悬吊与黄金 5 秒急救</h4>
+            <p>1. <strong>设备与备份</strong>：悬吊起吊前，必须对竹竿、主锁、转环进行 1.5 至 2 倍自重拉力测试；主吊点必须做双重备份防脱。</p>
+            <p>2. <strong>黄金 5 秒剪绳解脱</strong>：悬吊与高张力实践中，救援剪（防伤剪）必须随手可及。一旦突发眩晕、发晕或应激，立刻用剪刀切断主绳降落放平（平卧抬高双腿休克位），绝不浪费时间解结。</p>
+          </div>
+        </div>
+
+        <div class="p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex flex-col md:flex-row items-center justify-between gap-3">
+          <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-stone-800 dark:text-stone-200">
+            <input type="checkbox" id="check-safety-pledge" class="w-4 h-4 rounded text-jute-750 focus:ring-jute-500">
+            <span>我已认真阅读并承诺无条件遵守以上安全铁律</span>
+          </label>
+          <button onclick="confirmSafetyPledge()" class="w-full md:w-auto px-5 py-2 bg-jute-750 hover:bg-jute-900 text-white font-bold rounded text-xs transition-colors">
+            确认签署并激活权限 ➔
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 背景遮罩 -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden" onclick="closeAllDrawers()"></div>
+
+    <!-- ==================== JS 核心逻辑 ==================== -->
+    <script>
+      // 🔑 预设唯一教师口令
+      const UNIQUE_TEACHER_CODE = "77077";
+
+      // 课时数据库 (全 26 课时)
+      const curriculumData = [
+        // 阶段一 (8课时)
+        {
+          stage: 0, id: "0-0", title: "L1. 认识绳索与神经自检基础",
+          focus: "本课程带你开启绳索与身体对话的第一步，从解剖学视角建立对人体的敬畏与物理认知。你将深入体察麻绳在延展性、摩擦力及温感上的感觉，掌握高效理绳与手部收放的持绳手法；通过对半扣、半结、8字扣及十字扣等基础结扣的反复锤炼，建立精准的定位手感与接绳顺畅度，将绳结从单纯的“约束工具”转化为手部的触觉延伸。",
+          goal: "重点培养学生对绳索物理阻尼与双侧张力对称性的敏锐触觉，使其能在操绳过程中通过手感实时调整力道，并熟练掌握隐形接绳时的张力平稳过渡。教师需引导学生以温和且确定的节奏，帮助被缚者完成从“常规自由”到“初始受限”的心态过渡，使其肌肤逐步适应绳纹摩擦与适度紧箍带来的包裹感与沉降感，建立最初的身体信任。",
+          safety: "在动绳之前，必须要求学生进行严格的“神经物理坐标摸查”。通过手指按压亲自定位被缚者双臂的桡神经沟（大臂外侧中下1/3处）、尺神经沟（肘关节内后侧）及腕侧正中神经，直观感受因按压引发的触电与酥麻感。教师需将这一身体自检确立为不可逾越的避卡铁律，确保学生在脑海与手感中构建出清晰的“解剖禁区坐标”，从源头上杜绝神经压迫隐患。"
+        },
+        {
+          stage: 0, id: "0-1", title: "L2. 基本绳结与单柱缚、双柱缚",
+          focus: "本课程深入拆解单柱缚（Single Column Tie）与双柱缚（Double Column Tie）的核心绳路架构，重点涵盖本结单柱缚与 Somerville Bowline 的结构区别。你将理解单柱缚“受力自锁、内径恒定、不随外力收缩”的物理原理，学会利用这一特性构建稳定且不挤压肢体的受力环路；并在双手并拢情境下，掌握将单柱受力逻辑延伸至双柱结构的技巧，建立对肢体固定精度的持绳手感。",
+          goal: "重点考核学生在任何拉扯与外力负载方向下，对绳圈内径绝对恒定的控制能力，严防因结扣锁死不当导致的“动态收缩与滑勒”。教师需指导学生掌握手掌按压与关节保护的持绳细节，在进行双手并缚时，利用手掌肉垫建立缓冲垫层，防止两侧腕骨（尺骨茎突）硬性对磨；引导被缚者感知受力环路的包裹安全性与腕部的骨骼支撑感。",
+          safety: "严禁在手腕等神经与血管密集的关节点使用任何具有活结收缩特性的绳结，此为不可逾越的生理红线。绑扎位置必须严格避开手腕最细处（尺骨与桡骨茎突的骨骼最薄弱及浅表血管区），向靠近前臂方向退离 1.5 至 2 指宽；持绳全程必须定时触摸被缚者手指温感，按压指甲床观察血流复色（Capillary Refill），严防桡动脉与尺动脉卡压引发末梢缺血。"
+        },
+        {
+          stage: 0, id: "0-2", title: "L3. 单绳控制：张力控感与肢体控制",
+          focus: "本课程将带你脱离对复杂绳结的路径依赖，回归到最纯粹的单绳情境，探索如何将一根绳索转化为极其敏锐的身体引导与感知工具。你将学习如何放弃依赖蛮力拉扯，转而通过微小的张力变化与力道流转，精准引导被缚者的重心偏移、姿态起伏与肢体位移；并在单绳的收放与延展之间，建立起对被缚者呼吸节奏、肌肉张力及生理承受边界的实时双向觉察，真正体验“绳索即触角”的精准控感与肢体互动。",
+          goal: "教案的核心旨在培养学生脱离固定套路的动态力学直觉，引导其掌握“以躯干重力带轴、以恒定张力控场”的持绳技术，使其能够熟练利用单绳的力学杠杆与阻尼感，高效且顺畅地完成对被缚者肢体与重心的引导。教师需重点考核学生对“有效张力”与“无效生硬拉扯”的辨识能力，确保学生在课程结束时，不仅能以单绳实现对肢体姿态的稳定控制，更能将这种对张力连贯性与身体反馈的敏锐度，内化为日后构建所有复杂绳缚结构的基础安全力学意识。",
+          safety: "教师必须向学生严厉强调单绳控制的“高压强风险”——由于单绳受力面积小、局部压强极高，在引导肢体或改变重心时，极易对浅表神经（如桡神经、尺神经沟、臂丛神经）及软组织造成急剧压迫与挫伤。教学中需明确设定不可逾越的安全红线：严禁在单绳状态下进行剧烈的动力学冲击或单点死扣悬拉；要求学生全程监控被缚者末梢循环（皮温、色泽）与神经压迫信号（麻木、刺痛）；并确保持绳过程中单绳时刻处于“可快速释放张力或瞬间解脱”的物理状态，绝不以牺牲生理安全为代价换取肢体控制度。"
+        },
+        {
+          stage: 0, id: "0-3", title: "L4. 下肢绑定：折腿与并腿的绑法",
+          focus: "本课程深入探讨下肢结构限制的技术与生理逻辑，重点掌握折腿缚（Futomomo）与下肢并拢绑法。你将学习如何顺应人体髋、膝关节的生理屈伸角度，放弃生硬强折，转而通过引导脚尖方位与重心转移自然完成肢体折叠；并精通大腿段与小腿段的独立及复合固定手法，体会下肢被平稳包裹沉降时的重力感与持绳节奏。",
+          goal: "重点培养学生利用身体解剖旋转角引导被缚者肢体屈曲的能力，掌握“以引导代替硬压”的折腿持绳要领。教师需指导学生在并腿与折腿时，将绳索压强均匀平铺于大腿外侧肌肉群及小腿胫骨前侧（迎面骨），实现对双膝与髋关节物理位移的稳定限制；引导被缚者感知下肢肌肉被平稳包裹后的安全沉降感与关节受限体验。",
+          safety: "膝关节外侧下缘（腓骨小头下方浅表区）为腓总神经极易受压的核心禁区，长时间局部重压将直接导致神经损伤及脚背无法抬起的“垂足症”（Foot Drop）。此区域严禁绳索交叉叠压或打死结；针对关节僵硬、韧带紧绷或有旧伤的被缚者，严禁暴力强压过度折叠，必须留出至少 15 度的自然生理弯曲间隙或使用软垫保护缓冲，确保关节解剖极限不被逾越。"
+        },
+        {
+          stage: 0, id: "0-4", title: "L5. 菱形缚、龟甲缚与不绑手的躯干束缚",
+          focus: "本课程探索躯干网格限制的技术逻辑与呼吸律动，重点解析菱形缚、龟甲缚（无腿绳/不并手版本）等自由臂躯干束缚的绳路架构。你将学习如何在完全保留双臂活动度的前提下，通过网格交错与张力分布建立对躯干主体的平铺包裹感；掌握利用十字扣锁紧与网格定位的持绳手法，体味绳网随胸腔呼吸起伏而产生的张力扩展与收放律动。",
+          goal: "重点培养学生利用躯干骨骼结构建立网格包裹的持绳直觉，掌握通过十字扣定位建立几何张力的技术要领，启发学生举一反三衍生出多元的自由臂躯干结构。教师需指导学生关注持绳过程中的胸腔呼吸节奏，引导被缚者在吸气扩展与呼气收缩的自然起伏中，感受胸廓被绳网稳定包覆的物理张力与安全包裹感。",
+          safety: "躯干持绳的核心安全红线在于受力支点的骨骼保护。主胸带及主要受力结构必须稳固锁定于胸骨柄及硬质胸肋板区域；严禁绳圈向下滑落至缺乏前方骨突保护的浮肋区间（第 11、12 肋骨），此处受压不仅会引发呼吸困难（卡气）与膈肌痉挛，局部重压极易导致内脏挫伤甚至肋骨骨折。持绳全程需随时监控主带位置，确保护持区域始终处于骨骼防护带内。"
+        },
+        {
+          stage: 0, id: "0-5", title: "L6. 头部限制：安全绳口枷与无声沟通",
+          focus: "本课程关注头部限制的技术安全性与感官剥夺下的非语言交互，重点涵盖安全绳口枷（Rope Gag）的走绳架构。你将学习下颔绳线平铺贴合、嘴角两端对称舒展以及利用后枕骨隆起（External Occipital Protuberance）进行物理锚定的持绳手法；体会在言语功能被暂时阻断的情境下，如何通过微弱的呼吸振颤、眼神交流与肢体微动作建立深刻的无声沟通与信任。",
+          goal: "重点培养学生在持绳过程中对口部细微解剖结构的物理防护与非语言信号的敏感度。教师需指导学生妥善处理嘴角绳股的平铺宽度与阻尼，严防绳索过细或张力不均造成嘴角皮肤勒伤与撕裂；在被缚者失去语言能力后，训练学生建立包含摆头频率、肢体震颤、呼吸音调等多维度的非语言双向确认通路，确保感官剥夺下的安全核对无死角。",
+          safety: "口枷系缚涉及气道安全的最高红线：凡伴有重度鼻塞、哮喘病史、呼吸道感染或恶心呕吐倾向者，绝对禁止施加任何口枷。枕部及后颈系结必须完全避开颈动脉窦与颈部浅表大血管，严禁对颈部前侧与两侧施加任何压迫，确保鼻腔气道 100% 通畅；持绳全程救援剪必须处于随手可及的物理位置，一旦出现气道受阻、呕吐或应激反应，必须毫秒级切断绳索解除限制。"
+        },
+        {
+          stage: 0, id: "0-6", title: "L7. 用简易绑法制造地面困境",
+          focus: "本课程探索地面姿态控制与自重锁定的力学机制，重点解析“驷马”结构（欧美称 Hogtie、日本称逆海老缚）的持绳逻辑。你将学习如何通过极简的绳索架构，将后扳的反剪手臂与折叠的下肢进行连结锁定，利用人体自身的重力与肌腱张力形成自锁；体会在重心被完全剥夺的地面情境下，肢体无法自主翻转的受限感与沉降体验。",
+          goal: "重点培养学生利用最小绳量达成最大结构效率的持绳直觉，掌握通过肢体折叠弧度平铺重力的技术要领。教师需指导学生关注被缚者在紧凑收拢姿态下的呼吸律动，引导被缚者顺应躯干后弯与胸腔的张力曲度，调整呼吸节奏，在深沉的长呼吸中感受身体被重力稳定锚定于地面深处的秩序感。",
+          safety: "地面自重锁定涉及极为严峻的体位安全风险：俯卧姿态下，胸腹部受躯干自重与下肢牵引力的双重挤压，极易导致肺通气量急剧下降，引发致死性的“体位性窒息”（Positional Asphyxia）。胸腹贴地俯卧时长必须进行极其严格的分钟级限制，持绳全程需时刻监控呼吸起伏与面部气色；同时，地面环境必须彻底清场并铺设软垫，清除周边一切坚硬桌角与突出物，严防被缚者侧倾失控时发生头面部刚性碰撞伤。"
+        },
+        {
+          stage: 0, id: "0-7", title: "L8. 后手缚：经典TK结构与关节保护",
+          focus: "本课程深入拆解后手缚（又称高手小手缚，简称 TK）。你将学习从手腕固定高低与肩关节度的解剖评估入手，精通“上胸圈”与“下胸圈”的走绳分工与张力分配，以及“中心线”的摩擦锁定与张力收紧；理解上臂肌肉对绳索的物理支撑原理，掌握绳索走向与上肢四大神经（臂丛神经、桡神经、尺神经、正中神经）解剖走行的避让与防压技巧；掌握 TK 作为“地面束缚中的约束结构”以及“吊缚过程中的承重结构”的双重力学功能，体会躯干被稳定固定后的重心沉降感与呼吸律动。",
+          goal: "重点培养学生根据被缚者柔韧度动态调整手腕固定高低、并善用上臂肌肉做绳索支撑垫层的持绳直觉。教师需指导学生精确定位上胸圈（乳房上沿）与下胸圈（乳房下沿）的张力分配，掌控中心线的摩擦锁紧要领；训练学生理解 TK 在地面静态约束与未来悬吊承重时的受力差异，引导被缚者感知躯干被稳固支撑的安全包裹感与高位沉降信任。",
+          safety: "TK 是极其复杂且高危的核心结构，持绳与走绳方向必须严格顺应上肢四大神经走行（臂丛神经、尺神经、桡神经、正中神经）：上胸圈过肩带必须严格避开锁骨上窝的臂丛神经；下胸圈与大臂环绕必须避开大臂外侧的桡神经沟、肘内侧的尺神经沟及前臂正中神经；严禁手腕固定位置过高造成肩关节强行脱位。持绳全程必须严格执行末梢循环检查（指甲血流复色 Capillary Refill 须在 2 秒内、桡动脉搏动、皮温）与吸气胸腔余量核对，常备救援剪在侧。"
+        },
+
+        // 阶段二 (8课时)
+        {
+          stage: 1, id: "1-0", title: "L1. 后手缚：3TK 结构与神经避让",
+          focus: "本课程进阶探索三绳后手缚（3TK / 三本高手小手）。你将学习如何通过第三根绳对“上胸圈”与“下胸圈”进行力学重构，掌握奈加流（奈加あきら）精密的“胸背双三角锁定”与中心线绳路技巧；理解如何利用大胸肌、斜方肌与背阔肌等丰厚肌群做天然平铺垫层，将原本集中于手腕的悬吊与拉力卸载至整个躯干；掌握 3TK 作为高强度地面约束结构与悬吊承重结构的双重转换，体会多向受力下的稳定平衡与躯干沉降感。",
+          goal: "重点培养学生掌握“三绳三角化闭环”与“高重载重力分流”的持绳直觉。教师需指导学生精通奈加流三绳分工：利用第三根绳在胸前与背部构建对称三角网络，使手腕受力降低 50% 以上；训练学生精准判断大胸肌、斜方肌与背阔肌的解剖平铺点，掌控过肩与环绕时的绳角阻尼，确保绳索间依靠摩擦锁死而非生硬紧箍；引导被缚者感知重力被均匀平铺至整个躯干后的高阶安全感与沉降信任。",
+          safety: "3TK 绳量密度极高，持绳走向必须极其严苛地避开上肢四大神经（臂丛神经、尺神经、桡神经、正中神经）及腋神经：过肩绳线必须平铺于斜方肌外侧与肩峰，严禁落入锁骨上窝压迫臂丛神经；大臂与背部交叉点必须严避大臂外侧桡神经沟与肘内侧尺神经沟；大臂环绕线严禁深塞入腋窝凹陷中心。持绳全程必须执行最高规格防线——持续核对手指酥麻与刺痛感、按压指甲床确认血流复色（Capillary Refill 须在 2 秒内）、检查桡动脉搏动与胸腔深呼吸余量；常备救援剪在侧，确保任何卡压异常时毫秒级切断。"
+        },
+        {
+          stage: 1, id: "1-1", title: "L2. 核心腰胯缚：腰胯结构与重心固定",
+          focus: "本课程学习日式经典腰胯缚与编织式腰胯缚（Hip Harness）的绑法与结构。你将学习如何利用胯骨作为天然的支撑点，掌握两侧胯骨受力平衡与绳圈锁紧的持绳要领；理解腰胯缚作为全身承重核心的受力机制，体会腰胯被稳固包裹后，重心下沉带来的安定感与身体信任。",
+          goal: "重点培养学生利用骨骼建立“稳固承重点”的持绳习惯。教师需指导学生将主腰带精确定位压紧在两侧髂前上棘（胯骨最凸起处）正上方，确保拉力由骨骼承担；训练学生掌握编织网格的对称张力，使腰胯结构在之后的姿态转换或悬吊中能够稳稳固定住骨盆重心，避免受力偏斜。",
+          safety: "腰胯持绳存在明确的内脏与血管压迫风险：主腰带绝对严禁离开胯骨向上滑到没有骨头保护的软腹部、侧腰或后腰肾区，腹部受压会导致内脏挤压受损、影响呼吸并阻碍下半身血液回流；同时，腿带与腹股沟交叉处要避开大腿根部的血管与神经。持绳全程必须随时检查腰带位置，确保它始终稳稳卡在胯骨上。"
+        },
+        {
+          stage: 1, id: "1-2", title: "L3. 重心破坏：铁炮缚、提篮缚和斜拉腰胯缚",
+          focus: "本课程学习经典的不对称体位约束——铁炮缚（Teppo，单臂上折、单臂下反）与提篮缚，以及斜拉腰胯缚的组合锁止。你将学习如何通过不对称的走绳打破被缚者的日常重心，掌握斜向拉力与腰胯固定的持绳技巧，体会姿态倾斜下重心被打破与交出身体控制权的感觉。",
+          goal: "重点培养学生利用不对称绳路控制姿态重心的持绳技巧。教师需指导学生通过斜拉绳路打破被缚者的双脚自平衡，使脊柱与髋骨产生自然的生理倾斜；引导被缚者在不对称姿态下顺应重力倾斜，逐步适应肢体受限感，建立对持绳者的信任。",
+          safety: "不对称斜拉对脊柱与肩关节有较大的扭转挤压：若被缚者有严重腰椎间盘突出、强直性脊柱炎或脊柱旧伤，绝对严禁进行铁炮缚悬吊；在地面持绳时，向上反折的上臂与躯干夹角在受力时必须低于 50 度，严禁生硬反掰拉扯，防止肩关节脱位或胸肌拉伤。"
+        },
+        {
+          stage: 1, id: "1-3", title: "L4. 肩部受限：后手直臂的绑法和注意事项",
+          focus: "本课程学习高阶后手直臂（直臂反剪）的结构与持绳技巧，解析奈加流与鵺神莲风格中双大臂背后并拢、手肘拉直锁定的做法。你将学习如何顺应肩关节的解剖极限进行安全固定，体会双肩后拉、胸腔展开状态下的深度受限感与身体张力。",
+          goal: "重点培养学生控制肩关节拉力与缓慢靠拢的持绳技巧。教师需指导学生掌握双肘合拢锁定的绳套打法，在胸肌拉伸、背部肩袖肌群（冈下肌等）收紧的状态下，学会缓慢对拉靠拢并固定双肩，严禁生硬生拉硬拽；引导被缚者适应直臂姿态下的胸腔扩展与肩部张力。",
+          safety: "直臂反剪对肩关节囊及肩袖肌群（小圆肌、冈下肌）的向前牵引力极强，属于高危的关节限制体位：缚手严禁粗暴强行将被缚者双肘生硬挤压贴死；在半承重或背后提拉受力时，直臂与躯干的抬起角度必须严格控制在 30 度以内，防止肩关节脱位、关节囊撕裂或胸肌拉伤。"
+        },
+        {
+          stage: 1, id: "1-4", title: "L5. 定点束缚：家具、木柱与长竹的使用",
+          focus: "本课程学习借助外部硬质结构进行定点绑扎的持绳技巧，涵盖靠背椅、地环、木柱及背竹（长竹竿）的多点交错固定。你将学习如何将绳索张力与硬质介质结合，贴合脊柱与骨盆进行稳固锁定，体会身体被紧紧锚定在硬质结构上、失去自主微调空间时的深度受限感。",
+          goal: "重点培养学生结合硬质介质控制姿态与重力的持绳习惯。教师需指导学生学会将硬质接触面（木柱、竹竿、椅背）精准贴合被缚者的骨骼平稳位置，利用硬质结构限制躯干与肢体的微调幅度；引导被缚者适应硬质支撑下的贴合感，建立对固定环境的踏实感与信任。",
+          safety: "硬质介质直接压迫身体存在明确的神经卡压与血液循环风险：木柱、竹竿与硬质椅背长时间抵压身体，极易导致浅表神经受损及下肢静脉血液回流障碍；所有硬物与骨骼突出处的压迫接触点，必须加厚使用软垫或棉垫保护；定点硬质绑扎的时长必须严格控制在 20 分钟以内，持绳全程随时核对末梢皮温与感知。"
+        },
+        {
+          stage: 1, id: "1-5", title: "L6. 呼吸控制与颈胸锁定：多维受限玩法与安全防线",
+          focus: "本课程全面探索呼吸控制的 4 种实践形式（捂住口鼻封堵、胸廓张力限制、绳口枷单向鼻腔引导，以及配合折叠/自重体位的多重极限呼吸控制），并结合安全颈胸锁定结构。你将学习利用上胸圈与下胸圈限制胸廓扩展，掌握配合绳口枷进行鼻腔单向呼吸的持绳技巧；重点精通处理“躯干压迫+口枷”多重极限呼吸受限的控场节奏；掌握将张力完全卸载、实现颈部受力隔离的解剖逻辑，体会在多重限制下的深沉沉降感。",
+          goal: "重点培养学生根据不同玩法层级（从基础胸限到体位叠加极限）进行精准控场与呼吸引导的持绳直觉。教师需指导学生掌握“呼气时渐进收紧”与“喘息间歇放松”的持绳节奏，学会通过胸带与体位控制潮气量；训练学生通过中心线将外部拉力完全隔离在颈部之外，引导被缚者在多重呼吸受限的状态下通过平稳鼻呼吸克服恐慌，建立高阶身心信任。",
+          safety: "必须向学生划清玩法的绝对红线：“呼吸控制来自于胸腹挤压、体位约束与气道引导，绝对严禁来自颈部加压！”在进行“口枷+胸带+折叠体位”的极限组合玩法时，必须确保被缚者鼻腔 100% 通畅（无感冒、鼻塞）；严禁任何压迫颈部气道或颈动脉窦制造窒息的行为；捆绑后强制执行吞咽测试；极限体位单次加压时长严限在 3 分钟以内，必须给予充分的喘息复原间歇；持绳全程救援剪随手可及，一旦被缚者出现面色发绀、无法进行鼻腔呼吸或意识模糊，必须毫秒级剪断中心线与口枷。"
+        },
+        {
+          stage: 1, id: "1-6", title: "L7. 半吊入门：双肩承重与背后半起吊",
+          focus: "本课程学习半悬吊（Semi-suspension）的搭建与安全起拉技巧。你将学习如何将 2TK 与 3TK 的背部锁点及中心线与悬吊主绳建立平衡连接，掌握慢速平稳的提拉与收绳手法，体会肢体部分离地、重力向双肩与胸廓转移时的半悬吊体验。",
+          goal: "重点培养学生平稳控绳与观察重力转移的持绳习惯。教师需指导学生慢速收拉悬吊主绳，将被缚者双肩及胸廓适度提起，使臀部或膝部呈半离地状态；引导被缚者逐步适应重力转移带来的体感变化，建立对半悬吊姿态的踏实感与信任。",
+          safety: "半悬吊涉及重力转移与心理落差，必须做好物理与心理的双重防护：双膝与臀部下方必须铺设软垫保护；手掌下方应留有随时可触及地面的安全支撑距离，防止被缚者因突然失重产生恐慌或情绪脱落（Sub-drop）；持绳全程随时监控末梢循环与手部感知，半悬吊单次时长严格限制在 12 分钟以内。"
+        },
+        {
+          stage: 1, id: "1-7", title: "L8. 疼痛感知：好的疼痛与坏的疼痛辨别",
+          focus: "区分“好的疼痛”与“坏的疼痛”，是被缚者最核心、最根本的安全红线。你将学习如何清晰辨识这两者的生理与体感边界：理解“好的疼痛”（如韧带被安全拉开的感觉、大面积肌肉受压承重时的沉重钝痛，通常在承受范围内且不会引发心慌）与“坏的疼痛”（如神经压迫发麻、关节由于暴力扭转产生的干涩卡顿、旧疾处的割裂痛）的本质区别；掌握双方在持绳与受缚过程中建立实时体感沟通的方法。",
+          goal: "重点培养缚手与被缚者共同建立痛觉边界的责任感。教师需指导学生学会在受限姿态下引导被缚者表达真实体感，将“出现坏的疼痛”作为随时叫停与调整的绝对凭据；鼓励学生在对自己与搭档负责的前提下，通过反复练习、多向圈内有经验的同好取经总结，建立对关节极限与肌肉承重的敏锐觉察。",
+          safety: "坏的疼痛是身体发出的危险警报，绝不可靠硬撑：一旦出现神经压迫发麻、关节干涩卡顿、旧疾割裂痛或刺痛，必须被视为触发叫停的红线，立刻卸载张力或松解绳索；时刻监控被缚者是否出现心慌、突发大冷汗、面色苍白或手指脚趾末梢缺血发白等恶性生理反应，确保体验始终在安全边界内进行。"
+        },
+
+        // 阶段三 (10课时)
+        {
+          stage: 2, id: "2-0", title: "L1. 悬吊点位：竹竿吊点构建与空中姿态",
+          focus: "本课程以竹竿悬吊为核心，带你掌握高阶完全悬吊（Full-suspension）的吊点构建。你将重点学习竹竿上的锁定与绳结打法，同时辅助掌握金属环、登山主锁（Carabiner）等环扣结构作为吊点时的锁定绳结的做法。理解空中受力与防滑原理，将竹竿吊点与空中姿态控制结合，体验零晃动、可调控的高空悬吊。",
+          goal: "重点培养学生掌握“竹竿防滑锁止”与“空中姿态调控”的知识内容。教师要重点教给学生竹竿上的防滑锁定打法，确保绳圈在竹竿上稳定牢固，不侧滑、不偏压；课程主攻竹竿悬吊路线的构建，对金属环、主锁等环扣结构的悬吊仅做基础技术普及；指导学生通过调整竹竿吊点间距来调控空中姿态与旋转平衡，让被缚者在离地升空瞬间感受踏实、平稳的物理支撑。",
+          safety: "起吊前必须仔细检查竹竿完好无裂纹、无隐伤，竹竿绑扎点必须做防滑锁定（如普鲁士结或方结固定），严禁绳圈在光滑竹竿上直接受力拉扯；若配合使用登山主锁等环扣，升空前必须手动旋紧螺扣，严禁主锁侧向受力；升空前必须用 1.5 到 2 倍自重用力下拉测试竹竿与主锁，确认无松动损伤，且竹竿主吊点处必须设置二次备份防脱挂点，严禁单点无备份承重。"
+        },
+        {
+          stage: 2, id: "2-1", title: "L2. 完全悬吊：基础平吊与起吊安全",
+          focus: "本课程学习面朝下的基础平吊结构与起吊技巧。你将学习如何以后背（如后手缚/TK 锁点）为主吊点，配合腿部与脚部的辅助吊点，实现人体面朝下、水平离地的悬吊平衡；掌握多吊点之间的拉力配比与起拉节奏，体会身体完全悬空平浮时的失重感与包裹体验。",
+          goal: "重点培养学生掌握“背部主承重”与“水平姿态调控”的持绳要领。教师要指导学生学会调节后背、腿部与脚部三个吊点的绳索张力，确保起吊后躯干呈面朝下的平稳水平姿态，防止腰部大幅下塌或头脚倾斜；训练学生平稳匀速的升空控制，引导被缚者适应完全离地后的高空失重体验。",
+          safety: "面朝下平吊时躯干受多点拉力牵引，必须密切关注脊柱曲度与呼吸通畅度：起吊前需确认背部与腿部吊点受力均匀，防止腰椎过度下塌受压；升空后必须做吞咽与呼吸测试，确保头部与颈部处于自然放松姿态，严禁颈部过度后仰或气道受阻；悬吊全程随时检查脚踝与手部末梢循环，练习时，平吊单次悬吊时长严格限制在 10 分钟以内。"
+        },
+        {
+          stage: 2, id: "2-2", title: "L3. 高空承重：吊点分配与重心选择",
+          focus: "本课程学习高空悬吊中的多吊点重力分配与重心切换技巧。你将学习如何根据不同姿态（竖吊、倒吊、侧吊等），合理分配主吊点与辅助吊点的承重比例；掌握通过调整吊点位置来改变人体重心的持绳技巧，体会高空中姿态平稳转换、重力被平铺时的体验。",
+          goal: "重点培养学生掌握“主副吊点张力配比”与“空中重心调控”的持绳要领。教师要指导学生学会识别不同体位下的躯干重心，合理分配主吊点（如背部或腰胯）与副吊点（如肢体或腿部）的承重比例，防止空中姿态转换时发生意外失衡或关节生硬拉扯；训练学生平稳调控姿态切换的节奏，让被缚者在高空重心移动时感受踏实、可控的物理支撑。",
+          safety: "高空承重必须确保主吊点固定在躯干强承重区域（如 TK 背部锁点或腰胯），严禁将主重力单独挂载在手腕或脚踝等脆弱关节上；在空中调整重心或切换姿态前，必须先确认副吊点绳索已锁紧受力，防止重心突变导致坠落或关节剧烈扭伤；悬吊全程密切观察被缚者的面色与呼吸，若出现发晕、恶心或末梢发麻，必须立即降下放平，单次悬吊时长严格限制在 12 分钟以内。"
+        },
+        {
+          stage: 2, id: "2-3", title: "L4. 失重限制：直立悬吊与完全倒吊",
+          focus: "本课程学习直立悬吊与完全倒吊的姿态控制与起吊技巧。你将学习如何通过 TK（后手缚）与腰胯缚实现稳定的直立悬吊，以及利用腰胯与腿部作为主承重进行完全倒吊；掌握直立与倒吊姿态切换时的持绳要领，体会在视觉颠倒、重力逆转下的失重感与深度控制体验。",
+          goal: "重点培养学生掌握“倒吊姿态平稳控制”与“血流充血观察”的持绳要领。教师要指导学生学会选择坚固的骨盆与腿部承重结构，确保完全倒吊时受力点绝对安全；训练学生控制姿态翻转与起降的平稳节奏，引导被缚者适应头足颠倒后的失重体验，建立对倒吊姿态的踏实信任。",
+          safety: "完全倒吊会引发头部快速充血与颅内压升高，存在明确的血管与神经风险：起吊前必须确认腰胯与腿部绑扎牢固，严禁单点悬挂脚踝；倒吊全程密切观察被缚者的面色、眼压与语言反应，一旦出现剧烈头痛、眼花、恶心或面色紫红，必须立刻翻转降下；完全倒吊单次倒吊时长必须严格限制在 5 分钟以内，降落后须在地面平卧缓冲，严禁直接站立以防体位性低血压晕厥。"
+        },
+        {
+          stage: 2, id: "2-4", title: "L5. 侧面悬吊：侧吊与脊椎扭转控制",
+          focus: "本课程学习侧吊（Side Suspension）的结构搭建与侧向拉力控制。你将学习如何利用单侧腰胯与躯干侧环作为主受力点，实现身体单侧倾斜悬空；掌握侧吊姿态下的不平衡受力配比与锁紧要领，体会单侧肋部与躯干舒展时，不对称悬吊带来的张力与平衡体验。",
+          goal: "重点培养学生掌握“侧向拉力平缓控制”与“脊柱扭转防线”的持绳要领。教师要指导学生学会调节单侧吊带的拉力幅度，平缓引导被缚者舒展单侧侧肋与躯干，严禁生硬拉扯导致脊柱猛烈扭转；训练学生控制升空与侧倾的平稳节奏，引导被缚者适应侧向悬空的失重感受。",
+          safety: "侧向斜拉与脊柱扭转对腰椎和椎间盘的侧拉压力极强，存在明确的脊柱与肌肉拉伤风险：若被缚者有腰椎间盘突出或脊柱旧伤，绝对严禁进行侧悬吊；侧吊状态下严禁对外力施加剧烈晃动或强行旋转躯干，防止腰椎扭伤或肋间肌拉伤；悬吊全程密切监控呼吸与躯干状态，侧吊单次悬吊时长严格限制在 8 分钟以内。"
+        },
+        {
+          stage: 2, id: "2-5", title: "L6. 空中姿态转换：多点受力辅助重心转移",
+          focus: "本课程学习高空动态姿态转换与重心转移的操作技巧。你将学习如何在空中平稳转换姿态，掌握利用多点受力辅助躯干重心的平稳平移，确保重心移动过程中张力无空档、不突然下坠；体验高空中姿态流畅转换时，身体被多点张力稳稳承托的连贯体验。",
+          goal: "重点培养学生掌握“多点受力配合”与“重心平稳转移”的操作要领。教师要指导学生学会通过多点张力的协调收放，辅助躯干重心的平滑移动，确保主受力点切换时无骤然松弛或猛烈拉扯；训练学生精准判断重心的移动轨迹，引导被缚者适应空中姿态转换，建立连续、踏实的悬吊信任。",
+          safety: "空中重心转移存在明确的失衡、骤坠与关节扭伤风险：在利用多点受力转移重心时，必须确认辅助吊点绳索已预先紧绷受力，严禁在主受力点完全松开后再去调整重心，防止出现张力空档导致失重坠落；姿态转换与重心移动过程必须平缓匀速，严禁猛烈拉扯；悬吊全程密切观察被缚者面色与末梢循环。"
+        },
+        {
+          stage: 2, id: "2-6", title: "L7. 悬吊状态下加挂重物的玩法",
+          focus: "这个玩法就是在人已经吊在空中时，额外往身上挂重物（如沙袋、配重块），增加往下坠的沉重感。你将学习怎么选对挂重物的位置（比如腰胯或腿、脚部这些耐受度较高的部位），掌握一点一点加重和瞬间卸重的技巧；让被缚者体会身上被额外重量拽住、完全交出控制权的深沉压迫感。",
+          goal: "教学生掌握“挂得对、加得平稳、卸得快速”的玩法技巧。要让学生学会先算好“人重+挂重”的总重量，别超出吊点的承重上限；教学生把重物挂在腰胯、大腿或脚部等耐受度较高的区域，确保受力平铺，别让单一关节点受伤；教学生用快拆锁扣或活结挂重物，随时能把重物卸掉，给被缚者足够的安全感。",
+          safety: "加挂重物会成倍增加吊点负担和身体压强，安全底线必须守住：加挂前算好总重，确保吊点和主绳扛得住；重物挂在腰胯或腿脚部位时，必须平铺受力，严禁直接硬扯关节，且绝对严禁挂在脖子上（简单可控的呼吸控制玩法时可短时间悬挂，但必须保证安全可控）；挂重物可用快拆绳扣，只要被缚者出现手脚发麻、呼吸困难或发晕，立刻卸掉重物并把人降下来。"
+        },
+        {
+          stage: 2, id: "2-7", title: "L8. 更多”责绳“的玩法",
+          focus: "本课程探索以身体耐受与心理考验为核心的“责绳”进阶玩法。围绕“动弹不得、左右两难”的核心体验，你将学习如何利用半吊（脚尖或膝盖微离地，既无法完全站立、又无法彻底放松）、极端体位放置（如高强度折叠与受迫跪姿，考验肌肉耐力与呼吸节奏控制），以及结合竹竿等硬质道具打造逃无可逃的煎熬困境；理解“责绳”并非盲目施加痛苦，而是通过精准控制张力，让被缚者在极限边缘交出控制权，体会肉体受限与意志突破的深层感官体验。",
+          goal: "重点教给学生“高阶责绳玩法必须建立在极其扎实的基础绳缚技巧之上”的铁律。教师要指导学生学会利用半吊与竹竿道具构建两难受力结构，掌握“看似煎熬但骨骼神经绝对安全”的分寸；深刻告知学生：没有 TK、腰胯缚等基础结构的规范打底，不懂神经走向与关节生理极限，盲目尝试“责绳”极易造成关节脱位或神经损伤；训练学生在持绳过程中掌控“给压与间歇喘息”的节奏，引导被缚者在安全红线内探索感官极限。",
+          safety: "“责绳”玩法对体力与神经耐受消耗极大，且高强度受限极易掩盖神经卡压与血管阻断的危险信号，必须严守安全死命令：使用竹竿等硬质道具绑定时，所有压迫点必须加垫缓冲，严禁硬勒关节或强行超出韧带生理极限；半吊与强迫体位极易引发肌肉剧烈抽搐与体位性缺氧，持绳全程必须随时核对“好的疼痛”（韧带拉开感、大面积钝痛）与“坏的疼痛”（发麻、触电感、关节卡顿与旧疾割裂痛），一旦被缚者出现坏的疼痛、剧烈抽搐、大冷汗或面色苍白，必须立刻解脱卸载；单次高强度“责绳”解脱后必须给予充分的平静喘息与陪伴恢复（Aftercare）。"
+        },
+        {
+          stage: 2, id: "2-8", title: "L9. 应急救援：剪绳逃生与落地急救",
+          focus: "本课程进行绳缚应急逃生与急救演练。你将模拟空中突发紧急状况（如被缚者突发眩晕、低血糖发作、缺氧发晕或极端情绪应激等），学习如何果断剪绳解脱；掌握用身体托举替搭档分担重力、落地后快速解开胸绳与口枷解除气道受限，以及平卧抬高双腿恢复脑部供血等急救技巧，确保在危机时刻毫秒级保全搭档安全。",
+          goal: "重点培养学生“果断剪绳”与“身体托举应急”的实操反应。教师要指导学生学会用自己的大腿或后背贴紧并托住被缚者臀背部，瞬间替搭档分担悬吊拉力；训练学生掌握“剪断主绳 — 降人落地 — 剪开胸绳与口枷 — 恢复气道与循环”的标准化应急顺序，学会将被缚者平卧并抬高双腿 20 到 30 度（休克位）以恢复脑部供血，引导被缚者从应激状态平稳恢复。",
+          safety: "发生紧急眩晕或晕厥时，必须守住“黄金 5 秒剪绳解脱”红线：严禁浪费任何时间去解绳结，缚手必须立刻用救援剪（防伤剪）剪断主绳；降落落地时必须用身体接住被缚者，严禁直接摔落；落地后剪断前胸 TK 上下胸圈、中心线及口枷等影响呼吸与循环的绳圈，保持气道完全通畅；被缚者平卧后密切核对呼吸与脉搏，及时补充糖水与保暖，若晕厥持续超 30 秒或无呼吸心跳，必须立刻拨打 120 急救。"
+        },
+        {
+          stage: 2, id: "2-9", title: "L10. 终极实操：绳缚全流程演绎实践",
+          focus: "本课程是本阶段学习的毕业考核与综合演练。你将与被缚者独立策划并完成一场完整的绳缚实践：从实践前的需求沟通与身体评估，到躯干束缚结构搭建（如 2TK/3TK、折腿缚、腰胯缚等）、空中悬吊与姿态转换，再到降绳解脱与事后安抚（Aftercare）。这不仅是一次对全课程核心技术与解剖安全的综合考核，更是一次将手感、张力与双方信任融为一体的绳缚表达。",
+          goal: "重点考核学生独立把控全流程绳缚的综合能力。教师要从“事前沟通与解剖评估、持绳与走绳流畅度、张力与姿态控场、应急处理与 Aftercare”四个维度进行综合考核；观察学生能否根据被缚者的即时反馈灵活调整绳路与节奏，考核其是否将“好的疼痛与坏的疼痛”辨识、四大神经避让及安全防线真正内化为持绳本能。",
+          safety: "即使是毕业考核，安全依然是不可逾越的绝对红线：教师全程作为现场最高安全监督员，严密监控考核过程中的神经与循环隐患，一旦学生出现压迫四大神经、活结勒卡关节或超时悬吊等违规操作，必须立刻现场叫停并强制纠正；考核全程救援剪（防伤剪）必须隨手可及，被缚者拥有无条件叫停权；降绳解脱后必须强制执行完整标准的 Aftercare（保暖、补水与情绪安抚），确保双方身心安全落地。"
+        }
+      ];
+
+      // 全局状态
+      let userLevel = localStorage.getItem('shibari_user_level') || 'visitor';
+      let hasSignedPledge = localStorage.getItem('shibari_signed_pledge') === 'true';
+      let currentTab = 'home';
+      let pendingLevel = null;
+      let isEditMode = false;
+
+      function parsePasscode(code) {
+        code = code.trim().toLowerCase();
+        if (code === UNIQUE_TEACHER_CODE) {
+          return { level: 'master', isTeacher: true, name: '👑 教师/管理员' };
+        }
+        if (/^base\d{2}$/.test(code)) {
+          return { level: 'base', isTeacher: false, name: '🟢 初级学员' };
+        }
+        if (/^adv\d{3}$/.test(code)) {
+          return { level: 'adv', isTeacher: false, name: '🟡 提高学员' };
+        }
+        if (/^exp\d{4}$/.test(code)) {
+          return { level: 'power', isTeacher: false, name: '🔴 熟练学员' };
+        }
+        return null;
+      }
+
+      function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+      }
+
+      function switchTab(tabId) {
+        currentTab = tabId;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.className = "tab-btn px-3 py-1.5 rounded transition-colors text-stone-300 hover:bg-stone-800";
+        });
+        const activeBtn = document.getElementById(`tab-${tabId}`);
+        if (activeBtn) {
+          activeBtn.className = "tab-btn px-3 py-1.5 rounded transition-colors bg-jute-750 text-white font-bold";
+        }
+
+        document.getElementById('view-home').classList.add('hidden');
+        document.querySelectorAll('.stage-view').forEach(v => v.classList.add('hidden'));
+
+        const mobileBtn = document.getElementById('btn-mobile-toc-wrapper');
+
+        if (tabId === 'home') {
+          document.getElementById('view-home').classList.remove('hidden');
+          if (mobileBtn) mobileBtn.classList.add('hidden');
+        } else {
+          document.getElementById(`view-${tabId}`).classList.remove('hidden');
+          if (mobileBtn) mobileBtn.classList.remove('hidden');
+          populateMobileToc(parseInt(tabId.replace('stage-', '')));
+        }
+      }
+
+      function renderCurriculum() {
+        [0, 1, 2].forEach(sIdx => {
+          const container = document.getElementById(`container-stage-${sIdx}`);
+          const tocList = document.getElementById(`toc-list-${sIdx}`);
+          if (container) container.innerHTML = '';
+          if (tocList) tocList.innerHTML = '';
+        });
+
+        let maxAllowedStage = -1;
+        if (userLevel === 'base') maxAllowedStage = 0;
+        if (userLevel === 'adv') maxAllowedStage = 1;
+        if (userLevel === 'power' || userLevel === 'master') maxAllowedStage = 2;
+
+        curriculumData.forEach(item => {
+          const container = document.getElementById(`container-stage-${item.stage}`);
+          const tocList = document.getElementById(`toc-list-${item.stage}`);
+          if (!container) return;
+
+          const isUnlocked = item.stage <= maxAllowedStage;
+
+          if (tocList) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+        <a href="#lesson-${item.id}" onclick="scrollToLesson('${item.id}')" class="block truncate py-1 px-1.5 rounded hover:bg-stone-200 dark:hover:bg-zinc-800 text-stone-600 dark:text-stone-400 transition-colors">
+          ${item.title}
+        </a>
+      `;
+            tocList.appendChild(li);
+          }
+
+          const card = document.createElement('div');
+          card.className = "lesson-card bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg shadow-sm overflow-hidden transition-all duration-200";
+          card.id = `lesson-${item.id}`;
+
+          let contentHtml = '';
+          if (isUnlocked) {
+            contentHtml = `
+        <div class="card-header px-4 py-3 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')">
+          <span class="font-bold text-stone-900 dark:text-stone-100 text-sm">${item.title}</span>
+          <span class="text-xs text-stone-400 font-mono">▼</span>
+        </div>
+        <!-- 重点：此处加上了 hidden，实现学员解锁后默认折叠 -->
+        <div id="body-${item.id}" class="card-body border-t border-shibariBorder-light dark:border-shibariBorder-dark p-4 space-y-4 hidden">
+          <div>
+            <span class="text-xs font-semibold tracking-wider text-jute-750 uppercase">【学程重点】</span>
+            <p class="text-stone-700 dark:text-stone-300 text-sm leading-relaxed mt-1">${item.focus}</p>
+          </div>
+          ${userLevel === 'master' ? `
+            <div class="teacher-only-goal p-3 bg-amber-500/5 border-l-2 border-jute-500/50 rounded-r">
+              <span class="text-xs font-bold text-jute-750 block">📌 学程目标（师资版）：</span>
+              <p class="text-stone-600 dark:text-stone-400 text-sm leading-relaxed mt-1">${item.goal}</p>
+            </div>
+            <div class="teacher-only-safety p-3 bg-red-500/5 border-l-2 border-red-500/50 rounded-r">
+              <span class="text-xs font-bold text-red-600 block">⚠️ 安全防线（师资版）：</span>
+              <p class="text-stone-600 dark:text-stone-400 text-sm leading-relaxed mt-1">${item.safety}</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+          } else {
+            contentHtml = `
+        <div class="card-header px-4 py-3 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20">
+          <span class="font-bold text-stone-500 dark:text-stone-400 text-sm">${item.title}</span>
+          <span class="text-xs font-bold text-amber-600 dark:text-amber-500 flex items-center gap-1">🔒 需口令解锁</span>
+        </div>
+        <div class="p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50/50 dark:bg-zinc-900/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <p class="text-xs text-stone-500 dark:text-stone-400">
+            本课时包含深度讲解与物理实操要领。请输入对应阶段激活口令解锁阅读。
+          </p>
+          <button onclick="openPasscodeModal()" class="px-3 py-1 bg-jute-750 text-white rounded text-xs font-bold flex-shrink-0">
+            输入解锁口令
+          </button>
+        </div>
+      `;
+          }
+
+          card.innerHTML = contentHtml;
+          container.appendChild(card);
+        });
+
+        updateUIByRole();
+      }
+
+      function scrollToLesson(id) {
+        const card = document.getElementById(`lesson-${id}`);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const body = document.getElementById(`body-${id}`);
+          if (body && body.classList.contains('hidden')) {
+            body.classList.remove('hidden');
+          }
+        }
+      }
+
+      function toggleCardBody(id) {
+        const body = document.getElementById(`body-${id}`);
+        if (body) body.classList.toggle('hidden');
+      }
+
+      // PC 侧边栏折叠 & 右侧拉伸居中
+      function toggleSidebarToc(stageIdx) {
+        const sidebar = document.getElementById(`sidebar-toc-${stageIdx}`);
+        const btnExpand = document.getElementById(`btn-expand-toc-${stageIdx}`);
+        const container = document.getElementById(`container-stage-${stageIdx}`);
+
+        if (!sidebar || !container) return;
+
+        // 修复核心：判断大屏下侧边栏是否包含了 lg:hidden（即是否被折叠隐藏了）
+        const isHidden = sidebar.classList.contains('lg:hidden');
+
+        if (isHidden) {
+          // 【展开】恢复侧边栏显示，右侧恢复 3 列
+          sidebar.className = "hidden lg:block lg:col-span-1 space-y-3 transition-all duration-300";
+          if (btnExpand) btnExpand.className = "hidden fixed left-0 top-32 z-30 bg-jute-750 hover:bg-jute-900 text-white px-2 py-3 rounded-r-lg text-xs font-bold shadow-xl transition-all";
+          container.className = "col-span-1 lg:col-span-3 space-y-4 transition-all duration-300";
+        } else {
+          // 【收起】在 lg 大屏上强制隐藏侧边栏，唤出左侧悬浮按钮，右侧扩大到 4 列并居中
+          sidebar.className = "hidden lg:hidden space-y-3 transition-all duration-300";
+          if (btnExpand) btnExpand.className = "hidden lg:block fixed left-0 top-32 z-30 bg-jute-750 hover:bg-jute-900 text-white px-2 py-3 rounded-r-lg text-xs font-bold shadow-xl transition-all";
+          container.className = "col-span-1 lg:col-span-4 max-w-4xl mx-auto w-full space-y-4 transition-all duration-300";
+        }
+      }
+
+      // 📱 手机端 Drawer 填充与切换
+      function populateMobileToc(stageIdx) {
+        const list = document.getElementById('mobile-toc-list');
+        if (!list) return;
+        list.innerHTML = '';
+
+        const stageLessons = curriculumData.filter(item => item.stage === stageIdx);
+        stageLessons.forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a href="#lesson-${item.id}" onclick="scrollToLesson('${item.id}'); closeMobileToc();" class="block py-2 px-2.5 rounded bg-stone-100 dark:bg-zinc-900 hover:bg-stone-200 text-stone-700 dark:text-stone-300 font-medium">
+              ${item.title}
+            </a>
+          `;
+          list.appendChild(li);
+        });
+      }
+
+      function toggleMobileToc() {
+        const drawer = document.getElementById('mobile-toc-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        if (drawer.classList.contains('translate-x-full') || drawer.classList.contains('-translate-x-full') || drawer.classList.contains('hidden')) {
+          drawer.classList.remove('hidden');
+          overlay.classList.remove('hidden');
+          setTimeout(() => drawer.classList.remove('-translate-x-full'), 10);
+        } else {
+          closeMobileToc();
+        }
+      }
+
+      function closeMobileToc() {
+        const drawer = document.getElementById('mobile-toc-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        drawer.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        setTimeout(() => drawer.classList.add('hidden'), 300);
+      }
+
+      function updateUIByRole() {
+        const badge = document.getElementById('role-badge');
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const nerveBtn = document.getElementById('btn-nerve-wrapper');
+        const pledgeBtn = document.getElementById('btn-safety-pledge');
+        const teacherTools = document.getElementById('teacher-tools');
+
+        if (userLevel === 'visitor') {
+          badge.textContent = '👁️ 游客';
+          badge.className = 'ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-stone-800 text-stone-400 border border-stone-700';
+          btnLogin.classList.remove('hidden');
+          btnLogout.classList.add('hidden');
+          nerveBtn.classList.add('hidden');
+          pledgeBtn.classList.add('hidden');
+          teacherTools.classList.add('hidden');
+        } else {
+          btnLogin.classList.add('hidden');
+          btnLogout.classList.remove('hidden');
+          nerveBtn.classList.remove('hidden');
+          pledgeBtn.classList.remove('hidden');
+
+          if (userLevel === 'base') {
+            badge.textContent = '🟢 初级学员';
+            badge.className = 'ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-emerald-900/50 text-emerald-300 border border-emerald-700';
+            teacherTools.classList.add('hidden');
+          } else if (userLevel === 'adv') {
+            badge.textContent = '🟡 提高学员';
+            badge.className = 'ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-amber-900/50 text-amber-300 border border-amber-700';
+            teacherTools.classList.add('hidden');
+          } else if (userLevel === 'power') {
+            badge.textContent = '🔴 熟练学员';
+            badge.className = 'ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-red-900/50 text-red-300 border border-red-700';
+            teacherTools.classList.add('hidden');
+          } else if (userLevel === 'master') {
+            badge.textContent = '👑 教师/管理员';
+            badge.className = 'ml-2 px-2 py-0.5 text-[11px] font-bold rounded bg-purple-900/50 text-purple-300 border border-purple-700';
+            teacherTools.classList.remove('hidden');
+          }
+        }
+
+        document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已完全解锁' : '已开放预览';
+        document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'power' || userLevel === 'master') ? '✅ 已完全解锁' : '🔒 需口令解锁';
+        document.getElementById('badge-stage-2-status').textContent = (userLevel === 'power' || userLevel === 'master') ? '✅ 已完全解锁' : '🔒 需口令解锁';
+      }
+
+      function openPasscodeModal() {
+        document.getElementById('modal-passcode').classList.remove('hidden');
+        document.getElementById('passcode-error').classList.add('hidden');
+        document.getElementById('input-passcode').value = '';
+      }
+      function closePasscodeModal() {
+        document.getElementById('modal-passcode').classList.add('hidden');
+      }
+
+      function verifyPasscode() {
+        const input = document.getElementById('input-passcode').value.trim();
+        const result = parsePasscode(input);
+
+        if (result) {
+          closePasscodeModal();
+          if (result.isTeacher) {
+            userLevel = 'master';
+            hasSignedPledge = true;
+            localStorage.setItem('shibari_user_level', userLevel);
+            localStorage.setItem('shibari_signed_pledge', 'true');
+            renderCurriculum();
+            // alert('👑 欢迎回来，尊重的导师！已为您开启最高完全控制权限。');
+          } else {
+            pendingLevel = result.level;
+            openSafetyModal();
+          }
+        } else {
+          document.getElementById('passcode-error').classList.remove('hidden');
+        }
+      }
+
+      function openSafetyModal() {
+        document.getElementById('modal-safety-pledge').classList.remove('hidden');
+        document.getElementById('check-safety-pledge').checked = false;
+      }
+      function closeSafetyModal() {
+        document.getElementById('modal-safety-pledge').classList.add('hidden');
+      }
+
+      function confirmSafetyPledge() {
+        const check = document.getElementById('check-safety-pledge');
+        if (!check.checked) {
+          alert('请先勾选确认已阅读并理解安全条款！');
+          return;
+        }
+
+        if (pendingLevel) {
+          userLevel = pendingLevel;
+          pendingLevel = null;
+        }
+        hasSignedPledge = true;
+        localStorage.setItem('shibari_user_level', userLevel);
+        localStorage.setItem('shibari_signed_pledge', 'true');
+
+        closeSafetyModal();
+        renderCurriculum();
+        // alert('🎉 身份认证成功！已为您更新大纲阅读权限。');
+      }
+
+      function logout() {
+        if (confirm('确认退出当前学员登录身份吗？')) {
+          userLevel = 'visitor';
+          hasSignedPledge = false;
+          localStorage.removeItem('shibari_user_level');
+          localStorage.removeItem('shibari_signed_pledge');
+          renderCurriculum();
+          switchTab('home');
+        }
+      }
+
+      function toggleNerveDrawer() {
+        const drawer = document.getElementById('nerve-drawer');
+        const overlay = document.getElementById('drawer-overlay');
+        if (drawer.classList.contains('translate-x-full')) {
+          drawer.classList.remove('hidden');
+          overlay.classList.remove('hidden');
+          setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+        } else {
+          drawer.classList.add('translate-x-full');
+          overlay.classList.add('hidden');
+          setTimeout(() => drawer.classList.add('hidden'), 300);
+        }
+      }
+
+      function closeAllDrawers() {
+        document.getElementById('nerve-drawer').classList.add('translate-x-full');
+        closeMobileToc();
+        document.getElementById('drawer-overlay').classList.add('hidden');
+      }
+
+      const nerveDict = {
+        radial: {
+          title: "桡神经 (Radial Nerve) - 避让防线",
+          desc: "桡神经主要支配大臂后侧肌群与手背外侧（虎口区）的肌肤感知。",
+          symptom: "主要症状：腕下垂（手腕耷拉无法抬起）、虎口麻木或失去感觉。",
+          prevention: "防护规范：在施加 TK 或大臂绑扎时，严禁绳圈压在肱骨外侧中下 1/3 的桡神经沟内。打结后必须能轻松塞入一指。"
+        },
+        median: {
+          title: "正中神经 (Median Nerve) - 避让防线",
+          desc: "正中神经支配前臂屈肌群及手掌大鱼际肌、拇/食/中指感知。",
+          symptom: "主要症状：猿手畸形（大拇指无法碰到小指）、前臂至手掌剧烈麻木与刺痛。",
+          prevention: "防护规范：手腕最细的腕骨与腕横纹处严禁使用活结。绑扎位置必须向上退离 1.5 至 2 指，并保持内径绝对恒定。"
+        },
+        ulnar: {
+          title: "尺神经 (Ulnar Nerve) - 避让防线",
+          desc: "尺神经主要支配手部精细小肌肉群，以及小指与无名指的感觉。",
+          symptom: "主要症状：爪形手（小指与无名指屈曲无法伸直）、手掌尺侧极度麻木。",
+          prevention: "防护规范：直臂反剪或大臂收紧时，肘关节内后方的尺神经沟易受硬性挤压。持绳时必须缓慢靠拢，随时触摸指端皮温。"
+        }
+      };
+
+      function switchNerveDashboard(key) {
+        const data = nerveDict[key];
+        const content = document.getElementById('nerve-content');
+        ['radial', 'median', 'ulnar'].forEach(k => {
+          const btn = document.getElementById(`btn-${k}`);
+          btn.className = (k === key) ? "flex-1 py-1.5 text-xs font-bold rounded bg-jute-750 text-white" : "flex-1 py-1.5 text-xs font-bold rounded bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300";
+        });
+        content.innerHTML = `
+          <h4 class="text-sm font-bold text-stone-900 dark:text-stone-100 border-b border-shibariBorder-light dark:border-shibariBorder-dark pb-1">${data.title}</h4>
+          <p class="text-xs text-stone-600 dark:text-stone-400 mt-2">${data.desc}</p>
+          <div class="p-3 bg-stone-100 dark:bg-zinc-900 rounded border border-shibariBorder-light dark:border-shibariBorder-dark text-xs space-y-1">
+            <p class="text-amber-700 dark:text-amber-500 font-bold">${data.symptom}</p>
+          </div>
+          <div class="p-3 bg-red-500/5 border-l-2 border-red-500 rounded-r text-xs leading-relaxed text-stone-600 dark:text-stone-400">
+            ${data.prevention}
+          </div>
+        `;
+      }
+
+      function toggleEditMode() {
+        isEditMode = !isEditMode;
+        document.body.classList.toggle('edit-active');
+        const btn = document.getElementById('btn-toggle-edit');
+        if (isEditMode) {
+          btn.textContent = '💾 保存退出编辑';
+          document.querySelectorAll('.lesson-card p, .lesson-card h4').forEach(el => el.setAttribute('contenteditable', 'true'));
+        } else {
+          btn.textContent = '⚙️ 编辑重排';
+          document.querySelectorAll('.lesson-card [contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        }
+      }
+
+      // 初始化加载
+      window.addEventListener('DOMContentLoaded', () => {
+        renderCurriculum();
+        switchNerveDashboard('radial');
+      });
+
+      // 一键展开当前阶段的所有课时
+      function expandAllLessonsInStage(stageIdx) {
+        const container = document.getElementById(`container-stage-${stageIdx}`);
+        if (!container) return;
+        container.querySelectorAll('.card-body').forEach(body => {
+          body.classList.remove('hidden');
+        });
+      }
+
+      // 一键折叠当前阶段的所有课时
+      function collapseAllLessonsInStage(stageIdx) {
+        const container = document.getElementById(`container-stage-${stageIdx}`);
+        if (!container) return;
+        container.querySelectorAll('.card-body').forEach(body => {
+          body.classList.add('hidden');
+        });
+      }
+    </script>
+  </body>
+
+</html>
