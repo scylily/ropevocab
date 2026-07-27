@@ -115,11 +115,11 @@ const sideA = sideNameMap[qData.side_a] || qData.side_a;
 const sideB = sideNameMap[qData.side_b] || qData.side_b;
 const w = userAnswers[i].weight;
 let scoreLabel = "";
-if (w === 0) scoreLabel = `强偏向【${sideA}】`;
-else if (w === 1) scoreLabel = `偏向【${sideA}】`;
-else if (w === 2) scoreLabel = `【${sideA} / ${sideB}】双向平衡`;
-else if (w === 3) scoreLabel = `偏向【${sideB}】`;
-else if (w === 4) scoreLabel = `强偏向【${sideB}】`;
+if (w === 0) scoreLabel = `强偏向于【${sideA}】`;
+else if (w === 1) scoreLabel = `偏向于【${sideA}】`;
+else if (w === 2) scoreLabel = `双向平衡【${sideA} / ${sideB}】`;
+else if (w === 3) scoreLabel = `偏向于【${sideB}】`;
+else if (w === 4) scoreLabel = `强偏向于【${sideB}】`;
 return `
 <div class="review-item">
 <div class="review-q">
