@@ -3,592 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>前端代码极速瘦身与纯净发布工具</title>
+    <title>全语言零压缩安全注释清洗工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --accent-green: #10b981;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 30px 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        header h1 {
-            font-size: 28px;
-            color: var(--text-color);
-            margin-bottom: 8px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 15px;
-        }
-
-        .drop-zone {
-            background-color: var(--card-bg);
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        .drop-zone:hover, .drop-zone.dragover {
-            border-color: var(--primary-color);
-            background-color: #eff6ff;
-        }
-
-        .drop-zone-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .drop-zone-text {
-            font-size: 16px;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        .drop-zone-hint {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        .options-bar {
-            background: var(--card-bg);
-            padding: 16px 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 25px;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .options-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: var(--text-muted);
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .checkbox-label input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: var(--primary-color);
-        }
-
-        .suffix-input-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: var(--text-color);
-            margin-left: auto;
-        }
-
-        .suffix-input-group input[type="text"] {
-            padding: 4px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            width: 90px;
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .suffix-input-group input[type="text"]:focus {
-            border-color: var(--primary-color);
-        }
-
-        .action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .stats {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-success {
-            background-color: var(--accent-green);
-        }
-
-        .btn-success:hover {
-            background-color: #059669;
-        }
-
-        .btn:disabled {
-            background-color: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .file-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .file-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-            text-transform: uppercase;
-        }
-
-        .badge-html { background-color: #e34f26; }
-        .badge-css { background-color: #1572b6; }
-        .badge-js { background-color: #f7df1e; color: #000; }
-
-        .file-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .file-name {
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .file-meta {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .file-savings {
-            color: var(--accent-green);
-            font-weight: 600;
-        }
-
-        .file-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            background: var(--card-bg);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbcbcb; border-radius: 4px; }
     </style>
 </head>
-<body>
-
-<div class="container">
-    <header>
-        <h1>纯净发布包生成器</h1>
-        <p>无损去除 HTML / CSS / JS 中的所有注释与多余空白 | 浏览器本地处理，安全高效</p>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col font-sans">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 shadow-sm flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">🛡️</span>
+            <div>
+                <h1 class="text-lg font-bold text-gray-900">全语言代码安全清洗工具 (零压缩·全格式)</h1>
+                <p class="text-xs text-gray-500">严格保留所有换行与缩进排版，支持 HTML/Vue/JS/TS/CSS/Python/C++/Java/SQL/YAML 等广泛格式</p>
+            </div>
+        </div>
+        <div class="text-xs text-green-700 bg-green-100 px-2.5 py-1 rounded-full font-medium">全语言通用版 V4.0</div>
     </header>
 
-    <!-- 拖拽上传区 -->
-    <div class="drop-zone" id="drop-zone">
-        <span class="drop-zone-icon">📁</span>
-        <div class="drop-zone-text">点击选择文件，或直接将文件拖拽至此处</div>
-        <div class="drop-zone-hint">支持批量上传 .html, .css, .js 文件</div>
-        <input type="file" id="file-input" multiple accept=".html,.css,.js">
-    </div>
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Left: Input & Drop Zone -->
+        <div id="dropZone" class="flex flex-col bg-white rounded-xl border-2 border-dashed border-gray-300 shadow-sm overflow-hidden transition-all duration-200">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm font-semibold text-gray-700">📄 原始代码 / 拖入文件</span>
+                    <span id="fileNameBadge" class="hidden text-[10px] bg-red-100 text-red-800 px-2 py-0.5 rounded font-mono"></span>
+                </div>
+                <div class="space-x-2">
+                    <input type="file" id="fileInput" class="hidden" accept=".html,.htm,.vue,.js,.ts,.jsx,.tsx,.css,.less,.scss,.sass,.java,.c,.cpp,.cs,.go,.php,.swift,.kt,.dart,.py,.sh,.yaml,.yml,.toml,.r,.sql,.xml,.svg,.txt">
+                    <button onclick="document.getElementById('fileInput').click()" class="text-xs text-blue-600 hover:underline">📂 选择本地文件</button>
+                    <button onclick="clearInput()" class="text-xs text-red-600 hover:underline">清空</button>
+                </div>
+            </div>
+            
+            <div class="relative flex-1 flex flex-col">
+                <textarea id="rawInput" placeholder="直接在此粘贴代码，或者把文件拖放到这里..." class="flex-1 w-full p-4 font-mono text-xs focus:outline-none resize-none border-none leading-relaxed"></textarea>
 
-    <!-- 处理选项 -->
-    <div class="options-bar">
-        <span class="options-title">清理选项：</span>
-        <label class="checkbox-label">
-            <input type="checkbox" id="opt-comments" checked> 移除所有注释 (//, /* */, <!-- -->)
-        </label>
-        <label class="checkbox-label">
-            <input type="checkbox" id="opt-space" checked> 压缩多余空白与空行
-        </label>
-        
-        <!-- 新增标识后缀输入栏 -->
-        <div class="suffix-input-group">
-            <label for="opt-suffix">导出标识后缀：</label>
-            <input type="text" id="opt-suffix" value=".clean" placeholder="如 .clean 或 -min">
+                <!-- Overlay prompt when dragging -->
+                <div id="dragOverlay" class="absolute inset-0 bg-blue-50/90 border-2 border-dashed border-blue-500 rounded-b-xl flex flex-col items-center justify-center space-y-2 pointer-events-none opacity-0 transition-opacity duration-200">
+                    <span class="text-3xl">📥</span>
+                    <span class="text-sm font-bold text-blue-700">松开鼠标即可导入文件</span>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- 操作与统计 -->
-    <div class="action-bar">
-        <div class="stats" id="stats-text">等待导入文件...</div>
-        <button class="btn btn-success" id="download-all-btn" disabled>
-            📦 打包导出全部纯净文件 (.zip)
+        <!-- Right: Output -->
+        <div class="flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <span class="text-sm font-semibold text-gray-700">✨ 清洗后的代码 (格式与排版原样保留)</span>
+                <div class="space-x-2">
+                    <button onclick="copyOutput()" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs transition">复制代码</button>
+                    <button onclick="downloadOutput()" class="px-3 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded text-xs transition font-medium">📥 下载清洗后的文件</button>
+                </div>
+            </div>
+            <textarea id="cleanOutput" readonly placeholder="清洗后的纯净代码将显示在这里..." class="flex-1 w-full p-4 font-mono text-xs focus:outline-none resize-none border-none bg-gray-50 leading-relaxed"></textarea>
+        </div>
+    </main>
+
+    <!-- Control Bar -->
+    <div class="bg-white border-t border-gray-200 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center space-x-6 text-xs text-gray-600 flex-wrap gap-y-2">
+            <label class="flex items-center space-x-2 cursor-pointer" title="如需后续自己手工注入水印，请勿勾选此项">
+                <input type="checkbox" id="optWatermark" class="rounded text-blue-600 focus:ring-blue-500">
+                <span>清除零宽隐形水印字符 (\u200B/\u200C/\uFEFF)</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer">
+                <input type="checkbox" id="optComments" checked class="rounded text-blue-600 focus:ring-blue-500">
+                <span>安全擦除代码注释 (自动匹配文件类型，严格保留换行)</span>
+            </label>
+        </div>
+        <button onclick="processClean()" class="px-6 py-2 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow transition text-sm">
+            🚀 开始安全清洗
         </button>
     </div>
 
-    <!-- 文件列表 -->
-    <div class="file-list" id="file-list">
-        <div class="empty-state">尚无待处理的文件</div>
-    </div>
+    <!-- Processing Logic -->
+    <script>
+        let loadedFileName = 'cleaned_code.txt';
+        let fileExt = 'txt';
 
-    <footer>
-        🛡️ 提示：所有操作均在你的浏览器本地通过 JavaScript 完成，源文件绝不会被修改，数据不会上传至任何服务器。
-    </footer>
-</div>
+        const dropZone = document.getElementById('dropZone');
+        const dragOverlay = document.getElementById('dragOverlay');
+        const rawInput = document.getElementById('rawInput');
+        const fileInput = document.getElementById('fileInput');
 
-<!-- JSZip 库用于打包下载 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault(); e.stopPropagation();
+                dragOverlay.classList.remove('opacity-0');
+            }, false);
+        });
 
-<script>
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const fileListEl = document.getElementById('file-list');
-    const statsText = document.getElementById('stats-text');
-    const downloadAllBtn = document.getElementById('download-all-btn');
-    const suffixInput = document.getElementById('opt-suffix');
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault(); e.stopPropagation();
+                dragOverlay.classList.add('opacity-0');
+            }, false);
+        });
 
-    let processedFiles = [];
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0]);
+        });
 
-    // 拖拽与点击事件触发
-    dropZone.addEventListener('click', (e) => {
-        fileInput.click();
-    });
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.add('dragover');
-        }, false);
-    });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            dropZone.classList.remove('dragover');
-        }, false);
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
-
-    // 监听标识后缀改变，实时更新界面中的文件名提示
-    suffixInput.addEventListener('input', () => {
-        renderFileList();
-    });
-
-    // 处理导入的文件
-    function handleFiles(files) {
-        const validExtensions = ['html', 'css', 'js'];
-        const fileArray = Array.from(files);
-
-        fileArray.forEach(file => {
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (!validExtensions.includes(ext)) {
-                return;
-            }
+        function handleFile(file) {
+            const nameParts = file.name.split('.');
+            fileExt = nameParts.length > 1 ? nameParts.pop().toLowerCase() : 'txt';
+            const baseName = nameParts.join('.');
+            
+            loadedFileName = `${baseName}.clean.${fileExt}`;
+            document.getElementById('fileNameBadge').innerText = file.name;
+            document.getElementById('fileNameBadge').classList.remove('hidden');
 
             const reader = new FileReader();
-            reader.onload = (e) => {
-                const originalCode = e.target.result;
-                const cleanedCode = processCode(originalCode, ext);
-                
-                const fileObj = {
-                    name: file.name,
-                    ext: ext,
-                    originalSize: file.size,
-                    cleanedSize: new Blob([cleanedCode]).size,
-                    cleanedContent: cleanedCode
-                };
-
-                const existingIdx = processedFiles.findIndex(f => f.name === file.name);
-                if (existingIdx >= 0) {
-                    processedFiles[existingIdx] = fileObj;
-                } else {
-                    processedFiles.push(fileObj);
-                }
-
-                renderFileList();
+            reader.onload = function(e) {
+                rawInput.value = e.target.result;
+                processClean();
             };
             reader.readAsText(file, 'UTF-8');
-        });
-    }
-
-    function processCode(code, type) {
-    const removeComments = document.getElementById('opt-comments').checked;
-    const removeSpace = document.getElementById('opt-space').checked;
-
-    let result = code;
-
-    // --- 1. CSS 清理逻辑 ---
-    function cleanCSS(cssText) {
-        let clean = cssText;
-        if (removeComments) {
-            // 保护字符串，只删 /* ... */ 注释
-            clean = clean.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')|(\/\*[\s\S]*?\*\/)/g, (match, group1) => {
-                return group1 ? group1 : '';
-            });
         }
-        if (removeSpace) {
-            clean = clean.replace(/\s+/g, ' ')
-                         .replace(/\s*([{}:;,])\s*/g, '$1')
-                         .trim();
-        }
-        return clean;
-    }
 
-    // --- 2. JS 清理逻辑（安全版） ---
-    function cleanJS(jsText) {
-        let clean = jsText;
-        if (removeComments) {
-            // 支持 ES6+ 语法标志，精确剥离多行与单行注释
-            const jsCommentRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimsuyd]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g;
-            clean = clean.replace(jsCommentRegex, (match, stringOrRegex, p2, p3, p4, p5, comment) => {
-                // 如果匹配到的是字符串或正则，原样保留；如果是注释，替换为一个换行/空格（防止破坏自动分号补全）
-                if (stringOrRegex) return stringOrRegex;
-                // 如果是单行注释 //，保留末尾换行，防止上下两行代码挤到一起导致少了 ';'
-                if (comment && comment.startsWith('//')) return '\n';
+        // 1. C 风格注释擦除 (适用于 JS, TS, JSX, TSX, CSS, Java, C++, Go, PHP 等)
+        function cleanCStyle(code) {
+            const tokenRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimusuyd]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g;
+            return code.replace(tokenRegex, function(match, literal, g2, g3, g4, g5, comment) {
+                if (literal) return literal;
+                if (comment && comment.startsWith('//')) return '';
+                if (comment && comment.startsWith('/*')) {
+                    const newlineCount = (comment.match(/\n/g) || []).length;
+                    return '\n'.repeat(newlineCount);
+                }
                 return '';
             });
         }
-        if (removeSpace) {
-            // 安全压缩：只去除每行首尾空白，过滤掉纯空行，但保留换行符！
-            // 严格保证没有分号的代码行不会因为强制压成一行而报 ';' expected 错误
-            clean = clean.split(/\r?\n/)
-                         .map(line => line.trim())
-                         .filter(line => line.length > 0)
-                         .join('\n');
-        }
-        return clean;
-    }
 
-    // --- 3. 根据类型执行处理 ---
-    if (type === 'css') {
-        result = cleanCSS(result);
-    } else if (type === 'js') {
-        result = cleanJS(result);
-    } else if (type === 'html') {
-        if (removeComments) {
-            // 清理 <style> 里的 CSS 注释
-            result = result.replace(/(<style[\s\S]*?>)([\s\S]*?)(<\/style>)/gi, (match, openTag, content, closeTag) => {
-                return openTag + cleanCSS(content) + closeTag;
+        // 2. 井号 (#) 注释擦除 (适用于 Python, Shell, YAML, TOML, R)
+        function cleanHashStyle(code) {
+            const tokenRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`)|(#[^\r\n]*)/g;
+            return code.replace(tokenRegex, function(match, literal, g2, g3, g4, comment) {
+                if (literal) return literal;
+                if (comment) return '';
+                return '';
             });
-            // 清理 <script> 里的 JS 注释
-            result = result.replace(/(<script[\s\S]*?>)([\s\S]*?)(<\/script>)/gi, (match, openTag, content, closeTag) => {
-                if (openTag.includes('type=') && !openTag.includes('javascript') && !openTag.includes('module')) {
+        }
+
+        // 3. SQL 注释擦除 (-- 与 /* */)
+        function cleanSqlStyle(code) {
+            const tokenRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*')|(\/\*[\s\S]*?\*\/|--[^\r\n]*)/g;
+            return code.replace(tokenRegex, function(match, literal, g2, g3, comment) {
+                if (literal) return literal;
+                if (comment && comment.startsWith('--')) return '';
+                if (comment && comment.startsWith('/*')) {
+                    const newlineCount = (comment.match(/\n/g) || []).length;
+                    return '\n'.repeat(newlineCount);
+                }
+                return '';
+            });
+        }
+
+        // 4. HTML / XML 注释擦除 (<!-- -->)
+        function cleanHtmlStyle(code) {
+            return code.replace(/<!--(?!\[if)[\s\S]*?-->/g, function(match) {
+                const newlineCount = (match.match(/\n/g) || []).length;
+                return '\n'.repeat(newlineCount);
+            });
+        }
+
+        // 5. 混合网页组件清洗 (HTML, Vue)
+        function cleanMarkupComponent(code) {
+            // 擦除 HTML 注释
+            let cleaned = cleanHtmlStyle(code);
+
+            // 擦除 <style> 中的 CSS 注释
+            cleaned = cleaned.replace(/(<style[\s\S]*?>)([\s\S]*?)(<\/style>)/gi, function(match, openTag, content, closeTag) {
+                return openTag + cleanCStyle(content) + closeTag;
+            });
+
+            // 擦除 <script> 中的 JS/TS 注释
+            cleaned = cleaned.replace(/(<script[\s\S]*?>)([\s\S]*?)(<\/script>)/gi, function(match, openTag, content, closeTag) {
+                if (openTag.includes('type=') && !/javascript|module|text\/babel|ts|typescript/i.test(openTag)) {
                     return match;
                 }
-                return openTag + cleanJS(content) + closeTag;
+                return openTag + cleanCStyle(content) + closeTag;
             });
-            // 清理 HTML 注释 <!-- ... -->
-            result = result.replace(/<!--[\s\S]*?-->/g, '');
+
+            return cleaned;
         }
 
-        if (removeSpace) {
-            // HTML 压缩：只安全压缩标签间距，不破坏内联 script
-            result = result.replace(/>\s+</g, '><').replace(/^\s*[\r\n]/gm, '');
+        function processClean() {
+            let code = rawInput.value;
+            if (!code) {
+                alert('请先拖入文件或粘贴代码！');
+                return;
+            }
+
+            // 1. 清除零宽隐形水印 (默认未勾选，保护 Unicode 水印；勾选后仅删 \u200B\u200C\uFEFF，严格保留 \u200D Emoji)
+            if (document.getElementById('optWatermark').checked) {
+                code = code.replace(/[\u200B\u200C\uFEFF]/g, '');
+            }
+
+            // 2. 根据扩展名智能分配清洗策略
+            if (document.getElementById('optComments').checked) {
+                switch (fileExt) {
+                    case 'html': case 'htm': case 'vue':
+                        code = cleanMarkupComponent(code);
+                        break;
+                    case 'xml': case 'svg':
+                        code = cleanHtmlStyle(code);
+                        break;
+                    case 'py': case 'sh': case 'yaml': case 'yml': case 'toml': case 'r':
+                        code = cleanHashStyle(code);
+                        break;
+                    case 'sql':
+                        code = cleanSqlStyle(code);
+                        break;
+                    default:
+                        // 包含 js, ts, jsx, tsx, css, less, scss, sass, java, c, cpp, cs, go, php, swift, kt, dart 等
+                        code = cleanCStyle(code);
+                        break;
+                }
+            }
+
+            document.getElementById('cleanOutput').value = code;
         }
-    }
 
-    return result;
-}
-
-    // 获取拼接后缀后的导出文件名
-    function getExportName(originalName) {
-        const suffix = suffixInput.value.trim();
-        if (!suffix) return originalName;
-
-        const lastDotIndex = originalName.lastIndexOf('.');
-        if (lastDotIndex === -1) return originalName + suffix;
-
-        const baseName = originalName.substring(0, lastDotIndex);
-        const ext = originalName.substring(lastDotIndex);
-        return `${baseName}${suffix}${ext}`;
-    }
-
-    // 渲染页面与信息列表
-    function renderFileList() {
-        if (processedFiles.length === 0) {
-            fileListEl.innerHTML = '<div class="empty-state">尚无待处理的文件</div>';
-            downloadAllBtn.disabled = true;
-            statsText.innerText = '等待导入文件...';
-            return;
+        function clearInput() {
+            rawInput.value = '';
+            document.getElementById('cleanOutput').value = '';
+            document.getElementById('fileNameBadge').classList.add('hidden');
+            fileInput.value = '';
+            fileExt = 'txt';
         }
 
-        fileListEl.innerHTML = '';
-        let totalOriginal = 0;
-        let totalCleaned = 0;
+        function copyOutput() {
+            const output = document.getElementById('cleanOutput');
+            if (!output.value) return;
+            output.select();
+            document.execCommand('copy');
+            alert('已复制清洗后的代码到剪贴板！');
+        }
 
-        processedFiles.forEach((f, index) => {
-            totalOriginal += f.originalSize;
-            totalCleaned += f.cleanedSize;
-
-            const savedBytes = f.originalSize - f.cleanedSize;
-            const savedPercent = f.originalSize > 0 ? ((savedBytes / f.originalSize) * 100).toFixed(1) : 0;
-            const exportName = getExportName(f.name);
-
-            const card = document.createElement('div');
-            card.className = 'file-card';
-            card.innerHTML = `
-                <div class="file-info">
-                    <span class="badge badge-${f.ext}">${f.ext}</span>
-                    <div class="file-details">
-                        <div class="file-name">${f.name} ➔ <span style="color: var(--primary-color);">${exportName}</span></div>
-                        <div class="file-meta">
-                            原始: ${formatBytes(f.originalSize)} ➔ 纯净: ${formatBytes(f.cleanedSize)} 
-                            <span class="file-savings">(节省 ${savedPercent}%)</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="file-actions">
-                    <button class="btn btn-sm" onclick="downloadSingle(${index})">💾 导出新文件</button>
-                </div>
-            `;
-            fileListEl.appendChild(card);
-        });
-
-        const totalSavedPercent = totalOriginal > 0 ? (((totalOriginal - totalCleaned) / totalOriginal) * 100).toFixed(1) : 0;
-        statsText.innerText = `已处理 ${processedFiles.length} 个文件 | 总体积: ${formatBytes(totalOriginal)} ➔ ${formatBytes(totalCleaned)} (总体节省 ${totalSavedPercent}%)`;
-        downloadAllBtn.disabled = false;
-    }
-
-    // 导出单个文件
-    window.downloadSingle = function(index) {
-        const file = processedFiles[index];
-        const exportName = getExportName(file.name);
-        const blob = new Blob([file.cleanedContent], { type: 'text/plain;charset=utf-8' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = exportName;
-        a.click();
-        URL.revokeObjectURL(a.href);
-    };
-
-    // 导出全部 ZIP
-    downloadAllBtn.addEventListener('click', () => {
-        if (processedFiles.length === 0) return;
-
-        const zip = new JSZip();
-        processedFiles.forEach(f => {
-            const exportName = getExportName(f.name);
-            zip.file(exportName, f.cleanedContent);
-        });
-
-        zip.generateAsync({ type: 'blob' }).then(content => {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = 'publish_clean_dist.zip';
-            a.click();
-            URL.revokeObjectURL(a.href);
-        });
-    });
-
-    function formatBytes(bytes, decimals = 2) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-    }
-</script>
-
+        function downloadOutput() {
+            const val = document.getElementById('cleanOutput').value;
+            if (!val) {
+                alert('暂无内容可供下载');
+                return;
+            }
+            const blob = new Blob([val], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = loadedFileName || 'cleaned_code.txt';
+            link.click();
+        }
+    </script>
 </body>
 </html>
