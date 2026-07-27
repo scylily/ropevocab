@@ -154,7 +154,7 @@
                   <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded">阶段一</span>
                   <span id="badge-stage-0-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
                 </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟢 初级阶段：地面控制与感知</h4>
+                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟢 初级阶段：地面控制与感知基础</h4>
                 <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。掌握绳索特性、结扣、单/双柱缚、下肢/躯干绑定及 2TK 结构。</p>
               </div>
               <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-emerald-500">
@@ -169,7 +169,7 @@
                   <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded">阶段二</span>
                   <span id="badge-stage-1-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
                 </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟡 提高阶段：躯干限制与半吊</h4>
+                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟡 提高阶段：躯干限制与半吊过渡</h4>
                 <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。进阶 3TK 奈加流分流、腰胯重心固定、铁炮/提篮及呼吸控制。</p>
               </div>
               <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-amber-500">
@@ -184,7 +184,7 @@
                   <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded">阶段三</span>
                   <span id="badge-stage-2-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
                 </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🔴 熟练阶段：完全悬吊控制</h4>
+                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🔴 熟练阶段：完全悬吊与高空控制</h4>
                 <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 10 课时。竹竿吊点锁定、面朝下平吊、倒吊/侧吊、急救与毕业演练。</p>
               </div>
               <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-red-500">
@@ -384,12 +384,11 @@
 
         <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
           <h3 class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-base flex items-center gap-1.5">
-            <span>🛡️</span> 绳缚安全与解剖红线共识
+            <span>🛡️</span> <span id="safety-modal-title">绳缚安全与解剖红线共识</span>
           </h3>
           <button onclick="closeSafetyModal()" class="text-stone-400 hover:text-stone-600">✕</button>
         </div>
 
-        <!-- 替换此区域：原有的静态文字段落，替换为 id="safety-modal-body" 容器 -->
         <div id="safety-modal-body" class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 text-[11px] sm:text-xs leading-relaxed text-stone-700 dark:text-stone-300">
           <p class="text-stone-400">正在加载绳缚安全共识条款...</p>
         </div>
@@ -410,7 +409,7 @@
     <!-- 背景遮罩 -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden" onclick="closeAllDrawers()"></div>
 
-    <!-- ==================== JS 核心逻辑 ==================== -->
+    <!-- ==================== JS 核心逻辑 (已被 Supabase 防盗安全引擎强力驱动) ==================== -->
     <script>
       // 🔗 Supabase 配置
       const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
@@ -578,10 +577,10 @@
           if (tocList) {
             const li = document.createElement('li');
             li.innerHTML = `
-        <a href="#lesson-${item.id}" onclick="scrollToLesson('${item.id}')" class="block truncate py-1 px-1.5 rounded hover:bg-stone-200 dark:hover:bg-zinc-800 text-stone-600 dark:text-stone-400">
-          ${isChecked ? '✅ ' : ''}${item.title}
-        </a>
-      `;
+              <a href="#lesson-${item.id}" onclick="scrollToLesson('${item.id}')" class="block truncate py-1 px-1.5 rounded hover:bg-stone-200 dark:hover:bg-zinc-800 text-stone-600 dark:text-stone-400">
+                ${isChecked ? '✅ ' : ''}${item.title}
+              </a>
+            `;
             tocList.appendChild(li);
           }
 
@@ -593,18 +592,18 @@
           if (item.images && Array.isArray(item.images) && item.images.length > 0) {
             if (item.images.length === 1) {
               mediaHtml += `
-          <div class="mt-2.5 flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 sm:p-3 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark shadow-inner">
-            <img src="${item.images[0]}" class="rounded-lg object-contain max-w-full sm:max-w-md md:max-w-lg max-h-[420px] sm:max-h-[480px] h-auto shadow-sm" alt="教学细节图" />
-          </div>
-        `;
+                <div class="mt-2.5 flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 sm:p-3 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark shadow-inner">
+                  <img src="${item.images[0]}" class="rounded-lg object-contain max-w-full sm:max-w-md md:max-w-lg max-h-[420px] sm:max-h-[480px] h-auto shadow-sm" alt="教学细节图" />
+                </div>
+              `;
             } else {
               mediaHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5">`;
               item.images.forEach(imgUrl => {
                 mediaHtml += `
-            <div class="flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">
-              <img src="${imgUrl}" class="rounded-lg object-contain w-full max-h-[350px] h-auto shadow-sm" alt="教学细节图" />
-            </div>
-          `;
+                  <div class="flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">
+                    <img src="${imgUrl}" class="rounded-lg object-contain w-full max-h-[350px] h-auto shadow-sm" alt="教学细节图" />
+                  </div>
+                `;
               });
               mediaHtml += `</div>`;
             }
@@ -627,57 +626,57 @@
             }
 
             mediaHtml += `
-        <div class="mt-2.5 aspect-video rounded-xl overflow-hidden border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
-          <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-        </div>
-      `;
+              <div class="mt-2.5 aspect-video rounded-xl overflow-hidden border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
+                <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            `;
           }
 
           let contentHtml = '';
           if (isUnlocked) {
             contentHtml = `
-        <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')">
-          <span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm flex items-center gap-1.5">
-            ${isChecked ? '<span class="text-emerald-500">✅</span>' : ''}
-            ${item.title}
-          </span>
-          <span class="text-[10px] sm:text-xs text-stone-400 font-mono">▼</span>
-        </div>
-        <div id="body-${item.id}" class="card-body border-t border-shibariBorder-light dark:border-shibariBorder-dark p-3 sm:p-4 space-y-2.5 sm:space-y-3.5 hidden">
-          <div>
-            <span class="text-[10px] sm:text-[11px] font-semibold tracking-wider text-jute-750 uppercase">【学程重点】</span>
-            <p class="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mt-1">${item.focus || ''}</p>
-          </div>
-          ${mediaHtml}
-          ${userLevel === 'master' ? `
-            <div class="p-2.5 bg-amber-500/5 border-l-2 border-jute-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
-              <span class="font-bold text-jute-750 block">📌 学程目标（师资版）：</span>
-              <p class="text-stone-600 dark:text-stone-400 text-xs sm:text-sm">${item.goal || ''}</p>
-            </div>
-            <div class="p-2.5 bg-red-500/5 border-l-2 border-red-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
-              <span class="font-bold text-red-600 block">⚠️ 安全防线（师资版）：</span>
-              <p class="text-stone-600 dark:text-stone-400">${item.safety || ''}</p>
-            </div>
-          ` : ''}
+              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')">
+                <span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm flex items-center gap-1.5">
+                  ${isChecked ? '<span class="text-emerald-500">✅</span>' : ''}
+                  ${item.title}
+                </span>
+                <span class="text-[10px] sm:text-xs text-stone-400 font-mono">▼</span>
+              </div>
+              <div id="body-${item.id}" class="card-body border-t border-shibariBorder-light dark:border-shibariBorder-dark p-3 sm:p-4 space-y-2.5 sm:space-y-3.5 hidden">
+                <div>
+                  <span class="text-[10px] sm:text-[11px] font-semibold tracking-wider text-jute-750 uppercase">【学程重点】</span>
+                  <p class="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mt-1">${item.focus || ''}</p>
+                </div>
+                ${mediaHtml}
+                ${userLevel === 'master' ? `
+                  <div class="p-2.5 bg-amber-500/5 border-l-2 border-jute-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
+                    <span class="font-bold text-jute-750 block">📌 学程目标（师资版）：</span>
+                    <p class="text-stone-600 dark:text-stone-400 text-xs sm:text-sm">${item.goal || ''}</p>
+                  </div>
+                  <div class="p-2.5 bg-red-500/5 border-l-2 border-red-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
+                    <span class="font-bold text-red-600 block">⚠️ 安全防线（师资版）：</span>
+                    <p class="text-stone-600 dark:text-stone-400">${item.safety || ''}</p>
+                  </div>
+                ` : ''}
 
-          <div class="pt-2 flex justify-end border-t border-shibariBorder-light dark:border-shibariBorder-dark">
-            <button onclick="toggleCheckIn('${item.id}')" class="px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-bold transition-colors ${isChecked ? 'bg-emerald-600 text-white' : 'bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300'}">
-              ${isChecked ? '✅ 已学完 (点击取消打卡)' : '⚪ 标记此课时为已学'}
-            </button>
-          </div>
-        </div>
-      `;
+                <div class="pt-2 flex justify-end border-t border-shibariBorder-light dark:border-shibariBorder-dark">
+                  <button onclick="toggleCheckIn('${item.id}')" class="px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-bold transition-colors ${isChecked ? 'bg-emerald-600 text-white' : 'bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300'}">
+                    ${isChecked ? '✅ 已学完 (点击取消打卡)' : '⚪ 标记此课时为已学'}
+                  </button>
+                </div>
+              </div>
+            `;
           } else {
             contentHtml = `
-        <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20">
-          <span class="font-bold text-stone-500 dark:text-stone-400 text-[11px] sm:text-sm truncate">${item.title}</span>
-          <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap ml-2">🔒 需解锁</span>
-        </div>
-        <div class="p-3 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex items-center justify-between gap-2">
-          <p class="text-[11px] text-stone-500">登录对应级别的学员账号解锁阅读。</p>
-          <button onclick="openAuthModal('login')" class="px-2 py-0.5 bg-jute-750 text-white rounded text-[11px] font-bold whitespace-nowrap">登录解锁</button>
-        </div>
-      `;
+              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20">
+                <span class="font-bold text-stone-500 dark:text-stone-400 text-[11px] sm:text-sm truncate">${item.title}</span>
+                <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap ml-2">🔒 需解锁</span>
+              </div>
+              <div class="p-3 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex items-center justify-between gap-2">
+                <p class="text-[11px] text-stone-500">登录对应级别的学员账号解锁阅读。</p>
+                <button onclick="openAuthModal('login')" class="px-2 py-0.5 bg-jute-750 text-white rounded text-[11px] font-bold whitespace-nowrap">登录解锁</button>
+              </div>
+            `;
           }
 
           card.innerHTML = contentHtml;
@@ -714,7 +713,11 @@
         const isLoggedIn = !!currentUser;
 
         if (isLoggedIn) {
-          drawerEmail.textContent = currentUser.email;
+          if (userLevel === 'master' || (currentUser.email && currentUser.email.includes('master_teacher'))) {
+            drawerEmail.textContent = '👑 教师/管理员';
+          } else {
+            drawerEmail.textContent = currentUser.email;
+          }
           if (homeLoginBtn) homeLoginBtn.classList.add('hidden');
         } else {
           drawerEmail.textContent = '未登录 (游客预览模式)';
@@ -756,7 +759,7 @@
         updateProgressUI();
       }
 
-      // 👑 教师通道
+      // 👑 教师极简通道（口令直达登录，自动无感授权）
       async function loginAsTeacherByPasscode() {
         const code = document.getElementById('input-teacher-passcode').value.trim();
         if (!code) {
@@ -765,7 +768,6 @@
         }
 
         try {
-          // 1. 调用后端安全验证口令
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('teacher_passcode_login', { passcode: code });
 
           if (rpcErr || !rpcRes.success) {
@@ -773,7 +775,6 @@
             return;
           }
 
-          // 2. 拿着后端返回的安全授权，自动无感登录导师 Session
           const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
             email: rpcRes.email,
             password: rpcRes.password
@@ -788,7 +789,6 @@
           document.getElementById('input-teacher-passcode').value = '';
           closeProfileDrawer();
 
-          // 3. 实时拉取导师全量打卡与全盘课程（含师资防线与目标）
           await fetchUserProgress(currentUser.id);
           await fetchCurriculumFromSupabase();
           openSafetyModal();
@@ -920,14 +920,12 @@
               return;
             }
 
-            // 1. 注册新用户账号
             const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
             if (authErr) throw authErr;
             if (!authData || !authData.user) throw new Error("注册失败，未获取到用户");
 
             currentUser = authData.user;
 
-            // 🛡️ 2. 调用后端 RPC 安全激活邀请码
             const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
             if (rpcErr || !rpcRes.success) {
               throw new Error(rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败'));
@@ -1052,21 +1050,21 @@
 
           if (Array.isArray(safetyAgreementData.sections)) {
             sectionsHtml = safetyAgreementData.sections.map(sec => `
-        <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-          <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
-          ${sec.items.map(item => `
-            <p><strong>${item.label}</strong>：${item.text}</p>
-          `).join('')}
-        </div>
-      `).join('');
+              <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
+                <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
+                ${sec.items.map(item => `
+                  <p><strong>${item.label}</strong>：${item.text}</p>
+                `).join('')}
+              </div>
+            `).join('');
           }
 
           bodyEl.innerHTML = `
-      <p>${safetyAgreementData.intro}</p>
-      <div class="space-y-3 pt-1">
-        ${sectionsHtml}
-      </div>
-    `;
+            <p>${safetyAgreementData.intro}</p>
+            <div class="space-y-3 pt-1">
+              ${sectionsHtml}
+            </div>
+          `;
         }
       }
     </script>
