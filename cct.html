@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端代码极速瘦身与纯净发布工具</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent-green: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .drop-zone {
+            background-color: var(--card-bg);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .drop-zone-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .drop-zone-hint {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .options-bar {
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .options-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .suffix-input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-left: auto;
+        }
+
+        .suffix-input-group input[type="text"] {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 90px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .suffix-input-group input[type="text"]:focus {
+            border-color: var(--primary-color);
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-success {
+            background-color: var(--accent-green);
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .file-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .badge-html { background-color: #e34f26; }
+        .badge-css { background-color: #1572b6; }
+        .badge-js { background-color: #f7df1e; color: #000; }
+
+        .file-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .file-savings {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>纯净发布包生成器</h1>
+        <p>无损去除 HTML / CSS / JS 中的所有注释与多余空白 | 浏览器本地处理，安全高效</p>
+    </header>
+
+    <!-- 拖拽上传区 -->
+    <div class="drop-zone" id="drop-zone">
+        <span class="drop-zone-icon">📁</span>
+        <div class="drop-zone-text">点击选择文件，或直接将文件拖拽至此处</div>
+        <div class="drop-zone-hint">支持批量上传 .html, .css, .js 文件</div>
+        <input type="file" id="file-input" multiple accept=".html,.css,.js">
+    </div>
+
+    <!-- 处理选项 -->
+    <div class="options-bar">
+        <span class="options-title">清理选项：</span>
+        <label class="checkbox-label">
+            <input type="checkbox" id="opt-comments" checked> 移除所有注释 (//, /* */, <!-- -->)
+        </label>
+        <label class="checkbox-label">
+            <input type="checkbox" id="opt-space" checked> 压缩多余空白与空行
+        </label>
+        
+        <!-- 新增标识后缀输入栏 -->
+        <div class="suffix-input-group">
+            <label for="opt-suffix">导出标识后缀：</label>
+            <input type="text" id="opt-suffix" value=".clean" placeholder="如 .clean 或 -min">
+        </div>
+    </div>
+
+    <!-- 操作与统计 -->
+    <div class="action-bar">
+        <div class="stats" id="stats-text">等待导入文件...</div>
+        <button class="btn btn-success" id="download-all-btn" disabled>
+            📦 打包导出全部纯净文件 (.zip)
+        </button>
+    </div>
+
+    <!-- 文件列表 -->
+    <div class="file-list" id="file-list">
+        <div class="empty-state">尚无待处理的文件</div>
+    </div>
+
+    <footer>
+        🛡️ 提示：所有操作均在你的浏览器本地通过 JavaScript 完成，源文件绝不会被修改，数据不会上传至任何服务器。
+    </footer>
+</div>
+
+<!-- JSZip 库用于打包下载 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileListEl = document.getElementById('file-list');
+    const statsText = document.getElementById('stats-text');
+    const downloadAllBtn = document.getElementById('download-all-btn');
+    const suffixInput = document.getElementById('opt-suffix');
+
+    let processedFiles = [];
+
+    // 拖拽与点击事件触发
+    dropZone.addEventListener('click', (e) => {
+        fileInput.click();
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('dragover');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('dragover');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
+
+    // 监听标识后缀改变，实时更新界面中的文件名提示
+    suffixInput.addEventListener('input', () => {
+        renderFileList();
+    });
+
+    // 处理导入的文件
+    function handleFiles(files) {
+        const validExtensions = ['html', 'css', 'js'];
+        const fileArray = Array.from(files);
+
+        fileArray.forEach(file => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(ext)) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const originalCode = e.target.result;
+                const cleanedCode = processCode(originalCode, ext);
+                
+                const fileObj = {
+                    name: file.name,
+                    ext: ext,
+                    originalSize: file.size,
+                    cleanedSize: new Blob([cleanedCode]).size,
+                    cleanedContent: cleanedCode
+                };
+
+                const existingIdx = processedFiles.findIndex(f => f.name === file.name);
+                if (existingIdx >= 0) {
+                    processedFiles[existingIdx] = fileObj;
+                } else {
+                    processedFiles.push(fileObj);
+                }
+
+                renderFileList();
+            };
+            reader.readAsText(file, 'UTF-8');
+        });
+    }
+
+    // 正则逻辑
+    function processCode(code, type) {
+        const removeComments = document.getElementById('opt-comments').checked;
+        const removeSpace = document.getElementById('opt-space').checked;
+
+        let result = code;
+
+        if (type === 'html') {
+            if (removeComments) {
+                result = result.replace(/<!--[\s\S]*?-->/g, '');
+            }
+            if (removeSpace) {
+                result = result.replace(/>\s+</g, '><').replace(/^\s*[\r\n]/gm, '');
+            }
+        } else if (type === 'css') {
+            if (removeComments) {
+                result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+            }
+            if (removeSpace) {
+                result = result.replace(/\s+/g, ' ')
+                              .replace(/\s*([{}:;,])\s*/g, '$1')
+                              .trim();
+            }
+        } else if (type === 'js') {
+            if (removeComments) {
+                result = result.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimy]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g, (match, stringOrRegex) => {
+                    return stringOrRegex ? stringOrRegex : '';
+                });
+            }
+            if (removeSpace) {
+                result = result.split(/\r?\n/)
+                              .map(line => line.trim())
+                              .filter(line => line.length > 0)
+                              .join('\n');
+            }
+        }
+
+        return result;
+    }
+
+    // 获取拼接后缀后的导出文件名
+    function getExportName(originalName) {
+        const suffix = suffixInput.value.trim();
+        if (!suffix) return originalName;
+
+        const lastDotIndex = originalName.lastIndexOf('.');
+        if (lastDotIndex === -1) return originalName + suffix;
+
+        const baseName = originalName.substring(0, lastDotIndex);
+        const ext = originalName.substring(lastDotIndex);
+        return `${baseName}${suffix}${ext}`;
+    }
+
+    // 渲染页面与信息列表
+    function renderFileList() {
+        if (processedFiles.length === 0) {
+            fileListEl.innerHTML = '<div class="empty-state">尚无待处理的文件</div>';
+            downloadAllBtn.disabled = true;
+            statsText.innerText = '等待导入文件...';
+            return;
+        }
+
+        fileListEl.innerHTML = '';
+        let totalOriginal = 0;
+        let totalCleaned = 0;
+
+        processedFiles.forEach((f, index) => {
+            totalOriginal += f.originalSize;
+            totalCleaned += f.cleanedSize;
+
+            const savedBytes = f.originalSize - f.cleanedSize;
+            const savedPercent = f.originalSize > 0 ? ((savedBytes / f.originalSize) * 100).toFixed(1) : 0;
+            const exportName = getExportName(f.name);
+
+            const card = document.createElement('div');
+            card.className = 'file-card';
+            card.innerHTML = `
+                <div class="file-info">
+                    <span class="badge badge-${f.ext}">${f.ext}</span>
+                    <div class="file-details">
+                        <div class="file-name">${f.name} ➔ <span style="color: var(--primary-color);">${exportName}</span></div>
+                        <div class="file-meta">
+                            原始: ${formatBytes(f.originalSize)} ➔ 纯净: ${formatBytes(f.cleanedSize)} 
+                            <span class="file-savings">(节省 ${savedPercent}%)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="btn btn-sm" onclick="downloadSingle(${index})">💾 导出新文件</button>
+                </div>
+            `;
+            fileListEl.appendChild(card);
+        });
+
+        const totalSavedPercent = totalOriginal > 0 ? (((totalOriginal - totalCleaned) / totalOriginal) * 100).toFixed(1) : 0;
+        statsText.innerText = `已处理 ${processedFiles.length} 个文件 | 总体积: ${formatBytes(totalOriginal)} ➔ ${formatBytes(totalCleaned)} (总体节省 ${totalSavedPercent}%)`;
+        downloadAllBtn.disabled = false;
+    }
+
+    // 导出单个文件
+    window.downloadSingle = function(index) {
+        const file = processedFiles[index];
+        const exportName = getExportName(file.name);
+        const blob = new Blob([file.cleanedContent], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = exportName;
+        a.click();
+        URL.revokeObjectURL(a.href);
+    };
+
+    // 导出全部 ZIP
+    downloadAllBtn.addEventListener('click', () => {
+        if (processedFiles.length === 0) return;
+
+        const zip = new JSZip();
+        processedFiles.forEach(f => {
+            const exportName = getExportName(f.name);
+            zip.file(exportName, f.cleanedContent);
+        });
+
+        zip.generateAsync({ type: 'blob' }).then(content => {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = 'publish_clean_dist.zip';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        });
+    });
+
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+</script>
+
+</body>
+</html>
