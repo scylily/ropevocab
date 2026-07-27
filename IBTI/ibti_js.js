@@ -185,10 +185,10 @@ const s = result.scores;
 let summaryText = `<div style="font-size:0.85rem; color:#666; text-align:center; margin-top:10px; line-height:1.8;">`;
 summaryText += `<strong>各维度权重指标参考：</strong><br>`;
 summaryText += `
-掌控感(M):${s.M.toFixed(1)} | 配合度(S):${s.S.toFixed(1)} <br>
-主导力(I):${s.I.toFixed(1)} | 响应度(R):${s.R.toFixed(1)} <br>
-认知博弈(C):${s.C.toFixed(1)} | 本能驱动(O):${s.O.toFixed(1)} <br>
-情绪边界(G):${s.G.toFixed(1)} | 探索深度(D):${s.D.toFixed(1)}
+寻求掌控(M):${s.M.toFixed(1)} | 听从安排(S):${s.S.toFixed(1)} <br>
+主导引领(I):${s.I.toFixed(1)} | 愿意顺从(R):${s.R.toFixed(1)} <br>
+理智分析/讲道理(C):${s.C.toFixed(1)} | 身体感受/看感觉(O):${s.O.toFixed(1)} <br>
+需要安全感(G):${s.G.toFixed(1)} | 喜欢寻求刺激(D):${s.D.toFixed(1)}
 `;
 summaryText += `</div>`;
 scoreSummaryElem.innerHTML = summaryText;
@@ -210,8 +210,8 @@ window.myChart = new Chart(ctx, {
 type: "radar",
 data: {
 labels: [
-"掌控感(M)", "主导力(I)", "认知博弈(C)", "探索深度(D)",
-"配合度(S)", "响应度(R)", "本能驱动(O)", "情绪边界(G)"
+"寻求掌控(M)", "主导引领(I)", "理智分析/讲道理(C)", "喜欢寻求刺激(D)",
+"听从安排(S)", "愿意顺从(R)", "身体感受/看感觉(O)", "需要安全感(G)"
 ],
 datasets: [
 {
