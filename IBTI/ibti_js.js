@@ -128,7 +128,7 @@ ${isCore ? '<span class="core-tag">核心动力</span>' : ''}
 </div>
 <div class="review-a">
 你的选择：${userAnswers[i].optText}
-<span class="score-hint">[ 倾向: ${scoreLabel} ]</span>
+<span class="score-hint">[ ${scoreLabel} ]</span>
 </div>
 </div>
 `;
@@ -187,7 +187,7 @@ summaryText += `<strong>各维度权重指标参考：</strong><br>`;
 summaryText += `
 寻求掌控(M):${s.M.toFixed(1)} | 听从安排(S):${s.S.toFixed(1)} <br>
 主导引领(I):${s.I.toFixed(1)} | 愿意顺从(R):${s.R.toFixed(1)} <br>
-理智分析/讲道理(C):${s.C.toFixed(1)} | 身体感受/看感觉(O):${s.O.toFixed(1)} <br>
+理智分析:${s.C.toFixed(1)} | 身体感受:${s.O.toFixed(1)} <br>
 需要安全感(G):${s.G.toFixed(1)} | 喜欢寻求刺激(D):${s.D.toFixed(1)}
 `;
 summaryText += `</div>`;
