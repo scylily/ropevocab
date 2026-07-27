@@ -411,9 +411,7 @@
         });
     }
 
-    // 正则逻辑
-    // 优化后的纯净处理逻辑
-function processCode(code, type) {
+    function processCode(code, type) {
     const removeComments = document.getElementById('opt-comments').checked;
     const removeSpace = document.getElementById('opt-space').checked;
 
@@ -423,7 +421,7 @@ function processCode(code, type) {
     function cleanCSS(cssText) {
         let clean = cssText;
         if (removeComments) {
-            // 匹配字符串（单双引号）与注释，保护字符串，清除注释
+            // 保护字符串，只删 /* ... */ 注释
             clean = clean.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')|(\/\*[\s\S]*?\*\/)/g, (match, group1) => {
                 return group1 ? group1 : '';
             });
@@ -436,17 +434,23 @@ function processCode(code, type) {
         return clean;
     }
 
-    // --- 2. JS 清理逻辑 ---
+    // --- 2. JS 清理逻辑（安全版） ---
     function cleanJS(jsText) {
         let clean = jsText;
         if (removeComments) {
-            // 增强版 JS 正则：支持完整的 ES6+ 正则标志 (gimsuyd) 及复杂的模板字符串
+            // 支持 ES6+ 语法标志，精确剥离多行与单行注释
             const jsCommentRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimsuyd]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g;
-            clean = clean.replace(jsCommentRegex, (match, stringOrRegex) => {
-                return stringOrRegex ? stringOrRegex : '';
+            clean = clean.replace(jsCommentRegex, (match, stringOrRegex, p2, p3, p4, p5, comment) => {
+                // 如果匹配到的是字符串或正则，原样保留；如果是注释，替换为一个换行/空格（防止破坏自动分号补全）
+                if (stringOrRegex) return stringOrRegex;
+                // 如果是单行注释 //，保留末尾换行，防止上下两行代码挤到一起导致少了 ';'
+                if (comment && comment.startsWith('//')) return '\n';
+                return '';
             });
         }
         if (removeSpace) {
+            // 安全压缩：只去除每行首尾空白，过滤掉纯空行，但保留换行符！
+            // 严格保证没有分号的代码行不会因为强制压成一行而报 ';' expected 错误
             clean = clean.split(/\r?\n/)
                          .map(line => line.trim())
                          .filter(line => line.length > 0)
@@ -461,26 +465,24 @@ function processCode(code, type) {
     } else if (type === 'js') {
         result = cleanJS(result);
     } else if (type === 'html') {
-        // 步骤 A: 如果勾选了清理注释，先清除 HTML 内联的 <style> 和 <script> 中的 CSS/JS 注释
         if (removeComments) {
-            // 处理内联 <style>
+            // 清理 <style> 里的 CSS 注释
             result = result.replace(/(<style[\s\S]*?>)([\s\S]*?)(<\/style>)/gi, (match, openTag, content, closeTag) => {
                 return openTag + cleanCSS(content) + closeTag;
             });
-            // 处理内联 <script>
+            // 清理 <script> 里的 JS 注释
             result = result.replace(/(<script[\s\S]*?>)([\s\S]*?)(<\/script>)/gi, (match, openTag, content, closeTag) => {
-                // 忽略非 JS 脚本块（如 type="template" 等）
                 if (openTag.includes('type=') && !openTag.includes('javascript') && !openTag.includes('module')) {
                     return match;
                 }
                 return openTag + cleanJS(content) + closeTag;
             });
-            // 清理 HTML 标准注释 <!-- ... -->
+            // 清理 HTML 注释 <!-- ... -->
             result = result.replace(/<!--[\s\S]*?-->/g, '');
         }
 
-        // 步骤 B: 压缩多余空白
         if (removeSpace) {
+            // HTML 压缩：只安全压缩标签间距，不破坏内联 script
             result = result.replace(/>\s+</g, '><').replace(/^\s*[\r\n]/gm, '');
         }
     }
