@@ -318,7 +318,7 @@
         <div class="space-y-2 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark">
           <button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 邀请码注册账号</button>
           <button id="drawer-btn-upgrade" onclick="openUpgradeModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-amber-600 text-white rounded font-bold">🎓 输入新邀请码升级权限</button>
-          <button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看安全红线承诺书</button>
+          <button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看绳缚安全共识书</button>
           <button id="drawer-btn-logout" onclick="logout(); closeProfileDrawer();" class="hidden w-full py-2 bg-red-800 text-white rounded font-bold">🚪 退出当前登录</button>
         </div>
       </div>
@@ -381,7 +381,7 @@
 
     <!-- 🛡️ 完整版《安全防护承诺书》弹窗 -->
     <div id="modal-safety-pledge" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
-      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
+      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
 
         <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
           <h3 class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-base flex items-center gap-1.5">
@@ -390,36 +390,9 @@
           <button onclick="closeSafetyModal()" class="text-stone-400 hover:text-stone-600">✕</button>
         </div>
 
-        <div class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 text-[11px] sm:text-xs leading-relaxed text-stone-700 dark:text-stone-300">
-          <p>
-            绳缚是一项建立在相互信任、冷静克制与严谨解剖安全基础上的感官实践。
-          <p class="font-bold text-stone-900 dark:text-stone-100 border-l-2 border-jute-750 pl-2">在进入绳缚的练习与探索前，我们希望每一位实践者都能将“身体自主权”与“解剖安全”视为一切体感的基础。以下准则旨在帮助我们在探索中清晰识别身体边界，建立严谨且负责任的绳缚习惯：
-          </p>
-          </p>
-
-          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">解剖结构与神经避让</h4>
-            <p><strong>上肢四大神经避让</strong>：理解并熟记臂丛神经、桡神经、尺神经及正中神经的解剖走向。绳缚时，避免在神经通道上集中施压或打紧死结，保持绳索张力的均衡与分散。</p>
-            <p><strong>下肢腓总神经避让</strong>：涉及下肢捆绑时，注意避开膝关节外侧下缘（迎面骨），避免腓总神经受压引发下肢麻木或损伤。</p>
-          </div>
-
-          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">气道通畅与颈部受力边界</h4>
-            <p><strong>颈部绝不承重</strong>：始终把气道通畅放在第一位。明确颈部解剖结构的脆弱性，不让颈部承担体重或承受绞杀张力。若需探索呼吸限制感，请将张力控制在胸腹部的合理范围内。</p>
-            <p><strong>吞咽与发音自检</strong>：涉及颈部周边走绳或使用口枷时，解脱后建议主动进行吞咽与发音自检，确认咽喉及肌肉无隐性不适。</p>
-          </div>
-
-          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">区体感信号辨析与及时叫停</h4>
-            <p><strong>绝不靠硬撑</strong>：保持敏锐的体感觉察，清晰区分肌肉酸胀、皮肤牵拉等正常体验，与发麻、触电感、针刺感、局部冰凉等神经压迫警报。</p>
-            <p><strong>最高叫停权</strong>：始终将同伴的体感放在首位。一旦出现坏的疼痛或神经受压信号，及时卸载绳索张力或完全解脱，不凭经验硬撑，也不诱导对方忍耐。</p>
-          </div>
-
-          <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-            <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">悬吊安全评估与应急解脱</h4>
-            <p><strong>设备与备份</strong>：进行悬吊练习前，对吊点及承重系统进行充分的拉力测试，并在关键受力点设置有效的双重备份。</p>
-            <p><strong>黄金时间剪绳解脱</strong>：将救援剪放置在随手可及的位置。遇到突发体征异常或紧急状况，以直接剪断绳索恢复安全为第一优先程序，不浪费时间解绳结。</p>
-          </div>
+        <!-- 替换此区域：原有的静态文字段落，替换为 id="safety-modal-body" 容器 -->
+        <div id="safety-modal-body" class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 text-[11px] sm:text-xs leading-relaxed text-stone-700 dark:text-stone-300">
+          <p class="text-stone-400">正在加载安全红线共识条款...</p>
         </div>
 
         <div class="p-3.5 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-2.5">
@@ -457,6 +430,7 @@
       let currentUser = null;
       let pendingPostPledgeAction = null;
       let stageExpandState = { 0: false, 1: false, 2: false };
+      let safetyAgreementData = null; // 存储从 Supabase 拉取的安全条款
 
       async function initApp() {
         await checkCurrentSession();
@@ -1054,6 +1028,69 @@
       function toggleTheme() { document.documentElement.classList.toggle('dark'); }
 
       window.addEventListener('DOMContentLoaded', initApp);
+
+      // 从 Supabase 拉取安全条款数据
+      async function fetchSafetyAgreementFromSupabase() {
+        try {
+          const { data, error } = await supabaseClient
+            .from('safety_agreements')
+            .select('*')
+            .order('id', { ascending: false }) // 获取最新的记录
+            .limit(1)
+            .single();
+
+          if (error) {
+            console.error('❌ 拉取安全条款失败:', error);
+            return;
+          }
+
+          if (data) {
+            safetyAgreementData = data;
+            renderSafetyModal();
+          }
+        } catch (err) {
+          console.error('网络请求安全条款异常:', err);
+        }
+      }
+
+      // 渲染安全条款到弹窗中
+      function renderSafetyModal() {
+        if (!safetyAgreementData) return;
+
+        const titleEl = document.getElementById('safety-modal-title');
+        const bodyEl = document.getElementById('safety-modal-body');
+
+        if (titleEl) titleEl.textContent = safetyAgreementData.title;
+
+        if (bodyEl) {
+          let sectionsHtml = '';
+
+          // 解析 JSON 动态构建 HTML
+          if (Array.isArray(safetyAgreementData.sections)) {
+            sectionsHtml = safetyAgreementData.sections.map(sec => `
+        <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
+          <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
+          ${sec.items.map(item => `
+            <p><strong>${item.label}</strong>：${item.text}</p>
+          `).join('')}
+        </div>
+      `).join('');
+          }
+
+          bodyEl.innerHTML = `
+      <p>${safetyAgreementData.intro}</p>
+      <div class="space-y-3 pt-1">
+        ${sectionsHtml}
+      </div>
+    `;
+        }
+      }
+
+      async function initApp() {
+        await checkCurrentSession();
+        await fetchCurriculumFromSupabase();
+        await fetchSafetyAgreementFromSupabase(); // 👈 在此处新增调用
+      }
     </script>
   </body>
 
