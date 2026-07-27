@@ -412,44 +412,81 @@
     }
 
     // 正则逻辑
-    function processCode(code, type) {
-        const removeComments = document.getElementById('opt-comments').checked;
-        const removeSpace = document.getElementById('opt-space').checked;
+    // 优化后的纯净处理逻辑
+function processCode(code, type) {
+    const removeComments = document.getElementById('opt-comments').checked;
+    const removeSpace = document.getElementById('opt-space').checked;
 
-        let result = code;
+    let result = code;
 
-        if (type === 'html') {
-            if (removeComments) {
-                result = result.replace(/<!--[\s\S]*?-->/g, '');
-            }
-            if (removeSpace) {
-                result = result.replace(/>\s+</g, '><').replace(/^\s*[\r\n]/gm, '');
-            }
-        } else if (type === 'css') {
-            if (removeComments) {
-                result = result.replace(/\/\*[\s\S]*?\*\//g, '');
-            }
-            if (removeSpace) {
-                result = result.replace(/\s+/g, ' ')
-                              .replace(/\s*([{}:;,])\s*/g, '$1')
-                              .trim();
-            }
-        } else if (type === 'js') {
-            if (removeComments) {
-                result = result.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimy]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g, (match, stringOrRegex) => {
-                    return stringOrRegex ? stringOrRegex : '';
-                });
-            }
-            if (removeSpace) {
-                result = result.split(/\r?\n/)
-                              .map(line => line.trim())
-                              .filter(line => line.length > 0)
-                              .join('\n');
-            }
+    // --- 1. CSS 清理逻辑 ---
+    function cleanCSS(cssText) {
+        let clean = cssText;
+        if (removeComments) {
+            // 匹配字符串（单双引号）与注释，保护字符串，清除注释
+            clean = clean.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')|(\/\*[\s\S]*?\*\/)/g, (match, group1) => {
+                return group1 ? group1 : '';
+            });
+        }
+        if (removeSpace) {
+            clean = clean.replace(/\s+/g, ' ')
+                         .replace(/\s*([{}:;,])\s*/g, '$1')
+                         .trim();
+        }
+        return clean;
+    }
+
+    // --- 2. JS 清理逻辑 ---
+    function cleanJS(jsText) {
+        let clean = jsText;
+        if (removeComments) {
+            // 增强版 JS 正则：支持完整的 ES6+ 正则标志 (gimsuyd) 及复杂的模板字符串
+            const jsCommentRegex = /("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`|\/([^\/\*\\]|\\.)+\/[gimsuyd]*)|(\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g;
+            clean = clean.replace(jsCommentRegex, (match, stringOrRegex) => {
+                return stringOrRegex ? stringOrRegex : '';
+            });
+        }
+        if (removeSpace) {
+            clean = clean.split(/\r?\n/)
+                         .map(line => line.trim())
+                         .filter(line => line.length > 0)
+                         .join('\n');
+        }
+        return clean;
+    }
+
+    // --- 3. 根据类型执行处理 ---
+    if (type === 'css') {
+        result = cleanCSS(result);
+    } else if (type === 'js') {
+        result = cleanJS(result);
+    } else if (type === 'html') {
+        // 步骤 A: 如果勾选了清理注释，先清除 HTML 内联的 <style> 和 <script> 中的 CSS/JS 注释
+        if (removeComments) {
+            // 处理内联 <style>
+            result = result.replace(/(<style[\s\S]*?>)([\s\S]*?)(<\/style>)/gi, (match, openTag, content, closeTag) => {
+                return openTag + cleanCSS(content) + closeTag;
+            });
+            // 处理内联 <script>
+            result = result.replace(/(<script[\s\S]*?>)([\s\S]*?)(<\/script>)/gi, (match, openTag, content, closeTag) => {
+                // 忽略非 JS 脚本块（如 type="template" 等）
+                if (openTag.includes('type=') && !openTag.includes('javascript') && !openTag.includes('module')) {
+                    return match;
+                }
+                return openTag + cleanJS(content) + closeTag;
+            });
+            // 清理 HTML 标准注释 <!-- ... -->
+            result = result.replace(/<!--[\s\S]*?-->/g, '');
         }
 
-        return result;
+        // 步骤 B: 压缩多余空白
+        if (removeSpace) {
+            result = result.replace(/>\s+</g, '><').replace(/^\s*[\r\n]/gm, '');
+        }
     }
+
+    return result;
+}
 
     // 获取拼接后缀后的导出文件名
     function getExportName(originalName) {
