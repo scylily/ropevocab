@@ -413,229 +413,229 @@
     <!-- ==================== JS 核心逻辑 ==================== -->
     <script>
       // 🔗 Supabase 配置
-        const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
+      const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 全局状态
-        let curriculumData = [];
-        let userProgressSet = new Set();
-        let userLevel = localStorage.getItem('shibari_user_level') || 'visitor';
-        let currentAuthMode = 'login';
-        let currentTab = 'home';
-        let currentUser = null;
-        let pendingPostPledgeAction = null;
-        let stageExpandState = { 0: false, 1: false, 2: false };
-        let safetyAgreementData = null;
+      // 全局状态
+      let curriculumData = [];
+      let userProgressSet = new Set();
+      let userLevel = localStorage.getItem('shibari_user_level') || 'visitor';
+      let currentAuthMode = 'login';
+      let currentTab = 'home';
+      let currentUser = null;
+      let pendingPostPledgeAction = null;
+      let stageExpandState = { 0: false, 1: false, 2: false };
+      let safetyAgreementData = null;
 
-        async function initApp() {
-          await checkCurrentSession();
-          await fetchCurriculumFromSupabase();
-          await fetchSafetyAgreementFromSupabase();
+      async function initApp() {
+        await checkCurrentSession();
+        await fetchCurriculumFromSupabase();
+        await fetchSafetyAgreementFromSupabase();
+      }
+
+      // 🛡️ 严格基于 Supabase 真实 Auth 状态建立 Session（杜绝伪造）
+      async function checkCurrentSession() {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data && data.session) {
+          currentUser = data.session.user;
+          await fetchUserRole(currentUser.id);
+          await fetchUserProgress(currentUser.id);
+        } else {
+          currentUser = null;
+          userLevel = 'visitor';
         }
 
-        // 🛡️ 严格基于 Supabase 真实 Auth 状态建立 Session（杜绝伪造）
-        async function checkCurrentSession() {
-          const { data } = await supabaseClient.auth.getSession();
-          if (data && data.session) {
-            currentUser = data.session.user;
-            await fetchUserRole(currentUser.id);
-            await fetchUserProgress(currentUser.id);
-          } else {
-            currentUser = null;
-            userLevel = 'visitor';
-          }
+        updateUIByRole();
 
-          updateUIByRole();
-
-          if (currentUser) {
-            const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
-            if (!hasSignedThisSession) {
-              setTimeout(() => { openSafetyModal(); }, 500);
-            }
+        if (currentUser) {
+          const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
+          if (!hasSignedThisSession) {
+            setTimeout(() => { openSafetyModal(); }, 500);
           }
         }
+      }
 
-        // 🛡️ 查询数据库防偷窥安全视图 v_lessons
-        async function fetchCurriculumFromSupabase() {
-          try {
-            const { data, error } = await supabaseClient
-              .from('v_lessons')
-              .select('*')
-              .order('stage', { ascending: true })
-              .order('id', { ascending: true });
+      // 🛡️ 查询数据库防偷窥安全视图 v_lessons
+      async function fetchCurriculumFromSupabase() {
+        try {
+          const { data, error } = await supabaseClient
+            .from('v_lessons')
+            .select('*')
+            .order('stage', { ascending: true })
+            .order('id', { ascending: true });
 
-            if (error) { console.error('❌ 拉取课程失败:', error); return; }
-            if (data && data.length > 0) { curriculumData = data; renderCurriculum(); }
-          } catch (err) { console.error('网络请求异常:', err); }
-        }
+          if (error) { console.error('❌ 拉取课程失败:', error); return; }
+          if (data && data.length > 0) { curriculumData = data; renderCurriculum(); }
+        } catch (err) { console.error('网络请求异常:', err); }
+      }
 
-        async function fetchUserProgress(userId) {
-          if (!userId) return;
-          const { data } = await supabaseClient.from('user_progress').select('lesson_id').eq('user_id', userId);
-          if (data) {
-            userProgressSet = new Set(data.map(p => p.lesson_id));
-            updateProgressUI();
-            renderCurriculum();
-          }
-        }
-
-        async function toggleCheckIn(lessonId) {
-          if (!currentUser) {
-            alert('请先登录学员或导师账号再进行打卡！');
-            openAuthModal('login');
-            return;
-          }
-
-          const isChecked = userProgressSet.has(lessonId);
-          if (isChecked) {
-            userProgressSet.delete(lessonId);
-            if (currentUser.id) await supabaseClient.from('user_progress').delete().eq('user_id', currentUser.id).eq('lesson_id', lessonId);
-          } else {
-            userProgressSet.add(lessonId);
-            if (currentUser.id) await supabaseClient.from('user_progress').insert({ user_id: currentUser.id, lesson_id: lessonId });
-          }
+      async function fetchUserProgress(userId) {
+        if (!userId) return;
+        const { data } = await supabaseClient.from('user_progress').select('lesson_id').eq('user_id', userId);
+        if (data) {
+          userProgressSet = new Set(data.map(p => p.lesson_id));
           updateProgressUI();
           renderCurriculum();
         }
+      }
 
-        function getTotalAccessibleLessons(level) {
-          if (level === 'base') return 8;
-          if (level === 'adv') return 16;
-          if (level === 'exp' || level === 'master') return 26;
-          return 26;
+      async function toggleCheckIn(lessonId) {
+        if (!currentUser) {
+          alert('请先登录学员或导师账号再进行打卡！');
+          openAuthModal('login');
+          return;
         }
 
-        function updateProgressUI() {
-          const total = getTotalAccessibleLessons(userLevel);
-          const completed = userProgressSet.size;
-          const pct = Math.min(100, Math.round((completed / total) * 100));
-
-          const bar = document.getElementById('drawer-progress-bar');
-          const percentText = document.getElementById('drawer-progress-percent');
-          const text = document.getElementById('drawer-progress-text');
-
-          if (bar) bar.style.width = pct + '%';
-          if (percentText) percentText.textContent = pct + ' %';
-          if (text) text.textContent = `已完成 ${completed} / ${total} 课时`;
+        const isChecked = userProgressSet.has(lessonId);
+        if (isChecked) {
+          userProgressSet.delete(lessonId);
+          if (currentUser.id) await supabaseClient.from('user_progress').delete().eq('user_id', currentUser.id).eq('lesson_id', lessonId);
+        } else {
+          userProgressSet.add(lessonId);
+          if (currentUser.id) await supabaseClient.from('user_progress').insert({ user_id: currentUser.id, lesson_id: lessonId });
         }
+        updateProgressUI();
+        renderCurriculum();
+      }
 
-        function switchTab(tabId) {
-          currentTab = tabId;
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+      function getTotalAccessibleLessons(level) {
+        if (level === 'base') return 8;
+        if (level === 'adv') return 16;
+        if (level === 'exp' || level === 'master') return 26;
+        return 26;
+      }
 
-          document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap";
-          });
-          const activeBtn = document.getElementById(`tab-${tabId}`);
-          if (activeBtn) activeBtn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm";
+      function updateProgressUI() {
+        const total = getTotalAccessibleLessons(userLevel);
+        const completed = userProgressSet.size;
+        const pct = Math.min(100, Math.round((completed / total) * 100));
 
-          document.getElementById('view-home').classList.add('hidden');
-          document.querySelectorAll('.stage-view').forEach(v => v.classList.add('hidden'));
+        const bar = document.getElementById('drawer-progress-bar');
+        const percentText = document.getElementById('drawer-progress-percent');
+        const text = document.getElementById('drawer-progress-text');
 
-          if (tabId === 'home') {
-            document.getElementById('view-home').classList.remove('hidden');
-          } else {
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-          }
+        if (bar) bar.style.width = pct + '%';
+        if (percentText) percentText.textContent = pct + ' %';
+        if (text) text.textContent = `已完成 ${completed} / ${total} 课时`;
+      }
+
+      function switchTab(tabId) {
+        currentTab = tabId;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap";
+        });
+        const activeBtn = document.getElementById(`tab-${tabId}`);
+        if (activeBtn) activeBtn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm";
+
+        document.getElementById('view-home').classList.add('hidden');
+        document.querySelectorAll('.stage-view').forEach(v => v.classList.add('hidden'));
+
+        if (tabId === 'home') {
+          document.getElementById('view-home').classList.remove('hidden');
+        } else {
+          document.getElementById(`view-${tabId}`).classList.remove('hidden');
         }
+      }
 
-        function toggleAllLessonsInStage(stageIdx) {
-          const container = document.getElementById(`container-stage-${stageIdx}`);
+      function toggleAllLessonsInStage(stageIdx) {
+        const container = document.getElementById(`container-stage-${stageIdx}`);
+        if (!container) return;
+
+        stageExpandState[stageIdx] = !stageExpandState[stageIdx];
+        const isExpanded = stageExpandState[stageIdx];
+
+        container.querySelectorAll('.card-body').forEach(b => {
+          if (isExpanded) b.classList.remove('hidden');
+          else b.classList.add('hidden');
+        });
+
+        const btnText = document.getElementById(`text-toggle-stage-${stageIdx}`);
+        if (btnText) {
+          btnText.textContent = isExpanded ? '折叠' : '展开';
+        }
+      }
+
+      function renderCurriculum() {
+        [0, 1, 2].forEach(sIdx => {
+          const container = document.getElementById(`container-stage-${sIdx}`);
+          const tocList = document.getElementById(`toc-list-${sIdx}`);
+          if (container) container.innerHTML = '';
+          if (tocList) tocList.innerHTML = '';
+        });
+
+        curriculumData.forEach(item => {
+          const container = document.getElementById(`container-stage-${item.stage}`);
+          const tocList = document.getElementById(`toc-list-${item.stage}`);
           if (!container) return;
 
-          stageExpandState[stageIdx] = !stageExpandState[stageIdx];
-          const isExpanded = stageExpandState[stageIdx];
+          // 🛡️ 由数据库视图根据权限直接下发的 is_unlocked 决定
+          const isUnlocked = item.is_unlocked === true;
+          const isChecked = userProgressSet.has(item.id);
 
-          container.querySelectorAll('.card-body').forEach(b => {
-            if (isExpanded) b.classList.remove('hidden');
-            else b.classList.add('hidden');
-          });
-
-          const btnText = document.getElementById(`text-toggle-stage-${stageIdx}`);
-          if (btnText) {
-            btnText.textContent = isExpanded ? '折叠' : '展开';
-          }
-        }
-
-        function renderCurriculum() {
-          [0, 1, 2].forEach(sIdx => {
-            const container = document.getElementById(`container-stage-${sIdx}`);
-            const tocList = document.getElementById(`toc-list-${sIdx}`);
-            if (container) container.innerHTML = '';
-            if (tocList) tocList.innerHTML = '';
-          });
-
-          curriculumData.forEach(item => {
-            const container = document.getElementById(`container-stage-${item.stage}`);
-            const tocList = document.getElementById(`toc-list-${item.stage}`);
-            if (!container) return;
-
-            // 🛡️ 由数据库视图根据权限直接下发的 is_unlocked 决定
-            const isUnlocked = item.is_unlocked === true;
-            const isChecked = userProgressSet.has(item.id);
-
-            if (tocList) {
-              const li = document.createElement('li');
-              li.innerHTML = `
+          if (tocList) {
+            const li = document.createElement('li');
+            li.innerHTML = `
         <a href="#lesson-${item.id}" onclick="scrollToLesson('${item.id}')" class="block truncate py-1 px-1.5 rounded hover:bg-stone-200 dark:hover:bg-zinc-800 text-stone-600 dark:text-stone-400">
           ${isChecked ? '✅ ' : ''}${item.title}
         </a>
       `;
-              tocList.appendChild(li);
-            }
+            tocList.appendChild(li);
+          }
 
-            const card = document.createElement('div');
-            card.className = "lesson-card bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg shadow-sm overflow-hidden";
-            card.id = `lesson-${item.id}`;
+          const card = document.createElement('div');
+          card.className = "lesson-card bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg shadow-sm overflow-hidden";
+          card.id = `lesson-${item.id}`;
 
-            let mediaHtml = '';
-            if (item.images && Array.isArray(item.images) && item.images.length > 0) {
-              if (item.images.length === 1) {
-                mediaHtml += `
+          let mediaHtml = '';
+          if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+            if (item.images.length === 1) {
+              mediaHtml += `
           <div class="mt-2.5 flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 sm:p-3 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark shadow-inner">
             <img src="${item.images[0]}" class="rounded-lg object-contain max-w-full sm:max-w-md md:max-w-lg max-h-[420px] sm:max-h-[480px] h-auto shadow-sm" alt="教学细节图" />
           </div>
         `;
-              } else {
-                mediaHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5">`;
-                item.images.forEach(imgUrl => {
-                  mediaHtml += `
+            } else {
+              mediaHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5">`;
+              item.images.forEach(imgUrl => {
+                mediaHtml += `
             <div class="flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">
               <img src="${imgUrl}" class="rounded-lg object-contain w-full max-h-[350px] h-auto shadow-sm" alt="教学细节图" />
             </div>
           `;
-                });
-                mediaHtml += `</div>`;
-              }
+              });
+              mediaHtml += `</div>`;
+            }
+          }
+
+          if (item.video_url) {
+            let embedUrl = item.video_url.trim();
+
+            if (embedUrl.includes('vimeo.com/') && !embedUrl.includes('player.vimeo.com')) {
+              const videoId = embedUrl.split('vimeo.com/')[1].split('?')[0].split('#')[0];
+              embedUrl = `https://player.vimeo.com/video/${videoId}`;
             }
 
-            if (item.video_url) {
-              let embedUrl = item.video_url.trim();
+            if (embedUrl.includes('youtube.com/watch?v=')) {
+              const videoId = embedUrl.split('v=')[1].split('&')[0];
+              embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            } else if (embedUrl.includes('youtu.be/')) {
+              const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
+              embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            }
 
-              if (embedUrl.includes('vimeo.com/') && !embedUrl.includes('player.vimeo.com')) {
-                const videoId = embedUrl.split('vimeo.com/')[1].split('?')[0].split('#')[0];
-                embedUrl = `https://player.vimeo.com/video/${videoId}`;
-              }
-
-              if (embedUrl.includes('youtube.com/watch?v=')) {
-                const videoId = embedUrl.split('v=')[1].split('&')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}`;
-              } else if (embedUrl.includes('youtu.be/')) {
-                const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
-                embedUrl = `https://www.youtube.com/embed/${videoId}`;
-              }
-
-              mediaHtml += `
+            mediaHtml += `
         <div class="mt-2.5 aspect-video rounded-xl overflow-hidden border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
           <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
         </div>
       `;
-            }
+          }
 
-            let contentHtml = '';
-            if (isUnlocked) {
-              contentHtml = `
+          let contentHtml = '';
+          if (isUnlocked) {
+            contentHtml = `
         <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')">
           <span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm flex items-center gap-1.5">
             ${isChecked ? '<span class="text-emerald-500">✅</span>' : ''}
@@ -667,8 +667,8 @@
           </div>
         </div>
       `;
-            } else {
-              contentHtml = `
+          } else {
+            contentHtml = `
         <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20">
           <span class="font-bold text-stone-500 dark:text-stone-400 text-[11px] sm:text-sm truncate">${item.title}</span>
           <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap ml-2">🔒 需解锁</span>
@@ -678,368 +678,380 @@
           <button onclick="openAuthModal('login')" class="px-2 py-0.5 bg-jute-750 text-white rounded text-[11px] font-bold whitespace-nowrap">登录解锁</button>
         </div>
       `;
-            }
+          }
 
-            card.innerHTML = contentHtml;
-            container.appendChild(card);
+          card.innerHTML = contentHtml;
+          container.appendChild(card);
+        });
+
+        updateUIByRole();
+      }
+
+      function scrollToLesson(id) {
+        const card = document.getElementById(`lesson-${id}`);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const body = document.getElementById(`body-${id}`);
+          if (body && body.classList.contains('hidden')) body.classList.remove('hidden');
+        }
+      }
+
+      function toggleCardBody(id) {
+        const body = document.getElementById(`body-${id}`);
+        if (body) body.classList.toggle('hidden');
+      }
+
+      function updateUIByRole() {
+        const badge = document.getElementById('drawer-role-badge');
+        const navRole = document.getElementById('nav-role-text');
+        const drawerEmail = document.getElementById('drawer-user-email');
+        const authBtn = document.getElementById('drawer-btn-auth');
+        const logoutBtn = document.getElementById('drawer-btn-logout');
+        const upgradeBtn = document.getElementById('drawer-btn-upgrade');
+        const teacherBox = document.getElementById('drawer-teacher-box');
+        const homeLoginBtn = document.getElementById('home-login-btn');
+
+        const isLoggedIn = !!currentUser;
+
+        if (isLoggedIn) {
+          drawerEmail.textContent = currentUser.email;
+          if (homeLoginBtn) homeLoginBtn.classList.add('hidden');
+        } else {
+          drawerEmail.textContent = '未登录 (游客预览模式)';
+          if (homeLoginBtn) homeLoginBtn.classList.remove('hidden');
+        }
+
+        if (isLoggedIn) {
+          if (authBtn) authBtn.classList.add('hidden');
+          if (teacherBox) teacherBox.classList.add('hidden');
+          if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+          if (upgradeBtn) {
+            if (userLevel !== 'master' && userLevel !== 'exp') {
+              upgradeBtn.classList.remove('hidden');
+            } else {
+              upgradeBtn.classList.add('hidden');
+            }
+          }
+        } else {
+          if (authBtn) authBtn.classList.remove('hidden');
+          if (teacherBox) teacherBox.classList.remove('hidden');
+          if (logoutBtn) logoutBtn.classList.add('hidden');
+          if (upgradeBtn) upgradeBtn.classList.add('hidden');
+        }
+
+        let roleName = '👁️ 游客';
+        if (userLevel === 'base') roleName = '🟢 初级学员';
+        if (userLevel === 'adv') roleName = '🟡 提高学员';
+        if (userLevel === 'exp') roleName = '🔴 熟练学员';
+        if (userLevel === 'master') roleName = '👑 教师/管理员';
+
+        if (badge) badge.textContent = roleName;
+        if (navRole) navRole.textContent = roleName;
+
+        document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
+        document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+        document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+
+        updateProgressUI();
+      }
+
+      // 👑 教师通道
+      async function loginAsTeacherByPasscode() {
+        const code = document.getElementById('input-teacher-passcode').value.trim();
+        if (!code) {
+          alert('请输入导师口令！');
+          return;
+        }
+
+        try {
+          // 1. 调用后端安全验证口令
+          const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('teacher_passcode_login', { passcode: code });
+
+          if (rpcErr || !rpcRes.success) {
+            alert('❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '口令验证失败')));
+            return;
+          }
+
+          // 2. 拿着后端返回的安全授权，自动无感登录导师 Session
+          const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
+            email: rpcRes.email,
+            password: rpcRes.password
           });
 
-          updateUIByRole();
-        }
+          if (authErr) throw authErr;
 
-        function scrollToLesson(id) {
-          const card = document.getElementById(`lesson-${id}`);
-          if (card) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            const body = document.getElementById(`body-${id}`);
-            if (body && body.classList.contains('hidden')) body.classList.remove('hidden');
-          }
-        }
+          currentUser = authData.user;
+          userLevel = 'master';
+          localStorage.setItem('shibari_user_level', 'master');
 
-        function toggleCardBody(id) {
-          const body = document.getElementById(`body-${id}`);
-          if (body) body.classList.toggle('hidden');
-        }
-
-        function updateUIByRole() {
-          const badge = document.getElementById('drawer-role-badge');
-          const navRole = document.getElementById('nav-role-text');
-          const drawerEmail = document.getElementById('drawer-user-email');
-          const authBtn = document.getElementById('drawer-btn-auth');
-          const logoutBtn = document.getElementById('drawer-btn-logout');
-          const upgradeBtn = document.getElementById('drawer-btn-upgrade');
-          const teacherBox = document.getElementById('drawer-teacher-box');
-          const homeLoginBtn = document.getElementById('home-login-btn');
-
-          const isLoggedIn = !!currentUser;
-
-          if (isLoggedIn) {
-            drawerEmail.textContent = currentUser.email;
-            if (homeLoginBtn) homeLoginBtn.classList.add('hidden');
-          } else {
-            drawerEmail.textContent = '未登录 (游客预览模式)';
-            if (homeLoginBtn) homeLoginBtn.classList.remove('hidden');
-          }
-
-          if (isLoggedIn) {
-            if (authBtn) authBtn.classList.add('hidden');
-            if (teacherBox) teacherBox.classList.add('hidden');
-            if (logoutBtn) logoutBtn.classList.remove('hidden');
-
-            if (upgradeBtn) {
-              if (userLevel !== 'master' && userLevel !== 'exp') {
-                upgradeBtn.classList.remove('hidden');
-              } else {
-                upgradeBtn.classList.add('hidden');
-              }
-            }
-          } else {
-            if (authBtn) authBtn.classList.remove('hidden');
-            if (teacherBox) teacherBox.classList.remove('hidden');
-            if (logoutBtn) logoutBtn.classList.add('hidden');
-            if (upgradeBtn) upgradeBtn.classList.add('hidden');
-          }
-
-          let roleName = '👁️ 游客';
-          if (userLevel === 'base') roleName = '🟢 初级学员';
-          if (userLevel === 'adv') roleName = '🟡 提高学员';
-          if (userLevel === 'exp') roleName = '🔴 熟练学员';
-          if (userLevel === 'master') roleName = '👑 教师/管理员';
-
-          if (badge) badge.textContent = roleName;
-          if (navRole) navRole.textContent = roleName;
-
-          document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
-          document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-          document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-
-          updateProgressUI();
-        }
-
-        // 👑 导师通道（通过后端安全 RPC 验证口令）
-        async function loginAsTeacherByPasscode() {
-          const code = document.getElementById('input-teacher-passcode').value.trim();
-          if (!code) {
-            alert('请输入导师口令！');
-            return;
-          }
-
-          if (!currentUser) {
-            alert('请先登录学员账号（或注册账号），再输入导师口令验证！');
-            openAuthModal('login');
-            return;
-          }
-
-          try {
-            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_teacher_role', { passcode: code });
-            if (rpcErr || !rpcRes.success) {
-              alert('❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '验证失败')));
-              return;
-            }
-
-            await fetchUserRole(currentUser.id);
-            document.getElementById('input-teacher-passcode').value = '';
-            closeProfileDrawer();
-            await fetchCurriculumFromSupabase(); // 重新按导师角色拉取带防线的数据
-            openSafetyModal();
-            alert('👑 ' + rpcRes.message);
-          } catch (err) {
-            console.error('导师验证报错:', err);
-            alert('❌ 验证异常: ' + (err.message || '操作失败'));
-          }
-        }
-
-        function openProfileDrawer() {
-          const drawer = document.getElementById('drawer-profile');
-          const overlay = document.getElementById('drawer-overlay');
-          drawer.classList.remove('hidden');
-          overlay.classList.remove('hidden');
-          setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
-        }
-        function closeProfileDrawer() {
-          const drawer = document.getElementById('drawer-profile');
-          const overlay = document.getElementById('drawer-overlay');
-          drawer.classList.add('translate-x-full');
-          overlay.classList.add('hidden');
-          setTimeout(() => drawer.classList.add('hidden'), 300);
-        }
-        function closeAllDrawers() {
+          document.getElementById('input-teacher-passcode').value = '';
           closeProfileDrawer();
-          closeSafetyModal();
+
+          // 3. 实时拉取导师全量打卡与全盘课程（含师资防线与目标）
+          await fetchUserProgress(currentUser.id);
+          await fetchCurriculumFromSupabase();
+          openSafetyModal();
+
+          alert('👑 欢迎导师！口令验证成功，已直达最高导师权限。');
+
+        } catch (err) {
+          console.error('导师极简登录报错:', err);
+          alert('❌ 登录失败: ' + (err.message || '系统异常'));
+        }
+      }
+
+      function openProfileDrawer() {
+        const drawer = document.getElementById('drawer-profile');
+        const overlay = document.getElementById('drawer-overlay');
+        drawer.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        setTimeout(() => drawer.classList.remove('translate-x-full'), 10);
+      }
+      function closeProfileDrawer() {
+        const drawer = document.getElementById('drawer-profile');
+        const overlay = document.getElementById('drawer-overlay');
+        drawer.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+        setTimeout(() => drawer.classList.add('hidden'), 300);
+      }
+      function closeAllDrawers() {
+        closeProfileDrawer();
+        closeSafetyModal();
+      }
+
+      function openSafetyModal() {
+        const modal = document.getElementById('modal-safety-pledge');
+        const check = document.getElementById('check-safety-pledge');
+        if (check) check.checked = false;
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      function closeSafetyModal() {
+        const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
+        if (currentUser && !hasSignedThisSession) {
+          alert('🛡️ 安全第一！必须勾选并确认签署安全承诺书，方可开启学习。');
+          return;
+        }
+        const modal = document.getElementById('modal-safety-pledge');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      function confirmSafetyPledge() {
+        const check = document.getElementById('check-safety-pledge');
+        if (!check || !check.checked) {
+          alert('请先勾选确认已认真阅读并承诺遵守安全铁律！');
+          return;
         }
 
-        function openSafetyModal() {
-          const modal = document.getElementById('modal-safety-pledge');
-          const check = document.getElementById('check-safety-pledge');
-          if (check) check.checked = false;
-          if (modal) modal.classList.remove('hidden');
+        sessionStorage.setItem('shibari_signed_pledge_session', 'true');
+        const modal = document.getElementById('modal-safety-pledge');
+        if (modal) modal.classList.add('hidden');
+
+        if (typeof pendingPostPledgeAction === 'function') {
+          pendingPostPledgeAction();
+          pendingPostPledgeAction = null;
+        } else {
+          renderCurriculum();
+        }
+      }
+
+      function openAuthModal(mode = 'login') {
+        document.getElementById('modal-auth').classList.remove('hidden');
+        switchAuthTab(mode);
+      }
+      function closeAuthModal() { document.getElementById('modal-auth').classList.add('hidden'); }
+
+      function switchAuthTab(mode) {
+        currentAuthMode = mode;
+        const loginTab = document.getElementById('auth-tab-login');
+        const regTab = document.getElementById('auth-tab-register');
+        const codeWrapper = document.getElementById('wrapper-invite-code');
+        const submitBtn = document.getElementById('btn-submit-auth');
+
+        document.getElementById('auth-error').classList.add('hidden');
+        document.getElementById('auth-success').classList.add('hidden');
+
+        if (mode === 'login') {
+          loginTab.className = "flex-1 pb-2 border-b-2 border-jute-750 text-jute-750 font-bold";
+          regTab.className = "flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200 font-bold";
+          codeWrapper.classList.add('hidden');
+          submitBtn.textContent = '立即登录 ➔';
+        } else {
+          regTab.className = "flex-1 pb-2 border-b-2 border-jute-750 text-jute-750 font-bold";
+          loginTab.className = "flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200 font-bold";
+          codeWrapper.classList.remove('hidden');
+          submitBtn.textContent = '验证邀请码并注册 ➔';
+        }
+      }
+
+      // 🛡️ 注册与登录（通过后端安全 RPC 激活邀请码）
+      async function handleAuthSubmit() {
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value.trim();
+        const inviteCode = document.getElementById('auth-invite-code').value.trim().toUpperCase();
+        const errDiv = document.getElementById('auth-error');
+        const succDiv = document.getElementById('auth-success');
+
+        errDiv.classList.add('hidden'); succDiv.classList.add('hidden');
+
+        if (!email || !password) {
+          errDiv.textContent = '❌ 请填写邮箱与密码';
+          errDiv.classList.remove('hidden');
+          return;
         }
 
-        function closeSafetyModal() {
-          const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
-          if (currentUser && !hasSignedThisSession) {
-            alert('🛡️ 安全第一！必须勾选并确认签署安全承诺书，方可开启学习。');
-            return;
-          }
-          const modal = document.getElementById('modal-safety-pledge');
-          if (modal) modal.classList.add('hidden');
-        }
+        try {
+          if (currentAuthMode === 'login') {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
 
-        function confirmSafetyPledge() {
-          const check = document.getElementById('check-safety-pledge');
-          if (!check || !check.checked) {
-            alert('请先勾选确认已认真阅读并承诺遵守安全铁律！');
-            return;
-          }
+            currentUser = data.user;
+            await fetchUserRole(currentUser.id);
+            await fetchUserProgress(currentUser.id);
+            await fetchCurriculumFromSupabase();
+            closeAuthModal();
+            openSafetyModal();
 
-          sessionStorage.setItem('shibari_signed_pledge_session', 'true');
-          const modal = document.getElementById('modal-safety-pledge');
-          if (modal) modal.classList.add('hidden');
-
-          if (typeof pendingPostPledgeAction === 'function') {
-            pendingPostPledgeAction();
-            pendingPostPledgeAction = null;
           } else {
-            renderCurriculum();
-          }
-        }
-
-        function openAuthModal(mode = 'login') {
-          document.getElementById('modal-auth').classList.remove('hidden');
-          switchAuthTab(mode);
-        }
-        function closeAuthModal() { document.getElementById('modal-auth').classList.add('hidden'); }
-
-        function switchAuthTab(mode) {
-          currentAuthMode = mode;
-          const loginTab = document.getElementById('auth-tab-login');
-          const regTab = document.getElementById('auth-tab-register');
-          const codeWrapper = document.getElementById('wrapper-invite-code');
-          const submitBtn = document.getElementById('btn-submit-auth');
-
-          document.getElementById('auth-error').classList.add('hidden');
-          document.getElementById('auth-success').classList.add('hidden');
-
-          if (mode === 'login') {
-            loginTab.className = "flex-1 pb-2 border-b-2 border-jute-750 text-jute-750 font-bold";
-            regTab.className = "flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200 font-bold";
-            codeWrapper.classList.add('hidden');
-            submitBtn.textContent = '立即登录 ➔';
-          } else {
-            regTab.className = "flex-1 pb-2 border-b-2 border-jute-750 text-jute-750 font-bold";
-            loginTab.className = "flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200 font-bold";
-            codeWrapper.classList.remove('hidden');
-            submitBtn.textContent = '验证邀请码并注册 ➔';
-          }
-        }
-
-        // 🛡️ 注册与登录（通过后端安全 RPC 激活邀请码）
-        async function handleAuthSubmit() {
-          const email = document.getElementById('auth-email').value.trim();
-          const password = document.getElementById('auth-password').value.trim();
-          const inviteCode = document.getElementById('auth-invite-code').value.trim().toUpperCase();
-          const errDiv = document.getElementById('auth-error');
-          const succDiv = document.getElementById('auth-success');
-
-          errDiv.classList.add('hidden'); succDiv.classList.add('hidden');
-
-          if (!email || !password) {
-            errDiv.textContent = '❌ 请填写邮箱与密码';
-            errDiv.classList.remove('hidden');
-            return;
-          }
-
-          try {
-            if (currentAuthMode === 'login') {
-              const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-              if (error) throw error;
-
-              currentUser = data.user;
-              await fetchUserRole(currentUser.id);
-              await fetchUserProgress(currentUser.id);
-              await fetchCurriculumFromSupabase();
-              closeAuthModal();
-              openSafetyModal();
-
-            } else {
-              if (!inviteCode) {
-                errDiv.textContent = '❌ 注册必须填写邀请码';
-                errDiv.classList.remove('hidden');
-                return;
-              }
-
-              // 1. 注册新用户账号
-              const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
-              if (authErr) throw authErr;
-              if (!authData || !authData.user) throw new Error("注册失败，未获取到用户");
-
-              currentUser = authData.user;
-
-              // 🛡️ 2. 调用后端 RPC 安全激活邀请码
-              const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
-              if (rpcErr || !rpcRes.success) {
-                throw new Error(rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败'));
-              }
-
-              userLevel = rpcRes.role;
-              localStorage.setItem('shibari_user_level', userLevel);
-
-              closeAuthModal();
-
-              pendingPostPledgeAction = async () => {
-                await fetchCurriculumFromSupabase();
-                alert('🎉 注册并激活成功！欢迎开启学习。');
-              };
-              openSafetyModal();
-            }
-          } catch (err) {
-            console.error("Auth 报错:", err);
-            errDiv.textContent = '❌ ' + (err.message || '操作失败');
-            errDiv.classList.remove('hidden');
-          }
-        }
-
-        async function handleForgotPassword() {
-          const email = document.getElementById('auth-email').value.trim();
-          if (!email) { alert('请先输入您的注册邮箱！'); return; }
-          const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-          if (error) alert('发送失败: ' + error.message);
-          else alert('📧 重置邮件已发送至邮箱，请查收！');
-        }
-
-        async function fetchUserRole(userId) {
-          const { data } = await supabaseClient.from('profiles').select('role').eq('id', userId).single();
-          if (data && data.role) {
-            userLevel = data.role;
-            localStorage.setItem('shibari_user_level', userLevel);
-            updateProgressUI();
-          }
-        }
-
-        function openUpgradeModal() { document.getElementById('modal-upgrade').classList.remove('hidden'); }
-        function closeUpgradeModal() { document.getElementById('modal-upgrade').classList.add('hidden'); }
-
-        // 🛡️ 权限升级（通过后端安全 RPC 激活）
-        async function handleUpgradeSubmit() {
-          const code = document.getElementById('upgrade-invite-code').value.trim().toUpperCase();
-          const errDiv = document.getElementById('upgrade-error');
-          errDiv.classList.add('hidden');
-
-          if (!code) { errDiv.textContent = '❌ 请输入升级邀请码'; errDiv.classList.remove('hidden'); return; }
-
-          try {
-            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: code });
-            if (rpcErr || !rpcRes.success) {
-              errDiv.textContent = '❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '升级失败'));
+            if (!inviteCode) {
+              errDiv.textContent = '❌ 注册必须填写邀请码';
               errDiv.classList.remove('hidden');
               return;
+            }
+
+            // 1. 注册新用户账号
+            const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
+            if (authErr) throw authErr;
+            if (!authData || !authData.user) throw new Error("注册失败，未获取到用户");
+
+            currentUser = authData.user;
+
+            // 🛡️ 2. 调用后端 RPC 安全激活邀请码
+            const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
+            if (rpcErr || !rpcRes.success) {
+              throw new Error(rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败'));
             }
 
             userLevel = rpcRes.role;
             localStorage.setItem('shibari_user_level', userLevel);
 
-            closeUpgradeModal();
-            await fetchCurriculumFromSupabase();
-            updateProgressUI();
-            alert('🎉 成功升级至：' + userLevel);
-          } catch (err) {
-            errDiv.textContent = '❌ ' + (err.message || '升级失败');
-            errDiv.classList.remove('hidden');
+            closeAuthModal();
+
+            pendingPostPledgeAction = async () => {
+              await fetchCurriculumFromSupabase();
+              alert('🎉 注册并激活成功！欢迎开启学习。');
+            };
+            openSafetyModal();
           }
+        } catch (err) {
+          console.error("Auth 报错:", err);
+          errDiv.textContent = '❌ ' + (err.message || '操作失败');
+          errDiv.classList.remove('hidden');
         }
+      }
 
-        // 🚪 安全退出
-        async function logout() {
-          if (supabaseClient) await supabaseClient.auth.signOut();
-          currentUser = null;
-          userProgressSet.clear();
-          userLevel = 'visitor';
-          localStorage.removeItem('shibari_user_level');
-          sessionStorage.removeItem('shibari_signed_pledge_session');
+      async function handleForgotPassword() {
+        const email = document.getElementById('auth-email').value.trim();
+        if (!email) { alert('请先输入您的注册邮箱！'); return; }
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        if (error) alert('发送失败: ' + error.message);
+        else alert('📧 重置邮件已发送至邮箱，请查收！');
+      }
 
+      async function fetchUserRole(userId) {
+        const { data } = await supabaseClient.from('profiles').select('role').eq('id', userId).single();
+        if (data && data.role) {
+          userLevel = data.role;
+          localStorage.setItem('shibari_user_level', userLevel);
+          updateProgressUI();
+        }
+      }
+
+      function openUpgradeModal() { document.getElementById('modal-upgrade').classList.remove('hidden'); }
+      function closeUpgradeModal() { document.getElementById('modal-upgrade').classList.add('hidden'); }
+
+      // 🛡️ 权限升级（通过后端安全 RPC 激活）
+      async function handleUpgradeSubmit() {
+        const code = document.getElementById('upgrade-invite-code').value.trim().toUpperCase();
+        const errDiv = document.getElementById('upgrade-error');
+        errDiv.classList.add('hidden');
+
+        if (!code) { errDiv.textContent = '❌ 请输入升级邀请码'; errDiv.classList.remove('hidden'); return; }
+
+        try {
+          const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: code });
+          if (rpcErr || !rpcRes.success) {
+            errDiv.textContent = '❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '升级失败'));
+            errDiv.classList.remove('hidden');
+            return;
+          }
+
+          userLevel = rpcRes.role;
+          localStorage.setItem('shibari_user_level', userLevel);
+
+          closeUpgradeModal();
           await fetchCurriculumFromSupabase();
           updateProgressUI();
-          alert('已安全退出当前登录');
+          alert('🎉 成功升级至：' + userLevel);
+        } catch (err) {
+          errDiv.textContent = '❌ ' + (err.message || '升级失败');
+          errDiv.classList.remove('hidden');
         }
+      }
 
-        function toggleTheme() { document.documentElement.classList.toggle('dark'); }
+      // 🚪 安全退出
+      async function logout() {
+        if (supabaseClient) await supabaseClient.auth.signOut();
+        currentUser = null;
+        userProgressSet.clear();
+        userLevel = 'visitor';
+        localStorage.removeItem('shibari_user_level');
+        sessionStorage.removeItem('shibari_signed_pledge_session');
 
-        window.addEventListener('DOMContentLoaded', initApp);
+        await fetchCurriculumFromSupabase();
+        updateProgressUI();
+        alert('已安全退出当前登录');
+      }
 
-        // 从 Supabase 拉取安全条款
-        async function fetchSafetyAgreementFromSupabase() {
-          try {
-            const { data, error } = await supabaseClient
-              .from('safety_agreements')
-              .select('*')
-              .order('id', { ascending: false })
-              .limit(1)
-              .single();
+      function toggleTheme() { document.documentElement.classList.toggle('dark'); }
 
-            if (error) { console.error('❌ 拉取安全条款失败:', error); return; }
+      window.addEventListener('DOMContentLoaded', initApp);
 
-            if (data) {
-              safetyAgreementData = data;
-              renderSafetyModal();
-            }
-          } catch (err) {
-            console.error('网络请求安全条款异常:', err);
+      // 从 Supabase 拉取安全条款
+      async function fetchSafetyAgreementFromSupabase() {
+        try {
+          const { data, error } = await supabaseClient
+            .from('safety_agreements')
+            .select('*')
+            .order('id', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (error) { console.error('❌ 拉取安全条款失败:', error); return; }
+
+          if (data) {
+            safetyAgreementData = data;
+            renderSafetyModal();
           }
+        } catch (err) {
+          console.error('网络请求安全条款异常:', err);
         }
+      }
 
-        function renderSafetyModal() {
-          if (!safetyAgreementData) return;
+      function renderSafetyModal() {
+        if (!safetyAgreementData) return;
 
-          const titleEl = document.getElementById('safety-modal-title');
-          const bodyEl = document.getElementById('safety-modal-body');
+        const titleEl = document.getElementById('safety-modal-title');
+        const bodyEl = document.getElementById('safety-modal-body');
 
-          if (titleEl) titleEl.textContent = safetyAgreementData.title;
+        if (titleEl) titleEl.textContent = safetyAgreementData.title;
 
-          if (bodyEl) {
-            let sectionsHtml = '';
+        if (bodyEl) {
+          let sectionsHtml = '';
 
-            if (Array.isArray(safetyAgreementData.sections)) {
-              sectionsHtml = safetyAgreementData.sections.map(sec => `
+          if (Array.isArray(safetyAgreementData.sections)) {
+            sectionsHtml = safetyAgreementData.sections.map(sec => `
         <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
           <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
           ${sec.items.map(item => `
@@ -1047,16 +1059,16 @@
           `).join('')}
         </div>
       `).join('');
-            }
+          }
 
-            bodyEl.innerHTML = `
+          bodyEl.innerHTML = `
       <p>${safetyAgreementData.intro}</p>
       <div class="space-y-3 pt-1">
         ${sectionsHtml}
       </div>
     `;
-          }
         }
+      }
     </script>
   </body>
 
