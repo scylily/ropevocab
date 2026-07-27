@@ -306,9 +306,8 @@
         <!-- 👑 教师极简通道 -->
         <div id="drawer-teacher-box" class="p-2.5 sm:p-3 bg-purple-500/10 rounded-lg border border-purple-500/30 space-y-1.5">
           <div class="font-bold text-purple-700 dark:text-purple-400 flex items-center justify-between">
-            <span>👑 教师极简通道</span>
+            <span>👑 教师通道</span>
           </div>
-          <p class="text-[10px] sm:text-[11px] text-stone-500">只需输入口令直达最高导师权限：</p>
           <div class="flex gap-1.5">
             <input type="text" id="input-teacher-passcode" placeholder="输入口令..." class="flex-1 px-2 py-1 border rounded border-purple-500/40 bg-stone-50 dark:bg-zinc-900 uppercase text-xs focus:outline-none">
             <button onclick="loginAsTeacherByPasscode()" class="px-2.5 py-1 bg-purple-800 text-white font-bold rounded text-xs">登录 ➔</button>
@@ -316,7 +315,7 @@
         </div>
 
         <div class="space-y-2 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark">
-          <button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 邀请码注册账号</button>
+          <button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 注册账号</button>
           <button id="drawer-btn-upgrade" onclick="openUpgradeModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-amber-600 text-white rounded font-bold">🎓 输入新邀请码升级权限</button>
           <button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看绳缚安全共识书</button>
           <button id="drawer-btn-logout" onclick="logout(); closeProfileDrawer();" class="hidden w-full py-2 bg-red-800 text-white rounded font-bold">🚪 退出当前登录</button>
@@ -442,7 +441,7 @@
 
         if (isTeacherSession) {
           userLevel = 'master';
-          currentUser = { email: '👑 导师/管理员 (极简口令登录)', isTeacher: true };
+          currentUser = { email: '👑 教师/管理员 (口令登录)', isTeacher: true };
         } else {
           const { data } = await supabaseClient.auth.getSession();
           if (data && data.session) {
