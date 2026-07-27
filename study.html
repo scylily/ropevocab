@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN" class="light">
-
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>张力与感官：绳缚入门到精通</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
+<!DOCTYPE html><html lang="zh-CN" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>张力与感官：绳缚入门到精通</title><script src="https://cdn.tailwindcss.com"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -26,396 +15,39 @@
           }
         }
       }
-    </script>
-    <style>
+    </script><style>
       .lesson-card {
         scroll-margin-top: 5rem;
       }
-
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       }
-
       .no-scrollbar::-webkit-scrollbar {
         display: none;
       }
-
       .no-scrollbar {
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-
       ::-webkit-scrollbar {
         width: 5px;
         height: 5px;
       }
-
       ::-webkit-scrollbar-thumb {
         background: #b45309;
         border-radius: 4px;
       }
-
       .dark ::-webkit-scrollbar-thumb {
         background: #d97706;
       }
-    </style>
-  </head>
-
-  <body class="bg-shibariBg-light dark:bg-shibariBg-dark text-stone-800 dark:text-stone-200 min-h-screen transition-colors duration-200 flex flex-col">
-
-    <!-- 📱/🖥️ 移动端极窄 / PC端旗舰 响应式吸顶导航栏 -->
-    <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-md border-b border-stone-800/80">
-      <div class="max-w-7xl mx-auto px-3 sm:px-4 py-1.5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-6">
-
-        <!-- 1. 品牌标题区域 (手机端仅展示主标题以极大地节省高度，PC端展示副标题) -->
-        <div class="flex items-center justify-between w-full sm:w-auto">
-          <div onclick="switchTab('home')" class="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer hover:opacity-90" title="返回首页">
-            <span class="text-jute-500 text-lg sm:text-xl md:text-2xl font-black tracking-wider whitespace-nowrap">张力与感官</span>
-            <div class="h-3.5 sm:h-5 w-[1px] bg-stone-700"></div>
-            <span class="text-xs sm:text-sm text-stone-400 font-semibold whitespace-nowrap">绳缚入门到精通</span>
-          </div>
-
-          <!-- 移动端显示的快捷按钮 -->
-          <div class="flex items-center gap-1 sm:hidden">
-            <button onclick="toggleTheme()" class="p-1 text-stone-400 hover:text-white text-xs">🌓</button>
-            <button onclick="openProfileDrawer()" class="flex items-center gap-1 px-2 py-0.5 bg-stone-800 text-amber-400 rounded-full text-[11px] font-bold border border-stone-700">
-              <span>👤</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 2. 阶段导航轨道 (手机端超紧凑平铺，PC端分段胶囊) -->
-        <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-stone-800/60">
-          <nav class="flex items-center justify-between sm:justify-start gap-1 w-full sm:w-auto text-[11px] sm:text-sm font-bold bg-stone-800/90 sm:bg-stone-800/80 p-0.5 sm:p-1 rounded-lg sm:rounded-xl border border-stone-700/60 shadow-inner">
-            <button onclick="switchTab('home')" id="tab-home" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm">
-              <span>🏠</span><span>首页</span>
-            </button>
-            <button onclick="switchTab('stage-0')" id="tab-stage-0" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap">
-              <span>🟢</span><span>初级阶段</span>
-            </button>
-            <button onclick="switchTab('stage-1')" id="tab-stage-1" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap">
-              <span>🟡</span><span>提高阶段</span>
-            </button>
-            <button onclick="switchTab('stage-2')" id="tab-stage-2" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap">
-              <span>🔴</span><span>熟练阶段</span>
-            </button>
-          </nav>
-
-          <div class="hidden sm:flex items-center gap-2 flex-shrink-0 ml-1">
-            <button onclick="toggleTheme()" class="p-2 text-stone-400 hover:text-white text-sm transition-colors" title="切换主题">🌓</button>
-            <button id="btn-user-avatar" onclick="openProfileDrawer()" class="flex items-center gap-2 px-3.5 py-1.5 bg-stone-800 hover:bg-stone-750 text-amber-400 rounded-xl text-xs sm:text-sm font-bold border border-stone-700/80 transition-all shadow-sm">
-              <span>👤</span>
-              <span id="nav-role-text">游客</span>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </header>
-
-    <!-- 主体视图区域 -->
-    <main class="max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 flex-1 w-full">
-
-      <!-- ================= 首页视图 (Home View) ================= -->
-      <div id="view-home" class="space-y-4 sm:space-y-6">
-
-        <!-- 核心内容与导览卡片 -->
-        <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl p-3.5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
-          <div class="border-b border-jute-500/30 pb-2 flex items-center justify-between gap-2">
-            <h2 class="text-sm sm:text-xl font-black text-jute-750 dark:text-jute-600 tracking-wide whitespace-nowrap">🔺核心内容导览🔻</h2>
-            <button onclick="openAuthModal('login')" id="home-login-btn" class="px-2.5 py-1 bg-jute-750 text-white rounded-md text-[11px] sm:text-xs font-bold hover:bg-jute-900 whitespace-nowrap shadow-sm">🔑 登录/注册账号</button>
-          </div>
-
-          <!-- 合并为 1 个统一的极简底框 -->
-          <div class="p-3 sm:p-3.5 bg-stone-50 dark:bg-zinc-900/50 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col sm:flex-row items-center justify-center sm:justify-around gap-2 sm:gap-4 text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-200">
-            <div class="flex gap-3 w-full sm:w-auto">
-              <span>⚙️</span><span>物理力学与解剖安全</span>
-            </div>
-            <span class="hidden sm:inline text-stone-300 dark:text-stone-700 font-normal">|</span>
-            <div class="flex gap-3 w-full sm:w-auto">
-              <span>🙆</span><span>呼吸律动与双向觉察</span>
-            </div>
-            <span class="hidden sm:inline text-stone-300 dark:text-stone-700 font-normal">|</span>
-            <div class="flex gap-3 w-full sm:w-auto">
-              <span>🤹‍♀️</span><span>多维玩法与高空悬吊</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 三大阶段路线图 -->
-        <div class="space-y-2.5 sm:space-y-3">
-          <h3 class="text-base sm:text-lg font-bold text-stone-800 dark:text-stone-200">🚩 课程级别阶段</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6">
-
-            <!-- 阶段一卡片 -->
-            <div onclick="switchTab('stage-0')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-jute-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded">阶段一</span>
-                  <span id="badge-stage-0-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
-                </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟢 初级阶段：地面控制与感知基础</h4>
-                <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。掌握绳索特性、结、扣、单/双柱缚、下肢/躯干捆绑及 2TK 结构等。</p>
-              </div>
-              <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-emerald-500">
-                <span>进入学习 ➔</span>
-              </div>
-            </div>
-
-            <!-- 阶段二卡片 -->
-            <div onclick="switchTab('stage-1')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-amber-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded">阶段二</span>
-                  <span id="badge-stage-1-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
-                </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟡 提高阶段：躯干限制与半吊过渡</h4>
-                <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。进阶 3TK 多流派技法、腰胯缚重心固定、铁炮缚/提篮缚及呼吸控制等。</p>
-              </div>
-              <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-amber-500">
-                <span>进入学习 ➔</span>
-              </div>
-            </div>
-
-            <!-- 阶段三卡片 -->
-            <div onclick="switchTab('stage-2')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-red-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
-              <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded">阶段三</span>
-                  <span id="badge-stage-2-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span>
-                </div>
-                <h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🔴 熟练阶段：完全悬吊与高空控制</h4>
-                <p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 10 课时。竹竿、环、扣吊点锁定、平吊、倒吊/侧吊、急救与结业演练等。</p>
-              </div>
-              <div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-red-500">
-                <span>进入学习 ➔</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- ================= 阶段一：独立页面 ================= -->
-      <div id="view-stage-0" class="stage-view hidden space-y-3 sm:space-y-6">
-        <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
-          <div class="space-y-0.5">
-            <h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <span>🟢</span><span>阶段一：地面控制与感知基础</span>
-            </h2>
-            <div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 8 课时</div>
-          </div>
-          <button id="btn-toggle-stage-0" onclick="toggleAllLessonsInStage(0)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 rounded-md border border-emerald-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0">
-            <span>↕️</span><span id="text-toggle-stage-0">展开</span>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-          <aside id="sidebar-toc-0" class="hidden lg:block lg:col-span-1 space-y-3">
-            <div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
-              <span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span>
-              <ul id="toc-list-0" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul>
-            </div>
-          </aside>
-          <div id="container-stage-0" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div>
-        </div>
-      </div>
-
-      <!-- ================= 阶段二：独立页面 ================= -->
-      <div id="view-stage-1" class="stage-view hidden space-y-3 sm:space-y-6">
-        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
-          <div class="space-y-0.5">
-            <h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <span>🟡</span><span>阶段二：躯干限制与半吊过渡</span>
-            </h2>
-            <div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 8 课时</div>
-          </div>
-          <button id="btn-toggle-stage-1" onclick="toggleAllLessonsInStage(1)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-amber-700 dark:text-amber-300 rounded-md border border-amber-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0">
-            <span>↕️</span><span id="text-toggle-stage-1">展开</span>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-          <aside id="sidebar-toc-1" class="hidden lg:block lg:col-span-1 space-y-3">
-            <div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
-              <span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span>
-              <ul id="toc-list-1" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul>
-            </div>
-          </aside>
-          <div id="container-stage-1" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div>
-        </div>
-      </div>
-
-      <!-- ================= 阶段三：独立页面 ================= -->
-      <div id="view-stage-2" class="stage-view hidden space-y-3 sm:space-y-6">
-        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
-          <div class="space-y-0.5">
-            <h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-              <span>🔴</span><span>阶段三：完全悬吊与高空控制</span>
-            </h2>
-            <div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 10 课时</div>
-          </div>
-          <button id="btn-toggle-stage-2" onclick="toggleAllLessonsInStage(2)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-red-700 dark:text-red-300 rounded-md border border-red-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0">
-            <span>↕️</span><span id="text-toggle-stage-2">展开</span>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative">
-          <aside id="sidebar-toc-2" class="hidden lg:block lg:col-span-1 space-y-3">
-            <div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm">
-              <span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span>
-              <ul id="toc-list-2" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul>
-            </div>
-          </aside>
-          <div id="container-stage-2" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div>
-        </div>
-      </div>
-
-    </main>
-
-    <!-- 👤 侧滑个人中心抽屉 Drawer -->
-    <div id="drawer-profile" class="fixed top-0 right-0 h-full w-[85vw] max-w-xs bg-stone-50 dark:bg-zinc-950 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col hidden">
-      <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
-        <h3 class="text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-100 flex items-center gap-1.5">
-          <span>👤</span> 个人中心与进度
-        </h3>
-        <button onclick="closeProfileDrawer()" class="text-stone-400 hover:text-stone-600 font-bold p-1">✕</button>
-      </div>
-
-      <div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 sm:space-y-5 text-xs">
-        <div class="p-2.5 sm:p-3 bg-stone-100 dark:bg-zinc-900 rounded-lg space-y-1.5 border border-shibariBorder-light dark:border-shibariBorder-dark">
-          <div class="text-stone-500 text-[11px]">当前账号</div>
-          <div id="drawer-user-email" class="font-bold text-stone-800 dark:text-stone-200 truncate">未登录 (游客预览模式)</div>
-          <div class="pt-1 flex items-center justify-between">
-            <span class="text-stone-500">学员级别：</span>
-            <span id="drawer-role-badge" class="px-2 py-0.5 font-bold rounded bg-stone-800 text-stone-400 border border-stone-700">👁️ 游客</span>
-          </div>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex justify-between font-bold">
-            <span>学习打卡进度</span>
-            <span id="drawer-progress-percent" class="text-jute-750">0 %</span>
-          </div>
-          <div class="w-full bg-stone-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden">
-            <div id="drawer-progress-bar" class="bg-jute-750 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-          </div>
-          <div id="drawer-progress-text" class="text-[11px] text-stone-500 text-right">已完成 0 / 26 课时</div>
-        </div>
-
-        <!-- 👑 教师极简通道 -->
-        <div id="drawer-teacher-box" class="p-2.5 sm:p-3 bg-purple-500/10 rounded-lg border border-purple-500/30 space-y-1.5">
-          <div class="font-bold text-purple-700 dark:text-purple-400 flex items-center justify-between">
-            <span>👑 教师通道</span>
-          </div>
-          <div class="flex gap-1.5">
-            <input type="text" id="input-teacher-passcode" placeholder="输入口令..." class="flex-1 px-2 py-1 border rounded border-purple-500/40 bg-stone-50 dark:bg-zinc-900 uppercase text-xs focus:outline-none">
-            <button onclick="loginAsTeacherByPasscode()" class="px-2.5 py-1 bg-purple-800 text-white font-bold rounded text-xs">登录 ➔</button>
-          </div>
-        </div>
-
-        <div class="space-y-2 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark">
-          <button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 注册账号</button>
-          <button id="drawer-btn-upgrade" onclick="openUpgradeModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-amber-600 text-white rounded font-bold">🎓 输入新邀请码升级权限</button>
-          <button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看绳缚安全共识书</button>
-          <button id="drawer-btn-logout" onclick="logout(); closeProfileDrawer();" class="hidden w-full py-2 bg-red-800 text-white rounded font-bold">🚪 退出当前登录</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🔑 登录 / 邀请码注册弹窗 -->
-    <div id="modal-auth" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl">
-        <div class="flex border-b border-shibariBorder-light dark:border-shibariBorder-dark text-xs sm:text-sm font-bold">
-          <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-2 border-b-2 border-jute-750 text-jute-750">账号登录</button>
-          <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200">邀请码注册</button>
-          <button onclick="closeAuthModal()" class="text-stone-400 hover:text-stone-600">✕</button>
-        </div>
-
-        <div class="space-y-2.5">
-          <div>
-            <label class="text-[11px] text-stone-500 block mb-0.5">电子邮箱</label>
-            <input type="email" id="auth-email" placeholder="your@email.com" class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs focus:outline-none focus:ring-2 focus:ring-jute-500">
-          </div>
-          <div>
-            <div class="flex justify-between items-center mb-0.5">
-              <label class="text-[11px] text-stone-500">设置密码</label>
-              <button onclick="handleForgotPassword()" class="text-[10px] text-jute-750 hover:underline">忘记密码？</button>
-            </div>
-            <input type="password" id="auth-password" placeholder="••••••••" class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs focus:outline-none focus:ring-2 focus:ring-jute-500">
-          </div>
-
-          <div id="wrapper-invite-code" class="hidden">
-            <label class="text-[11px] text-stone-500 block mb-0.5">学员激活邀请码</label>
-            <input type="text" id="auth-invite-code" placeholder="输入邀请码..." class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500">
-          </div>
-        </div>
-
-        <div id="auth-error" class="text-[11px] font-bold text-red-500 hidden"></div>
-        <div id="auth-success" class="text-[11px] font-bold text-emerald-500 hidden"></div>
-
-        <div class="flex gap-2 justify-end pt-1">
-          <button onclick="closeAuthModal()" class="px-3 py-1.5 rounded text-xs bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300">取消</button>
-          <button id="btn-submit-auth" onclick="handleAuthSubmit()" class="px-3.5 py-1.5 rounded text-xs font-bold bg-jute-750 text-white hover:bg-jute-900">立即登录 ➔</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🎓 学员升级弹窗 -->
-    <div id="modal-upgrade" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl">
-        <div class="flex justify-between items-center border-b pb-2 border-shibariBorder-light dark:border-shibariBorder-dark">
-          <h3 class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">🎓 自助升级权限级别</h3>
-          <button onclick="closeUpgradeModal()" class="text-stone-400">✕</button>
-        </div>
-        <p class="text-[11px] sm:text-xs text-stone-500 leading-relaxed">请输入导师发给您的高阶升级邀请码：</p>
-        <input type="text" id="upgrade-invite-code" placeholder="输入高阶邀请码..." class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500">
-        <div id="upgrade-error" class="text-[11px] font-bold text-red-500 hidden"></div>
-        <div class="flex justify-end gap-2 pt-1">
-          <button onclick="closeUpgradeModal()" class="px-3 py-1.5 rounded text-xs bg-stone-200 dark:bg-zinc-800">取消</button>
-          <button onclick="handleUpgradeSubmit()" class="px-3.5 py-1.5 rounded text-xs font-bold bg-amber-600 text-white hover:bg-amber-700">确认升级 ➔</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🛡️ 完整版《安全防护承诺书》弹窗 -->
-    <div id="modal-safety-pledge" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
-      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-
-        <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
-          <h3 class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-base flex items-center gap-1.5">
-            <span>🛡️</span> <span id="safety-modal-title">绳缚安全与解剖红线共识</span>
-          </h3>
-          <button onclick="closeSafetyModal()" class="text-stone-400 hover:text-stone-600">✕</button>
-        </div>
-
-        <div id="safety-modal-body" class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 text-[11px] sm:text-xs leading-relaxed text-stone-700 dark:text-stone-300">
-          <p class="text-stone-400">正在加载绳缚安全共识条款...</p>
-        </div>
-
-        <div class="p-3.5 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-2.5">
-          <label class="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs font-bold text-stone-800 dark:text-stone-200">
-            <input type="checkbox" id="check-safety-pledge" class="w-3.5 h-4 rounded text-jute-750 focus:ring-jute-500">
-            <span>我已阅读并理解以上安全共识，愿在绳缚练习中尊重身体局限，理性实践。</span>
-          </label>
-          <button onclick="confirmSafetyPledge()" class="w-full sm:w-auto px-4 py-2 bg-jute-750 hover:bg-jute-900 text-white font-bold rounded-lg text-xs transition-colors shadow">
+    </style></head><body class="bg-shibariBg-light dark:bg-shibariBg-dark text-stone-800 dark:text-stone-200 min-h-screen transition-colors duration-200 flex flex-col"><header class="sticky top-0 z-40 bg-stone-900 text-white shadow-md border-b border-stone-800/80"><div class="max-w-7xl mx-auto px-3 sm:px-4 py-1.5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-6"><div class="flex items-center justify-between w-full sm:w-auto"><div onclick="switchTab('home')" class="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer hover:opacity-90" title="返回首页"><span class="text-jute-500 text-lg sm:text-xl md:text-2xl font-black tracking-wider whitespace-nowrap">张力与感官</span><div class="h-3.5 sm:h-5 w-[1px] bg-stone-700"></div><span class="text-xs sm:text-sm text-stone-400 font-semibold whitespace-nowrap">绳缚入门到精通</span></div><div class="flex items-center gap-1 sm:hidden"><button onclick="toggleTheme()" class="p-1 text-stone-400 hover:text-white text-xs">🌓</button><button onclick="openProfileDrawer()" class="flex items-center gap-1 px-2 py-0.5 bg-stone-800 text-amber-400 rounded-full text-[11px] font-bold border border-stone-700"><span>👤</span></button></div></div><div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-stone-800/60"><nav class="flex items-center justify-between sm:justify-start gap-1 w-full sm:w-auto text-[11px] sm:text-sm font-bold bg-stone-800/90 sm:bg-stone-800/80 p-0.5 sm:p-1 rounded-lg sm:rounded-xl border border-stone-700/60 shadow-inner"><button onclick="switchTab('home')" id="tab-home" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm"><span>🏠</span><span>首页</span></button><button onclick="switchTab('stage-0')" id="tab-stage-0" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap"><span>🟢</span><span>初级阶段</span></button><button onclick="switchTab('stage-1')" id="tab-stage-1" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap"><span>🟡</span><span>提高阶段</span></button><button onclick="switchTab('stage-2')" id="tab-stage-2" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap"><span>🔴</span><span>熟练阶段</span></button></nav><div class="hidden sm:flex items-center gap-2 flex-shrink-0 ml-1"><button onclick="toggleTheme()" class="p-2 text-stone-400 hover:text-white text-sm transition-colors" title="切换主题">🌓</button><button id="btn-user-avatar" onclick="openProfileDrawer()" class="flex items-center gap-2 px-3.5 py-1.5 bg-stone-800 hover:bg-stone-750 text-amber-400 rounded-xl text-xs sm:text-sm font-bold border border-stone-700/80 transition-all shadow-sm"><span>👤</span><span id="nav-role-text">游客</span></button></div></div></div></header><main class="max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 flex-1 w-full"><div id="view-home" class="space-y-4 sm:space-y-6"><div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl p-3.5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3"><div class="border-b border-jute-500/30 pb-2 flex items-center justify-between gap-2"><h2 class="text-sm sm:text-xl font-black text-jute-750 dark:text-jute-600 tracking-wide whitespace-nowrap">🔺核心内容导览🔻</h2><button onclick="openAuthModal('login')" id="home-login-btn" class="px-2.5 py-1 bg-jute-750 text-white rounded-md text-[11px] sm:text-xs font-bold hover:bg-jute-900 whitespace-nowrap shadow-sm">🔑 登录/注册账号</button></div><div class="p-3 sm:p-3.5 bg-stone-50 dark:bg-zinc-900/50 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col sm:flex-row items-center justify-center sm:justify-around gap-2 sm:gap-4 text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-200"><div class="flex gap-3 w-full sm:w-auto"><span>⚙️</span><span>物理力学与解剖安全</span></div><span class="hidden sm:inline text-stone-300 dark:text-stone-700 font-normal">|</span><div class="flex gap-3 w-full sm:w-auto"><span>🙆</span><span>呼吸律动与双向觉察</span></div><span class="hidden sm:inline text-stone-300 dark:text-stone-700 font-normal">|</span><div class="flex gap-3 w-full sm:w-auto"><span>🤹‍♀️</span><span>多维玩法与高空悬吊</span></div></div></div><div class="space-y-2.5 sm:space-y-3"><h3 class="text-base sm:text-lg font-bold text-stone-800 dark:text-stone-200">🚩 课程级别阶段</h3><div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6"><div onclick="switchTab('stage-0')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-jute-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between"><div class="space-y-1.5"><div class="flex items-center justify-between"><span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded">阶段一</span><span id="badge-stage-0-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span></div><h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟢 初级阶段：地面控制与感知基础</h4><p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。掌握绳索特性、结、扣、单/双柱缚、下肢/躯干捆绑及 2TK 结构等。</p></div><div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-emerald-500"><span>进入学习 ➔</span></div></div><div onclick="switchTab('stage-1')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-amber-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between"><div class="space-y-1.5"><div class="flex items-center justify-between"><span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded">阶段二</span><span id="badge-stage-1-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span></div><h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🟡 提高阶段：躯干限制与半吊过渡</h4><p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 8 课时。进阶 3TK 多流派技法、腰胯缚重心固定、铁炮缚/提篮缚及呼吸控制等。</p></div><div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-amber-500"><span>进入学习 ➔</span></div></div><div onclick="switchTab('stage-2')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-red-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between"><div class="space-y-1.5"><div class="flex items-center justify-between"><span class="text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded">阶段三</span><span id="badge-stage-2-status" class="text-[10px] sm:text-[11px] font-bold text-stone-400">🔒 需解锁</span></div><h4 class="text-sm sm:text-lg font-black text-stone-900 dark:text-stone-100">🔴 熟练阶段：完全悬吊与高空控制</h4><p class="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 leading-relaxed">共 10 课时。竹竿、环、扣吊点锁定、平吊、倒吊/侧吊、急救与结业演练等。</p></div><div class="mt-2.5 sm:mt-4 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center text-[11px] sm:text-xs font-bold text-red-500"><span>进入学习 ➔</span></div></div></div></div></div><div id="view-stage-0" class="stage-view hidden space-y-3 sm:space-y-6"><div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm"><div class="space-y-0.5"><h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>🟢</span><span>阶段一：地面控制与感知基础</span></h2><div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 8 课时</div></div><button id="btn-toggle-stage-0" onclick="toggleAllLessonsInStage(0)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-emerald-700 dark:text-emerald-300 rounded-md border border-emerald-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0"><span>↕️</span><span id="text-toggle-stage-0">展开</span></button></div><div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative"><aside id="sidebar-toc-0" class="hidden lg:block lg:col-span-1 space-y-3"><div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm"><span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span><ul id="toc-list-0" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul></div></aside><div id="container-stage-0" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div></div></div><div id="view-stage-1" class="stage-view hidden space-y-3 sm:space-y-6"><div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm"><div class="space-y-0.5"><h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>🟡</span><span>阶段二：躯干限制与半吊过渡</span></h2><div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 8 课时</div></div><button id="btn-toggle-stage-1" onclick="toggleAllLessonsInStage(1)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-amber-700 dark:text-amber-300 rounded-md border border-amber-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0"><span>↕️</span><span id="text-toggle-stage-1">展开</span></button></div><div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative"><aside id="sidebar-toc-1" class="hidden lg:block lg:col-span-1 space-y-3"><div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm"><span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span><ul id="toc-list-1" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul></div></aside><div id="container-stage-1" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div></div></div><div id="view-stage-2" class="stage-view hidden space-y-3 sm:space-y-6"><div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm"><div class="space-y-0.5"><h2 class="text-sm sm:text-[19px] font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-2"><span>🔴</span><span>阶段三：完全悬吊与高空控制</span></h2><div class="text-[10px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium pl-5 sm:pl-6">共 10 课时</div></div><button id="btn-toggle-stage-2" onclick="toggleAllLessonsInStage(2)" class="px-2.5 py-1 bg-white dark:bg-zinc-800 text-red-700 dark:text-red-300 rounded-md border border-red-500/30 text-[11px] font-bold whitespace-nowrap shadow-sm transition-all flex items-center gap-1 flex-shrink-0"><span>↕️</span><span id="text-toggle-stage-2">展开</span></button></div><div class="grid grid-cols-1 lg:grid-cols-4 gap-6 relative"><aside id="sidebar-toc-2" class="hidden lg:block lg:col-span-1 space-y-3"><div class="sticky top-24 bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg p-3 text-xs shadow-sm"><span class="font-bold block border-b pb-2 mb-2">📖 本阶段目录</span><ul id="toc-list-2" class="space-y-1.5 max-h-[calc(100vh-12rem)] overflow-y-auto"></ul></div></aside><div id="container-stage-2" class="col-span-1 lg:col-span-3 space-y-2 sm:space-y-4"></div></div></div></main><div id="drawer-profile" class="fixed top-0 right-0 h-full w-[85vw] max-w-xs bg-stone-50 dark:bg-zinc-950 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col hidden"><div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900"><h3 class="text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-100 flex items-center gap-1.5"><span>👤</span> 个人中心与进度
+        </h3><button onclick="closeProfileDrawer()" class="text-stone-400 hover:text-stone-600 font-bold p-1">✕</button></div><div class="p-4 sm:p-5 flex-1 overflow-y-auto space-y-4 sm:space-y-5 text-xs"><div class="p-2.5 sm:p-3 bg-stone-100 dark:bg-zinc-900 rounded-lg space-y-1.5 border border-shibariBorder-light dark:border-shibariBorder-dark"><div class="text-stone-500 text-[11px]">当前账号</div><div id="drawer-user-email" class="font-bold text-stone-800 dark:text-stone-200 truncate">未登录 (游客预览模式)</div><div class="pt-1 flex items-center justify-between"><span class="text-stone-500">学员级别：</span><span id="drawer-role-badge" class="px-2 py-0.5 font-bold rounded bg-stone-800 text-stone-400 border border-stone-700">👁️ 游客</span></div></div><div class="space-y-1.5"><div class="flex justify-between font-bold"><span>学习打卡进度</span><span id="drawer-progress-percent" class="text-jute-750">0 %</span></div><div class="w-full bg-stone-200 dark:bg-zinc-800 rounded-full h-2 overflow-hidden"><div id="drawer-progress-bar" class="bg-jute-750 h-2 rounded-full transition-all duration-300" style="width: 0%"></div></div><div id="drawer-progress-text" class="text-[11px] text-stone-500 text-right">已完成 0 / 26 课时</div></div><div id="drawer-teacher-box" class="p-2.5 sm:p-3 bg-purple-500/10 rounded-lg border border-purple-500/30 space-y-1.5"><div class="font-bold text-purple-700 dark:text-purple-400 flex items-center justify-between"><span>👑 教师通道</span></div><div class="flex gap-1.5"><input type="text" id="input-teacher-passcode" placeholder="输入口令..." class="flex-1 px-2 py-1 border rounded border-purple-500/40 bg-stone-50 dark:bg-zinc-900 uppercase text-xs focus:outline-none"><button onclick="loginAsTeacherByPasscode()" class="px-2.5 py-1 bg-purple-800 text-white font-bold rounded text-xs">登录 ➔</button></div></div><div class="space-y-2 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark"><button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 注册账号</button><button id="drawer-btn-upgrade" onclick="openUpgradeModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-amber-600 text-white rounded font-bold">🎓 输入新邀请码升级权限</button><button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看绳缚安全共识书</button><button id="drawer-btn-logout" onclick="logout(); closeProfileDrawer();" class="hidden w-full py-2 bg-red-800 text-white rounded font-bold">🚪 退出当前登录</button></div></div></div><div id="modal-auth" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden"><div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl"><div class="flex border-b border-shibariBorder-light dark:border-shibariBorder-dark text-xs sm:text-sm font-bold"><button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-2 border-b-2 border-jute-750 text-jute-750">账号登录</button><button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200">邀请码注册</button><button onclick="closeAuthModal()" class="text-stone-400 hover:text-stone-600">✕</button></div><div class="space-y-2.5"><div><label class="text-[11px] text-stone-500 block mb-0.5">电子邮箱</label><input type="email" id="auth-email" placeholder="your@email.com" class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs focus:outline-none focus:ring-2 focus:ring-jute-500"></div><div><div class="flex justify-between items-center mb-0.5"><label class="text-[11px] text-stone-500">设置密码</label><button onclick="handleForgotPassword()" class="text-[10px] text-jute-750 hover:underline">忘记密码？</button></div><input type="password" id="auth-password" placeholder="••••••••" class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs focus:outline-none focus:ring-2 focus:ring-jute-500"></div><div id="wrapper-invite-code" class="hidden"><label class="text-[11px] text-stone-500 block mb-0.5">学员激活邀请码</label><input type="text" id="auth-invite-code" placeholder="输入邀请码..." class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500"></div></div><div id="auth-error" class="text-[11px] font-bold text-red-500 hidden"></div><div id="auth-success" class="text-[11px] font-bold text-emerald-500 hidden"></div><div class="flex gap-2 justify-end pt-1"><button onclick="closeAuthModal()" class="px-3 py-1.5 rounded text-xs bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300">取消</button><button id="btn-submit-auth" onclick="handleAuthSubmit()" class="px-3.5 py-1.5 rounded text-xs font-bold bg-jute-750 text-white hover:bg-jute-900">立即登录 ➔</button></div></div></div><div id="modal-upgrade" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden"><div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl"><div class="flex justify-between items-center border-b pb-2 border-shibariBorder-light dark:border-shibariBorder-dark"><h3 class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">🎓 自助升级权限级别</h3><button onclick="closeUpgradeModal()" class="text-stone-400">✕</button></div><p class="text-[11px] sm:text-xs text-stone-500 leading-relaxed">请输入导师发给您的高阶升级邀请码：</p><input type="text" id="upgrade-invite-code" placeholder="输入高阶邀请码..." class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500"><div id="upgrade-error" class="text-[11px] font-bold text-red-500 hidden"></div><div class="flex justify-end gap-2 pt-1"><button onclick="closeUpgradeModal()" class="px-3 py-1.5 rounded text-xs bg-stone-200 dark:bg-zinc-800">取消</button><button onclick="handleUpgradeSubmit()" class="px-3.5 py-1.5 rounded text-xs font-bold bg-amber-600 text-white hover:bg-amber-700">确认升级 ➔</button></div></div></div><div id="modal-safety-pledge" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden"><div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"><div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900"><h3 class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-base flex items-center gap-1.5"><span>🛡️</span><span id="safety-modal-title">绳缚安全与解剖红线共识</span></h3><button onclick="closeSafetyModal()" class="text-stone-400 hover:text-stone-600">✕</button></div><div id="safety-modal-body" class="p-4 sm:p-5 overflow-y-auto space-y-3 sm:space-y-4 text-[11px] sm:text-xs leading-relaxed text-stone-700 dark:text-stone-300"><p class="text-stone-400">正在加载绳缚安全共识条款...</p></div><div class="p-3.5 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-2.5"><label class="flex items-center gap-2 cursor-pointer text-[11px] sm:text-xs font-bold text-stone-800 dark:text-stone-200"><input type="checkbox" id="check-safety-pledge" class="w-3.5 h-4 rounded text-jute-750 focus:ring-jute-500"><span>我已阅读并理解以上安全共识，愿在绳缚练习中尊重身体局限，理性实践。</span></label><button onclick="confirmSafetyPledge()" class="w-full sm:w-auto px-4 py-2 bg-jute-750 hover:bg-jute-900 text-white font-bold rounded-lg text-xs transition-colors shadow">
             确认签署并激活权限 ➔
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 背景遮罩 -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden" onclick="closeAllDrawers()"></div>
-
-    <!-- ==================== JS 核心逻辑 (已被 Supabase 防盗安全引擎强力驱动) ==================== -->
-    <script>
+          </button></div></div></div><div id="drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden" onclick="closeAllDrawers()"></div><script>
       // 🔗 Supabase 配置
       const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
       const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
       // 全局状态
       let curriculumData = [];
       let userProgressSet = new Set();
@@ -426,13 +58,11 @@
       let pendingPostPledgeAction = null;
       let stageExpandState = { 0: false, 1: false, 2: false };
       let safetyAgreementData = null;
-
       async function initApp() {
         await checkCurrentSession();
         await fetchCurriculumFromSupabase();
         await fetchSafetyAgreementFromSupabase();
       }
-
       // 🛡️ 严格基于 Supabase 真实 Auth 状态建立 Session（杜绝伪造）
       async function checkCurrentSession() {
         const { data } = await supabaseClient.auth.getSession();
@@ -444,9 +74,7 @@
           currentUser = null;
           userLevel = 'visitor';
         }
-
         updateUIByRole();
-
         if (currentUser) {
           const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
           if (!hasSignedThisSession) {
@@ -454,7 +82,6 @@
           }
         }
       }
-
       // 🛡️ 查询数据库防偷窥安全视图 v_lessons
       async function fetchCurriculumFromSupabase() {
         try {
@@ -463,12 +90,10 @@
             .select('*')
             .order('stage', { ascending: true })
             .order('id', { ascending: true });
-
           if (error) { console.error('❌ 拉取课程失败:', error); return; }
           if (data && data.length > 0) { curriculumData = data; renderCurriculum(); }
         } catch (err) { console.error('网络请求异常:', err); }
       }
-
       async function fetchUserProgress(userId) {
         if (!userId) return;
         const { data } = await supabaseClient.from('user_progress').select('lesson_id').eq('user_id', userId);
@@ -478,14 +103,12 @@
           renderCurriculum();
         }
       }
-
       async function toggleCheckIn(lessonId) {
         if (!currentUser) {
           alert('请先登录学员或导师账号再进行打卡！');
           openAuthModal('login');
           return;
         }
-
         const isChecked = userProgressSet.has(lessonId);
         if (isChecked) {
           userProgressSet.delete(lessonId);
@@ -497,66 +120,53 @@
         updateProgressUI();
         renderCurriculum();
       }
-
       function getTotalAccessibleLessons(level) {
         if (level === 'base') return 8;
         if (level === 'adv') return 16;
         if (level === 'exp' || level === 'master') return 26;
         return 26;
       }
-
       function updateProgressUI() {
         const total = getTotalAccessibleLessons(userLevel);
         const completed = userProgressSet.size;
         const pct = Math.min(100, Math.round((completed / total) * 100));
-
         const bar = document.getElementById('drawer-progress-bar');
         const percentText = document.getElementById('drawer-progress-percent');
         const text = document.getElementById('drawer-progress-text');
-
         if (bar) bar.style.width = pct + '%';
         if (percentText) percentText.textContent = pct + ' %';
         if (text) text.textContent = `已完成 ${completed} / ${total} 课时`;
       }
-
       function switchTab(tabId) {
         currentTab = tabId;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
         document.querySelectorAll('.tab-btn').forEach(btn => {
           btn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all text-stone-300 hover:text-white hover:bg-stone-700/60 flex items-center justify-center gap-1 whitespace-nowrap";
         });
         const activeBtn = document.getElementById(`tab-${tabId}`);
         if (activeBtn) activeBtn.className = "tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm";
-
         document.getElementById('view-home').classList.add('hidden');
         document.querySelectorAll('.stage-view').forEach(v => v.classList.add('hidden'));
-
         if (tabId === 'home') {
           document.getElementById('view-home').classList.remove('hidden');
         } else {
           document.getElementById(`view-${tabId}`).classList.remove('hidden');
         }
       }
-
       function toggleAllLessonsInStage(stageIdx) {
         const container = document.getElementById(`container-stage-${stageIdx}`);
         if (!container) return;
-
         stageExpandState[stageIdx] = !stageExpandState[stageIdx];
         const isExpanded = stageExpandState[stageIdx];
-
         container.querySelectorAll('.card-body').forEach(b => {
           if (isExpanded) b.classList.remove('hidden');
           else b.classList.add('hidden');
         });
-
         const btnText = document.getElementById(`text-toggle-stage-${stageIdx}`);
         if (btnText) {
           btnText.textContent = isExpanded ? '折叠' : '展开';
         }
       }
-
       function renderCurriculum() {
         [0, 1, 2].forEach(sIdx => {
           const container = document.getElementById(`container-stage-${sIdx}`);
@@ -564,16 +174,13 @@
           if (container) container.innerHTML = '';
           if (tocList) tocList.innerHTML = '';
         });
-
         curriculumData.forEach(item => {
           const container = document.getElementById(`container-stage-${item.stage}`);
           const tocList = document.getElementById(`toc-list-${item.stage}`);
           if (!container) return;
-
           // 🛡️ 由数据库视图根据权限直接下发的 is_unlocked 决定
           const isUnlocked = item.is_unlocked === true;
           const isChecked = userProgressSet.has(item.id);
-
           if (tocList) {
             const li = document.createElement('li');
             li.innerHTML = `
@@ -583,40 +190,31 @@
             `;
             tocList.appendChild(li);
           }
-
           const card = document.createElement('div');
           card.className = "lesson-card bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-lg shadow-sm overflow-hidden";
           card.id = `lesson-${item.id}`;
-
           let mediaHtml = '';
           if (item.images && Array.isArray(item.images) && item.images.length > 0) {
             if (item.images.length === 1) {
               mediaHtml += `
-                <div class="mt-2.5 flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 sm:p-3 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark shadow-inner">
-                  <img src="${item.images[0]}" class="rounded-lg object-contain max-w-full sm:max-w-md md:max-w-lg max-h-[420px] sm:max-h-[480px] h-auto shadow-sm" alt="教学细节图" />
-                </div>
+                <div class="mt-2.5 flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 sm:p-3 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark shadow-inner"><img src="${item.images[0]}" class="rounded-lg object-contain max-w-full sm:max-w-md md:max-w-lg max-h-[420px] sm:max-h-[480px] h-auto shadow-sm" alt="教学细节图" /></div>
               `;
             } else {
               mediaHtml += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2.5">`;
               item.images.forEach(imgUrl => {
                 mediaHtml += `
-                  <div class="flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">
-                    <img src="${imgUrl}" class="rounded-lg object-contain w-full max-h-[350px] h-auto shadow-sm" alt="教学细节图" />
-                  </div>
+                  <div class="flex justify-center bg-stone-100/60 dark:bg-zinc-900/60 p-2 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark"><img src="${imgUrl}" class="rounded-lg object-contain w-full max-h-[350px] h-auto shadow-sm" alt="教学细节图" /></div>
                 `;
               });
               mediaHtml += `</div>`;
             }
           }
-
           if (item.video_url) {
             let embedUrl = item.video_url.trim();
-
             if (embedUrl.includes('vimeo.com/') && !embedUrl.includes('player.vimeo.com')) {
               const videoId = embedUrl.split('vimeo.com/')[1].split('?')[0].split('#')[0];
               embedUrl = `https://player.vimeo.com/video/${videoId}`;
             }
-
             if (embedUrl.includes('youtube.com/watch?v=')) {
               const videoId = embedUrl.split('v=')[1].split('&')[0];
               embedUrl = `https://www.youtube.com/embed/${videoId}`;
@@ -624,68 +222,35 @@
               const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
               embedUrl = `https://www.youtube.com/embed/${videoId}`;
             }
-
             mediaHtml += `
-              <div class="mt-2.5 aspect-video rounded-xl overflow-hidden border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm">
-                <iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-              </div>
+              <div class="mt-2.5 aspect-video rounded-xl overflow-hidden border border-shibariBorder-light dark:border-shibariBorder-dark shadow-sm"><iframe src="${embedUrl}" class="w-full h-full" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
             `;
           }
-
           let contentHtml = '';
           if (isUnlocked) {
             contentHtml = `
-              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')">
-                <span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm flex items-center gap-1.5">
+              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between cursor-pointer bg-stone-50 hover:bg-stone-100/50 dark:bg-zinc-900/40" onclick="toggleCardBody('${item.id}')"><span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm flex items-center gap-1.5">
                   ${isChecked ? '<span class="text-emerald-500">✅</span>' : ''}
                   ${item.title}
-                </span>
-                <span class="text-[10px] sm:text-xs text-stone-400 font-mono">▼</span>
-              </div>
-              <div id="body-${item.id}" class="card-body border-t border-shibariBorder-light dark:border-shibariBorder-dark p-3 sm:p-4 space-y-2.5 sm:space-y-3.5 hidden">
-                <div>
-                  <span class="text-[10px] sm:text-[11px] font-semibold tracking-wider text-jute-750 uppercase">【学程重点】</span>
-                  <p class="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mt-1">${item.focus || ''}</p>
-                </div>
+                </span><span class="text-[10px] sm:text-xs text-stone-400 font-mono">▼</span></div><div id="body-${item.id}" class="card-body border-t border-shibariBorder-light dark:border-shibariBorder-dark p-3 sm:p-4 space-y-2.5 sm:space-y-3.5 hidden"><div><span class="text-[10px] sm:text-[11px] font-semibold tracking-wider text-jute-750 uppercase">【学程重点】</span><p class="text-stone-700 dark:text-stone-300 text-xs sm:text-sm leading-relaxed mt-1">${item.focus || ''}</p></div>
                 ${mediaHtml}
                 ${userLevel === 'master' ? `
-                  <div class="p-2.5 bg-amber-500/5 border-l-2 border-jute-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
-                    <span class="font-bold text-jute-750 block">📌 学程目标（师资版）：</span>
-                    <p class="text-stone-600 dark:text-stone-400 text-xs sm:text-sm">${item.goal || ''}</p>
-                  </div>
-                  <div class="p-2.5 bg-red-500/5 border-l-2 border-red-500/50 rounded-r text-[11px] sm:text-xs space-y-1">
-                    <span class="font-bold text-red-600 block">⚠️ 安全防线（师资版）：</span>
-                    <p class="text-stone-600 dark:text-stone-400">${item.safety || ''}</p>
-                  </div>
+                  <div class="p-2.5 bg-amber-500/5 border-l-2 border-jute-500/50 rounded-r text-[11px] sm:text-xs space-y-1"><span class="font-bold text-jute-750 block">📌 学程目标（师资版）：</span><p class="text-stone-600 dark:text-stone-400 text-xs sm:text-sm">${item.goal || ''}</p></div><div class="p-2.5 bg-red-500/5 border-l-2 border-red-500/50 rounded-r text-[11px] sm:text-xs space-y-1"><span class="font-bold text-red-600 block">⚠️ 安全防线（师资版）：</span><p class="text-stone-600 dark:text-stone-400">${item.safety || ''}</p></div>
                 ` : ''}
-
-                <div class="pt-2 flex justify-end border-t border-shibariBorder-light dark:border-shibariBorder-dark">
-                  <button onclick="toggleCheckIn('${item.id}')" class="px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-bold transition-colors ${isChecked ? 'bg-emerald-600 text-white' : 'bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300'}">
+                <div class="pt-2 flex justify-end border-t border-shibariBorder-light dark:border-shibariBorder-dark"><button onclick="toggleCheckIn('${item.id}')" class="px-2.5 py-1 rounded-md text-[11px] sm:text-xs font-bold transition-colors ${isChecked ? 'bg-emerald-600 text-white' : 'bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 hover:bg-stone-300'}">
                     ${isChecked ? '✅ 已学完 (点击取消打卡)' : '⚪ 标记此课时为已学'}
-                  </button>
-                </div>
-              </div>
+                  </button></div></div>
             `;
           } else {
             contentHtml = `
-              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20">
-                <span class="font-bold text-stone-500 dark:text-stone-400 text-[11px] sm:text-sm truncate">${item.title}</span>
-                <span class="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap ml-2">🔒 需解锁</span>
-              </div>
-              <div class="p-3 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex items-center justify-between gap-2">
-                <p class="text-[11px] text-stone-500">登录对应级别的学员账号解锁阅读。</p>
-                <button onclick="openAuthModal('login')" class="px-2 py-0.5 bg-jute-750 text-white rounded text-[11px] font-bold whitespace-nowrap">登录解锁</button>
-              </div>
+              <div class="card-header px-3 py-2 sm:px-4 sm:py-2.5 flex items-center justify-between bg-stone-100/50 dark:bg-zinc-900/20"><span class="font-bold text-stone-500 dark:text-stone-400 text-[11px] sm:text-sm truncate">${item.title}</span><span class="text-[10px] sm:text-[11px] font-bold text-amber-600 dark:text-amber-500 whitespace-nowrap ml-2">🔒 需解锁</span></div><div class="p-3 sm:p-4 border-t border-shibariBorder-light dark:border-shibariBorder-dark flex items-center justify-between gap-2"><p class="text-[11px] text-stone-500">登录对应级别的学员账号解锁阅读。</p><button onclick="openAuthModal('login')" class="px-2 py-0.5 bg-jute-750 text-white rounded text-[11px] font-bold whitespace-nowrap">登录解锁</button></div>
             `;
           }
-
           card.innerHTML = contentHtml;
           container.appendChild(card);
         });
-
         updateUIByRole();
       }
-
       function scrollToLesson(id) {
         const card = document.getElementById(`lesson-${id}`);
         if (card) {
@@ -694,12 +259,10 @@
           if (body && body.classList.contains('hidden')) body.classList.remove('hidden');
         }
       }
-
       function toggleCardBody(id) {
         const body = document.getElementById(`body-${id}`);
         if (body) body.classList.toggle('hidden');
       }
-
       function updateUIByRole() {
         const badge = document.getElementById('drawer-role-badge');
         const navRole = document.getElementById('nav-role-text');
@@ -709,9 +272,7 @@
         const upgradeBtn = document.getElementById('drawer-btn-upgrade');
         const teacherBox = document.getElementById('drawer-teacher-box');
         const homeLoginBtn = document.getElementById('home-login-btn');
-
         const isLoggedIn = !!currentUser;
-
         if (isLoggedIn) {
           if (userLevel === 'master' || (currentUser.email && currentUser.email.includes('master_teacher'))) {
             drawerEmail.textContent = '👑 教师/管理员';
@@ -723,12 +284,10 @@
           drawerEmail.textContent = '未登录 (游客预览模式)';
           if (homeLoginBtn) homeLoginBtn.classList.remove('hidden');
         }
-
         if (isLoggedIn) {
           if (authBtn) authBtn.classList.add('hidden');
           if (teacherBox) teacherBox.classList.add('hidden');
           if (logoutBtn) logoutBtn.classList.remove('hidden');
-
           if (upgradeBtn) {
             if (userLevel !== 'master' && userLevel !== 'exp') {
               upgradeBtn.classList.remove('hidden');
@@ -742,23 +301,18 @@
           if (logoutBtn) logoutBtn.classList.add('hidden');
           if (upgradeBtn) upgradeBtn.classList.add('hidden');
         }
-
         let roleName = '👁️ 游客';
         if (userLevel === 'base') roleName = '🟢 初级学员';
         if (userLevel === 'adv') roleName = '🟡 提高学员';
         if (userLevel === 'exp') roleName = '🔴 熟练学员';
         if (userLevel === 'master') roleName = '👑 教师/管理员';
-
         if (badge) badge.textContent = roleName;
         if (navRole) navRole.textContent = roleName;
-
         document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
         document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
         document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-
         updateProgressUI();
       }
-
       // 👑 教师极简通道（口令直达登录，自动无感授权）
       async function loginAsTeacherByPasscode() {
         const code = document.getElementById('input-teacher-passcode').value.trim();
@@ -766,41 +320,31 @@
           alert('请输入导师口令！');
           return;
         }
-
         try {
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('teacher_passcode_login', { passcode: code });
-
           if (rpcErr || !rpcRes.success) {
             alert('❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '口令验证失败')));
             return;
           }
-
           const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
             email: rpcRes.email,
             password: rpcRes.password
           });
-
           if (authErr) throw authErr;
-
           currentUser = authData.user;
           userLevel = 'master';
           localStorage.setItem('shibari_user_level', 'master');
-
           document.getElementById('input-teacher-passcode').value = '';
           closeProfileDrawer();
-
           await fetchUserProgress(currentUser.id);
           await fetchCurriculumFromSupabase();
           openSafetyModal();
-
           alert('👑 欢迎导师！口令验证成功，已直达最高导师权限。');
-
         } catch (err) {
           console.error('导师极简登录报错:', err);
           alert('❌ 登录失败: ' + (err.message || '系统异常'));
         }
       }
-
       function openProfileDrawer() {
         const drawer = document.getElementById('drawer-profile');
         const overlay = document.getElementById('drawer-overlay');
@@ -819,14 +363,12 @@
         closeProfileDrawer();
         closeSafetyModal();
       }
-
       function openSafetyModal() {
         const modal = document.getElementById('modal-safety-pledge');
         const check = document.getElementById('check-safety-pledge');
         if (check) check.checked = false;
         if (modal) modal.classList.remove('hidden');
       }
-
       function closeSafetyModal() {
         const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
         if (currentUser && !hasSignedThisSession) {
@@ -836,18 +378,15 @@
         const modal = document.getElementById('modal-safety-pledge');
         if (modal) modal.classList.add('hidden');
       }
-
       function confirmSafetyPledge() {
         const check = document.getElementById('check-safety-pledge');
         if (!check || !check.checked) {
           alert('请先勾选确认已认真阅读并承诺遵守安全铁律！');
           return;
         }
-
         sessionStorage.setItem('shibari_signed_pledge_session', 'true');
         const modal = document.getElementById('modal-safety-pledge');
         if (modal) modal.classList.add('hidden');
-
         if (typeof pendingPostPledgeAction === 'function') {
           pendingPostPledgeAction();
           pendingPostPledgeAction = null;
@@ -855,23 +394,19 @@
           renderCurriculum();
         }
       }
-
       function openAuthModal(mode = 'login') {
         document.getElementById('modal-auth').classList.remove('hidden');
         switchAuthTab(mode);
       }
       function closeAuthModal() { document.getElementById('modal-auth').classList.add('hidden'); }
-
       function switchAuthTab(mode) {
         currentAuthMode = mode;
         const loginTab = document.getElementById('auth-tab-login');
         const regTab = document.getElementById('auth-tab-register');
         const codeWrapper = document.getElementById('wrapper-invite-code');
         const submitBtn = document.getElementById('btn-submit-auth');
-
         document.getElementById('auth-error').classList.add('hidden');
         document.getElementById('auth-success').classList.add('hidden');
-
         if (mode === 'login') {
           loginTab.className = "flex-1 pb-2 border-b-2 border-jute-750 text-jute-750 font-bold";
           regTab.className = "flex-1 pb-2 border-b-2 border-transparent text-stone-400 hover:text-stone-200 font-bold";
@@ -884,7 +419,6 @@
           submitBtn.textContent = '验证邀请码并注册 ➔';
         }
       }
-
       // 🛡️ 注册与登录（通过后端安全 RPC 激活邀请码）
       async function handleAuthSubmit() {
         const email = document.getElementById('auth-email').value.trim();
@@ -892,50 +426,39 @@
         const inviteCode = document.getElementById('auth-invite-code').value.trim().toUpperCase();
         const errDiv = document.getElementById('auth-error');
         const succDiv = document.getElementById('auth-success');
-
         errDiv.classList.add('hidden'); succDiv.classList.add('hidden');
-
         if (!email || !password) {
           errDiv.textContent = '❌ 请填写邮箱与密码';
           errDiv.classList.remove('hidden');
           return;
         }
-
         try {
           if (currentAuthMode === 'login') {
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw error;
-
             currentUser = data.user;
             await fetchUserRole(currentUser.id);
             await fetchUserProgress(currentUser.id);
             await fetchCurriculumFromSupabase();
             closeAuthModal();
             openSafetyModal();
-
           } else {
             if (!inviteCode) {
               errDiv.textContent = '❌ 注册必须填写邀请码';
               errDiv.classList.remove('hidden');
               return;
             }
-
             const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
             if (authErr) throw authErr;
             if (!authData || !authData.user) throw new Error("注册失败，未获取到用户");
-
             currentUser = authData.user;
-
             const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
             if (rpcErr || !rpcRes.success) {
               throw new Error(rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败'));
             }
-
             userLevel = rpcRes.role;
             localStorage.setItem('shibari_user_level', userLevel);
-
             closeAuthModal();
-
             pendingPostPledgeAction = async () => {
               await fetchCurriculumFromSupabase();
               alert('🎉 注册并激活成功！欢迎开启学习。');
@@ -948,7 +471,6 @@
           errDiv.classList.remove('hidden');
         }
       }
-
       async function handleForgotPassword() {
         const email = document.getElementById('auth-email').value.trim();
         if (!email) { alert('请先输入您的注册邮箱！'); return; }
@@ -956,7 +478,6 @@
         if (error) alert('发送失败: ' + error.message);
         else alert('📧 重置邮件已发送至邮箱，请查收！');
       }
-
       async function fetchUserRole(userId) {
         const { data } = await supabaseClient.from('profiles').select('role').eq('id', userId).single();
         if (data && data.role) {
@@ -965,18 +486,14 @@
           updateProgressUI();
         }
       }
-
       function openUpgradeModal() { document.getElementById('modal-upgrade').classList.remove('hidden'); }
       function closeUpgradeModal() { document.getElementById('modal-upgrade').classList.add('hidden'); }
-
       // 🛡️ 权限升级（通过后端安全 RPC 激活）
       async function handleUpgradeSubmit() {
         const code = document.getElementById('upgrade-invite-code').value.trim().toUpperCase();
         const errDiv = document.getElementById('upgrade-error');
         errDiv.classList.add('hidden');
-
         if (!code) { errDiv.textContent = '❌ 请输入升级邀请码'; errDiv.classList.remove('hidden'); return; }
-
         try {
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: code });
           if (rpcErr || !rpcRes.success) {
@@ -984,10 +501,8 @@
             errDiv.classList.remove('hidden');
             return;
           }
-
           userLevel = rpcRes.role;
           localStorage.setItem('shibari_user_level', userLevel);
-
           closeUpgradeModal();
           await fetchCurriculumFromSupabase();
           updateProgressUI();
@@ -997,7 +512,6 @@
           errDiv.classList.remove('hidden');
         }
       }
-
       // 🚪 安全退出
       async function logout() {
         if (supabaseClient) await supabaseClient.auth.signOut();
@@ -1006,16 +520,12 @@
         userLevel = 'visitor';
         localStorage.removeItem('shibari_user_level');
         sessionStorage.removeItem('shibari_signed_pledge_session');
-
         await fetchCurriculumFromSupabase();
         updateProgressUI();
         alert('已安全退出当前登录');
       }
-
       function toggleTheme() { document.documentElement.classList.toggle('dark'); }
-
       window.addEventListener('DOMContentLoaded', initApp);
-
       // 从 Supabase 拉取安全条款
       async function fetchSafetyAgreementFromSupabase() {
         try {
@@ -1025,9 +535,7 @@
             .order('id', { ascending: false })
             .limit(1)
             .single();
-
           if (error) { console.error('❌ 拉取安全条款失败:', error); return; }
-
           if (data) {
             safetyAgreementData = data;
             renderSafetyModal();
@@ -1036,38 +544,27 @@
           console.error('网络请求安全条款异常:', err);
         }
       }
-
       function renderSafetyModal() {
         if (!safetyAgreementData) return;
-
         const titleEl = document.getElementById('safety-modal-title');
         const bodyEl = document.getElementById('safety-modal-body');
-
         if (titleEl) titleEl.textContent = safetyAgreementData.title;
-
         if (bodyEl) {
           let sectionsHtml = '';
-
           if (Array.isArray(safetyAgreementData.sections)) {
             sectionsHtml = safetyAgreementData.sections.map(sec => `
-              <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5">
-                <h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
+              <div class="p-3 bg-stone-50 dark:bg-zinc-900/60 rounded-lg border border-shibariBorder-light dark:border-shibariBorder-dark space-y-1.5"><h4 class="font-bold text-amber-700 dark:text-amber-500 text-xs sm:text-sm">${sec.category}</h4>
                 ${sec.items.map(item => `
                   <p><strong>${item.label}</strong>：${item.text}</p>
                 `).join('')}
               </div>
             `).join('');
           }
-
           bodyEl.innerHTML = `
-            <p>${safetyAgreementData.intro}</p>
-            <div class="space-y-3 pt-1">
+            <p>${safetyAgreementData.intro}</p><div class="space-y-3 pt-1">
               ${sectionsHtml}
             </div>
           `;
         }
       }
-    </script>
-  </body>
-
-</html>
+    </script></body></html>
