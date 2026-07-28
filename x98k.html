@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>绳缚体验知情同意与偏好管理后台</title>
+    <link rel="stylesheet" href="assets/css/s4r_style.css">
+    <link rel="icon" href="image/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+      /* 🔑 口令验证遮罩 */
+      .admin-auth-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #1e1e2d;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 20000;
+      }
+
+      .admin-auth-card {
+        background: #ffffff;
+        padding: 35px 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .admin-auth-card h2 {
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-size: 1.4rem;
+      }
+
+      .admin-auth-card p {
+        color: #666;
+        font-size: 0.88rem;
+        margin-bottom: 20px;
+      }
+
+      .admin-auth-card input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      /* 🔍 工具栏 */
+      .admin-toolbar {
+        background: #ffffff;
+        padding: 15px 20px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .admin-search-input {
+        padding: 8px 15px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        min-width: 250px;
+        outline: none;
+      }
+
+      /* 🎴 首页卡片网格 */
+      .admin-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
+        margin-bottom: 25px;
+      }
+
+      .customer-card {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 15px 16px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border-left: 5px solid var(--primary);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+      }
+
+      .customer-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(139, 92, 246, 0.18);
+        border-left-color: var(--primary-dark);
+      }
+
+      .customer-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .customer-card-name {
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: var(--text-dark);
+      }
+
+      .customer-card-time {
+        font-size: 0.75rem;
+        color: #888;
+      }
+
+      .customer-card-safeword {
+        font-size: 0.85rem;
+        color: var(--danger);
+        font-weight: 500;
+      }
+
+      /* 🔢 分页 */
+      .pagination-bar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 30px;
+      }
+
+      .page-btn {
+        padding: 6px 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.88rem;
+        transition: all 0.2s;
+      }
+
+      .page-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .page-btn.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+        font-weight: 600;
+      }
+
+      /* 🌟 弹窗容器 */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(5px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 15000;
+        padding: 15px;
+        box-sizing: border-box;
+      }
+
+      .modal-container {
+        background: #ffffff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 820px;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+        padding: 20px 15px;
+        clip-path: inset(0 round 14px);
+        animation: modalFadeIn 0.2s ease-out;
+      }
+
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.97);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* 美化弹窗滚动条 */
+      .modal-container::-webkit-scrollbar {
+        width: 7px;
+      }
+
+      .modal-container::-webkit-scrollbar-track {
+        background: transparent;
+        margin: 15px 0;
+      }
+
+      .modal-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      .modal-container::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* 🌟 优化：吸顶关闭按钮往左上挪动，离边缘更远更和谐 */
+      .modal-close-btn {
+        position: sticky;
+        top: 8px;
+        float: right;
+        margin-bottom: -40px;
+        margin-right: 12px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        border: 1px solid var(--border);
+        color: #64748b;
+        font-size: 0.95rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        line-height: 1;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 100;
+      }
+
+      .modal-close-btn:hover {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+        transform: rotate(90deg);
+      }
+
+      /* 🎨 键值卡片样式组 */
+      .detail-card-group {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      }
+
+      .detail-card-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* 严格双列表单网格 */
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px 14px;
+      }
+
+      @media (max-width: 640px) {
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* 每个字段的小盒子 (KV-Box) */
+      .kv-box {
+        display: flex;
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        min-height: 38px;
+        box-sizing: border-box;
+      }
+
+      .kv-box.full {
+        grid-column: 1 / -1;
+        align-items: flex-start;
+      }
+
+      .kv-label {
+        color: #64748b;
+        font-weight: 500;
+        width: 100px;
+        flex-shrink: 0;
+        font-size: 0.85rem;
+      }
+
+      .kv-val {
+        color: #0f172a;
+        font-weight: 600;
+        word-break: break-word;
+        flex-grow: 1;
+      }
+
+      /* 安全词警示 Banner */
+      .safeword-banner {
+        background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 100%);
+        border: 1px solid #fca5a5;
+        border-left: 5px solid #ef4444;
+        border-radius: 8px;
+        padding: 10px 16px;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #991b1b;
+      }
+
+      /* 精致胶囊标签组 */
+      .tag-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+      }
+
+      .tag-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 500;
+      }
+
+      .tag-pill.purple {
+        background: #f3e8ff;
+        color: #7e22ce;
+        border: 1px solid #e9d5ff;
+      }
+
+      .tag-pill.red {
+        background: #ffe4e6;
+        color: #be123c;
+        border: 1px solid #fecdd3;
+      }
+
+      .tag-pill.gray {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+      }
+
+      .btn-danger-action {
+        background: #ef4444;
+        color: white;
+        border: none;
+      }
+
+      .btn-danger-action:hover {
+        background: #dc2626;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- 🔑 管理员访问口令锁 -->
+    <div class="admin-auth-overlay" id="authOverlay">
+      <div class="admin-auth-card">
+        <i class="fas fa-user-shield" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+        <h2>管理后台身份验证</h2>
+        <p>请输入管理员专属访问口令以拉取客户数据</p>
+        <input type="password" id="authPassword" placeholder="输入访问口令" />
+        <button class="btn-submit" style="margin-top:0;" onclick="verifyAdminPass()">进入控制台</button>
+      </div>
+    </div>
+
+    <!-- 🖥️ 主界面 -->
+    <div class="container" style="margin-top: 20px; margin-bottom: 40px;">
+      <div class="header">
+        <h1>绳缚知情同意表单 - 管理控制台</h1>
+        <p>安全备份数据与客户偏好全量档案管理</p>
+      </div>
+
+      <div class="content">
+        <div class="admin-toolbar">
+          <div>
+            <i class="fas fa-search" style="color:#888; margin-right: 5px;"></i>
+            <input type="text" id="searchInput" class="admin-search-input" placeholder="搜索客户称呼 / 安全词..." oninput="filterResponses()" />
+          </div>
+          <div>
+            <span id="responseCount" style="font-size: 0.9rem; color: #666; margin-right: 15px;">已载入 0 条档案</span>
+            <button class="btn-action btn-secondary" style="display:inline-flex; padding:6px 12px; font-size:0.85rem;" onclick="loadDataFromSupabase()">
+              <i class="fas fa-sync-alt"></i> 刷新数据
+            </button>
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: var(--text-dark);"><i class="fas fa-users"></i> 客户档案列表（点击卡片弹窗查看详情）</h3>
+        <div class="admin-cards-grid" id="customerCardsGrid"></div>
+        <div class="pagination-bar" id="paginationBar"></div>
+      </div>
+    </div>
+
+    <!-- 🌟 沉浸式档案弹窗 (Modal) -->
+    <div class="modal-overlay" id="detailModal" onclick="handleOverlayClick(event)">
+      <div class="modal-container">
+
+        <!-- 吸顶悬浮关闭按钮 -->
+        <button class="modal-close-btn" onclick="closeDetailModal()" title="关闭窗口">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- 🌟 核心优化：专门增加 25px 充裕内边距容器，确保截长图时四周留有优雅的白边 -->
+        <div id="formContainer" style="padding: 25px 20px; background: #ffffff; border-radius: 12px;">
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+            <h2 style="font-size: 1.25rem; color: var(--text-dark); margin:0;">
+              <i class="fas fa-file-contract" style="color: var(--primary);"></i> 【<span id="displayCustomerName"></span>】的问卷档案表
+            </h2>
+          </div>
+
+          <!-- 🚨 安全词置顶高亮横幅 -->
+          <div class="safeword-banner">
+            <i class="fas fa-exclamation-triangle" style="font-size: 1.2rem;"></i>
+            <div><strong>安全词 / 动作：</strong> <span id="confSafeword" style="font-weight: 700; font-size: 1.1rem; text-decoration: underline;"></span></div>
+          </div>
+
+          <!-- 模块 1：基本信息与健康声明 -->
+          <div class="detail-card-group">
+            <div class="detail-card-title"><i class="fas fa-user-shield"></i> 基本信息与健康声明</div>
+            <div class="detail-grid">
+              <div class="kv-box"><span class="kv-label">称呼方式：</span><span class="kv-val" id="confNickname"></span></div>
+              <div class="kv-box"><span class="kv-label">是否成年：</span><span class="kv-val" id="confAdult"></span></div>
+              <div class="kv-box"><span class="kv-label">安全须知：</span><span class="kv-val" id="confSafety"></span></div>
+              <div class="kv-box"><span class="kv-label">影像记录：</span><span class="kv-val" id="confRecording"></span></div>
+              <div class="kv-box full"><span class="kv-label">健康问题：</span><span class="kv-val" id="confMedical"></span></div>
+              <div class="kv-box full"><span class="kv-label">穿孔 / 改造：</span><span class="kv-val" id="confPiercings"></span></div>
+            </div>
+          </div>
+
+          <!-- 模块 2：身体界限与部位限制 -->
+          <div class="detail-card-group">
+            <div class="detail-card-title"><i class="fas fa-ban"></i> 身体界限与限制设置</div>
+            <div class="detail-grid" style="margin-bottom: 10px;">
+              <div class="kv-box"><span class="kv-label">上半身裸露：</span><span class="kv-val" id="confTopless"></span></div>
+              <div class="kv-box"><span class="kv-label">身体痕迹：</span><span class="kv-val" id="confMarks"></span></div>
+            </div>
+
+            <div class="kv-box full" style="margin-bottom: 10px; flex-direction: column; align-items: flex-start;">
+              <span class="kv-label" style="margin-bottom: 4px; width: 100%;"><i class="fas fa-handshake-alt-slash"></i> 不希望被触碰的部位：</span>
+              <div class="tag-group" id="confNoTouchTags"></div>
+            </div>
+
+            <div class="kv-box full" style="flex-direction: column; align-items: flex-start;">
+              <span class="kv-label" style="margin-bottom: 4px; width: 100%;"><i class="fas fa-ban"></i> 不可以被捆绑的部位：</span>
+              <div class="tag-group" id="confNoBondageTags"></div>
+            </div>
+          </div>
+
+          <!-- 模块 3：痛感与特定玩法偏好 -->
+          <div class="detail-card-group">
+            <div class="detail-card-title"><i class="fas fa-bolt"></i> 痛感与特定玩法偏好</div>
+            <div class="detail-grid" style="margin-bottom: 10px;">
+              <div class="kv-box"><span class="kv-label">除捆绑外痛感：</span><span class="kv-val" id="confPainOther"></span></div>
+              <div class="kv-box"><span class="kv-label">疼痛忍耐度：</span><span class="kv-val" id="confPainTolerance"></span></div>
+            </div>
+
+            <div class="kv-box full" style="flex-direction: column; align-items: flex-start;">
+              <span class="kv-label" style="margin-bottom: 4px; width: 100%;"><i class="fas fa-check-circle"></i> 能接受的特定项目：</span>
+              <div class="tag-group" id="confAcceptsTags"></div>
+            </div>
+          </div>
+
+          <!-- 模块 4：互动偏好明细 -->
+          <div class="detail-card-group">
+            <div class="detail-card-title"><i class="fas fa-heart"></i> 互动偏好明细</div>
+            <div class="detail-grid">
+              <div class="kv-box"><span class="kv-label">接受拥抱：</span><span class="kv-val" id="confHug"></span></div>
+              <div class="kv-box"><span class="kv-label">五感剥夺：</span><span class="kv-val" id="confSensory"></span></div>
+              <div class="kv-box"><span class="kv-label">蒙眼接受度：</span><span class="kv-val" id="confBlindfold"></span></div>
+              <div class="kv-box"><span class="kv-label">堵嘴接受度：</span><span class="kv-val" id="confGag"></span></div>
+              <div class="kv-box full"><span class="kv-label">呼吸控制：</span><span class="kv-val" id="confBreath"></span></div>
+            </div>
+          </div>
+
+          <!-- 模块 5：期望的深度体验感受 -->
+          <div class="detail-card-group">
+            <div class="detail-card-title"><i class="fas fa-feather-alt"></i> 期望的深度体验感受</div>
+            <div id="confFeelingsCompact" style="padding: 4px 0;"></div>
+          </div>
+
+          <!-- 底部操作按钮 -->
+          <div class="action-buttons" style="margin-top: 20px;">
+            <button type="button" class="btn-action btn-primary" onclick="downloadS4RImage('formContainer')">
+              <i class="fas fa-camera"></i> <span>保存为长图</span>
+            </button>
+            <button class="btn-action btn-primary" onclick="printConfirmation()">
+              <i class="fas fa-print"></i> 打印该档案
+            </button>
+            <button class="btn-action btn-danger-action" onclick="deleteCurrentCustomer()">
+              <i class="fas fa-trash-alt"></i> 废弃/删除此档案
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 🛠️ 后台交互脚本 -->
+    <script>
+      const bodyPartsMap = {
+        "头发": "fas fa-cut", "面部": "fas fa-smile", "脖子": "fas fa-user",
+        "胸部": "fas fa-glasses", "手臂": "fas fa-hand-paper", "手指": "fas fa-hand-point-up",
+        "腰部": "fas fa-sort", "臀部": "fas fa-heart", "私密部位": "fas fa-chevron-circle-down",
+        "下肢": "fas fa-walking", "脚": "fas fa-shoe-prints", "无": "fas fa-user-secret"
+      };
+
+      const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", no: "不接受" };
+      const blindfoldMap = { "享受": "享受", "可以接受": "可以接受", "不接受（会不安）": "不接受（会不安）" };
+      const gagMap = { "享受": "享受", "可以轻度接受": "可以轻度接受", "不接受": "不接受" };
+      const acceptMap = { hair_pulling: "拉头发", slapping: "耳光", spanking: "SP", thigh_rope: "股绳" };
+
+      const SUPABASE_URL = 'https://cpjjmuzrcvgbaekiqkrx.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2';
+
+      const { createClient } = supabase;
+      const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { db: { schema: 's4r' } });
+
+      let allResponses = [];
+      let filteredResponses = [];
+      let currentSelectedId = null;
+      let currentPage = 1;
+      const pageSize = 12;
+
+      async function verifyAdminPass() {
+        const inputPass = document.getElementById("authPassword").value.trim();
+        const btn = document.querySelector(".admin-auth-card .btn-submit");
+        if (!inputPass) return alert("请输入访问口令！");
+
+        btn.disabled = true;
+        btn.innerText = "正在验证权限...";
+
+        try {
+          const { data: isMatched, error } = await _supabase.rpc('verify_admin_pass', { input_pass: inputPass });
+          if (error) throw error;
+
+          if (isMatched === true) {
+            document.getElementById("authOverlay").style.display = "none";
+            loadDataFromSupabase();
+          } else {
+            alert("访问口令错误，拒绝访问！");
+          }
+        } catch (err) {
+          console.error("口令验证失败:", err);
+          alert("验证请求异常，请检查网络或 Supabase 配置！");
+        } finally {
+          btn.disabled = false;
+          btn.innerText = "进入控制台";
+        }
+      }
+
+      document.getElementById("authPassword").addEventListener("keyup", function (e) {
+        if (e.key === "Enter") verifyAdminPass();
+      });
+
+      async function loadDataFromSupabase() {
+        try {
+          const { data, error } = await _supabase
+            .from('responses')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+
+          allResponses = data || [];
+          filteredResponses = [...allResponses];
+          document.getElementById("responseCount").innerText = `已载入 ${allResponses.length} 条档案`;
+
+          currentPage = 1;
+          renderPagedCustomerCards();
+        } catch (err) {
+          console.error("加载数据失败:", err);
+          alert("加载数据失败，请检查网络或 Supabase 配置！");
+        }
+      }
+
+      function renderPagedCustomerCards() {
+        const container = document.getElementById("customerCardsGrid");
+        container.innerHTML = "";
+
+        if (filteredResponses.length === 0) {
+          container.innerHTML = `<p style="color:#888; grid-column: 1/-1; text-align:center; padding:30px;">未找到任何问卷数据</p>`;
+          document.getElementById("paginationBar").innerHTML = "";
+          return;
+        }
+
+        const startIndex = (currentPage - 1) * pageSize;
+        const pageItems = filteredResponses.slice(startIndex, startIndex + pageSize);
+
+        pageItems.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "customer-card";
+          card.id = `card-${item.id}`;
+
+          const timeStr = new Date(item.created_at).toLocaleString('zh-CN', {
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+          });
+
+          card.innerHTML = `
+            <div class="customer-card-header">
+              <span class="customer-card-name">${item.nickname || '未填写称呼'}</span>
+              <span class="customer-card-time">${timeStr}</span>
+            </div>
+            <div class="customer-card-safeword"> 🚨 : ${item.safeword || '未设定'}</div>
+          `;
+
+          card.onclick = () => openCustomerModal(item.id);
+          container.appendChild(card);
+        });
+
+        renderPaginationControls();
+      }
+
+      function renderPaginationControls() {
+        const totalPages = Math.ceil(filteredResponses.length / pageSize);
+        const pBar = document.getElementById("paginationBar");
+        pBar.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        const prevBtn = document.createElement("button");
+        prevBtn.className = "page-btn";
+        prevBtn.innerText = "上一页";
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => { currentPage--; renderPagedCustomerCards(); };
+        pBar.appendChild(prevBtn);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const pBtn = document.createElement("button");
+          pBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+          pBtn.innerText = i;
+          pBtn.onclick = () => { currentPage = i; renderPagedCustomerCards(); };
+          pBar.appendChild(pBtn);
+        }
+
+        const nextBtn = document.createElement("button");
+        nextBtn.className = "page-btn";
+        nextBtn.innerText = "下一页";
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => { currentPage++; renderPagedCustomerCards(); };
+        pBar.appendChild(nextBtn);
+      }
+
+      // 🌟 打开弹窗并渲染
+      function openCustomerModal(id) {
+        currentSelectedId = id;
+
+        const item = allResponses.find(r => r.id === id);
+        if (!item) return;
+
+        document.getElementById("displayCustomerName").innerText = item.nickname || "客户";
+        document.getElementById("confSafeword").innerText = item.safeword || "未设置";
+
+        // 1. 基本信息模块
+        document.getElementById("confNickname").innerText = item.nickname || "未填写";
+        document.getElementById("confAdult").innerText = item.is_adult === "yes" ? "是 (已成年)" : "否";
+        document.getElementById("confSafety").innerHTML = `<span style="color:var(--success);">✅ 已理解同意</span>`;
+        document.getElementById("confRecording").innerText = item.recording === "yes" ? "希望留下记录" : "不希望留记录";
+        document.getElementById("confMedical").innerText = item.medical_history || "无特别声明";
+        document.getElementById("confPiercings").innerText = item.piercings || "无特别声明";
+
+        // 2. 身体界限模块
+        document.getElementById("confTopless").innerText = item.topless === "accept" ? "接受上半身赤裸" : "不接受";
+
+        let marksText = item.marks === "accept" ? "能接受痕迹" : "不能接受痕迹";
+        if (item.marks === "not_accept" && item.no_marks_areas) {
+          marksText += ` (不可留痕：${item.no_marks_areas})`;
+        }
+        document.getElementById("confMarks").innerText = marksText;
+
+        // 不可触碰胶囊标签
+        const noTouchTags = document.getElementById("confNoTouchTags");
+        if (item.no_touch && item.no_touch.length > 0) {
+          noTouchTags.innerHTML = item.no_touch.map(part => {
+            const icon = bodyPartsMap[part] || "fas fa-minus-circle";
+            return `<span class="tag-pill purple"><i class="${icon}"></i>${part}</span>`;
+          }).join("");
+        } else {
+          noTouchTags.innerHTML = `<span class="tag-pill gray">无特殊限制</span>`;
+        }
+
+        // 不可捆绑胶囊标签
+        const noBondageTags = document.getElementById("confNoBondageTags");
+        if (item.no_bondage && item.no_bondage.length > 0) {
+          noBondageTags.innerHTML = item.no_bondage.map(part => {
+            const icon = bodyPartsMap[part] || "fas fa-ban";
+            return `<span class="tag-pill red"><i class="${icon}"></i>${part}</span>`;
+          }).join("");
+        } else {
+          noBondageTags.innerHTML = `<span class="tag-pill gray">无特殊限制</span>`;
+        }
+
+        // 3. 痛感模块
+        document.getElementById("confPainOther").innerText = item.other_pain === "yes" ? "希望体验除捆绑感外疼痛" : "不希望体验";
+        document.getElementById("confPainTolerance").innerText = item.pain_tolerance || "未选择";
+
+        // 特定玩法项目
+        const acceptsTags = document.getElementById("confAcceptsTags");
+        if (item.accepts && item.accepts.length > 0) {
+          acceptsTags.innerHTML = item.accepts.map(acc => {
+            return `<span class="tag-pill purple"><i class="fas fa-check"></i>${acceptMap[acc] || acc}</span>`;
+          }).join("");
+        } else {
+          acceptsTags.innerHTML = `<span class="tag-pill gray">未选择特定项目</span>`;
+        }
+
+        // 4. 互动偏好模块
+        document.getElementById("confHug").innerText = item.hug === "yes" ? "可以" : "不可以";
+        document.getElementById("confSensory").innerText = item.sensory_deprivation === "yes" ? "是" : "否";
+        document.getElementById("confBlindfold").innerText = blindfoldMap[item.blindfold] || item.blindfold || "未选择";
+        document.getElementById("confGag").innerText = gagMap[item.gag] || item.gag || "未选择";
+        document.getElementById("confBreath").innerText = breathControlMap[item.breath_control] || item.breath_control || "未选择";
+
+        // 5. 期望体验模块
+        const feelingsContainer = document.getElementById("confFeelingsCompact");
+        if (item.feelings && item.feelings.length > 0) {
+          feelingsContainer.innerHTML = item.feelings.map(feel => {
+            const val = typeof feel === 'object' ? feel.value : feel;
+            return `<div style="font-size:0.85rem; color:#1e293b; padding:4px 8px; background:#f8fafc; border-radius:6px; margin-bottom:4px; border:1px solid #f1f5f9;">• <strong>${val}</strong></div>`;
+          }).join("");
+        } else {
+          feelingsContainer.innerHTML = `<span style="font-size:0.85rem; color:#888;">无特殊偏好</span>`;
+        }
+
+        // 🌟 1. 先显示弹窗（确保 DOM 节点可见）
+        const modal = document.getElementById("detailModal");
+        modal.style.display = "flex";
+
+        // 🌟 2. 弹窗显示后，强制将滚动条归零回到最顶端！
+        setTimeout(() => {
+          const modalContainer = document.querySelector(".modal-container");
+          if (modalContainer) modalContainer.scrollTop = 0;
+          modal.scrollTop = 0;
+        }, 10);
+      }
+
+      function closeDetailModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
+
+      function handleOverlayClick(e) {
+        if (e.target.id === "detailModal") closeDetailModal();
+      }
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeDetailModal();
+      });
+
+      function filterResponses() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        filteredResponses = allResponses.filter(item => {
+          const name = (item.nickname || '').toLowerCase();
+          const word = (item.safeword || '').toLowerCase();
+          return name.includes(query) || word.includes(query);
+        });
+        currentPage = 1;
+        renderPagedCustomerCards();
+      }
+
+      async function deleteCurrentCustomer() {
+        if (!currentSelectedId) return;
+
+        const currentItem = allResponses.find(r => r.id === currentSelectedId);
+        const name = currentItem ? currentItem.nickname : '此';
+
+        if (!confirm(`确定要废弃并彻底删除【${name}】的这份知情同意档案吗？删除后不可恢复！`)) {
+          return;
+        }
+
+        try {
+          const { error } = await _supabase
+            .from('responses')
+            .delete()
+            .eq('id', currentSelectedId);
+
+          if (error) throw error;
+
+          alert("档案已成功废弃并删除！");
+          closeDetailModal();
+          loadDataFromSupabase();
+        } catch (err) {
+          console.error("删除失败:", err);
+          alert("删除失败，请检查数据库权限配置！\n详细信息: " + err.message);
+        }
+      }
+
+      function printConfirmation() { window.print(); }
+
+      function downloadS4RImage(id) {
+        const element = document.getElementById(id);
+        html2canvas(element, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+          const imageData = canvas.toDataURL("image/png");
+          const link = document.createElement('a');
+          link.download = `绳缚体验同意书-${document.getElementById("displayCustomerName").innerText}.png`;
+          link.href = imageData;
+          link.click();
+        });
+      }
+    </script>
+  </body>
+
+</html>
