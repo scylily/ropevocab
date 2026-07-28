@@ -626,15 +626,7 @@ function downloadS4RImage(id) {
       .then((canvas) => {
         const imageData = canvas.toDataURL("image/png");
 
-        // 2. 自动触发带自定义文件名的浏览器下载 (电脑/普通手机浏览器)
-        const downloadLink = document.createElement("a");
-        downloadLink.href = imageData;
-        downloadLink.download = fileName; // 设置自定义文件名！
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-
-        // 3. 同时弹窗显示预览 (方便微信/Safari 内长图保存相册)
+        // 2. 弹窗显示预览 (方便微信/Safari 内长图保存相册)
         let overlay = document.getElementById("image-download-overlay");
         if (!overlay) {
           overlay = document.createElement("div");
