@@ -1,13 +1,535 @@
-/*_encrypted_shell_*/
-(function() {
-    const b64 = "Y29uc3QgYm9keVBhcnRzID0gWwogIHsgaWQ6ICLlpLTlj5EiLCBuYW1lOiAi5aS05Y+RIiwgaWNvbjogImZhcyBmYS1jdXQiIH0sCiAgeyBpZDogIumdoumDqCIsIG5hbWU6ICLpnaLpg6giLCBpY29uOiAiZmFzIGZhLXNtaWxlIiB9LAogIHsgaWQ6ICLohJblrZAiLCBuYW1lOiAi6ISW5a2QIiwgaWNvbjogImZhcyBmYS11c2VyIiB9LAogIHsgaWQ6ICLog7jpg6giLCBuYW1lOiAi6IO46YOoIiwgaWNvbjogImZhcyBmYS1nbGFzc2VzIiB9LAogIHsgaWQ6ICLmiYvoh4IiLCBuYW1lOiAi5omL6IeCIiwgaWNvbjogImZhcyBmYS1oYW5kLXBhcGVyIiB9LAogIHsgaWQ6ICLmiYvmjIciLCBuYW1lOiAi5omL5oyHIiwgaWNvbjogImZhcyBmYS1oYW5kLXBvaW50LXVwIiB9LAogIHsgaWQ6ICLohbDpg6giLCBuYW1lOiAi6IWw6YOoIiwgaWNvbjogImZhcyBmYS1zb3J0IiB9LAogIHsgaWQ6ICLoh4Dpg6giLCBuYW1lOiAi6IeA6YOoIiwgaWNvbjogImZhcyBmYS1oZWFydCIgfSwKICB7IGlkOiAi56eB5a+G6YOo5L2NIiwgbmFtZTogIuengeWvhumDqOS9jSIsIGljb246ICJmYXMgZmEtY2hldnJvbi1jaXJjbGUtZG93biIgfSwKICB7IGlkOiAi5LiL6IKiIiwgbmFtZTogIuS4i+iCoiIsIGljb246ICJmYXMgZmEtd2Fsa2luZyIgfSwKICB7IGlkOiAi6ISaIiwgbmFtZTogIuiEmiIsIGljb246ICJmYXMgZmEtc2hvZS1wcmludHMiIH0sCiAgeyBpZDogIuaXoCIsIG5hbWU6ICLml6AiLCBpY29uOiAiZmFzIGZhcyBmYS11c2VyLXNlY3JldCIgfSwKXTsKbGV0IHVzZXJGb3JtRGF0YSA9IHt9OwpmdW5jdGlvbiBpbml0Qm9keVBhcnRTZWxlY3RvcnMoKSB7CiAgY29uc3Qgbm9Ub3VjaENvbnRhaW5lciA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJub1RvdWNoQXJlYXMiKTsKICBjb25zdCBub0JvbmRhZ2VDb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgibm9Cb25kYWdlQXJlYXMiKTsKICBib2R5UGFydHMuZm9yRWFjaCgocGFydCkgPT4gewogICAgY29uc3QgdG91Y2hEaXYgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTsKICAgIHRvdWNoRGl2LmNsYXNzTmFtZSA9ICJib2R5LXBhcnQtaXRlbSI7CiAgICB0b3VjaERpdi5kYXRhc2V0LmlkID0gcGFydC5pZDsKICAgIHRvdWNoRGl2LmRhdGFzZXQubmFtZSA9IHBhcnQubmFtZTsKICAgIHRvdWNoRGl2LmlubmVySFRNTCA9IGA8aSBjbGFzcz0iJHtwYXJ0Lmljb259Ij48L2k+PHNwYW4+JHtwYXJ0Lm5hbWV9PC9zcGFuPmA7CiAgICB0b3VjaERpdi5hZGRFdmVudExpc3RlbmVyKCJjbGljayIsICgpID0+IHsKICAgICAgdG91Y2hEaXYuY2xhc3NMaXN0LnRvZ2dsZSgic2VsZWN0ZWQiKTsKICAgICAgdXBkYXRlSGlkZGVuSW5wdXQoIm5vX3RvdWNoX2lucHV0IiwgIm5vVG91Y2hBcmVhcyIpOwogICAgfSk7CiAgICBub1RvdWNoQ29udGFpbmVyLmFwcGVuZENoaWxkKHRvdWNoRGl2KTsKICAgIGNvbnN0IGJvbmRhZ2VEaXYgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTsKICAgIGJvbmRhZ2VEaXYuY2xhc3NOYW1lID0gImJvZHktcGFydC1pdGVtIjsKICAgIGJvbmRhZ2VEaXYuZGF0YXNldC5pZCA9IHBhcnQuaWQ7CiAgICBib25kYWdlRGl2LmRhdGFzZXQubmFtZSA9IHBhcnQubmFtZTsKICAgIGJvbmRhZ2VEaXYuaW5uZXJIVE1MID0gYDxpIGNsYXNzPSIke3BhcnQuaWNvbn0iPjwvaT48c3Bhbj4ke3BhcnQubmFtZX08L3NwYW4+YDsKICAgIGJvbmRhZ2VEaXYuYWRkRXZlbnRMaXN0ZW5lcigiY2xpY2siLCAoKSA9PiB7CiAgICAgIGJvbmRhZ2VEaXYuY2xhc3NMaXN0LnRvZ2dsZSgic2VsZWN0ZWQiKTsKICAgICAgdXBkYXRlSGlkZGVuSW5wdXQoIm5vX2JvbmRhZ2VfaW5wdXQiLCAibm9Cb25kYWdlQXJlYXMiKTsKICAgIH0pOwogICAgbm9Cb25kYWdlQ29udGFpbmVyLmFwcGVuZENoaWxkKGJvbmRhZ2VEaXYpOwogIH0pOwp9CmZ1bmN0aW9uIHVwZGF0ZUhpZGRlbklucHV0KGlucHV0SWQsIGNvbnRhaW5lcklkKSB7CiAgY29uc3QgaW5wdXQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChpbnB1dElkKTsKICBjb25zdCBjb250YWluZXIgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChjb250YWluZXJJZCk7CiAgY29uc3Qgc2VsZWN0ZWRJdGVtcyA9IGNvbnRhaW5lci5xdWVyeVNlbGVjdG9yQWxsKCIuc2VsZWN0ZWQiKTsKICBjb25zdCB2YWx1ZXMgPSBBcnJheS5mcm9tKHNlbGVjdGVkSXRlbXMpLm1hcCgoaXRlbSkgPT4gewogICAgaWYgKGNvbnRhaW5lcklkID09PSAiZmVlbGluZ1RhZ3MiKSB7CiAgICAgIHJldHVybiBpdGVtLnRleHRDb250ZW50OwogICAgfSBlbHNlIHsKICAgICAgcmV0dXJuIGl0ZW0uZGF0YXNldC5pZDsKICAgIH0KICB9KTsKICBpbnB1dC52YWx1ZSA9IHZhbHVlcy5qb2luKCIsIik7Cn0KZnVuY3Rpb24gY29sbGVjdEZvcm1EYXRhKCkgewogIGNvbnN0IGZvcm0gPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgicm9wZUZvcm0iKTsKICBjb25zdCBmb3JtRGF0YSA9IG5ldyBGb3JtRGF0YShmb3JtKTsKICB1c2VyRm9ybURhdGEgPSB7fTsKICBmb3IgKGxldCBba2V5LCB2YWx1ZV0gb2YgZm9ybURhdGEuZW50cmllcygpKSB7CiAgICBpZiAoa2V5ID09PSAiYWNjZXB0cyIpIHsKICAgICAgaWYgKCF1c2VyRm9ybURhdGEuYWNjZXB0cykgdXNlckZvcm1EYXRhLmFjY2VwdHMgPSBbXTsKICAgICAgdXNlckZvcm1EYXRhLmFjY2VwdHMucHVzaCh2YWx1ZSk7CiAgICB9IGVsc2UgewogICAgICB1c2VyRm9ybURhdGFba2V5XSA9IHZhbHVlOwogICAgfQogIH0KICBjb25zdCBub1RvdWNoSXRlbXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCIjbm9Ub3VjaEFyZWFzIC5zZWxlY3RlZCIpOwogIHVzZXJGb3JtRGF0YS5ub1RvdWNoSXRlbXMgPSBBcnJheS5mcm9tKG5vVG91Y2hJdGVtcykubWFwKChpdGVtKSA9PiAoewogICAgaWQ6IGl0ZW0uZGF0YXNldC5pZCwKICAgIG5hbWU6IGl0ZW0uZGF0YXNldC5uYW1lLAogIH0pKTsKICBjb25zdCBub0JvbmRhZ2VJdGVtcyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoIiNub0JvbmRhZ2VBcmVhcyAuc2VsZWN0ZWQiKTsKICB1c2VyRm9ybURhdGEubm9Cb25kYWdlSXRlbXMgPSBBcnJheS5mcm9tKG5vQm9uZGFnZUl0ZW1zKS5tYXAoKGl0ZW0pID0+ICh7CiAgICBpZDogaXRlbS5kYXRhc2V0LmlkLAogICAgbmFtZTogaXRlbS5kYXRhc2V0Lm5hbWUsCiAgfSkpOwogIGNvbnN0IGZlZWxpbmdJdGVtcyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoCiAgICAnLmZlZWxpbmctb3B0aW9uIGlucHV0W3R5cGU9ImNoZWNrYm94Il06Y2hlY2tlZCcsCiAgKTsKICB1c2VyRm9ybURhdGEuZmVlbGluZ0l0ZW1zID0gQXJyYXkuZnJvbShmZWVsaW5nSXRlbXMpLm1hcCgoaXRlbSkgPT4gKHsKICAgIHZhbHVlOiBpdGVtLnZhbHVlLAogICAgdGV4dDogaXRlbS5uZXh0RWxlbWVudFNpYmxpbmcKICAgICAgLnF1ZXJ5U2VsZWN0b3IoIi5vcHRpb24tdGl0bGUiKQogICAgICAudGV4dENvbnRlbnQudHJpbSgpLAogICAgZGVzYzogaXRlbS5uZXh0RWxlbWVudFNpYmxpbmcKICAgICAgLnF1ZXJ5U2VsZWN0b3IoIi5vcHRpb24tZGVzYyIpCiAgICAgIC50ZXh0Q29udGVudC50cmltKCksCiAgfSkpOwogIHJldHVybiB1c2VyRm9ybURhdGE7Cn0KZnVuY3Rpb24gc2hvd0NvbmZpcm1hdGlvbigpIHsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgic3VjY2Vzc01lc3NhZ2UiKS5zdHlsZS5kaXNwbGF5ID0gIm5vbmUiOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25maXJtYXRpb25QYWdlIikuc3R5bGUuZGlzcGxheSA9ICJibG9jayI7CiAgcG9wdWxhdGVDb25maXJtYXRpb25QYWdlKCk7Cn0KZnVuY3Rpb24gcG9wdWxhdGVDb25maXJtYXRpb25QYWdlKCkgewogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25mU2FmZXR5IikuaW5uZXJIVE1MID0KICAgIGA8cD7inIUg5oiR5bey56Gu6K6k55CG6Kej5bm25ZCM5oSP5omA5pyJ5a6J5YWo6aG755+l5YaF5a65PC9wPmA7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZOaWNrbmFtZSIpLmlubmVySFRNTCA9CiAgICBgPHA+PHN0cm9uZz4ke3VzZXJGb3JtRGF0YS5uaWNrbmFtZSB8fCAi5pyq5aGr5YaZIn08L3N0cm9uZz48L3A+YDsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29uZkFkdWx0IikuaW5uZXJIVE1MID0KICAgIGA8cD4ke3VzZXJGb3JtRGF0YS5hZHVsdCA9PT0gInllcyIgPyAi5pivIiA6ICLlkKYifTwvcD5gOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25mTWVkaWNhbCIpLmlubmVySFRNTCA9CiAgICBgPHA+JHt1c2VyRm9ybURhdGEubWVkaWNhbF9oaXN0b3J5IHx8ICLml6AifTwvcD5gOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25mUGllcmNpbmdzIikuaW5uZXJIVE1MID0KICAgIGA8cD4ke3VzZXJGb3JtRGF0YS5waWVyY2luZ3MgfHwgIuaXoCJ9PC9wPmA7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZTYWZld29yZCIpLmlubmVySFRNTCA9CiAgICBgPHA+PHN0cm9uZz4ke3VzZXJGb3JtRGF0YS5zYWZld29yZCB8fCAi5pyq6K6+572uIn08L3N0cm9uZz48L3A+CiAgICAgICAgICAgICAgICAgPHAgY2xhc3M9ImZvcm0taGVscCI+5Zyo57Sn5oCl5oOF5Ya15LiL6K+05Ye65q2k5a6J5YWo6K+N5oiW5YGa5Ye65a6J5YWo5Yqo5L2c77yM5bCG5peg5p2h5Lu256uL5Y2z5Lit5q2i5rS75YqoPC9wPmA7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZUb3BsZXNzIikuaW5uZXJIVE1MID0KICAgIGA8cD4ke3VzZXJGb3JtRGF0YS50b3BsZXNzID09PSAiYWNjZXB0IiA/ICLmjqXlj5fkuIrljYrouqvotaToo7giIDogIuS4jeaOpeWPl+S4iuWNiui6q+i1pOijuCJ9PC9wPgogICAgICAgICAgICAgICAgIDxwIGNsYXNzPSJmb3JtLWhlbHAiPuazqO+8muS4i+S9k+engeWvhumDqOS9jemcgOepv+edgOWGheijpDwvcD5gOwogIGxldCBtYXJrc0h0bWwgPSBgPHA+JHt1c2VyRm9ybURhdGEubWFya3MgPT09ICJhY2NlcHQiID8gIuiDveaOpeWPl+eXlei/uSIgOiAi5LiN6IO95o6l5Y+X55eV6L+5In08L3A+YDsKICBpZiAodXNlckZvcm1EYXRhLm1hcmtzID09PSAibm90X2FjY2VwdCIgJiYgdXNlckZvcm1EYXRhLm5vX21hcmtzX2FyZWFzKSB7CiAgICBtYXJrc0h0bWwgKz0gYDxwIGNsYXNzPSJmb3JtLWhlbHAiPuS4jeWPr+S7peeVmeS4i+eXlei/ueeahOWMuuWfn++8miR7dXNlckZvcm1EYXRhLm5vX21hcmtzX2FyZWFzfTwvcD5gOwogIH0KICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29uZk1hcmtzIikuaW5uZXJIVE1MID0gbWFya3NIdG1sOwogIHZhciBub01hcmtzQXJlYXMgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgibm9fbWFya3NfYXJlYXMiKS52YWx1ZTsKICB2YXIgY29uZmlybWF0aW9uTm9NYXJrc0FyZWFzID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoCiAgICAiY29uZmlybWF0aW9uTm9NYXJrc0FyZWFzIiwKICApOwogIHZhciBub01hcmtzQXJlYXNWYWx1ZSA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJub01hcmtzQXJlYXNWYWx1ZSIpOwogIGlmIChub01hcmtzQXJlYXMgJiYgbm9NYXJrc0FyZWFzLnRyaW0oKSAhPT0gIiIpIHsKICAgIG5vTWFya3NBcmVhc1ZhbHVlLnRleHRDb250ZW50ID0gbm9NYXJrc0FyZWFzOwogICAgY29uZmlybWF0aW9uTm9NYXJrc0FyZWFzLnN0eWxlLmRpc3BsYXkgPSAiYmxvY2siOwogIH0gZWxzZSB7CiAgICBjb25maXJtYXRpb25Ob01hcmtzQXJlYXMuc3R5bGUuZGlzcGxheSA9ICJub25lIjsKICB9CiAgbGV0IG5vVG91Y2hIdG1sID0gIjx1bD4iOwogIGlmICh1c2VyRm9ybURhdGEubm9Ub3VjaEl0ZW1zICYmIHVzZXJGb3JtRGF0YS5ub1RvdWNoSXRlbXMubGVuZ3RoID4gMCkgewogICAgdXNlckZvcm1EYXRhLm5vVG91Y2hJdGVtcy5mb3JFYWNoKChpdGVtKSA9PiB7CiAgICAgIGNvbnN0IHBhcnQgPSBib2R5UGFydHMuZmluZCgocCkgPT4gcC5pZCA9PT0gaXRlbS5pZCk7CiAgICAgIG5vVG91Y2hIdG1sICs9IGA8bGk+PGkgY2xhc3M9IiR7cGFydC5pY29ufSI+PC9pPiAke2l0ZW0ubmFtZX08L2xpPmA7CiAgICB9KTsKICB9IGVsc2UgewogICAgbm9Ub3VjaEh0bWwgKz0gIjxsaT7ml6DnibnmrorpmZDliLY8L2xpPiI7CiAgfQogIG5vVG91Y2hIdG1sICs9ICI8L3VsPiI7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZOb1RvdWNoIikuaW5uZXJIVE1MID0gbm9Ub3VjaEh0bWw7CiAgbGV0IG5vQm9uZGFnZUh0bWwgPSAiPHVsPiI7CiAgaWYgKHVzZXJGb3JtRGF0YS5ub0JvbmRhZ2VJdGVtcyAmJiB1c2VyRm9ybURhdGEubm9Cb25kYWdlSXRlbXMubGVuZ3RoID4gMCkgewogICAgdXNlckZvcm1EYXRhLm5vQm9uZGFnZUl0ZW1zLmZvckVhY2goKGl0ZW0pID0+IHsKICAgICAgY29uc3QgcGFydCA9IGJvZHlQYXJ0cy5maW5kKChwKSA9PiBwLmlkID09PSBpdGVtLmlkKTsKICAgICAgbm9Cb25kYWdlSHRtbCArPSBgPGxpPjxpIGNsYXNzPSIke3BhcnQuaWNvbn0iPjwvaT4gJHtpdGVtLm5hbWV9PC9saT5gOwogICAgfSk7CiAgfSBlbHNlIHsKICAgIG5vQm9uZGFnZUh0bWwgKz0gIjxsaT7ml6DnibnmrorpmZDliLY8L2xpPiI7CiAgfQogIG5vQm9uZGFnZUh0bWwgKz0gIjwvdWw+IjsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29uZk5vQm9uZGFnZSIpLmlubmVySFRNTCA9IG5vQm9uZGFnZUh0bWw7CiAgbGV0IHBhaW5IdG1sID0gYDxwPiR7dXNlckZvcm1EYXRhLm90aGVyX3BhaW4gPT09ICJ5ZXMiID8gIuW4jOacm+S9k+mqjOmZpOaNhue7keaEn+WklueahOWFtuS7lueWvOeXmyIgOiAi5LiN5biM5pyb5L2T6aqM5YW25LuW55a855ebIn08L3A+YDsKICBjb25zdCBwYWluVG9sZXJhbmNlTWFwID0gewogICAg5oGL55ebOiAi5oGL55ebIiwKICAgIOS4jeaAlTogIuS4jeaAlSIsCiAgICDovbvlvq46ICLovbvlvq4iLAogICAg5a6M5YWo5LiN6KaBOiAi5a6M5YWo5LiN6KaBIiwKICB9OwogIHBhaW5IdG1sICs9IGA8cD7nlrznl5vlv43ogJDnqIvluqbvvJo8c3Ryb25nPiR7cGFpblRvbGVyYW5jZU1hcFt1c2VyRm9ybURhdGEucGFpbl90b2xlcmFuY2VdIHx8ICLmnKrpgInmi6kifTwvc3Ryb25nPjwvcD5gOwogIGlmICh1c2VyRm9ybURhdGEuYWNjZXB0cyAmJiB1c2VyRm9ybURhdGEuYWNjZXB0cy5sZW5ndGggPiAwKSB7CiAgICBwYWluSHRtbCArPSAiPHA+6IO95o6l5Y+X55qE54m55a6a6aG555uu77yaPC9wPjx1bD4iOwogICAgY29uc3QgYWNjZXB0TWFwID0gewogICAgICBoYWlyX3B1bGxpbmc6ICLmi4nlpLTlj5EiLAogICAgICBzbGFwcGluZzogIuiAs+WFiSIsCiAgICAgIHNwYW5raW5nOiAiU1AiLAogICAgICB0aGlnaF9yb3BlOiAi6IKh57uzIiwKICAgIH07CiAgICB1c2VyRm9ybURhdGEuYWNjZXB0cy5mb3JFYWNoKChhY2NlcHQpID0+IHsKICAgICAgcGFpbkh0bWwgKz0gYDxsaT48c3Ryb25nPiR7YWNjZXB0TWFwW2FjY2VwdF0gfHwgYWNjZXB0fTwvc3Ryb25nPjwvbGk+YDsKICAgIH0pOwogICAgcGFpbkh0bWwgKz0gIjwvdWw+IjsKICB9CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZQYWluIikuaW5uZXJIVE1MID0gcGFpbkh0bWw7CiAgbGV0IGludGVyYWN0aW9uSHRtbCA9IGA8cD7mjqXlj5fmi6XmirHvvJo8c3Ryb25nPiR7dXNlckZvcm1EYXRhLmh1ZyA9PT0gInllcyIgPyAi5pivIiA6ICLlkKYifTwvc3Ryb25nPjwvcD5gOwogIGludGVyYWN0aW9uSHRtbCArPSBgPHA+5Zac5qyiIuS6lOaEn+WJpeWkuiLnjqnms5XvvJo8c3Ryb25nPiR7dXNlckZvcm1EYXRhLnNlbnNvcnlfZGVwcml2YXRpb24gPT09ICJ5ZXMiID8gIuaYryIgOiAi5ZCmIn08L3N0cm9uZz48L3A+YDsKICBjb25zdCBibGluZGZvbGRNYXAgPSB7CiAgICDkuqvlj5c6ICLkuqvlj5ciLAogICAg5Y+v5Lul5o6l5Y+XOiAi5Y+v5Lul5o6l5Y+XIiwKICAgICLkuI3mjqXlj5fvvIjkvJrkuI3lronvvIkiOiAi5LiN5o6l5Y+X77yI5Lya5LiN5a6J77yJIiwKICB9OwogIGludGVyYWN0aW9uSHRtbCArPSBgPHA+6JKZ55y85o6l5Y+X5bqm77yaPHN0cm9uZz4ke2JsaW5kZm9sZE1hcFt1c2VyRm9ybURhdGEuYmxpbmRmb2xkXSB8fCAi5pyq6YCJ5oupIn08L3N0cm9uZz48L3A+YDsKICBjb25zdCBnYWdNYXAgPSB7CiAgICDkuqvlj5c6ICLkuqvlj5ciLAogICAg5Y+v5Lul6L275bqm5o6l5Y+XOiAi5Y+v5Lul6L275bqm5o6l5Y+XIiwKICAgIOS4jeaOpeWPlzogIuS4jeaOpeWPlyIsCiAgfTsKICBpbnRlcmFjdGlvbkh0bWwgKz0gYDxwPuWgteWYtOaOpeWPl+W6pu+8mjxzdHJvbmc+JHtnYWdNYXBbdXNlckZvcm1EYXRhLmdhZ10gfHwgIuacqumAieaLqSJ9PC9zdHJvbmc+PC9wPmA7CiAgY29uc3QgYnJlYXRoQ29udHJvbE1hcCA9IHsKICAgIGVuam95OiAi5Lqr5Y+XIiwKICAgIG5lY2s6ICLohJbpoojlkbzlkLjmjqfliLYiLAogICAgbGlnaHQ6ICLovbvluqblkbzlkLjmjqfliLYiLAogICAgbm86ICLkuI3mjqXlj5ciLAogIH07CiAgaW50ZXJhY3Rpb25IdG1sICs9IGA8cD7lkbzlkLjmjqfliLbmjqXlj5fluqbvvJo8c3Ryb25nPiR7YnJlYXRoQ29udHJvbE1hcFt1c2VyRm9ybURhdGEuYnJlYXRoX2NvbnRyb2xdIHx8ICLmnKrpgInmi6kifTwvc3Ryb25nPjwvcD5gOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25mSW50ZXJhY3Rpb24iKS5pbm5lckhUTUwgPSBpbnRlcmFjdGlvbkh0bWw7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImNvbmZSZWNvcmRpbmciKS5pbm5lckhUTUwgPQogICAgYDxwPjxzdHJvbmc+JHt1c2VyRm9ybURhdGEucmVjb3JkaW5nID09PSAieWVzIiA/ICLluIzmnJvnlZnkuIvlvbHlg4/orrDlvZUiIDogIuS4jeW4jOacm+eVmeS4i+W9seWDj+iusOW9lSJ9PC9zdHJvbmc+PC9wPmA7CiAgbGV0IGZlZWxpbmdzSHRtbCA9ICc8dWwgc3R5bGU9Imxpc3Qtc3R5bGUtdHlwZTogbm9uZTsgcGFkZGluZy1sZWZ0OiAwOyI+JzsKICBpZiAodXNlckZvcm1EYXRhLmZlZWxpbmdJdGVtcyAmJiB1c2VyRm9ybURhdGEuZmVlbGluZ0l0ZW1zLmxlbmd0aCA+IDApIHsKICAgIHVzZXJGb3JtRGF0YS5mZWVsaW5nSXRlbXMuZm9yRWFjaCgoaXRlbSkgPT4gewogICAgICBmZWVsaW5nc0h0bWwgKz0gYAogICAgICAgICAgICAgICAgICAgICAgIDxwPjxzdHJvbmc+JHtpdGVtLnZhbHVlfTwvc3Ryb25nPmA7CiAgICB9KTsKICB9IGVsc2UgewogICAgZmVlbGluZ3NIdG1sICs9ICI8bGk+5peg54m55q6K5YGP5aW9PC9saT4iOwogIH0KICBmZWVsaW5nc0h0bWwgKz0gIjwvdWw+IjsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29uZkZlZWxpbmdzIikuaW5uZXJIVE1MID0gZmVlbGluZ3NIdG1sOwp9CmZ1bmN0aW9uIGdvQmFja1RvRm9ybSgpIHsKICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiY29uZmlybWF0aW9uUGFnZSIpLnN0eWxlLmRpc3BsYXkgPSAibm9uZSI7CiAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImZvcm1Db250ZW50Iikuc3R5bGUuZGlzcGxheSA9ICJibG9jayI7CiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiLnN0YXR1cy1iYXIiKS5zdHlsZS5kaXNwbGF5ID0gImZsZXgiOwp9CmZ1bmN0aW9uIHByaW50Q29uZmlybWF0aW9uKCkgewogIGNvbnN0IHByaW50Q29udGVudCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJjb25maXJtYXRpb25QYWdlIikuaW5uZXJIVE1MOwogIGNvbnN0IG9yaWdpbmFsQ29udGVudCA9IGRvY3VtZW50LmJvZHkuaW5uZXJIVE1MOwogIGRvY3VtZW50LmJvZHkuaW5uZXJIVE1MID0gYAogICAgICAgICAgICAgICAgPGRpdiBzdHlsZT0icGFkZGluZzogMjBweDsgbWF4LXdpZHRoOiA4MDBweDsgbWFyZ2luOiAwIGF1dG87Ij4KICAgICAgICAgICAgICAgICAgICA8aDEgc3R5bGU9InRleHQtYWxpZ246IGNlbnRlcjsgY29sb3I6ICM4YjVjZjY7IG1hcmdpbi1ib3R0b206IDMwcHg7Ij7nu7PnvJrkvZPpqoznn6Xmg4XlkIzmhI/kuI7lgY/lpb3osIPmn6XooaggLSDnoa7orqTpobU8L2gxPgogICAgICAgICAgICAgICAgICAgICR7cHJpbnRDb250ZW50fQogICAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgIGA7CiAgd2luZG93LnByaW50KCk7CiAgZG9jdW1lbnQuYm9keS5pbm5lckhUTUwgPSBvcmlnaW5hbENvbnRlbnQ7CiAgd2luZG93LmxvY2F0aW9uLnJlbG9hZCgpOwp9CmRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJyb3BlRm9ybSIpLmFkZEV2ZW50TGlzdGVuZXIoInN1Ym1pdCIsIGZ1bmN0aW9uIChlKSB7CiAgZS5wcmV2ZW50RGVmYXVsdCgpOwogIGNvbGxlY3RGb3JtRGF0YSgpOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJmb3JtQ29udGVudCIpLnN0eWxlLmRpc3BsYXkgPSAibm9uZSI7CiAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcigiLnN0YXR1cy1iYXIiKS5zdHlsZS5kaXNwbGF5ID0gIm5vbmUiOwogIGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCJzdWNjZXNzTWVzc2FnZSIpLnN0eWxlLmRpc3BsYXkgPSAiYmxvY2siOwp9KTsKZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcigiRE9NQ29udGVudExvYWRlZCIsIGZ1bmN0aW9uICgpIHsKICBpbml0Qm9keVBhcnRTZWxlY3RvcnMoKTsKICBjb25zdCBzZWN0aW9ucyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoIi5mb3JtLXNlY3Rpb24iKTsKICBjb25zdCBzdGF0dXNJdGVtcyA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoIi5zdGF0dXMtaXRlbSIpOwogIGNvbnN0IG9ic2VydmVyID0gbmV3IEludGVyc2VjdGlvbk9ic2VydmVyKAogICAgKGVudHJpZXMpID0+IHsKICAgICAgZW50cmllcy5mb3JFYWNoKChlbnRyeSkgPT4gewogICAgICAgIGlmIChlbnRyeS5pc0ludGVyc2VjdGluZykgewogICAgICAgICAgY29uc3QgaW5kZXggPSBBcnJheS5mcm9tKHNlY3Rpb25zKS5pbmRleE9mKGVudHJ5LnRhcmdldCk7CiAgICAgICAgICBzdGF0dXNJdGVtcy5mb3JFYWNoKChpdGVtLCBpKSA9PiB7CiAgICAgICAgICAgIGlmIChpIDw9IGluZGV4KSB7CiAgICAgICAgICAgICAgaXRlbS5jbGFzc0xpc3QuYWRkKCJhY3RpdmUiKTsKICAgICAgICAgICAgfSBlbHNlIHsKICAgICAgICAgICAgICBpdGVtLmNsYXNzTGlzdC5yZW1vdmUoImFjdGl2ZSIpOwogICAgICAgICAgICB9CiAgICAgICAgICB9KTsKICAgICAgICB9CiAgICAgIH0pOwogICAgfSwKICAgIHsgdGhyZXNob2xkOiAwLjUgfSwKICApOwogIHNlY3Rpb25zLmZvckVhY2goKHNlY3Rpb24pID0+IG9ic2VydmVyLm9ic2VydmUoc2VjdGlvbikpOwp9KTsKLyoqCiAqCiAqIEBwYXJhbSB7c3RyaW5nfSBpZAogKi8KZnVuY3Rpb24gZG93bmxvYWRTNFJJbWFnZShpZCkgewogIGNvbnN0IGVsZW1lbnQgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZChpZCkgfHwgZG9jdW1lbnQuYm9keTsKICBsZXQgcHJvY2Vzc1RvYXN0ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImltYWdlLXByb2Nlc3NpbmctdG9hc3QiKTsKICBpZiAoIXByb2Nlc3NUb2FzdCkgewogICAgcHJvY2Vzc1RvYXN0ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgiZGl2Iik7CiAgICBwcm9jZXNzVG9hc3QuaWQgPSAiaW1hZ2UtcHJvY2Vzc2luZy10b2FzdCI7CiAgICBwcm9jZXNzVG9hc3QuaW5uZXJIVE1MID0gYAogICAgICA8ZGl2IHN0eWxlPSJiYWNrZ3JvdW5kOiByZ2JhKDAsMCwwLDAuOCk7IGNvbG9yOiB3aGl0ZTsgcGFkZGluZzogMTVweCAyNXB4OyBib3JkZXItcmFkaXVzOiA4cHg7IHRleHQtYWxpZ246IGNlbnRlcjsgZm9udC1zaXplOiAwLjk1cmVtOyBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoMCwwLDAsMC4zKTsgei1pbmRleDogMTAwMDE7Ij4KICAgICAgICA8c3BhbiBpZD0idG9hc3QtdGV4dCI+5q2j5Zyo55Sf5oiQ57K+6Ie06ZW/5Zu+77yM6K+356iN5YCZ54mH5Yi7Li4uPC9zcGFuPgogICAgICA8L2Rpdj4KICAgIGA7CiAgICBPYmplY3QuYXNzaWduKHByb2Nlc3NUb2FzdC5zdHlsZSwgewogICAgICBwb3NpdGlvbjogImZpeGVkIiwKICAgICAgdG9wOiAwLAogICAgICBsZWZ0OiAwLAogICAgICB3aWR0aDogIjEwMHZ3IiwKICAgICAgaGVpZ2h0OiAiMTAwdmgiLAogICAgICBiYWNrZ3JvdW5kQ29sb3I6ICJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiLCAvLyDovbvlvq7no6jnoILmhJ8KICAgICAgZGlzcGxheTogImZsZXgiLAogICAgICBqdXN0aWZ5Q29udGVudDogImNlbnRlciIsCiAgICAgIGFsaWduSXRlbXM6ICJjZW50ZXIiLAogICAgICB6SW5kZXg6ICIxMDAwMCIsCiAgICB9KTsKICAgIGRvY3VtZW50LmJvZHkuYXBwZW5kQ2hpbGQocHJvY2Vzc1RvYXN0KTsKICB9IGVsc2UgewogICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInRvYXN0LXRleHQiKS5pbm5lclRleHQgPQogICAgICAi5q2j5Zyo55Sf5oiQ57K+6Ie06ZW/5Zu+77yM6K+356iN5YCZ54mH5Yi7Li4uIjsKICAgIHByb2Nlc3NUb2FzdC5zdHlsZS5kaXNwbGF5ID0gImZsZXgiOwogIH0KICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGh0bWwyY2FudmFzKGVsZW1lbnQsIHsKICAgICAgc2NhbGU6IDIsCiAgICAgIGJhY2tncm91bmRDb2xvcjogIiNmZmZmZmYiLAogICAgICB1c2VDT1JTOiB0cnVlLAogICAgICBpZ25vcmVFbGVtZW50czogKGVsZW1lbnQpID0+IHsKICAgICAgICByZXR1cm4gZWxlbWVudC5pZCA9PT0gImltYWdlLXByb2Nlc3NpbmctdG9hc3QiOwogICAgICB9LAogICAgfSkKICAgICAgLnRoZW4oKGNhbnZhcykgPT4gewogICAgICAgIGNvbnN0IGltYWdlRGF0YSA9IGNhbnZhcy50b0RhdGFVUkwoImltYWdlL3BuZyIpOwogICAgICAgIGxldCBvdmVybGF5ID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoImltYWdlLWRvd25sb2FkLW92ZXJsYXkiKTsKICAgICAgICBpZiAoIW92ZXJsYXkpIHsKICAgICAgICAgIG92ZXJsYXkgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCJkaXYiKTsKICAgICAgICAgIG92ZXJsYXkuaWQgPSAiaW1hZ2UtZG93bmxvYWQtb3ZlcmxheSI7CiAgICAgICAgICBvdmVybGF5LmlubmVySFRNTCA9IGAKICAgICAgICAgIDxkaXYgY2xhc3M9Im92ZXJsYXktY29udGVudCI+CiAgICAgICAgICAgIDxwIHN0eWxlPSJtYXJnaW46IDAgMCA1cHg7IGZvbnQtd2VpZ2h0OiBib2xkOyBjb2xvcjogIzMzMzsiPua4qemmqOaPkOekuu+8muWbvueJh+W3sueUn+aIkDwvcD4KICAgICAgICAgICAgPHAgc3R5bGU9Im1hcmdpbjogMCAwIDE1cHg7IGZvbnQtc2l6ZTogMC45NXJlbTsgY29sb3I6ICM2NjY7Ij48c3Ryb25nPuivt+mVv+aMieS4i+aWueWbvueJh+S/neWtmOWIsOebuOWGjDwvc3Ryb25nPjwvcD4KICAgICAgICAgICAgPGltZyBpZD0iZ2VuZXJhdGVkLWltYWdlIiBzcmM9IiIgc3R5bGU9IndpZHRoOiAxMDAlOyBtYXgtaGVpZ2h0OiA2MHZoOyBvYmplY3QtZml0OiBjb250YWluOyBib3JkZXItcmFkaXVzOiA0cHg7IGJveC1zaGFkb3c6IDAgMnB4IDhweCByZ2JhKDAsMCwwLDAuMTUpOyIgLz4KICAgICAgICAgICAgPGJ1dHRvbiBvbmNsaWNrPSJkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnaW1hZ2UtZG93bmxvYWQtb3ZlcmxheScpLnN0eWxlLmRpc3BsYXk9J25vbmUnIiBzdHlsZT0ibWFyZ2luLXRvcDogMTVweDsgYmFja2dyb3VuZDogIzY2N2VlYTsgY29sb3I6IHdoaXRlOyBib3JkZXI6IG5vbmU7IHBhZGRpbmc6IDhweCAyMHB4OyBib3JkZXItcmFkaXVzOiA0cHg7IGN1cnNvcjogcG9pbnRlcjsiPuWFs+mXremihOiniDwvYnV0dG9uPgogICAgICAgICAgPC9kaXY+CiAgICAgICAgYDsKICAgICAgICAgIGRvY3VtZW50LmJvZHkuYXBwZW5kQ2hpbGQob3ZlcmxheSk7CiAgICAgICAgfQogICAgICAgIGNvbnN0IGltZ0Rpc3BsYXkgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgiZ2VuZXJhdGVkLWltYWdlIik7CiAgICAgICAgaW1nRGlzcGxheS5zcmMgPSBpbWFnZURhdGE7CiAgICAgICAgcHJvY2Vzc1RvYXN0LnN0eWxlLmRpc3BsYXkgPSAibm9uZSI7CiAgICAgICAgb3ZlcmxheS5zdHlsZS5kaXNwbGF5ID0gImZsZXgiOwogICAgICAgIGNvbnNvbGUubG9nKCJTNFIg6ZW/5Zu+55Sf5oiQ5oiQ5YqfIik7CiAgICAgIH0pCiAgICAgIC5jYXRjaCgoZXJyKSA9PiB7CiAgICAgICAgY29uc29sZS5lcnJvcigi55Sf5oiQ6ZW/5Zu+5aSx6LSlOiIsIGVycik7CiAgICAgICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInRvYXN0LXRleHQiKS5pbm5lclRleHQgPQogICAgICAgICAgIueUn+aIkOWksei0pe+8jOivt+WIt+aWsOmHjeivlSI7CiAgICAgICAgc2V0VGltZW91dCgoKSA9PiB7CiAgICAgICAgICBwcm9jZXNzVG9hc3Quc3R5bGUuZGlzcGxheSA9ICJub25lIjsKICAgICAgICB9LCAxNTAwKTsKICAgICAgfSk7CiAgfSwgMTUwMCk7Cn0K";
-    const binaryString = window.atob(b64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+// =============================================================
+// 🛠️ 确认页调试模式开关
+// 设为 true 时：刷新页面【无需填表，直进确认页】方便实时调 CSS
+// 设为 false 时：恢复正常流程（必须填表提交后才看确认页）
+// =============================================================
+const DEBUG_MODE = false;
+
+// ==================== Supabase 初始化配置 ====================
+const SUPABASE_URL = 'https://cpjjmuzrcvgbaekiqkrx.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2';
+
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  db: { schema: 's4r' }
+});
+
+// ==================== 身体部位数据定义 ====================
+const bodyParts = [
+  { id: '头发', name: '头发', icon: 'fas fa-cut' },
+  { id: '面部', name: '面部', icon: 'fas fa-smile' },
+  { id: '脖子', name: '脖子', icon: 'fas fa-user' },
+  { id: '胸部', name: '胸部', icon: 'fas fa-glasses' },
+  { id: '手臂', name: '手臂', icon: 'fas fa-hand-paper' },
+  { id: '手指', name: '手指', icon: 'fas fa-hand-point-up' },
+  { id: '腰部', name: '腰部', icon: 'fas fa-sort' },
+  { id: '臀部', name: '臀部', icon: 'fas fa-heart' },
+  { id: '私密部位', name: '私密部位', icon: 'fas fa-chevron-circle-down' },
+  { id: '下肢', name: '下肢', icon: 'fas fa-walking' },
+  { id: '脚', name: '脚', icon: 'fas fa-shoe-prints' },
+  { id: '无', name: '无', icon: 'fas fa-user-secret' }
+];
+
+// 全局表达数据缓存
+let userFormData = {};
+
+// ==================== 表单交互逻辑 ====================
+
+// 初始化身体部位网格选择
+function initBodyPartSelectors() {
+  const noTouchContainer = document.getElementById('noTouchAreas');
+  const noBondageContainer = document.getElementById('noBondageAreas');
+
+  if (!noTouchContainer || !noBondageContainer) return;
+
+  bodyParts.forEach(part => {
+    // 1. 不希望被触碰网格项
+    const touchDiv = document.createElement('div');
+    touchDiv.className = 'body-part-item';
+    touchDiv.dataset.id = part.id;
+    touchDiv.dataset.name = part.name;
+    touchDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
+    touchDiv.addEventListener('click', () => {
+      touchDiv.classList.toggle('selected');
+      updateHiddenInput('no_touch_input', 'noTouchAreas');
+    });
+    noTouchContainer.appendChild(touchDiv);
+
+    // 2. 不可捆绑网格项
+    const bondageDiv = document.createElement('div');
+    bondageDiv.className = 'body-part-item';
+    bondageDiv.dataset.id = part.id;
+    bondageDiv.dataset.name = part.name;
+    bondageDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
+    bondageDiv.addEventListener('click', () => {
+      bondageDiv.classList.toggle('selected');
+      updateHiddenInput('no_bondage_input', 'noBondageAreas');
+    });
+    noBondageContainer.appendChild(bondageDiv);
+  });
+}
+
+// 更新隐藏 input 的逗号分隔字符串
+function updateHiddenInput(inputId, containerId) {
+  const input = document.getElementById(inputId);
+  const container = document.getElementById(containerId);
+  if (!input || !container) return;
+
+  const selectedItems = container.querySelectorAll('.selected');
+  const values = Array.from(selectedItems).map(item => item.dataset.id);
+  input.value = values.join(',');
+}
+
+// 收集表单完整数据
+function collectFormData() {
+  const form = document.getElementById('ropeForm');
+  const formData = new FormData(form);
+  userFormData = {};
+
+  for (let [key, value] of formData.entries()) {
+    if (key === 'accepts') {
+      if (!userFormData.accepts) userFormData.accepts = [];
+      userFormData.accepts.push(value);
+    } else {
+      userFormData[key] = value;
     }
-    const decoded = new TextDecoder().decode(bytes);
-    const script = document.createElement('script');
-    script.text = decoded;
-    document.body.appendChild(script);
-})();
+  }
+
+  // 收集禁忌部位
+  const noTouchItems = document.querySelectorAll('#noTouchAreas .selected');
+  userFormData.noTouchItems = Array.from(noTouchItems).map(item => ({
+    id: item.dataset.id,
+    name: item.dataset.name
+  }));
+
+  const noBondageItems = document.querySelectorAll('#noBondageAreas .selected');
+  userFormData.noBondageItems = Array.from(noBondageItems).map(item => ({
+    id: item.dataset.id,
+    name: item.dataset.name
+  }));
+
+  // 收集感官体验多选项（分层解析主副标题与描述）
+  const feelingItems = document.querySelectorAll('.feeling-option input[type="checkbox"]:checked');
+  userFormData.feelingItems = Array.from(feelingItems).map(item => {
+    const label = item.nextElementSibling;
+    const mainTitleEl = label ? label.querySelector('.title-main') : null;
+    const subTitleEl = label ? label.querySelector('.title-sub') : null;
+    const descEl = label ? label.querySelector('.option-desc') : null;
+    const iconEl = mainTitleEl ? mainTitleEl.querySelector('i') : null;
+
+    const mainText = mainTitleEl ? mainTitleEl.innerText.trim() : "";
+    const subText = subTitleEl ? subTitleEl.innerText.trim() : "";
+    const fullTitle = subText ? `${mainText}：${subText}` : (mainText || item.value);
+
+    return {
+      value: item.value,
+      title: fullTitle,
+      iconClass: iconEl ? iconEl.className : 'fas fa-star',
+      desc: descEl ? descEl.textContent.trim() : ''
+    };
+  });
+
+  return userFormData;
+}
+
+// ==================== 确认页展现与填充逻辑 ====================
+
+// 切换至确认页显示（隐藏主页大 Banner）
+function showConfirmation() {
+  document.getElementById('successMessage').style.display = 'none';
+  const mainHeader = document.querySelector('.header');
+  if (mainHeader) mainHeader.style.display = 'none';
+
+  document.getElementById('confirmationPage').style.display = 'block';
+  populateConfirmationPage();
+}
+
+// 填充确认页数据
+function populateConfirmationPage() {
+  const nick = userFormData.nickname || "未填写";
+  document.getElementById("confDocName").textContent = nick;
+
+  // 1. 安全词 (顶置红框)
+  document.getElementById("confSafeword").innerHTML =
+    `<strong style="font-size:1.15rem; color:#be123c;">${userFormData.safeword || "未设置"}</strong>`;
+
+  // 2. 基本信息与健康声明
+  document.getElementById("confNickname").innerHTML = `<strong>${nick}</strong>`;
+
+  document.getElementById("confAdult").innerHTML =
+    userFormData.adult === "yes"
+      ? `<span class="badge-pill badge-green">是 (已成年)</span>`
+      : `<span class="badge-pill badge-red">否 (未成年)</span>`;
+
+  document.getElementById("confSafety").innerHTML =
+    `<span class="badge-pill badge-green"><i class="fas fa-check"></i> 已理解同意</span>`;
+
+  document.getElementById("confRecording").innerHTML =
+    userFormData.recording === "yes"
+      ? `<span class="badge-pill badge-green"><i class="fas fa-video"></i> 希望留下记录</span>`
+      : `<span class="badge-pill badge-red"><i class="fas fa-video-slash"></i> 拒绝影像记录</span>`;
+
+  document.getElementById("confMedical").innerHTML =
+    userFormData.medical_history ? `<strong>${userFormData.medical_history}</strong>` : `<span>无</span>`;
+
+  document.getElementById("confPiercings").innerHTML =
+    userFormData.piercings ? `<strong>${userFormData.piercings}</strong>` : `<span>无</span>`;
+
+  // 3. 身体界限与限制设置
+  document.getElementById("confTopless").innerHTML =
+    userFormData.topless === "accept"
+      ? `<span class="badge-pill badge-purple">接受上半身赤裸</span>`
+      : `<span class="badge-pill badge-gray">不接受</span>`;
+
+  document.getElementById("confMarks").innerHTML =
+    userFormData.marks === "accept"
+      ? `<span class="badge-pill badge-green">能接受痕迹</span>`
+      : `<span class="badge-pill badge-red">不能接受痕迹</span>`;
+
+  var noMarksAreas = document.getElementById("no_marks_areas").value;
+  var confirmationNoMarksAreas = document.getElementById("confirmationNoMarksAreas");
+  var noMarksAreasValue = document.getElementById("noMarksAreasValue");
+  if (noMarksAreas && noMarksAreas.trim() !== "") {
+    noMarksAreasValue.textContent = noMarksAreas;
+    confirmationNoMarksAreas.style.display = "block";
+  } else {
+    confirmationNoMarksAreas.style.display = "none";
+  }
+
+  // 不希望触碰部位
+  let noTouchHtml = "";
+  if (userFormData.noTouchItems && userFormData.noTouchItems.length > 0) {
+    userFormData.noTouchItems.forEach((item) => {
+      const part = bodyParts.find((p) => p.id === item.id);
+      const iconClass = part ? part.icon : "fas fa-hand-paper";
+      noTouchHtml += `<span class="badge-pill badge-red"><i class="${iconClass}"></i> ${item.name}</span>`;
+    });
+  } else {
+    noTouchHtml = `<span class="badge-pill badge-gray">无特殊禁忌</span>`;
+  }
+  document.getElementById("confNoTouch").innerHTML = noTouchHtml;
+
+  // 不可捆绑部位
+  let noBondageHtml = "";
+  if (userFormData.noBondageItems && userFormData.noBondageItems.length > 0) {
+    userFormData.noBondageItems.forEach((item) => {
+      const part = bodyParts.find((p) => p.id === item.id);
+      const iconClass = part ? part.icon : "fas fa-ban";
+      noBondageHtml += `<span class="badge-pill badge-red"><i class="${iconClass}"></i> ${item.name}</span>`;
+    });
+  } else {
+    noBondageHtml = `<span class="badge-pill badge-gray">无特殊禁忌</span>`;
+  }
+  document.getElementById("confNoBondage").innerHTML = noBondageHtml;
+
+  // 4. 痛感与特定玩法偏好
+  document.getElementById("confPainOther").innerHTML =
+    userFormData.other_pain === "yes"
+      ? `<strong>希望体验除捆绑感外疼痛</strong>`
+      : `<strong>不希望体验</strong>`;
+
+  const painToleranceMap = { 恋痛: "恋痛", 不怕: "不怕", 畏痛: "畏痛", 不怯: "不怯", 轻微: "轻微", 完全不要: "完全不要" };
+  const userTolerance = userFormData.pain_tolerance;
+  document.getElementById("confPainTolerance").innerHTML =
+    `<span class="badge-pill badge-purple">${painToleranceMap[userTolerance] || userTolerance || "未选择"}</span>`;
+
+  // 能接受的项目
+  let acceptsHtml = "";
+  if (userFormData.accepts && userFormData.accepts.length > 0) {
+    const acceptMap = { hair_pulling: "拉头发", "拉头发": "拉头发", slapping: "耳光", "耳光": "耳光", spanking: "SP", "SP": "SP", thigh_rope: "股绳", "股绳": "股绳" };
+    userFormData.accepts.forEach((accept) => {
+      acceptsHtml += `<span class="badge-pill badge-purple"><i class="fas fa-check"></i> ${acceptMap[accept] || accept}</span>`;
+    });
+  } else {
+    acceptsHtml = `<span class="badge-pill badge-gray">无</span>`;
+  }
+  document.getElementById("confAccepts").innerHTML = acceptsHtml;
+
+  // 5. 互动偏好明细
+  document.getElementById("confHug").innerHTML =
+    userFormData.hug === "yes"
+      ? `<span class="badge-pill badge-green">可以</span>`
+      : `<span class="badge-pill badge-red">不可以</span>`;
+
+  document.getElementById("confSensory").innerHTML =
+    userFormData.sensory_deprivation === "yes"
+      ? `<span class="badge-pill badge-purple">是 (感兴趣)</span>`
+      : `<span class="badge-pill badge-gray">否</span>`;
+
+  const blindfoldMap = { 享受: "享受", 可以接受: "可以接受", "不接受（会不安）": "不接受" };
+  const blindfoldVal = blindfoldMap[userFormData.blindfold] || userFormData.blindfold || "未选择";
+  document.getElementById("confBlindfold").innerHTML =
+    blindfoldVal === "不接受"
+      ? `<span class="badge-pill badge-red">${blindfoldVal}</span>`
+      : `<span class="badge-pill badge-purple">${blindfoldVal}</span>`;
+
+  const gagMap = { 享受: "享受", 可以轻度接受: "可以轻度接受", 不接受: "不接受" };
+  const gagVal = gagMap[userFormData.gag] || userFormData.gag || "未选择";
+  document.getElementById("confGag").innerHTML =
+    gagVal === "不接受"
+      ? `<span class="badge-pill badge-red">${gagVal}</span>`
+      : `<span class="badge-pill badge-purple">${gagVal}</span>`;
+
+  const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", no: "不接受" };
+  const breathVal = breathControlMap[userFormData.breath_control] || userFormData.breath_control || "未选择";
+  document.getElementById("confBreathControl").innerHTML =
+    breathVal === "不接受"
+      ? `<span class="badge-pill badge-red">${breathVal}</span>`
+      : `<span class="badge-pill badge-purple">${breathVal}</span>`;
+
+  // 6. 期望的深度体验感受（丰富图卡展开）
+  let feelingsHtml = "";
+  if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
+    userFormData.feelingItems.forEach((item) => {
+      let lvlClass = "lvl-1";
+      let lvlName = "程度1：舒缓接纳";
+      let iconColor = "#7cb342";
+
+      if (item.value.includes("程度2")) {
+        lvlClass = "lvl-2";
+        lvlName = "程度2：灵蕴交流";
+        iconColor = "#ffb74d";
+      } else if (item.value.includes("程度3")) {
+        lvlClass = "lvl-3";
+        lvlName = "程度3：浸漫共鸣";
+        iconColor = "#ff7043";
+      } else if (item.value.includes("程度4")) {
+        lvlClass = "lvl-4";
+        lvlName = "程度4：沉淬突破";
+        iconColor = "#e53935";
+      }
+
+      feelingsHtml += `
+        <div class="feeling-rich-card ${lvlClass}">
+          <div class="feeling-rich-head">
+            <span class="feeling-rich-title">
+              <i class="${item.iconClass}" style="color: ${iconColor};"></i>
+              ${item.title}
+            </span>
+            <span class="feeling-rich-badge ${lvlClass}">${lvlName}</span>
+          </div>
+          ${item.desc ? `<div class="feeling-rich-desc">${item.desc}</div>` : ''}
+        </div>
+      `;
+    });
+  } else {
+    feelingsHtml = `<div class="badge-pill badge-gray">未勾选任何体验程度</div>`;
+  }
+  document.getElementById("confFeelings").innerHTML = feelingsHtml;
+}
+
+// 从确认页返回修改（恢复主页大 Banner）
+function goBackToForm() {
+  document.getElementById('confirmationPage').style.display = 'none';
+  const mainHeader = document.querySelector('.header');
+  if (mainHeader) mainHeader.style.display = 'block';
+
+  document.getElementById('formContent').style.display = 'block';
+  if (document.querySelector('.status-bar')) {
+    document.querySelector('.status-bar').style.display = 'flex';
+  }
+}
+
+// 打印确认页
+function printConfirmation() {
+  const printContent = document.getElementById('confirmationPage').innerHTML;
+  const originalContent = document.body.innerHTML;
+
+  document.body.innerHTML = `
+    <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+      <h1 style="text-align: center; color: #8b5cf6; margin-bottom: 30px;">绳缚体验知情同意与偏好调查表 - 确认页</h1>
+      ${printContent}
+    </div>
+  `;
+
+  window.print();
+  document.body.innerHTML = originalContent;
+  window.location.reload();
+}
+
+// ==================== 表单提交与 Supabase 数据备份 ====================
+document.getElementById('ropeForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const formData = collectFormData();
+
+  const submitBtn = e.target.querySelector('.btn-submit');
+  const originalBtnText = submitBtn ? submitBtn.innerHTML : '提交问卷';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在安全加密提交...';
+  }
+
+  try {
+    const { error } = await _supabase
+      .from('responses')
+      .insert([{
+        safety_acknowledged: formData.safety_acknowledged,
+        nickname: formData.nickname,
+        is_adult: formData.adult,
+        medical_history: formData.medical_history,
+        piercings: formData.piercings,
+        safeword: formData.safeword,
+        topless: formData.topless,
+        marks: formData.marks,
+        no_marks_areas: formData.no_marks_areas,
+        no_touch: formData.noTouchItems ? formData.noTouchItems.map(item => item.name) : [],
+        no_bondage: formData.noBondageItems ? formData.noBondageItems.map(item => item.name) : [],
+        other_pain: formData.other_pain,
+        pain_tolerance: formData.pain_tolerance,
+        accepts: formData.accepts || [],
+        hug: formData.hug,
+        sensory_deprivation: formData.sensory_deprivation,
+        blindfold: formData.blindfold,
+        gag: formData.gag,
+        breath_control: formData.breath_control,
+        recording: formData.recording,
+        feelings: formData.feelingItems || []
+      }]);
+
+    if (error) throw error;
+    console.log("表单数据已安全备份至云端！");
+
+    document.getElementById('formContent').style.display = 'none';
+    if (document.querySelector('.status-bar')) {
+      document.querySelector('.status-bar').style.display = 'none';
+    }
+    document.getElementById('successMessage').style.display = 'block';
+
+  } catch (err) {
+    console.error("提交至后台失败:", err);
+    alert("表单提交遇到问题，请检查网络或配置！\n错误提示: " + (err.message || "请求受阻"));
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+    }
+  }
+});
+
+// ==================== 页面加载初始化 ====================
+document.addEventListener('DOMContentLoaded', function () {
+  initBodyPartSelectors();
+
+  // 🛠️ 调试模式触发逻辑
+  if (typeof DEBUG_MODE !== 'undefined' && DEBUG_MODE) {
+    const mainHeader = document.querySelector('.header');
+    if (mainHeader) mainHeader.style.display = 'none';
+
+    userFormData = {
+      nickname: "u哦iu额万人计划",
+      adult: "yes",
+      safety_acknowledged: "是，我已理解并同意",
+      recording: "yes",
+      medical_history: "是的V步打撒快乐就好",
+      piercings: "阿瓦尔我去二",
+      safeword: "黄灯红了",
+      topless: "not_accept",
+      marks: "accept",
+      no_marks_areas: "脸上不可以",
+      noTouchItems: [{ id: "面部", name: "面部" }, { id: "手指", name: "手指" }],
+      noBondageItems: [{ id: "胸部", name: "胸部" }, { id: "私密部位", name: "私密部位" }],
+      other_pain: "yes",
+      pain_tolerance: "不怕",
+      accepts: ["拉头发", "SP"],
+      hug: "yes",
+      sensory_deprivation: "yes",
+      blindfold: "不接受（会不安）",
+      gag: "享受",
+      breath_control: "neck",
+      feelingItems: []
+    };
+
+    document.getElementById('formContent').style.display = 'none';
+    if (document.querySelector('.status-bar')) document.querySelector('.status-bar').style.display = 'none';
+    document.getElementById('confirmationPage').style.display = 'block';
+    populateConfirmationPage();
+  }
+
+  // 滚动状态栏 IntersectionObserver 联动
+  const sections = document.querySelectorAll('.form-section');
+  const statusItems = document.querySelectorAll('.status-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const index = Array.from(sections).indexOf(entry.target);
+        statusItems.forEach((item, i) => {
+          if (i <= index) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  sections.forEach(section => observer.observe(section));
+});
+
+// ==================== 长图生成与导出预览 ====================
+function downloadS4RImage(id) {
+  const element = document.getElementById(id) || document.body;
+
+  let processToast = document.getElementById('image-processing-toast');
+  if (!processToast) {
+    processToast = document.createElement('div');
+    processToast.id = 'image-processing-toast';
+    processToast.innerHTML = `
+      <div style="background: rgba(0,0,0,0.8); color: white; padding: 15px 25px; border-radius: 8px; text-align: center; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10001;">
+        <span id="toast-text">正在生成精致长图，请稍候片刻...</span>
+      </div>
+    `;
+    Object.assign(processToast.style, {
+      position: 'fixed',
+      top: 0, left: 0, width: '100vw', height: '100vh',
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      display: 'flex', justifyContent: 'center', alignItems: 'center',
+      zIndex: '10000'
+    });
+    document.body.appendChild(processToast);
+  } else {
+    document.getElementById('toast-text').innerText = "正在生成精致长图，请稍候片刻...";
+    processToast.style.display = 'flex';
+  }
+
+  setTimeout(() => {
+    html2canvas(element, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      ignoreElements: (element) => element.id === 'image-processing-toast'
+    }).then(canvas => {
+      const imageData = canvas.toDataURL("image/png");
+
+      let overlay = document.getElementById('image-download-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'image-download-overlay';
+        overlay.innerHTML = `
+          <div class="overlay-content">
+            <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
+            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
+            <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
+            <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭预览</button>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+      }
+
+      const imgDisplay = document.getElementById('generated-image');
+      imgDisplay.src = imageData;
+
+      processToast.style.display = 'none';
+      overlay.style.display = 'flex';
+
+      console.log("S4R 长图生成成功");
+    }).catch(err => {
+      console.error("生成长图失败:", err);
+      document.getElementById('toast-text').innerText = "生成失败，请刷新重试";
+      setTimeout(() => { processToast.style.display = 'none'; }, 1500);
+    });
+
+  }, 1500);
+}
