@@ -165,7 +165,7 @@
               <input id="no_touch_input" name="no_touch" type="hidden" />
             </div>
             <div class="form-group">
-              <label class="form-label-g">不可捆绑的部位（可多选）：</label>
+              <label class="form-label-g">不可以被捆绑的部位（可多选）：</label>
               <div class="body-part-grid" id="noBondageAreas"></div>
               <input id="no_bondage_input" name="no_bondage" type="hidden" />
             </div>
@@ -191,12 +191,12 @@
                   <span>恋痛</span>
                 </label>
                 <label class="radio-label">
-                  <input name="pain_tolerance" type="radio" value="不怕" />
-                  <span>不怕</span>
+                  <input name="pain_tolerance" type="radio" value="不怕痛" />
+                  <span>不怕痛</span>
                 </label>
                 <label class="radio-label">
-                  <input name="pain_tolerance" type="radio" value="轻微" />
-                  <span>轻微</span>
+                  <input name="pain_tolerance" type="radio" value="轻微痛感" />
+                  <span>轻微痛感</span>
                 </label>
                 <label class="radio-label">
                   <input name="pain_tolerance" type="radio" value="完全不要" />
@@ -204,6 +204,8 @@
                 </label>
               </div>
             </div>
+
+            <!-- 4.9 可接受特定项目 + 其他补充输入框 -->
             <div class="form-group">
               <label class="form-label-g">可接受以下哪些项目（可多选）？：</label>
               <div class="checkbox-group">
@@ -224,7 +226,10 @@
                   <span>股绳</span>
                 </label>
               </div>
+              <label class="form-label-g" for="other_accepts" style="margin-top: 12px; font-size: 0.9rem;">其他特定项目 / 补充说明：</label>
+              <input class="input-text" id="other_accepts" name="other_accepts" type="text" placeholder="如果你有其他想玩的项目可以写下来，如果都不想选择，可以写明不接受任何以上项目" />
             </div>
+
             <div class="form-group">
               <label class="form-label-g">我们可能会有一些“身体接触”，你会接受拥抱吗？</label>
               <div class="radio-group">
@@ -243,11 +248,11 @@
               <div class="radio-group">
                 <label class="radio-label">
                   <input name="sensory_deprivation" type="radio" value="yes" required />
-                  <span>是</span>
+                  <span>感兴趣</span>
                 </label>
                 <label class="radio-label">
                   <input name="sensory_deprivation" type="radio" value="no" />
-                  <span>否</span>
+                  <span>不感兴趣</span>
                 </label>
               </div>
             </div>
@@ -263,8 +268,12 @@
                   <span>可以接受</span>
                 </label>
                 <label class="radio-label">
-                  <input name="blindfold" type="radio" value="不接受（会不安）" />
-                  <span>不接受（会不安）</span>
+                  <input name="blindfold" type="radio" value="能接受但会不安" />
+                  <span>能接受但会不安</span>
+                </label>
+                <label class="radio-label">
+                  <input name="blindfold" type="radio" value="不接受" />
+                  <span>不接受</span>
                 </label>
               </div>
             </div>
@@ -299,6 +308,10 @@
                 <label class="radio-label">
                   <input name="breath_control" type="radio" value="light" />
                   <span>轻度呼吸控制</span>
+                </label>
+                <label class="radio-label">
+                  <input name="breath_control" type="radio" value="anxious" />
+                  <span>能接受但会不安</span>
                 </label>
                 <label class="radio-label">
                   <input name="breath_control" type="radio" value="no" />
@@ -406,7 +419,7 @@
                         <span class="title-main"><i class="fas fa-water" style="color: #ff7043;"></i> 心流状态：</span>
                         <span class="title-sub">忘我的协同，身心合一的专注</span>
                       </span>
-                      <span class="option-desc">通过被缚的身体状态，主动探索身体的不同可能，与绳索精准协调，让感官达到浑然忘我、身心合一的专注状态</span>
+                      <span class="option-desc">通过被束缚的状态主动探索身体的不同可能，与绳索精准协调，让感官达到浑然忘我、身心合一的专注状态</span>
                     </label>
                   </div>
                 </div>
@@ -502,7 +515,7 @@
 
       <!-- 1. 顶置安全词横幅 -->
       <div class="safeword-banner-top">
-        <span class="safeword-label"><i class="fas fa-exclamation-triangle"></i> 安全词 / 动作：</span>
+        <span class="safeword-label"><i class="fas fa-exclamation-triangle"></i> 安全词 / 安全动作：</span>
         <span class="safeword-val" id="confSafeword">--</span>
       </div>
 
@@ -548,11 +561,11 @@
         </div>
         <div class="conf-grid col-2 margin-bottom-sm">
           <div class="conf-field-row">
-            <span class="conf-label">上半身裸露：</span>
+            <span class="conf-label">身体裸露接受度：</span>
             <span class="conf-value" id="confTopless">--</span>
           </div>
           <div class="conf-field-row">
-            <span class="conf-label">身体痕迹：</span>
+            <span class="conf-label">身体痕迹接受度：</span>
             <span class="conf-value" id="confMarks">--</span>
           </div>
         </div>
@@ -561,7 +574,7 @@
           <span class="conf-value text-danger" id="noMarksAreasValue">--</span>
         </div>
         <div class="conf-field-block margin-bottom-sm">
-          <div class="conf-label"><i class="fas fa-hand-paper"></i> 不希望被触碰的部位：</div>
+          <div class="conf-label"><i class="fas fa-hand-paper"></i> 不希望被触摸的部位：</div>
           <div class="conf-tags-container" id="confNoTouch">--</div>
         </div>
         <div class="conf-field-block">
@@ -600,11 +613,11 @@
         </div>
         <div class="conf-grid col-2">
           <div class="conf-field-row">
-            <span class="conf-label">接受拥抱：</span>
+            <span class="conf-label">是否接受拥抱：</span>
             <span class="conf-value" id="confHug">--</span>
           </div>
           <div class="conf-field-row">
-            <span class="conf-label">五感剥夺：</span>
+            <span class="conf-label">五感剥夺玩法：</span>
             <span class="conf-value" id="confSensory">--</span>
           </div>
           <div class="conf-field-row">
@@ -616,17 +629,17 @@
             <span class="conf-value" id="confGag">--</span>
           </div>
           <div class="conf-field-row full-width">
-            <span class="conf-label">呼吸控制：</span>
+            <span class="conf-label">呼吸控制玩法：</span>
             <span class="conf-value" id="confBreathControl">--</span>
           </div>
         </div>
       </div>
 
-      <!-- 6. 期望的深度体验感受 -->
+      <!-- 6. 期望的绳缚体验感受 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-feather-alt text-purple"></i>
-          <h3>期望的深度体验感受</h3>
+          <h3>期望的绳缚体验感受：</h3>
         </div>
         <div class="feelings-rich-container" id="confFeelings">--</div>
       </div>
