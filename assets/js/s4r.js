@@ -6,28 +6,28 @@
 const DEBUG_MODE = false;
 
 // ==================== Supabase 初始化配置 ====================
-const SUPABASE_URL = 'https://cpjjmuzrcvgbaekiqkrx.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2';
+const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  db: { schema: 's4r' }
+  db: { schema: "s4r" },
 });
 
 // ==================== 身体部位数据定义 ====================
 const bodyParts = [
-  { id: '头发', name: '头发', icon: 'fas fa-cut' },
-  { id: '面部', name: '面部', icon: 'fas fa-smile' },
-  { id: '脖子', name: '脖子', icon: 'fas fa-user' },
-  { id: '胸部', name: '胸部', icon: 'fas fa-glasses' },
-  { id: '手臂', name: '手臂', icon: 'fas fa-hand-paper' },
-  { id: '手指', name: '手指', icon: 'fas fa-hand-point-up' },
-  { id: '腰部', name: '腰部', icon: 'fas fa-sort' },
-  { id: '臀部', name: '臀部', icon: 'fas fa-heart' },
-  { id: '私密部位', name: '私密部位', icon: 'fas fa-chevron-circle-down' },
-  { id: '下肢', name: '下肢', icon: 'fas fa-walking' },
-  { id: '脚', name: '脚', icon: 'fas fa-shoe-prints' },
-  { id: '无', name: '无', icon: 'fas fa-user-secret' }
+  { id: "头发", name: "头发", icon: "fas fa-cut" },
+  { id: "面部", name: "面部", icon: "fas fa-smile" },
+  { id: "脖子", name: "脖子", icon: "fas fa-user" },
+  { id: "胸部", name: "胸部", icon: "fas fa-glasses" },
+  { id: "手臂", name: "手臂", icon: "fas fa-hand-paper" },
+  { id: "手指", name: "手指", icon: "fas fa-hand-point-up" },
+  { id: "腰部", name: "腰部", icon: "fas fa-sort" },
+  { id: "臀部", name: "臀部", icon: "fas fa-heart" },
+  { id: "私密部位", name: "私密部位", icon: "fas fa-chevron-circle-down" },
+  { id: "下肢", name: "下肢", icon: "fas fa-walking" },
+  { id: "脚", name: "脚", icon: "fas fa-shoe-prints" },
+  { id: "无", name: "无", icon: "fas fa-user-secret" },
 ];
 
 // 全局表达数据缓存
@@ -37,33 +37,33 @@ let userFormData = {};
 
 // 初始化身体部位网格选择
 function initBodyPartSelectors() {
-  const noTouchContainer = document.getElementById('noTouchAreas');
-  const noBondageContainer = document.getElementById('noBondageAreas');
+  const noTouchContainer = document.getElementById("noTouchAreas");
+  const noBondageContainer = document.getElementById("noBondageAreas");
 
   if (!noTouchContainer || !noBondageContainer) return;
 
-  bodyParts.forEach(part => {
+  bodyParts.forEach((part) => {
     // 1. 不希望被触碰网格项
-    const touchDiv = document.createElement('div');
-    touchDiv.className = 'body-part-item';
+    const touchDiv = document.createElement("div");
+    touchDiv.className = "body-part-item";
     touchDiv.dataset.id = part.id;
     touchDiv.dataset.name = part.name;
     touchDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
-    touchDiv.addEventListener('click', () => {
-      touchDiv.classList.toggle('selected');
-      updateHiddenInput('no_touch_input', 'noTouchAreas');
+    touchDiv.addEventListener("click", () => {
+      touchDiv.classList.toggle("selected");
+      updateHiddenInput("no_touch_input", "noTouchAreas");
     });
     noTouchContainer.appendChild(touchDiv);
 
     // 2. 不可捆绑网格项
-    const bondageDiv = document.createElement('div');
-    bondageDiv.className = 'body-part-item';
+    const bondageDiv = document.createElement("div");
+    bondageDiv.className = "body-part-item";
     bondageDiv.dataset.id = part.id;
     bondageDiv.dataset.name = part.name;
     bondageDiv.innerHTML = `<i class="${part.icon}"></i><span>${part.name}</span>`;
-    bondageDiv.addEventListener('click', () => {
-      bondageDiv.classList.toggle('selected');
-      updateHiddenInput('no_bondage_input', 'noBondageAreas');
+    bondageDiv.addEventListener("click", () => {
+      bondageDiv.classList.toggle("selected");
+      updateHiddenInput("no_bondage_input", "noBondageAreas");
     });
     noBondageContainer.appendChild(bondageDiv);
   });
@@ -75,19 +75,19 @@ function updateHiddenInput(inputId, containerId) {
   const container = document.getElementById(containerId);
   if (!input || !container) return;
 
-  const selectedItems = container.querySelectorAll('.selected');
-  const values = Array.from(selectedItems).map(item => item.dataset.id);
-  input.value = values.join(',');
+  const selectedItems = container.querySelectorAll(".selected");
+  const values = Array.from(selectedItems).map((item) => item.dataset.id);
+  input.value = values.join(",");
 }
 
 // 收集表单完整数据
 function collectFormData() {
-  const form = document.getElementById('ropeForm');
+  const form = document.getElementById("ropeForm");
   const formData = new FormData(form);
   userFormData = {};
 
   for (let [key, value] of formData.entries()) {
-    if (key === 'accepts') {
+    if (key === "accepts") {
       if (!userFormData.accepts) userFormData.accepts = [];
       userFormData.accepts.push(value);
     } else {
@@ -96,39 +96,45 @@ function collectFormData() {
   }
 
   // 收集“其他特定项目”输入框
-  userFormData.other_accepts = formData.get('other_accepts') ? formData.get('other_accepts').trim() : '';
+  userFormData.other_accepts = formData.get("other_accepts")
+    ? formData.get("other_accepts").trim()
+    : "";
 
   // 收集禁忌部位
-  const noTouchItems = document.querySelectorAll('#noTouchAreas .selected');
-  userFormData.noTouchItems = Array.from(noTouchItems).map(item => ({
+  const noTouchItems = document.querySelectorAll("#noTouchAreas .selected");
+  userFormData.noTouchItems = Array.from(noTouchItems).map((item) => ({
     id: item.dataset.id,
-    name: item.dataset.name
+    name: item.dataset.name,
   }));
 
-  const noBondageItems = document.querySelectorAll('#noBondageAreas .selected');
-  userFormData.noBondageItems = Array.from(noBondageItems).map(item => ({
+  const noBondageItems = document.querySelectorAll("#noBondageAreas .selected");
+  userFormData.noBondageItems = Array.from(noBondageItems).map((item) => ({
     id: item.dataset.id,
-    name: item.dataset.name
+    name: item.dataset.name,
   }));
 
   // 收集感官体验多选项（分层解析主副标题与描述）
-  const feelingItems = document.querySelectorAll('.feeling-option input[type="checkbox"]:checked');
-  userFormData.feelingItems = Array.from(feelingItems).map(item => {
+  const feelingItems = document.querySelectorAll(
+    '.feeling-option input[type="checkbox"]:checked',
+  );
+  userFormData.feelingItems = Array.from(feelingItems).map((item) => {
     const label = item.nextElementSibling;
-    const mainTitleEl = label ? label.querySelector('.title-main') : null;
-    const subTitleEl = label ? label.querySelector('.title-sub') : null;
-    const descEl = label ? label.querySelector('.option-desc') : null;
-    const iconEl = mainTitleEl ? mainTitleEl.querySelector('i') : null;
+    const mainTitleEl = label ? label.querySelector(".title-main") : null;
+    const subTitleEl = label ? label.querySelector(".title-sub") : null;
+    const descEl = label ? label.querySelector(".option-desc") : null;
+    const iconEl = mainTitleEl ? mainTitleEl.querySelector("i") : null;
 
     const mainText = mainTitleEl ? mainTitleEl.innerText.trim() : "";
     const subText = subTitleEl ? subTitleEl.innerText.trim() : "";
-    const fullTitle = subText ? `${mainText} ${subText}` : (mainText || item.value);
+    const fullTitle = subText
+      ? `${mainText} ${subText}`
+      : mainText || item.value;
 
     return {
       value: item.value,
       title: fullTitle,
-      iconClass: iconEl ? iconEl.className : 'fas fa-star',
-      desc: descEl ? descEl.textContent.trim() : ''
+      iconClass: iconEl ? iconEl.className : "fas fa-star",
+      desc: descEl ? descEl.textContent.trim() : "",
     };
   });
 
@@ -139,11 +145,11 @@ function collectFormData() {
 
 // 切换至确认页显示（隐藏主页大 Banner）
 function showConfirmation() {
-  document.getElementById('successMessage').style.display = 'none';
-  const mainHeader = document.querySelector('.header');
-  if (mainHeader) mainHeader.style.display = 'none';
+  document.getElementById("successMessage").style.display = "none";
+  const mainHeader = document.querySelector(".header");
+  if (mainHeader) mainHeader.style.display = "none";
 
-  document.getElementById('confirmationPage').style.display = 'block';
+  document.getElementById("confirmationPage").style.display = "block";
   populateConfirmationPage();
 }
 
@@ -157,7 +163,8 @@ function populateConfirmationPage() {
     `<strong style="font-size:1.15rem; color:#be123c;">${userFormData.safeword || "未设置"}</strong>`;
 
   // 2. 基本信息与健康声明
-  document.getElementById("confNickname").innerHTML = `<strong>${nick}</strong>`;
+  document.getElementById("confNickname").innerHTML =
+    `<strong>${nick}</strong>`;
 
   document.getElementById("confAdult").innerHTML =
     userFormData.adult === "yes"
@@ -173,10 +180,13 @@ function populateConfirmationPage() {
       : `<span class="badge-pill badge-red"><i class="fas fa-video-slash"></i> 拒绝影像记录</span>`;
 
   document.getElementById("confMedical").innerHTML =
-    userFormData.medical_history ? `<strong>${userFormData.medical_history}</strong>` : `<span>无</span>`;
+    userFormData.medical_history
+      ? `<strong>${userFormData.medical_history}</strong>`
+      : `<span>无</span>`;
 
-  document.getElementById("confPiercings").innerHTML =
-    userFormData.piercings ? `<strong>${userFormData.piercings}</strong>` : `<span>无</span>`;
+  document.getElementById("confPiercings").innerHTML = userFormData.piercings
+    ? `<strong>${userFormData.piercings}</strong>`
+    : `<span>无</span>`;
 
   // 3. 身体界限与限制设置
   document.getElementById("confTopless").innerHTML =
@@ -190,7 +200,9 @@ function populateConfirmationPage() {
       : `<span class="badge-pill badge-red">不能接受痕迹</span>`;
 
   var noMarksAreas = document.getElementById("no_marks_areas").value;
-  var confirmationNoMarksAreas = document.getElementById("confirmationNoMarksAreas");
+  var confirmationNoMarksAreas = document.getElementById(
+    "confirmationNoMarksAreas",
+  );
   var noMarksAreasValue = document.getElementById("noMarksAreasValue");
   if (noMarksAreas && noMarksAreas.trim() !== "") {
     noMarksAreasValue.textContent = noMarksAreas;
@@ -237,7 +249,7 @@ function populateConfirmationPage() {
     轻微痛感: "轻微痛感",
     完全不要: "完全不要",
     不怕: "不怕痛",
-    轻微: "轻微痛感"
+    轻微: "轻微痛感",
   };
   const userTolerance = userFormData.pain_tolerance;
   document.getElementById("confPainTolerance").innerHTML =
@@ -246,10 +258,21 @@ function populateConfirmationPage() {
   // 4.9 能接受的特定项目 + “其他”输入框渲染逻辑
   let acceptsHtml = "";
   const checkedAccepts = userFormData.accepts || [];
-  const otherAcceptsText = userFormData.other_accepts ? userFormData.other_accepts.trim() : "";
+  const otherAcceptsText = userFormData.other_accepts
+    ? userFormData.other_accepts.trim()
+    : "";
 
   if (checkedAccepts.length > 0) {
-    const acceptMap = { hair_pulling: "拉头发", "拉头发": "拉头发", slapping: "耳光", "耳光": "耳光", spanking: "SP", "SP": "SP", thigh_rope: "股绳", "股绳": "股绳" };
+    const acceptMap = {
+      hair_pulling: "拉头发",
+      拉头发: "拉头发",
+      slapping: "耳光",
+      耳光: "耳光",
+      spanking: "SP",
+      SP: "SP",
+      thigh_rope: "股绳",
+      股绳: "股绳",
+    };
     checkedAccepts.forEach((accept) => {
       acceptsHtml += `<span class="badge-pill badge-purple"><i class="fas fa-check"></i> ${acceptMap[accept] || accept}</span>`;
     });
@@ -275,22 +298,42 @@ function populateConfirmationPage() {
       ? `<span class="badge-pill badge-purple">感兴趣</span>`
       : `<span class="badge-pill badge-gray">不感兴趣</span>`;
 
-  const blindfoldMap = { 享受: "享受", 可以接受: "可以接受", 能接受但会不安: "能接受但会不安", "不接受（会不安）": "不接受", 不接受: "不接受" };
-  const blindfoldVal = blindfoldMap[userFormData.blindfold] || userFormData.blindfold || "未选择";
+  const blindfoldMap = {
+    享受: "享受",
+    可以接受: "可以接受",
+    能接受但会不安: "能接受但会不安",
+    "不接受（会不安）": "不接受",
+    不接受: "不接受",
+  };
+  const blindfoldVal =
+    blindfoldMap[userFormData.blindfold] || userFormData.blindfold || "未选择";
   document.getElementById("confBlindfold").innerHTML =
     blindfoldVal === "不接受"
       ? `<span class="badge-pill badge-red">${blindfoldVal}</span>`
       : `<span class="badge-pill badge-purple">${blindfoldVal}</span>`;
 
-  const gagMap = { 享受: "享受", 可以轻度接受: "可以轻度接受", 不接受: "不接受" };
+  const gagMap = {
+    享受: "享受",
+    可以轻度接受: "可以轻度接受",
+    不接受: "不接受",
+  };
   const gagVal = gagMap[userFormData.gag] || userFormData.gag || "未选择";
   document.getElementById("confGag").innerHTML =
     gagVal === "不接受"
       ? `<span class="badge-pill badge-red">${gagVal}</span>`
       : `<span class="badge-pill badge-purple">${gagVal}</span>`;
 
-  const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", anxious: "能接受但会不安", no: "不接受" };
-  const breathVal = breathControlMap[userFormData.breath_control] || userFormData.breath_control || "未选择";
+  const breathControlMap = {
+    enjoy: "享受",
+    neck: "颈部呼吸控制",
+    light: "轻度呼吸控制",
+    anxious: "能接受但会不安",
+    no: "不接受",
+  };
+  const breathVal =
+    breathControlMap[userFormData.breath_control] ||
+    userFormData.breath_control ||
+    "未选择";
   document.getElementById("confBreathControl").innerHTML =
     breathVal === "不接受"
       ? `<span class="badge-pill badge-red">${breathVal}</span>`
@@ -306,21 +349,45 @@ function populateConfirmationPage() {
       let iconColor = "#7cb342";
 
       if (item.value.includes("静心冥想")) {
-        lvlClass = "lvl-1"; lvlName = "舒缓接纳"; prefixNum = "1-1"; iconColor = "#7cb342";
+        lvlClass = "lvl-1";
+        lvlName = "舒缓接纳";
+        prefixNum = "1-1";
+        iconColor = "#7cb342";
       } else if (item.value.includes("安全茧房")) {
-        lvlClass = "lvl-1"; lvlName = "舒缓接纳"; prefixNum = "1-2"; iconColor = "#7cb342";
+        lvlClass = "lvl-1";
+        lvlName = "舒缓接纳";
+        prefixNum = "1-2";
+        iconColor = "#7cb342";
       } else if (item.value.includes("趣味互动")) {
-        lvlClass = "lvl-2"; lvlName = "灵蕴交流"; prefixNum = "2-1"; iconColor = "#ffb74d";
+        lvlClass = "lvl-2";
+        lvlName = "灵蕴交流";
+        prefixNum = "2-1";
+        iconColor = "#ffb74d";
       } else if (item.value.includes("身体发现")) {
-        lvlClass = "lvl-2"; lvlName = "灵蕴交流"; prefixNum = "2-2"; iconColor = "#ffb74d";
+        lvlClass = "lvl-2";
+        lvlName = "灵蕴交流";
+        prefixNum = "2-2";
+        iconColor = "#ffb74d";
       } else if (item.value.includes("延迟满足")) {
-        lvlClass = "lvl-3"; lvlName = "浸漫共鸣"; prefixNum = "3-1"; iconColor = "#ff7043";
+        lvlClass = "lvl-3";
+        lvlName = "浸漫共鸣";
+        prefixNum = "3-1";
+        iconColor = "#ff7043";
       } else if (item.value.includes("心流状态")) {
-        lvlClass = "lvl-3"; lvlName = "浸漫共鸣"; prefixNum = "3-2"; iconColor = "#ff7043";
+        lvlClass = "lvl-3";
+        lvlName = "浸漫共鸣";
+        prefixNum = "3-2";
+        iconColor = "#ff7043";
       } else if (item.value.includes("痛感转化")) {
-        lvlClass = "lvl-4"; lvlName = "沉淬突破"; prefixNum = "4-1"; iconColor = "#e53935";
+        lvlClass = "lvl-4";
+        lvlName = "沉淬突破";
+        prefixNum = "4-1";
+        iconColor = "#e53935";
       } else if (item.value.includes("完全交付")) {
-        lvlClass = "lvl-4"; lvlName = "沉淬突破"; prefixNum = "4-2"; iconColor = "#e53935";
+        lvlClass = "lvl-4";
+        lvlName = "沉淬突破";
+        prefixNum = "4-2";
+        iconColor = "#e53935";
       }
 
       feelingsHtml += `
@@ -332,7 +399,7 @@ function populateConfirmationPage() {
             </span>
             <span class="feeling-rich-badge ${lvlClass}">${lvlName}</span>
           </div>
-          ${item.desc ? `<div class="feeling-rich-desc">${item.desc}</div>` : ''}
+          ${item.desc ? `<div class="feeling-rich-desc">${item.desc}</div>` : ""}
         </div>
       `;
     });
@@ -344,19 +411,19 @@ function populateConfirmationPage() {
 
 // 从确认页返回修改（恢复主页大 Banner）
 function goBackToForm() {
-  document.getElementById('confirmationPage').style.display = 'none';
-  const mainHeader = document.querySelector('.header');
-  if (mainHeader) mainHeader.style.display = 'block';
+  document.getElementById("confirmationPage").style.display = "none";
+  const mainHeader = document.querySelector(".header");
+  if (mainHeader) mainHeader.style.display = "block";
 
-  document.getElementById('formContent').style.display = 'block';
-  if (document.querySelector('.status-bar')) {
-    document.querySelector('.status-bar').style.display = 'flex';
+  document.getElementById("formContent").style.display = "block";
+  if (document.querySelector(".status-bar")) {
+    document.querySelector(".status-bar").style.display = "flex";
   }
 }
 
 // 打印确认页
 function printConfirmation() {
-  const printContent = document.getElementById('confirmationPage').innerHTML;
+  const printContent = document.getElementById("confirmationPage").innerHTML;
   const originalContent = document.body.innerHTML;
 
   document.body.innerHTML = `
@@ -372,74 +439,83 @@ function printConfirmation() {
 }
 
 // ==================== 表单提交与 Supabase 数据备份 ====================
-document.getElementById('ropeForm').addEventListener('submit', async function (e) {
-  e.preventDefault();
+document
+  .getElementById("ropeForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  const formData = collectFormData();
+    const formData = collectFormData();
 
-  const submitBtn = e.target.querySelector('.btn-submit');
-  const originalBtnText = submitBtn ? submitBtn.innerHTML : '提交问卷';
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在安全加密提交...';
-  }
-
-  try {
-    const { error } = await _supabase
-      .from('responses')
-      .insert([{
-        safety_acknowledged: formData.safety_acknowledged,
-        nickname: formData.nickname,
-        is_adult: formData.adult,
-        medical_history: formData.medical_history,
-        piercings: formData.piercings,
-        safeword: formData.safeword,
-        topless: formData.topless,
-        marks: formData.marks,
-        no_marks_areas: formData.no_marks_areas,
-        no_touch: formData.noTouchItems ? formData.noTouchItems.map(item => item.name) : [],
-        no_bondage: formData.noBondageItems ? formData.noBondageItems.map(item => item.name) : [],
-        other_pain: formData.other_pain,
-        pain_tolerance: formData.pain_tolerance,
-        accepts: formData.accepts || [],
-        other_accepts: formData.other_accepts || '',
-        hug: formData.hug,
-        sensory_deprivation: formData.sensory_deprivation,
-        blindfold: formData.blindfold,
-        gag: formData.gag,
-        breath_control: formData.breath_control,
-        recording: formData.recording,
-        feelings: formData.feelingItems || []
-      }]);
-
-    if (error) throw error;
-    console.log("表单数据已安全备份至云端！");
-
-    document.getElementById('formContent').style.display = 'none';
-    if (document.querySelector('.status-bar')) {
-      document.querySelector('.status-bar').style.display = 'none';
-    }
-    document.getElementById('successMessage').style.display = 'block';
-
-  } catch (err) {
-    console.error("提交至后台失败:", err);
-    alert("表单提交遇到问题，请检查网络或配置！\n错误提示: " + (err.message || "请求受阻"));
-  } finally {
+    const submitBtn = e.target.querySelector(".btn-submit");
+    const originalBtnText = submitBtn ? submitBtn.innerHTML : "提交问卷";
     if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalBtnText;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> 正在安全加密提交...';
     }
-  }
-});
+
+    try {
+      const { error } = await _supabase.from("responses").insert([
+        {
+          safety_acknowledged: formData.safety_acknowledged,
+          nickname: formData.nickname,
+          is_adult: formData.adult,
+          medical_history: formData.medical_history,
+          piercings: formData.piercings,
+          safeword: formData.safeword,
+          topless: formData.topless,
+          marks: formData.marks,
+          no_marks_areas: formData.no_marks_areas,
+          no_touch: formData.noTouchItems
+            ? formData.noTouchItems.map((item) => item.name)
+            : [],
+          no_bondage: formData.noBondageItems
+            ? formData.noBondageItems.map((item) => item.name)
+            : [],
+          other_pain: formData.other_pain,
+          pain_tolerance: formData.pain_tolerance,
+          accepts: formData.accepts || [],
+          other_accepts: formData.other_accepts || "",
+          hug: formData.hug,
+          sensory_deprivation: formData.sensory_deprivation,
+          blindfold: formData.blindfold,
+          gag: formData.gag,
+          breath_control: formData.breath_control,
+          recording: formData.recording,
+          feelings: formData.feelingItems || [],
+        },
+      ]);
+
+      if (error) throw error;
+      console.log("表单数据已安全备份至云端！");
+
+      document.getElementById("formContent").style.display = "none";
+      if (document.querySelector(".status-bar")) {
+        document.querySelector(".status-bar").style.display = "none";
+      }
+      document.getElementById("successMessage").style.display = "block";
+    } catch (err) {
+      console.error("提交至后台失败:", err);
+      alert(
+        "表单提交遇到问题，请检查网络或配置！\n错误提示: " +
+          (err.message || "请求受阻"),
+      );
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+      }
+    }
+  });
 
 // ==================== 页面加载初始化 ====================
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   initBodyPartSelectors();
 
   // 🛠️ 调试模式触发逻辑
-  if (typeof DEBUG_MODE !== 'undefined' && DEBUG_MODE) {
-    const mainHeader = document.querySelector('.header');
-    if (mainHeader) mainHeader.style.display = 'none';
+  if (typeof DEBUG_MODE !== "undefined" && DEBUG_MODE) {
+    const mainHeader = document.querySelector(".header");
+    if (mainHeader) mainHeader.style.display = "none";
 
     userFormData = {
       nickname: "u哦iu额万人计划",
@@ -452,8 +528,14 @@ document.addEventListener('DOMContentLoaded', function () {
       topless: "not_accept",
       marks: "accept",
       no_marks_areas: "脸上不可以",
-      noTouchItems: [{ id: "面部", name: "面部" }, { id: "手指", name: "手指" }],
-      noBondageItems: [{ id: "胸部", name: "胸部" }, { id: "私密部位", name: "私密部位" }],
+      noTouchItems: [
+        { id: "面部", name: "面部" },
+        { id: "手指", name: "手指" },
+      ],
+      noBondageItems: [
+        { id: "胸部", name: "胸部" },
+        { id: "私密部位", name: "私密部位" },
+      ],
       other_pain: "yes",
       pain_tolerance: "不怕痛",
       accepts: ["拉头发", "SP"],
@@ -463,61 +545,75 @@ document.addEventListener('DOMContentLoaded', function () {
       blindfold: "能接受但会不安",
       gag: "享受",
       breath_control: "neck",
-      feelingItems: []
+      feelingItems: [],
     };
 
-    document.getElementById('formContent').style.display = 'none';
-    if (document.querySelector('.status-bar')) document.querySelector('.status-bar').style.display = 'none';
-    document.getElementById('confirmationPage').style.display = 'block';
+    document.getElementById("formContent").style.display = "none";
+    if (document.querySelector(".status-bar"))
+      document.querySelector(".status-bar").style.display = "none";
+    document.getElementById("confirmationPage").style.display = "block";
     populateConfirmationPage();
   }
 
   // 滚动状态栏 IntersectionObserver 联动
-  const sections = document.querySelectorAll('.form-section');
-  const statusItems = document.querySelectorAll('.status-item');
+  const sections = document.querySelectorAll(".form-section");
+  const statusItems = document.querySelectorAll(".status-item");
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const index = Array.from(sections).indexOf(entry.target);
-        statusItems.forEach((item, i) => {
-          if (i <= index) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
-          }
-        });
-      }
-    });
-  }, { threshold: 0.5 });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = Array.from(sections).indexOf(entry.target);
+          statusItems.forEach((item, i) => {
+            if (i <= index) {
+              item.classList.add("active");
+            } else {
+              item.classList.remove("active");
+            }
+          });
+        }
+      });
+    },
+    { threshold: 0.5 },
+  );
 
-  sections.forEach(section => observer.observe(section));
+  sections.forEach((section) => observer.observe(section));
 });
 
-// ==================== 长图生成与导出预览 ====================
+// ==================== 长图生成与自定义文件名导出 ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
 
-  let processToast = document.getElementById('image-processing-toast');
+  // 1. 动态获取用户名与当前日期，生成自定义文件名
+  const nick = (userFormData && userFormData.nickname) ? userFormData.nickname.trim() : "未命名";
+  const now = new Date();
+  const dateStr = now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+
+  // 💡 在这里修改你喜欢的文件名格式（例如：绳缚体验知情同意书_昵称_日期.png）
+  const fileName = `绳缚体验知情同意书_${nick}_${dateStr}.png`;
+
+  let processToast = document.getElementById("image-processing-toast");
   if (!processToast) {
-    processToast = document.createElement('div');
-    processToast.id = 'image-processing-toast';
+    processToast = document.createElement("div");
+    processToast.id = "image-processing-toast";
     processToast.innerHTML = `
       <div style="background: rgba(0,0,0,0.8); color: white; padding: 15px 25px; border-radius: 8px; text-align: center; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10001;">
         <span id="toast-text">正在生成精致长图，请稍候片刻...</span>
       </div>
     `;
     Object.assign(processToast.style, {
-      position: 'fixed',
-      top: 0, left: 0, width: '100vw', height: '100vh',
-      backgroundColor: 'rgba(255,255,255,0.1)',
-      display: 'flex', justifyContent: 'center', alignItems: 'center',
-      zIndex: '10000'
+      position: "fixed",
+      top: 0, left: 0, width: "100vw", height: "100vh",
+      backgroundColor: "rgba(255,255,255,0.1)",
+      display: "flex", justifyContent: "center", alignItems: "center",
+      zIndex: "10000",
     });
     document.body.appendChild(processToast);
   } else {
-    document.getElementById('toast-text').innerText = "正在生成精致长图，请稍候片刻...";
-    processToast.style.display = 'flex';
+    document.getElementById("toast-text").innerText = "正在生成精致长图，请稍候片刻...";
+    processToast.style.display = "flex";
   }
 
   setTimeout(() => {
@@ -525,37 +621,49 @@ function downloadS4RImage(id) {
       scale: 2,
       backgroundColor: "#ffffff",
       useCORS: true,
-      ignoreElements: (element) => element.id === 'image-processing-toast'
-    }).then(canvas => {
-      const imageData = canvas.toDataURL("image/png");
+      ignoreElements: (element) => element.id === "image-processing-toast",
+    })
+      .then((canvas) => {
+        const imageData = canvas.toDataURL("image/png");
 
-      let overlay = document.getElementById('image-download-overlay');
-      if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'image-download-overlay';
-        overlay.innerHTML = `
+        // 2. 自动触发带自定义文件名的浏览器下载 (电脑/普通手机浏览器)
+        const downloadLink = document.createElement("a");
+        downloadLink.href = imageData;
+        downloadLink.download = fileName; // 设置自定义文件名！
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // 3. 同时弹窗显示预览 (方便微信/Safari 内长图保存相册)
+        let overlay = document.getElementById("image-download-overlay");
+        if (!overlay) {
+          overlay = document.createElement("div");
+          overlay.id = "image-download-overlay";
+          overlay.innerHTML = `
           <div class="overlay-content">
             <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
-            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
+            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>手机端请长按下方图片保存到相册</strong></p>
             <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
-            <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #667eea; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭预览</button>
+            <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #8b5cf6; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">关闭预览</button>
           </div>
         `;
-        document.body.appendChild(overlay);
-      }
+          document.body.appendChild(overlay);
+        }
 
-      const imgDisplay = document.getElementById('generated-image');
-      imgDisplay.src = imageData;
+        const imgDisplay = document.getElementById("generated-image");
+        imgDisplay.src = imageData;
 
-      processToast.style.display = 'none';
-      overlay.style.display = 'flex';
+        processToast.style.display = "none";
+        overlay.style.display = "flex";
 
-      console.log("S4R 长图生成成功");
-    }).catch(err => {
-      console.error("生成长图失败:", err);
-      document.getElementById('toast-text').innerText = "生成失败，请刷新重试";
-      setTimeout(() => { processToast.style.display = 'none'; }, 1500);
-    });
-
+        console.log("S4R 长图生成成功，文件名：" + fileName);
+      })
+      .catch((err) => {
+        console.error("生成长图失败:", err);
+        document.getElementById("toast-text").innerText = "生成失败，请刷新重试";
+        setTimeout(() => {
+          processToast.style.display = "none";
+        }, 1500);
+      });
   }, 1500);
 }
