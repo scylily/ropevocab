@@ -580,20 +580,19 @@ document.addEventListener("DOMContentLoaded", function () {
   sections.forEach((section) => observer.observe(section));
 });
 
-// ==================== 长图生成与自定义文件名导出 ====================
+// ==================== 长图生成与全平台统一弹窗预览 ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
 
-  // 1. 动态获取用户名与当前日期，生成自定义文件名
+  // 1. 动态生成自定义文件名
   const nick = (userFormData && userFormData.nickname) ? userFormData.nickname.trim() : "未命名";
   const now = new Date();
   const dateStr = now.getFullYear() +
     String(now.getMonth() + 1).padStart(2, '0') +
     String(now.getDate()).padStart(2, '0');
-
-  // 💡 在这里修改你喜欢的文件名格式（例如：绳缚体验知情同意书_昵称_日期.png）
   const fileName = `绳缚体验知情同意书_${nick}_${dateStr}.png`;
 
+  // 2. 弹出“正在生成”提示
   let processToast = document.getElementById("image-processing-toast");
   if (!processToast) {
     processToast = document.createElement("div");
@@ -616,6 +615,7 @@ function downloadS4RImage(id) {
     processToast.style.display = "flex";
   }
 
+  // 3. 渲染图片并展示统一遮罩弹窗（无任何 JavaScript 自动下载触发，彻底根治所有拦截 BUG）
   setTimeout(() => {
     html2canvas(element, {
       scale: 2,
@@ -626,16 +626,17 @@ function downloadS4RImage(id) {
       .then((canvas) => {
         const imageData = canvas.toDataURL("image/png");
 
-        // 2. 弹窗显示预览 (方便微信/Safari 内长图保存相册)
         let overlay = document.getElementById("image-download-overlay");
         if (!overlay) {
           overlay = document.createElement("div");
           overlay.id = "image-download-overlay";
           overlay.innerHTML = `
           <div class="overlay-content">
-            <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
-            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>手机端请长按下方图片保存到相册</strong></p>
-            <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
+            <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：长图已生成</p>
+            <p style="margin: 0 0 12px; font-size: 0.9rem; color: #6366f1; font-weight: bold;">
+              长按下方图片保存到相册
+            </p>
+            <img id="generated-image" src="" style="width: 100%; max-height: 55vh; object-fit: contain; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" />
             <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #8b5cf6; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">关闭预览</button>
           </div>
         `;
@@ -644,11 +645,13 @@ function downloadS4RImage(id) {
 
         const imgDisplay = document.getElementById("generated-image");
         imgDisplay.src = imageData;
+        imgDisplay.alt = fileName;   // 将自定义文件名挂载至图片 alt 属性
+        imgDisplay.title = fileName; // 将自定义文件名挂载至图片 title 属性
 
         processToast.style.display = "none";
         overlay.style.display = "flex";
 
-        console.log("S4R 长图生成成功，文件名：" + fileName);
+        console.log("S4R 长图生成成功，标识文件名：" + fileName);
       })
       .catch((err) => {
         console.error("生成长图失败:", err);
