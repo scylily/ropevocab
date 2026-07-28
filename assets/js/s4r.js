@@ -95,6 +95,9 @@ function collectFormData() {
     }
   }
 
+  // 收集“其他特定项目”输入框
+  userFormData.other_accepts = formData.get('other_accepts') ? formData.get('other_accepts').trim() : '';
+
   // 收集禁忌部位
   const noTouchItems = document.querySelectorAll('#noTouchAreas .selected');
   userFormData.noTouchItems = Array.from(noTouchItems).map(item => ({
@@ -119,7 +122,7 @@ function collectFormData() {
 
     const mainText = mainTitleEl ? mainTitleEl.innerText.trim() : "";
     const subText = subTitleEl ? subTitleEl.innerText.trim() : "";
-    const fullTitle = subText ? `${mainText}：${subText}` : (mainText || item.value);
+    const fullTitle = subText ? `${mainText} ${subText}` : (mainText || item.value);
 
     return {
       value: item.value,
@@ -162,7 +165,7 @@ function populateConfirmationPage() {
       : `<span class="badge-pill badge-red">否 (未成年)</span>`;
 
   document.getElementById("confSafety").innerHTML =
-    `<span class="badge-pill badge-green"><i class="fas fa-check"></i> 已理解同意</span>`;
+    `<span class="badge-pill badge-green"><i class="fas fa-check"></i> 已理解并同意</span>`;
 
   document.getElementById("confRecording").innerHTML =
     userFormData.recording === "yes"
@@ -228,20 +231,36 @@ function populateConfirmationPage() {
       ? `<strong>希望体验除捆绑感外疼痛</strong>`
       : `<strong>不希望体验</strong>`;
 
-  const painToleranceMap = { 恋痛: "恋痛", 不怕: "不怕", 畏痛: "畏痛", 不怯: "不怯", 轻微: "轻微", 完全不要: "完全不要" };
+  const painToleranceMap = {
+    恋痛: "恋痛",
+    不怕痛: "不怕痛",
+    轻微痛感: "轻微痛感",
+    完全不要: "完全不要",
+    不怕: "不怕痛",
+    轻微: "轻微痛感"
+  };
   const userTolerance = userFormData.pain_tolerance;
   document.getElementById("confPainTolerance").innerHTML =
     `<span class="badge-pill badge-purple">${painToleranceMap[userTolerance] || userTolerance || "未选择"}</span>`;
 
-  // 能接受的项目
+  // 4.9 能接受的特定项目 + “其他”输入框渲染逻辑
   let acceptsHtml = "";
-  if (userFormData.accepts && userFormData.accepts.length > 0) {
+  const checkedAccepts = userFormData.accepts || [];
+  const otherAcceptsText = userFormData.other_accepts ? userFormData.other_accepts.trim() : "";
+
+  if (checkedAccepts.length > 0) {
     const acceptMap = { hair_pulling: "拉头发", "拉头发": "拉头发", slapping: "耳光", "耳光": "耳光", spanking: "SP", "SP": "SP", thigh_rope: "股绳", "股绳": "股绳" };
-    userFormData.accepts.forEach((accept) => {
+    checkedAccepts.forEach((accept) => {
       acceptsHtml += `<span class="badge-pill badge-purple"><i class="fas fa-check"></i> ${acceptMap[accept] || accept}</span>`;
     });
-  } else {
-    acceptsHtml = `<span class="badge-pill badge-gray">无</span>`;
+  }
+
+  if (otherAcceptsText) {
+    acceptsHtml += `<span class="badge-pill badge-purple"><i class="fas fa-pen"></i> ${otherAcceptsText}</span>`;
+  }
+
+  if (!checkedAccepts.length && !otherAcceptsText) {
+    acceptsHtml = `<span class="badge-pill badge-gray">不接受</span>`;
   }
   document.getElementById("confAccepts").innerHTML = acceptsHtml;
 
@@ -253,10 +272,10 @@ function populateConfirmationPage() {
 
   document.getElementById("confSensory").innerHTML =
     userFormData.sensory_deprivation === "yes"
-      ? `<span class="badge-pill badge-purple">是 (感兴趣)</span>`
-      : `<span class="badge-pill badge-gray">否</span>`;
+      ? `<span class="badge-pill badge-purple">感兴趣</span>`
+      : `<span class="badge-pill badge-gray">不感兴趣</span>`;
 
-  const blindfoldMap = { 享受: "享受", 可以接受: "可以接受", "不接受（会不安）": "不接受" };
+  const blindfoldMap = { 享受: "享受", 可以接受: "可以接受", 能接受但会不安: "能接受但会不安", "不接受（会不安）": "不接受", 不接受: "不接受" };
   const blindfoldVal = blindfoldMap[userFormData.blindfold] || userFormData.blindfold || "未选择";
   document.getElementById("confBlindfold").innerHTML =
     blindfoldVal === "不接受"
@@ -270,33 +289,38 @@ function populateConfirmationPage() {
       ? `<span class="badge-pill badge-red">${gagVal}</span>`
       : `<span class="badge-pill badge-purple">${gagVal}</span>`;
 
-  const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", no: "不接受" };
+  const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", anxious: "能接受但会不安", no: "不接受" };
   const breathVal = breathControlMap[userFormData.breath_control] || userFormData.breath_control || "未选择";
   document.getElementById("confBreathControl").innerHTML =
     breathVal === "不接受"
       ? `<span class="badge-pill badge-red">${breathVal}</span>`
       : `<span class="badge-pill badge-purple">${breathVal}</span>`;
 
-  // 6. 期望的深度体验感受（丰富图卡展开）
+  // 6. 期望的绳缚体验感受（编号前置 + 纯净阶段胶囊）
   let feelingsHtml = "";
   if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
     userFormData.feelingItems.forEach((item) => {
       let lvlClass = "lvl-1";
-      let lvlName = "程度1：舒缓接纳";
+      let lvlName = "舒缓接纳";
+      let prefixNum = "1-1";
       let iconColor = "#7cb342";
 
-      if (item.value.includes("程度2")) {
-        lvlClass = "lvl-2";
-        lvlName = "程度2：灵蕴交流";
-        iconColor = "#ffb74d";
-      } else if (item.value.includes("程度3")) {
-        lvlClass = "lvl-3";
-        lvlName = "程度3：浸漫共鸣";
-        iconColor = "#ff7043";
-      } else if (item.value.includes("程度4")) {
-        lvlClass = "lvl-4";
-        lvlName = "程度4：沉淬突破";
-        iconColor = "#e53935";
+      if (item.value.includes("静心冥想")) {
+        lvlClass = "lvl-1"; lvlName = "舒缓接纳"; prefixNum = "1-1"; iconColor = "#7cb342";
+      } else if (item.value.includes("安全茧房")) {
+        lvlClass = "lvl-1"; lvlName = "舒缓接纳"; prefixNum = "1-2"; iconColor = "#7cb342";
+      } else if (item.value.includes("趣味互动")) {
+        lvlClass = "lvl-2"; lvlName = "灵蕴交流"; prefixNum = "2-1"; iconColor = "#ffb74d";
+      } else if (item.value.includes("身体发现")) {
+        lvlClass = "lvl-2"; lvlName = "灵蕴交流"; prefixNum = "2-2"; iconColor = "#ffb74d";
+      } else if (item.value.includes("延迟满足")) {
+        lvlClass = "lvl-3"; lvlName = "浸漫共鸣"; prefixNum = "3-1"; iconColor = "#ff7043";
+      } else if (item.value.includes("心流状态")) {
+        lvlClass = "lvl-3"; lvlName = "浸漫共鸣"; prefixNum = "3-2"; iconColor = "#ff7043";
+      } else if (item.value.includes("痛感转化")) {
+        lvlClass = "lvl-4"; lvlName = "沉淬突破"; prefixNum = "4-1"; iconColor = "#e53935";
+      } else if (item.value.includes("完全交付")) {
+        lvlClass = "lvl-4"; lvlName = "沉淬突破"; prefixNum = "4-2"; iconColor = "#e53935";
       }
 
       feelingsHtml += `
@@ -304,7 +328,7 @@ function populateConfirmationPage() {
           <div class="feeling-rich-head">
             <span class="feeling-rich-title">
               <i class="${item.iconClass}" style="color: ${iconColor};"></i>
-              ${item.title}
+              ${prefixNum} ${item.title}
             </span>
             <span class="feeling-rich-badge ${lvlClass}">${lvlName}</span>
           </div>
@@ -378,6 +402,7 @@ document.getElementById('ropeForm').addEventListener('submit', async function (e
         other_pain: formData.other_pain,
         pain_tolerance: formData.pain_tolerance,
         accepts: formData.accepts || [],
+        other_accepts: formData.other_accepts || '',
         hug: formData.hug,
         sensory_deprivation: formData.sensory_deprivation,
         blindfold: formData.blindfold,
@@ -430,11 +455,12 @@ document.addEventListener('DOMContentLoaded', function () {
       noTouchItems: [{ id: "面部", name: "面部" }, { id: "手指", name: "手指" }],
       noBondageItems: [{ id: "胸部", name: "胸部" }, { id: "私密部位", name: "私密部位" }],
       other_pain: "yes",
-      pain_tolerance: "不怕",
+      pain_tolerance: "不怕痛",
       accepts: ["拉头发", "SP"],
+      other_accepts: "",
       hug: "yes",
       sensory_deprivation: "yes",
-      blindfold: "不接受（会不安）",
+      blindfold: "能接受但会不安",
       gag: "享受",
       breath_control: "neck",
       feelingItems: []
