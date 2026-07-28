@@ -341,7 +341,7 @@
         color: #991b1b;
       }
 
-      /* 精致胶囊标签组 */
+      /* 精致胶囊标签组 (已加粗 font-weight: 600) */
       .tag-group {
         display: flex;
         flex-wrap: wrap;
@@ -356,13 +356,20 @@
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 0.82rem;
-        font-weight: 500;
+        font-weight: 600;
+        /* 👈 胶囊文字加粗 */
       }
 
       .tag-pill.purple {
         background: #f3e8ff;
         color: #7e22ce;
         border: 1px solid #e9d5ff;
+      }
+
+      .tag-pill.green {
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
       }
 
       .tag-pill.red {
@@ -486,8 +493,8 @@
 
             <!-- 不可留痕区域单独行 -->
             <div class="kv-box full" id="confNoMarksRow" style="margin-bottom: 10px; display: none;">
-              <span class="kv-label">不可留痕区域：</span>
-              <span class="kv-val" id="confNoMarksAreas" style="color:#ef4444;"></span>
+              <span class="kv-label" style="color: #ef4444; font-weight: 600;">不可留痕区域：</span>
+              <span class="kv-val" id="confNoMarksAreas" style="color: #ef4444; font-weight: 700;"></span>
             </div>
 
             <div class="kv-box full" style="margin-bottom: 10px; flex-direction: column; align-items: flex-start;">
@@ -593,6 +600,50 @@
         "耳光": "耳光",
         "SP": "SP",
         "股绳": "股绳"
+      };
+
+      /* 🌟 程度体验详细卡片映射表 */
+      const feelingDetailsMap = {
+        "【程度1：舒缓接纳】 静心冥想：呼吸同步的安宁": {
+          code: "1-1", title: "静心冥想：呼吸同步的安宁",
+          desc: "随绳索配合呼吸起伏，在收放间沉浸身心，进入安宁冥想状态",
+          level: "舒缓接纳", color: "#7cb342", badgeBg: "#dcfce7", badgeColor: "#15803d", icon: "fas fa-spa"
+        },
+        "【程度1：舒缓接纳】 安全茧房：被妥帖守护的松弛": {
+          code: "1-2", title: "安全茧房：被妥帖守护的松弛",
+          desc: "绳索温和地包裹，如云朵拥抱，不同松紧的张力状态，带来身心极致的松弛与安全感",
+          level: "舒缓接纳", color: "#7cb342", badgeBg: "#dcfce7", badgeColor: "#15803d", icon: "fas fa-shield-alt"
+        },
+        "【程度2：灵蕴交流】 趣味互动：跃动的好奇心探索": {
+          code: "2-1", title: "趣味互动：跃动的好奇心探索",
+          desc: "绳索与肌肤以不同力度与节奏触碰，只需专注感受触觉细微变化，无需语言，让好奇心尽情探索",
+          level: "灵蕴交流", color: "#ffb74d", badgeBg: "#fef3c7", badgeColor: "#b45309", icon: "fas fa-laugh-wink"
+        },
+        "【程度2：灵蕴交流】 身体发现：新知觉的温柔启蒙": {
+          code: "2-2", title: "身体发现：新知觉的温柔启蒙",
+          desc: "身体局部被绑定能引导注意力，通过绳索的绑定重新发现身体的敏感与新知觉差异",
+          level: "灵蕴交流", color: "#ffb74d", badgeBg: "#fef3c7", badgeColor: "#b45309", icon: "fas fa-search"
+        },
+        "【程度3：浸漫共鸣】 延迟满足：克制中煎熬，自主掌控的等待": {
+          code: "3-1", title: "延迟满足：克制中煎熬，自主掌控的等待",
+          desc: "在明确的安全规划下，必须主动使用安全词或约定手势解开，体会克制中获得独特的心理释放与满足感",
+          level: "浸漫共鸣", color: "#ff7043", badgeBg: "#ffedd5", badgeColor: "#c2410c", icon: "fas fa-hourglass-half"
+        },
+        "【程度3：浸漫共鸣】 心流状态：忘我的协同，身心合一的专注": {
+          code: "3-2", title: "心流状态：忘我的协同，身心合一的专注",
+          desc: "通过被束缚的状态主动探索身体的不同可能，与绳索精准协调，让感官达到浑然忘我、身心合一的专注状态",
+          level: "浸漫共鸣", color: "#ff7043", badgeBg: "#ffedd5", badgeColor: "#c2410c", icon: "fas fa-water"
+        },
+        "【程度4：沉淬突破】 痛感转化：探索耐受边界，感受煎熬与释放": {
+          code: "4-1", title: "痛感转化：探索耐受边界，感受煎熬与释放",
+          desc: "绳索以精准的控制，将身体推向耐受磨炼，内啡肽的激增，将苦痛煎熬转化为深层满足",
+          level: "沉淬突破", color: "#e53935", badgeBg: "#fee2e2", badgeColor: "#b91c1c", icon: "fas fa-bolt"
+        },
+        "【程度4：沉淬突破】 完全交付：信任的终极试炼": {
+          code: "4-2", title: "完全交付：信任的终极试炼",
+          desc: "身体会经过从挣扎紧绷到全然接受跟从，在精神完全交付身体的过程中，唤醒原本被忽略的细微感知，开启全新的体验维度",
+          level: "沉淬突破", color: "#e53935", badgeBg: "#fee2e2", badgeColor: "#b91c1c", icon: "fas fa-lock"
+        }
       };
 
       const SUPABASE_URL = 'https://cpjjmuzrcvgbaekiqkrx.supabase.co';
@@ -738,19 +789,31 @@
 
         // 1. 基本信息模块
         document.getElementById("confNickname").innerText = item.nickname || "未填写";
-        document.getElementById("confAdult").innerText = (item.adult === "yes" || item.is_adult === "yes") ? "是" : "否";
-        document.getElementById("confSafety").innerHTML = `<span style="color:var(--success);">✅ 已理解同意</span>`;
-        document.getElementById("confRecording").innerText = item.recording === "yes" ? "希望留下记录" : "不希望留记录";
+        document.getElementById("confAdult").innerHTML = (item.adult === "yes" || item.is_adult === "yes")
+          ? `<span class="tag-pill green">是 (已成年)</span>`
+          : `<span class="tag-pill gray">否</span>`;
+
+        document.getElementById("confSafety").innerHTML = `<span class="tag-pill green"><i class="fas fa-check"></i> 已理解并同意</span>`;
+
+        document.getElementById("confRecording").innerHTML = item.recording === "yes"
+          ? `<span class="tag-pill green"><i class="fas fa-video"></i> 希望留下记录</span>`
+          : `<span class="tag-pill gray">不希望留记录</span>`;
+
         document.getElementById("confMedical").innerText = item.medical_history || "无";
         document.getElementById("confPiercings").innerText = item.piercings || "无";
 
         // 2. 身体界限模块
-        document.getElementById("confTopless").innerText = item.topless === "accept" ? "接受上半身赤裸" : "不接受";
-        document.getElementById("confMarks").innerText = item.marks === "accept" ? "能接受" : "不能接受";
+        document.getElementById("confTopless").innerHTML = item.topless === "accept"
+          ? `<span class="tag-pill purple">接受上半身赤裸</span>`
+          : `<span class="tag-pill gray">不接受</span>`;
 
-        // 单独整行渲染不可留痕区域
+        document.getElementById("confMarks").innerHTML = item.marks === "accept"
+          ? `<span class="tag-pill green">能接受痕迹</span>`
+          : `<span class="tag-pill red">不能接受痕迹</span>`;
+
+        // 只要填写了不可留痕区域，均高亮单独显示
         const noMarksRow = document.getElementById("confNoMarksRow");
-        if (item.marks === "not_accept" && item.no_marks_areas && item.no_marks_areas.trim() !== "") {
+        if (item.no_marks_areas && item.no_marks_areas.trim() !== "") {
           document.getElementById("confNoMarksAreas").innerText = item.no_marks_areas.trim();
           noMarksRow.style.display = "flex";
         } else {
@@ -762,7 +825,7 @@
         if (item.no_touch && item.no_touch.length > 0) {
           noTouchTags.innerHTML = item.no_touch.map(part => {
             const icon = bodyPartsMap[part] || "fas fa-minus-circle";
-            return `<span class="tag-pill purple"><i class="${icon}"></i>${part}</span>`;
+            return `<span class="tag-pill red"><i class="${icon}"></i>${part}</span>`;
           }).join("");
         } else {
           noTouchTags.innerHTML = `<span class="tag-pill gray">无特殊限制</span>`;
@@ -781,7 +844,10 @@
 
         // 3. 痛感模块
         document.getElementById("confPainOther").innerText = item.other_pain === "yes" ? "希望体验除捆绑感外疼痛" : "不希望体验";
-        document.getElementById("confPainTolerance").innerText = item.pain_tolerance || "未选择";
+
+        document.getElementById("confPainTolerance").innerHTML = item.pain_tolerance
+          ? `<span class="tag-pill purple">${item.pain_tolerance}</span>`
+          : `<span class="tag-pill gray">未选择</span>`;
 
         // 特定玩法项目
         const acceptsTags = document.getElementById("confAcceptsTags");
@@ -802,18 +868,53 @@
         acceptsTags.innerHTML = htmlTags || `<span class="tag-pill gray">未选择特定项目</span>`;
 
         // 4. 互动偏好模块
-        document.getElementById("confHug").innerText = item.hug === "yes" ? "可以" : "不可以";
-        document.getElementById("confSensory").innerText = item.sensory_deprivation === "yes" ? "感兴趣" : "不感兴趣";
-        document.getElementById("confBlindfold").innerText = blindfoldMap[item.blindfold] || item.blindfold || "未选择";
-        document.getElementById("confGag").innerText = gagMap[item.gag] || item.gag || "未选择";
-        document.getElementById("confBreath").innerText = breathControlMap[item.breath_control] || item.breath_control || "未选择";
+        document.getElementById("confHug").innerHTML = item.hug === "yes"
+          ? `<span class="tag-pill green">可以</span>`
+          : `<span class="tag-pill gray">不可以</span>`;
 
-        // 5. 期望体验模块
+        document.getElementById("confSensory").innerHTML = item.sensory_deprivation === "yes"
+          ? `<span class="tag-pill purple">感兴趣</span>`
+          : `<span class="tag-pill gray">不感兴趣</span>`;
+
+        document.getElementById("confBlindfold").innerHTML = item.blindfold
+          ? `<span class="tag-pill purple">${blindfoldMap[item.blindfold] || item.blindfold}</span>`
+          : `<span class="tag-pill gray">未选择</span>`;
+
+        document.getElementById("confGag").innerHTML = item.gag
+          ? `<span class="tag-pill purple">${gagMap[item.gag] || item.gag}</span>`
+          : `<span class="tag-pill gray">未选择</span>`;
+
+        document.getElementById("confBreath").innerHTML = item.breath_control
+          ? `<span class="tag-pill purple">${breathControlMap[item.breath_control] || item.breath_control}</span>`
+          : `<span class="tag-pill gray">未选择</span>`;
+
+        // 5. 期望体验模块（复刻 s4r 精致卡片渲染）
         const feelingsContainer = document.getElementById("confFeelingsCompact");
         if (item.feelings && item.feelings.length > 0) {
           feelingsContainer.innerHTML = item.feelings.map(feel => {
-            const val = typeof feel === 'object' ? feel.value : feel;
-            return `<div style="font-size:0.85rem; color:#1e293b; padding:6px 10px; background:#f8fafc; border-radius:6px; margin-bottom:5px; border:1px solid #f1f5f9; line-height: 1.4;">• <strong>${val}</strong></div>`;
+            const rawVal = typeof feel === 'object' ? feel.value : feel;
+            const meta = feelingDetailsMap[rawVal];
+
+            if (meta) {
+              return `
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 5px solid ${meta.color}; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div style="font-weight: 700; font-size: 0.9rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                      <i class="${meta.icon}" style="color: ${meta.color}; font-size: 0.95rem;"></i>
+                      <span>${meta.code} ${meta.title}</span>
+                    </div>
+                    <span style="font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: ${meta.badgeBg}; color: ${meta.badgeColor};">
+                      ${meta.level}
+                    </span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #64748b; line-height: 1.4; margin-top: 2px;">
+                    ${meta.desc}
+                  </div>
+                </div>
+              `;
+            } else {
+              return `<div style="font-size:0.85rem; color:#1e293b; padding:8px 12px; background:#f8fafc; border-radius:6px; margin-bottom:6px; border:1px solid #e2e8f0;">• <strong>${rawVal}</strong></div>`;
+            }
           }).join("");
         } else {
           feelingsContainer.innerHTML = `<span style="font-size:0.85rem; color:#888;">无特殊偏好</span>`;
