@@ -1,3 +1,6 @@
+/* ==========================================================================
+   1. 变量与全局初始化 Reset
+   ========================================================================== */
 :root {
   --primary: #8b5cf6;
   --primary-dark: #7c3aed;
@@ -7,13 +10,12 @@
   --danger: #ef4444;
   --success: #10b981;
 
-  /* 添加情感多选时新增的 */
   --base-color: #4a6fa5;
   --light-color: #edf2f7;
   --hover-color: #f0f0f0;
   --text-dark: #333;
   --text-medium: #666;
-  --text-light: #888; /* 去除重复，保留最终覆盖值 */
+  --text-light: #888;
   --border-color: #ddd;
   --level1-color: #7cb342;
   --level2-color: #ffb74d;
@@ -31,33 +33,44 @@
 }
 
 body {
-  background: #f9f9f9; /* 后者覆盖前者的 linear-gradient */
-  color: var(--text-dark); /* 后者覆盖前者的 var(--text) */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* 后者覆盖 */
+  background: #f9f9f9;
+  color: var(--text-dark);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  padding: 20px; /* 后者覆盖前者的 clamp 边距 */
+  padding: 20px;
   max-width: 1000px;
   margin: 0 auto;
   min-height: 100vh;
+
+  /* 全局防文本选中 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
+input, textarea {
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
+
+/* ==========================================================================
+   2. 主页面结构 & 容器
+   ========================================================================== */
 .container {
   max-width: min(90vw, 1000px);
   margin: 0 auto;
   background: white;
   border-radius: clamp(0.75rem, 2vw, 1rem);
-  box-shadow: 0 clamp(0.375rem, 1vw, 0.625rem)
-    clamp(0.9375rem, 2.5vw, 1.5625rem) rgba(0, 0, 0, 0.05);
+  box-shadow: 0 clamp(0.375rem, 1vw, 0.625rem) clamp(0.9375rem, 2.5vw, 1.5625rem) rgba(0, 0, 0, 0.05);
   overflow: hidden;
   border: 0.0625rem solid var(--border);
 }
 
 .header {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   padding: clamp(1.5rem, 4vw, 2.5rem);
   text-align: center;
@@ -159,19 +172,18 @@ body {
   line-height: 1.5;
 }
 
-/* 整合合并后的表单组基础配置 */
+/* ==========================================================================
+   3. 问卷表单元素 & 卡片式 (Option 2) 容器样式
+   ========================================================================== */
 .form-group {
-  margin-bottom: clamp(1rem, 3vw, 1.5625rem);
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
 }
 
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.625rem;
-  color: var(--text);
-  font-size: clamp(1rem, 2.5vw, 1.1rem);
-}
-
+.form-label,
 .form-label-g {
   display: block;
   font-weight: 600;
@@ -193,128 +205,6 @@ body {
   margin-top: 0.3125rem;
   margin-bottom: 0.9375rem;
   line-height: 1.4;
-}
-
-.feeling-options {
-  margin-top: 15px;
-}
-
-.feeling-option {
-  position: relative;
-  margin-bottom: 15px;
-  transition: transform 0.2s;
-}
-
-.feeling-option:hover {
-  transform: translateX(5px);
-}
-
-.feeling-option input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-}
-
-.feeling-option label {
-  display: block;
-  padding: 18px 20px;
-  background: #f8f8f8;
-  border-radius: 10px;
-  border-left: 6px solid var(--border-color);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.feeling-option input[type="checkbox"]:checked + label {
-  background: var(--light-color);
-  box-shadow: 0 2px 8px rgba(74, 111, 165, 0.15);
-}
-
-.feeling-option:hover label {
-  background: var(--hover-color);
-}
-
-.option-title {
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 8px;
-}
-
-.option-title i {
-  margin-right: 10px;
-  font-size: 18px;
-  width: 24px;
-  text-align: center;
-}
-
-.option-desc {
-  display: block;
-  font-size: 14px;
-  color: var(--text-medium);
-  line-height: 1.6;
-  padding-left: 34px;
-}
-
-.safety-note {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 6px 10px;
-  background: var(--safety-bg);
-  border-radius: 6px;
-  font-size: 12px;
-  color: var(--safety-text);
-  line-height: 1.4;
-}
-
-.safety-note i {
-  margin-right: 5px;
-}
-
-/* 强度级别样式 */
-.level-1 input[type="checkbox"]:checked + label {
-  border-left-color: var(--level1-color);
-}
-.level-2 input[type="checkbox"]:checked + label {
-  border-left-color: var(--level2-color);
-}
-.level-3 input[type="checkbox"]:checked + label {
-  border-left-color: var(--level3-color);
-}
-.level-4 input[type="checkbox"]:checked + label {
-  border-left-color: var(--level4-color);
-}
-
-/* 强度标签 */
-.intensity-label,
-.intensity-label-comm {
-  display: inline-block;
-  border-radius: 10px;
-  font-weight: normal;
-}
-.intensity-label {
-  margin-left: 10px;
-  font-size: 0.7em;
-}
-.intensity-label-comm {
-  font-size: 0.8em;
-}
-
-.level-1 .intensity-label {
-  background-color: #7cb34226;
-  color: var(--level1-color);
-}
-.level-2 .intensity-label {
-  background-color: #ffb74d26;
-  color: var(--level2-color);
-}
-.level-3 .intensity-label {
-  background-color: #ff704326;
-  color: var(--level3-color);
-}
-.level-4 .intensity-label {
-  background-color: #e5393526;
-  color: var(--level4-color);
 }
 
 .input-text {
@@ -352,6 +242,7 @@ body {
   transition: all 0.2s;
   user-select: none;
   font-size: clamp(0.9rem, 2.5vw, 1rem);
+  background: #ffffff;
 }
 
 .radio-label:hover,
@@ -383,6 +274,7 @@ input[type="checkbox"] {
   cursor: pointer;
   transition: all 0.2s;
   font-size: clamp(0.8rem, 2vw, 0.9rem);
+  background: #ffffff;
 }
 
 .body-part-item:hover {
@@ -401,39 +293,136 @@ input[type="checkbox"] {
   margin-bottom: 0.5rem;
 }
 
-.feeling-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(0.5rem, 1.5vw, 0.75rem);
-  margin-top: 0.9375rem;
+/* ==========================================================================
+   4. 感官体验多选模块 (.feeling-module-box)
+   ========================================================================== */
+.feeling-module-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
 }
 
-.feeling-tag {
-  padding: 0.625rem 1.125rem;
-  background: var(--secondary);
-  border-radius: 3.125rem;
+.level-group {
+  margin-bottom: 18px;
+}
+
+.level-group:last-of-type {
+  margin-bottom: 12px;
+}
+
+.level-group-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.level-group-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.feeling-options {
+  margin-top: 10px;
+}
+
+.feeling-option {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.feeling-option input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.feeling-option label {
+  display: block;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  border-left: 5px solid var(--border-color);
   cursor: pointer;
-  transition: all 0.2s;
-  border: 0.125rem solid var(--border);
-  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
-.feeling-tag:hover {
-  transform: translateY(-0.125rem);
+.feeling-option input[type="checkbox"]:checked + label {
+  background: var(--light-color);
+  box-shadow: 0 2px 8px rgba(74, 111, 165, 0.15);
 }
 
-.feeling-tag.selected {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
+/* 隐藏卡片右侧重复的程度胶囊，避免挤压 */
+.feeling-module-box .intensity-label {
+  display: none;
 }
 
+/* 主副标题分层排版 */
+.option-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.option-title .title-main {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-title .title-main i {
+  font-size: 1.1rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.option-title .title-sub {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  padding-left: 26px; /* 统一 26px 基线 */
+  margin-top: 2px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.option-desc {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.5;
+  padding-left: 26px; /* 统一 26px 基线 */
+}
+
+/* 程度选框左侧边框颜色 */
+.level-1 input[type="checkbox"]:checked + label { border-left-color: var(--level1-color); }
+.level-2 input[type="checkbox"]:checked + label { border-left-color: var(--level2-color); }
+.level-3 input[type="checkbox"]:checked + label { border-left-color: var(--level3-color); }
+.level-4 input[type="checkbox"]:checked + label { border-left-color: var(--level4-color); }
+
+.feeling-guide-box {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+
+/* ==========================================================================
+   5. 提交按钮与成功界面 (.success-message & .btn-action)
+   ========================================================================== */
 .btn-submit {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
   border: none;
   padding: clamp(1rem, 3vw, 1.125rem) clamp(1.5rem, 5vw, 2.5rem);
@@ -444,7 +433,6 @@ input[type="checkbox"] {
   transition: all 0.3s;
   width: 100%;
   margin-top: clamp(1.5rem, 4vw, 1.875rem);
-  letter-spacing: 0.03125rem;
 }
 
 .btn-submit:hover {
@@ -452,25 +440,11 @@ input[type="checkbox"] {
   box-shadow: 0 0.625rem 1.25rem rgba(139, 92, 246, 0.3);
 }
 
-.btn-submit:active {
-  transform: translateY(-0.0625rem);
-}
-
-.footer {
-  text-align: center;
-  padding: clamp(1rem, 3vw, 1.875rem);
-  color: var(--text-light);
-  font-size: clamp(0.8rem, 2vw, 0.9rem);
-  border-top: 0.0625rem solid var(--border);
-  background: var(--secondary);
-}
-
-.privacy-note {
-  background: rgba(139, 92, 246, 0.05);
-  padding: 0.9375rem;
-  border-radius: 0.5rem;
-  margin-top: 1.25rem;
-  border-left: 0.25rem solid var(--primary);
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .success-message {
@@ -479,9 +453,11 @@ input[type="checkbox"] {
   display: none;
 }
 
-.success-message i {
+/* 提交成功大绿色对勾 */
+.success-message > i.fa-check-circle,
+.success-message > i:first-child {
   font-size: clamp(2.5rem, 10vw, 4rem);
-  color: var(--success);
+  color: #10b981;
   margin-bottom: 1.25rem;
 }
 
@@ -495,67 +471,6 @@ input[type="checkbox"] {
   margin-bottom: 0.5rem;
 }
 
-/* 确认页面样式 */
-.confirmation-page {
-  padding: clamp(1.5rem, 4vw, 2.5rem);
-  display: none;
-  background: white;
-}
-
-.confirmation-section {
-  margin-bottom: clamp(0.5rem, 2vw, 0.625rem);
-  padding-bottom: 1.25rem;
-  border-bottom: 0rem dashed var(--border);
-}
-
-.confirmation-section:last-child {
-  border-bottom: none;
-}
-
-.confirmation-item {
-  margin-bottom: 1.25rem;
-  padding: 0.9375rem;
-  background: var(--secondary);
-  border-radius: 0.625rem;
-  border-left: 0.25rem solid var(--primary);
-}
-
-.confirmation-label {
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  font-size: clamp(0.9rem, 2.5vw, 1rem);
-}
-
-.confirmation-label i {
-  color: var(--primary);
-}
-
-.confirmation-value {
-  color: var(--text-light);
-  padding-left: 1.625rem;
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
-}
-
-.confirmation-value ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.confirmation-value li {
-  padding: 0.3125rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.confirmation-value li i {
-  color: var(--primary);
-}
-
 .action-buttons {
   display: flex;
   gap: 0.9375rem;
@@ -563,6 +478,7 @@ input[type="checkbox"] {
   justify-content: center;
 }
 
+/* 规范操作按钮内部水平/垂直绝绝对齐 */
 .btn-action {
   padding: clamp(0.75rem, 2vw, 0.75rem) clamp(1.25rem, 3vw, 1.875rem);
   border-radius: 0.625rem;
@@ -571,18 +487,44 @@ input[type="checkbox"] {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  display: flex;
+  display: inline-flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.btn-action i {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900 !important;
+  font-style: normal !important;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.btn-action span {
+  display: inline-block;
+  line-height: 1.2;
+  margin: 0;
+  padding: 0;
+  color: inherit;
 }
 
 .btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--primary-dark) 100%
-  );
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: white;
+}
+
+.btn-primary i {
+  color: #ffffff;
 }
 
 .btn-secondary {
@@ -591,14 +533,375 @@ input[type="checkbox"] {
   border: 0.125rem solid var(--border);
 }
 
+.btn-secondary i {
+  color: #475569;
+}
+
 .btn-action:hover {
   transform: translateY(-0.125rem);
   box-shadow: 0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1);
 }
 
 /* ==========================================================================
-         平板与中屏设备响应式设计 (max-width: 768px)
-         ========================================================================== */
+   6. 720px 精致确认页与报告凭证卡片 (#confirmationPage)
+   ========================================================================== */
+.confirmation-page {
+  background: #ffffff;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  width: 100%;
+  display: none;
+}
+
+/* 紫色 Header 横幅（整体居中对齐） */
+.conf-header-card {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.conf-header-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.conf-header-title i {
+  font-size: 1.6rem;
+  opacity: 0.95;
+}
+
+.conf-header-title h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.conf-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.9;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* 居中绿底签署状态横幅 */
+.signed-status-row {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05);
+}
+
+.signed-status-row .badge-pill {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #15803d;
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0;
+  margin: 0;
+}
+
+/* 顶置安全词 Banner */
+.safeword-banner-top {
+  background: #fff0f0;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #ef4444;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.safeword-label {
+  font-weight: 700;
+  color: #dc2626;
+}
+
+/* 模块卡片 */
+.conf-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.conf-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.conf-card-header i {
+  font-size: 1rem;
+}
+
+.conf-card-header h3 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* 2列紧凑网格 */
+.conf-grid {
+  display: grid;
+  gap: 6px 12px;
+}
+
+.conf-grid.col-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 灰色平铺框 (Field Row) - 左对齐紧凑跟随 */
+.conf-field-row {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐紧贴 */
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 34px;
+  font-size: 0.88rem;
+}
+
+.conf-field-row.full-width {
+  grid-column: span 2;
+}
+
+.conf-label {
+  color: #64748b;
+  font-weight: 500;
+  margin-right: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.conf-value {
+  color: #0f172a;
+  font-weight: 600;
+  text-align: left;
+  word-break: break-word;
+}
+
+.conf-field-block {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+}
+
+.conf-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+/* 胶囊徽章样式 */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-red {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.badge-purple {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
+
+.badge-green {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-gray {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* 期望体验丰富卡片 */
+.feelings-rich-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feeling-rich-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.feeling-rich-card.lvl-1 { border-left: 4px solid #7cb342; }
+.feeling-rich-card.lvl-2 { border-left: 4px solid #ffb74d; }
+.feeling-rich-card.lvl-3 { border-left: 4px solid #ff7043; }
+.feeling-rich-card.lvl-4 { border-left: 4px solid #e53935; }
+
+.feeling-rich-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.feeling-rich-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feeling-rich-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.feeling-rich-badge.lvl-1 { background: #7cb34226; color: #558b2f; }
+.feeling-rich-badge.lvl-2 { background: #ffb74d26; color: #f57c00; }
+.feeling-rich-badge.lvl-3 { background: #ff704326; color: #e65100; }
+.feeling-rich-badge.lvl-4 { background: #e5393526; color: #c62828; }
+
+.feeling-rich-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+  padding-left: 20px;
+}
+
+/* 确认页隐私条款卡片 */
+.confirmation-page .privacy-note {
+  background: rgba(139, 92, 246, 0.05);
+  border-left: 4px solid #8b5cf6;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.confirmation-page .action-buttons {
+  margin-top: 20px;
+  margin-bottom: 24px;
+}
+
+/* 确认页 Footer */
+.confirmation-page .footer {
+  text-align: center;
+  padding: 20px 10px 10px 10px;
+  margin-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.confirmation-page .footer p {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.confirmation-page .footer p:last-child {
+  margin-bottom: 0;
+}
+
+/* 辅助颜色样式 */
+.margin-bottom-sm { margin-bottom: 6px; }
+.text-purple { color: #8b5cf6; }
+.text-green { color: #10b981; }
+.text-danger { color: #dc2626; font-weight: 600; }
+
+/* ==========================================================================
+   7. 全屏长图预览遮罩层 (#image-download-overlay)
+   ========================================================================== */
+#image-download-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 10000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+#image-download-overlay .overlay-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ==========================================================================
+   8. 响应式与移动端 (Media Queries)
+   ========================================================================== */
 @media (max-width: 768px) {
   body {
     padding: 0.75rem;
@@ -606,44 +909,6 @@ input[type="checkbox"] {
 
   .container {
     max-width: 95vw;
-  }
-
-  .header,
-  .content,
-  .confirmation-page {
-    padding: clamp(1rem, 3vw, 1.5625rem);
-  }
-
-  .header h1 {
-    font-size: clamp(1.3rem, 4vw, 2rem);
-  }
-
-  .status-bar {
-    padding: 0.75rem clamp(0.5rem, 2vw, 1rem);
-    flex-direction: row;
-    gap: clamp(0.5rem, 2vw, 1rem);
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .status-item {
-    flex: 1;
-    min-width: 80px;
-    justify-content: center;
-    text-align: center;
-    padding: 0.5rem 0.25rem;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .status-item i {
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-    margin: 0 auto;
-  }
-
-  .status-item span {
-    font-size: clamp(0.7rem, 1.8vw, 0.85rem);
-    line-height: 1.2;
   }
 
   .body-part-grid {
@@ -659,81 +924,36 @@ input[type="checkbox"] {
   .btn-action {
     width: 100%;
     justify-content: center;
-    padding: 0.75rem 1rem;
-  }
-
-  .radio-group,
-  .checkbox-group {
-    gap: 0.75rem;
-  }
-
-  .radio-label,
-  .checkbox-label {
-    padding: 0.5rem 0.75rem;
-  }
-
-  .form-group {
-    padding: 15px;
-  }
-
-  .feeling-option label {
-    padding: 15px;
-  }
-
-  .option-title {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.1rem;
-  }
-
-  .option-title i {
-    margin-right: 0;
-    margin-bottom: 0.2rem;
-    font-size: 1rem;
-    width: auto;
-  }
-
-  .option-desc {
-    font-size: 13px;
-    padding-left: 0;
-    padding-top: 0.3rem;
-    text-align: justify;
-  }
-
-  .section-title {
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    flex-wrap: nowrap !important;
-    white-space: nowrap !important;
-  }
-
-  .section-title i {
-    flex-shrink: 0 !important;
-    margin-top: 0.2rem !important;
-  }
-
-  .section-title h2 {
-    flex: 1;
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-
-  .warning-box h3 {
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .warning-box h3 i {
-    flex-shrink: 0 !important;
-    margin-top: 0.1rem !important;
   }
 }
 
-/* ==========================================================================
-         手机端专用超细化响应式设计 (max-width: 480px)
-         ========================================================================== */
+@media (max-width: 600px) {
+  /* 手机端确认页与网格降级为单列防溢出 */
+  .confirmation-page {
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .conf-grid.col-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .conf-field-row.full-width {
+    grid-column: span 1;
+  }
+
+  .conf-field-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .option-title .title-sub,
+  .option-desc {
+    padding-left: 24px;
+  }
+}
+
 @media (max-width: 480px) {
   body {
     padding: 10px;
@@ -743,129 +963,18 @@ input[type="checkbox"] {
   .container {
     max-width: 100%;
     border-radius: 12px;
-    margin: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   .header {
     padding: 20px 15px;
   }
 
-  .header h1 {
-    font-size: 1.2rem;
-    line-height: 1.3;
-    margin-bottom: 8px;
-  }
-
-  .header p {
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-
-  .status-bar {
-    padding: 0.5rem 0.25rem;
-    gap: 0.25rem;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .status-item {
-    min-width: 70px;
-    padding: 0.4rem 0.2rem;
-    flex-direction: column;
-    flex-shrink: 1;
-  }
-
-  .status-item i {
-    font-size: clamp(0.8rem, 2.2vw, 0.9rem);
-  }
-
-  .status-item span {
-    font-size: clamp(0.65rem, 1.6vw, 0.75rem);
-  }
-
   .content {
     padding: 20px 15px;
   }
 
-  .form-section {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-  }
-
-  .section-title {
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    gap: 8px;
-    padding-bottom: 12px;
-    margin-bottom: 20px;
-    flex-wrap: nowrap !important;
-    white-space: nowrap !important;
-  }
-
-  .section-title i {
-    flex-shrink: 0 !important;
-    margin-top: 0.2rem !important;
-  }
-
-  .section-title h2 {
-    font-size: 1.3rem;
-    line-height: 1.4;
-    flex: 1;
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-
-  .warning-box {
-    padding: 15px;
-    margin-bottom: 20px;
-  }
-
-  .warning-box h3 {
-    font-size: 1rem;
-    flex-direction: row !important;
-    align-items: flex-start !important;
-    flex-wrap: nowrap !important;
-  }
-
-  .warning-box h3 i {
-    flex-shrink: 0 !important;
-    margin-top: 0.1rem !important;
-  }
-
-  .warning-box p {
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
   .form-group {
-    margin-bottom: 25px;
-  }
-
-  .form-label {
-    display: block; /* 确保标签占满整行，使居中效果F生效 */
-    text-align: center; /* 让文字水平居中 */
-    font-size: 1rem;
-    margin-bottom: 8px;
-    line-height: 1.4;
-  }
-
-  .form-label-g {
-    font-size: 1rem;
-    margin-bottom: 8px;
-    line-height: 1.4;
-  }
-
-  .form-help {
-    font-size: 0.8rem;
-    margin-bottom: 12px;
-  }
-
-  .input-text {
     padding: 14px;
-    font-size: 0.95rem;
-    border-radius: 8px;
   }
 
   .radio-group,
@@ -877,169 +986,9 @@ input[type="checkbox"] {
   .radio-label,
   .checkbox-label {
     width: 100%;
-    padding: 12px 15px;
-    justify-content: flex-start;
-    font-size: 0.95rem;
   }
 
   .body-part-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
   }
-
-  .body-part-item {
-    padding: 12px 8px;
-    font-size: 0.85rem;
-    min-height: 80px;
-    text-align: center;
-  }
-
-  .body-part-item i {
-    font-size: 1.4rem;
-    margin-bottom: 6px;
-  }
-
-  .feeling-options {
-    margin-top: 10px;
-  }
-
-  .feeling-option {
-    margin-bottom: 12px;
-  }
-
-  .feeling-option label {
-    padding: 16px;
-    border-left-width: 4px;
-  }
-
-  .option-title {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 0.1rem;
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-  }
-
-  .option-title i {
-    font-size: 1rem;
-    margin-right: 0;
-    margin-bottom: 0.2rem;
-    width: auto;
-  }
-
-  .option-desc {
-    font-size: 0.8rem;
-    padding-left: 0;
-    padding-top: 0.2rem;
-    text-align: justify;
-    line-height: 1.4;
-  }
-
-  .intensity-label {
-    font-size: 11px;
-    padding: 2px 6px;
-    margin-left: 8px;
-  }
-
-  .safety-note {
-    font-size: 0.75rem;
-    padding: 5px 8px;
-    margin-top: 8px;
-  }
-
-  .btn-submit {
-    padding: 16px 20px;
-    font-size: 1.1rem;
-    border-radius: 10px;
-    margin-top: 25px;
-    position: relative;
-  }
-
-  .btn-submit:active {
-    transform: scale(0.98);
-  }
-
-  .confirmation-page {
-    padding: 20px 15px;
-  }
-
-  .confirmation-item {
-    padding: 12px;
-    margin-bottom: 15px;
-  }
-
-  .confirmation-label {
-    font-size: 0.95rem;
-  }
-
-  .confirmation-value {
-    padding-left: 0;
-    font-size: 0.9rem;
-    margin-top: 5px;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .btn-action {
-    width: 100%;
-    padding: 14px 20px;
-    justify-content: center;
-    font-size: 1rem;
-  }
-
-  .footer {
-    padding: 15px;
-    font-size: 0.8rem;
-  }
-
-  .privacy-note {
-    padding: 12px;
-    margin-top: 15px;
-  }
-
-  .success-message {
-    padding: 30px 20px;
-  }
-
-  .success-message h2 {
-    font-size: 1.5rem;
-  }
-
-  .success-message p {
-    font-size: 0.95rem;
-  }
-}
-/* 全屏长图预览遮罩层 */
-#image-download-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75); /* 半透明黑底 */
-  z-index: 10000; /* 确保在所有元素最上层 */
-  display: none; /* 默认隐藏，由 JS 改为 flex 显示 */
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-/* 遮罩层内部的白色卡片 */
-#image-download-overlay .overlay-content {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 400px; /* 适配手机端宽度 */
-  text-align: center;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
