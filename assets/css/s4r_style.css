@@ -42,7 +42,6 @@ body {
   margin: 0 auto;
   min-height: 100vh;
 
-  /* 全局防文本选中 */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -389,7 +388,7 @@ input[type="checkbox"] {
   font-size: 0.9rem;
   font-weight: 600;
   color: #334155;
-  padding-left: 26px; /* 统一 26px 基线 */
+  padding-left: 26px; /* 26px 基线 */
   margin-top: 2px;
   margin-bottom: 4px;
   line-height: 1.4;
@@ -401,7 +400,7 @@ input[type="checkbox"] {
   font-weight: 400;
   color: #64748b;
   line-height: 1.5;
-  padding-left: 26px; /* 统一 26px 基线 */
+  padding-left: 26px; /* 26px 基线 */
 }
 
 /* 程度选框左侧边框颜色 */
@@ -928,7 +927,6 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 600px) {
-  /* 手机端确认页与网格降级为单列防溢出 */
   .confirmation-page {
     max-width: 100%;
     padding: 10px;
@@ -990,5 +988,37 @@ input[type="checkbox"] {
 
   .body-part-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================
+   强制 iPhone SE 等小屏幕 Banner 标题在一行内显示
+   ========================================================= */
+
+@media (max-width: 480px) {
+  /* 1. 缩小 Header 左右内边距，给单行文字腾出最大宽度 */
+  .header {
+    padding: 16px 8px !important;
+  }
+
+  /* 2. 强制单行不换行 + 适配字号 (约 18px) */
+  .header h1 {
+    font-size: 1.12rem !important;      /* 微调字号，确保 14 个字轻松放下一行 */
+    white-space: nowrap !important;     /* 核心：强制绝对不换行！ */
+    letter-spacing: -0.5px !important;  /* 稍微收紧字间距 */
+    line-height: 1.2 !important;
+  }
+
+  /* 3. 顺便微调副标题字号 */
+  .header p {
+    font-size: 0.8rem !important;
+    line-height: 1.35 !important;
+  }
+}
+
+/* 针对 350px 以下极窄屏幕额外安全保护 */
+@media (max-width: 350px) {
+  .header h1 {
+    font-size: 1rem !important;         /* 极窄屏自动再缩小至 16px */
   }
 }
