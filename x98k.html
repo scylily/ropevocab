@@ -228,7 +228,6 @@
         background: #94a3b8;
       }
 
-      /* 🌟 优化：吸顶关闭按钮往左上挪动，离边缘更远更和谐 */
       .modal-close-btn {
         position: sticky;
         top: 8px;
@@ -316,7 +315,7 @@
       .kv-label {
         color: #64748b;
         font-weight: 500;
-        width: 100px;
+        width: 120px;
         flex-shrink: 0;
         font-size: 0.85rem;
       }
@@ -439,24 +438,34 @@
           <i class="fas fa-times"></i>
         </button>
 
-        <!-- 🌟 核心优化：专门增加 25px 充裕内边距容器，确保截长图时四周留有优雅的白边 -->
         <div id="formContainer" style="padding: 25px 20px; background: #ffffff; border-radius: 12px;">
 
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
-            <h2 style="font-size: 1.25rem; color: var(--text-dark); margin:0;">
-              <i class="fas fa-file-contract" style="color: var(--primary);"></i> 【<span id="displayCustomerName"></span>】的问卷档案表
-            </h2>
+          <!-- 顶部档案 Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 2px solid var(--primary); padding-bottom: 8px;">
+            <div>
+              <h2 style="font-size: 1.25rem; color: var(--text-dark); margin:0;">
+                <i class="fas fa-id-card" style="color: var(--primary);"></i> 【<span id="displayCustomerName"></span>】的问卷档案表
+              </h2>
+              <p style="margin: 4px 0 0 0; font-size: 0.8rem; color: #64748b;">RACK 原则知情同意档案 · 双方沟通确认凭证</p>
+            </div>
+          </div>
+
+          <!-- 签署状态标签行 -->
+          <div style="margin-bottom: 12px;">
+            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; border-radius: 12px; font-size: 0.78rem; font-weight: 600;">
+              <i class="fas fa-shield-alt"></i> 档案状态：已签署确认
+            </span>
           </div>
 
           <!-- 🚨 安全词置顶高亮横幅 -->
           <div class="safeword-banner">
             <i class="fas fa-exclamation-triangle" style="font-size: 1.2rem;"></i>
-            <div><strong>安全词 / 动作：</strong> <span id="confSafeword" style="font-weight: 700; font-size: 1.1rem; text-decoration: underline;"></span></div>
+            <div><strong>安全词 / 安全动作：</strong> <span id="confSafeword" style="font-weight: 700; font-size: 1.1rem; text-decoration: underline;"></span></div>
           </div>
 
           <!-- 模块 1：基本信息与健康声明 -->
           <div class="detail-card-group">
-            <div class="detail-card-title"><i class="fas fa-user-shield"></i> 基本信息与健康声明</div>
+            <div class="detail-card-title"><i class="fas fa-user text-purple"></i> 基本信息与健康声明</div>
             <div class="detail-grid">
               <div class="kv-box"><span class="kv-label">称呼方式：</span><span class="kv-val" id="confNickname"></span></div>
               <div class="kv-box"><span class="kv-label">是否成年：</span><span class="kv-val" id="confAdult"></span></div>
@@ -467,16 +476,22 @@
             </div>
           </div>
 
-          <!-- 模块 2：身体界限与部位限制 -->
+          <!-- 模块 2：身体界限与限制设置 -->
           <div class="detail-card-group">
-            <div class="detail-card-title"><i class="fas fa-ban"></i> 身体界限与限制设置</div>
+            <div class="detail-card-title"><i class="fas fa-ban text-purple"></i> 身体界限与限制设置</div>
             <div class="detail-grid" style="margin-bottom: 10px;">
-              <div class="kv-box"><span class="kv-label">上半身裸露：</span><span class="kv-val" id="confTopless"></span></div>
-              <div class="kv-box"><span class="kv-label">身体痕迹：</span><span class="kv-val" id="confMarks"></span></div>
+              <div class="kv-box"><span class="kv-label">身体裸露接受度：</span><span class="kv-val" id="confTopless"></span></div>
+              <div class="kv-box"><span class="kv-label">身体痕迹接受度：</span><span class="kv-val" id="confMarks"></span></div>
+            </div>
+
+            <!-- 不可留痕区域单独行 -->
+            <div class="kv-box full" id="confNoMarksRow" style="margin-bottom: 10px; display: none;">
+              <span class="kv-label">不可留痕区域：</span>
+              <span class="kv-val" id="confNoMarksAreas" style="color:#ef4444;"></span>
             </div>
 
             <div class="kv-box full" style="margin-bottom: 10px; flex-direction: column; align-items: flex-start;">
-              <span class="kv-label" style="margin-bottom: 4px; width: 100%;"><i class="fas fa-handshake-alt-slash"></i> 不希望被触碰的部位：</span>
+              <span class="kv-label" style="margin-bottom: 4px; width: 100%;"><i class="fas fa-hand-paper"></i> 不希望被触摸的部位：</span>
               <div class="tag-group" id="confNoTouchTags"></div>
             </div>
 
@@ -488,7 +503,7 @@
 
           <!-- 模块 3：痛感与特定玩法偏好 -->
           <div class="detail-card-group">
-            <div class="detail-card-title"><i class="fas fa-bolt"></i> 痛感与特定玩法偏好</div>
+            <div class="detail-card-title"><i class="fas fa-bolt text-purple"></i> 痛感与特定玩法偏好</div>
             <div class="detail-grid" style="margin-bottom: 10px;">
               <div class="kv-box"><span class="kv-label">除捆绑外痛感：</span><span class="kv-val" id="confPainOther"></span></div>
               <div class="kv-box"><span class="kv-label">疼痛忍耐度：</span><span class="kv-val" id="confPainTolerance"></span></div>
@@ -502,19 +517,19 @@
 
           <!-- 模块 4：互动偏好明细 -->
           <div class="detail-card-group">
-            <div class="detail-card-title"><i class="fas fa-heart"></i> 互动偏好明细</div>
+            <div class="detail-card-title"><i class="fas fa-heart text-purple"></i> 互动偏好明细</div>
             <div class="detail-grid">
-              <div class="kv-box"><span class="kv-label">接受拥抱：</span><span class="kv-val" id="confHug"></span></div>
-              <div class="kv-box"><span class="kv-label">五感剥夺：</span><span class="kv-val" id="confSensory"></span></div>
+              <div class="kv-box"><span class="kv-label">是否接受拥抱：</span><span class="kv-val" id="confHug"></span></div>
+              <div class="kv-box"><span class="kv-label">五感剥夺玩法：</span><span class="kv-val" id="confSensory"></span></div>
               <div class="kv-box"><span class="kv-label">蒙眼接受度：</span><span class="kv-val" id="confBlindfold"></span></div>
               <div class="kv-box"><span class="kv-label">堵嘴接受度：</span><span class="kv-val" id="confGag"></span></div>
-              <div class="kv-box full"><span class="kv-label">呼吸控制：</span><span class="kv-val" id="confBreath"></span></div>
+              <div class="kv-box full"><span class="kv-label">呼吸控制玩法：</span><span class="kv-val" id="confBreath"></span></div>
             </div>
           </div>
 
-          <!-- 模块 5：期望的深度体验感受 -->
+          <!-- 模块 5：期望的绳缚体验感受 -->
           <div class="detail-card-group">
-            <div class="detail-card-title"><i class="fas fa-feather-alt"></i> 期望的深度体验感受</div>
+            <div class="detail-card-title"><i class="fas fa-feather-alt text-purple"></i> 期望的绳缚体验感受：</div>
             <div id="confFeelingsCompact" style="padding: 4px 0;"></div>
           </div>
 
@@ -544,10 +559,41 @@
         "下肢": "fas fa-walking", "脚": "fas fa-shoe-prints", "无": "fas fa-user-secret"
       };
 
-      const breathControlMap = { enjoy: "享受", neck: "颈部呼吸控制", light: "轻度呼吸控制", no: "不接受" };
-      const blindfoldMap = { "享受": "享受", "可以接受": "可以接受", "不接受（会不安）": "不接受（会不安）" };
-      const gagMap = { "享受": "享受", "可以轻度接受": "可以轻度接受", "不接受": "不接受" };
-      const acceptMap = { hair_pulling: "拉头发", slapping: "耳光", spanking: "SP", thigh_rope: "股绳" };
+      /* 呼吸控制映射 */
+      const breathControlMap = {
+        enjoy: "享受",
+        neck: "颈部呼吸控制",
+        light: "轻度呼吸控制",
+        anxious: "能接受但会不安",
+        no: "不接受"
+      };
+
+      /* 蒙眼映射 */
+      const blindfoldMap = {
+        "享受": "享受",
+        "可以接受": "可以接受",
+        "能接受但会不安": "能接受但会不安",
+        "不接受": "不接受"
+      };
+
+      /* 堵嘴映射 */
+      const gagMap = {
+        "享受": "享受",
+        "可以轻度接受": "可以轻度接受",
+        "不接受": "不接受"
+      };
+
+      /* 特定玩法项目映射 */
+      const acceptMap = {
+        hair_pulling: "拉头发",
+        slapping: "耳光",
+        spanking: "SP",
+        thigh_rope: "股绳",
+        "拉头发": "拉头发",
+        "耳光": "耳光",
+        "SP": "SP",
+        "股绳": "股绳"
+      };
 
       const SUPABASE_URL = 'https://cpjjmuzrcvgbaekiqkrx.supabase.co';
       const SUPABASE_ANON_KEY = 'sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2';
@@ -692,20 +738,24 @@
 
         // 1. 基本信息模块
         document.getElementById("confNickname").innerText = item.nickname || "未填写";
-        document.getElementById("confAdult").innerText = item.is_adult === "yes" ? "是 (已成年)" : "否";
+        document.getElementById("confAdult").innerText = (item.adult === "yes" || item.is_adult === "yes") ? "是" : "否";
         document.getElementById("confSafety").innerHTML = `<span style="color:var(--success);">✅ 已理解同意</span>`;
         document.getElementById("confRecording").innerText = item.recording === "yes" ? "希望留下记录" : "不希望留记录";
-        document.getElementById("confMedical").innerText = item.medical_history || "无特别声明";
-        document.getElementById("confPiercings").innerText = item.piercings || "无特别声明";
+        document.getElementById("confMedical").innerText = item.medical_history || "无";
+        document.getElementById("confPiercings").innerText = item.piercings || "无";
 
         // 2. 身体界限模块
         document.getElementById("confTopless").innerText = item.topless === "accept" ? "接受上半身赤裸" : "不接受";
+        document.getElementById("confMarks").innerText = item.marks === "accept" ? "能接受" : "不能接受";
 
-        let marksText = item.marks === "accept" ? "能接受痕迹" : "不能接受痕迹";
-        if (item.marks === "not_accept" && item.no_marks_areas) {
-          marksText += ` (不可留痕：${item.no_marks_areas})`;
+        // 单独整行渲染不可留痕区域
+        const noMarksRow = document.getElementById("confNoMarksRow");
+        if (item.marks === "not_accept" && item.no_marks_areas && item.no_marks_areas.trim() !== "") {
+          document.getElementById("confNoMarksAreas").innerText = item.no_marks_areas.trim();
+          noMarksRow.style.display = "flex";
+        } else {
+          noMarksRow.style.display = "none";
         }
-        document.getElementById("confMarks").innerText = marksText;
 
         // 不可触碰胶囊标签
         const noTouchTags = document.getElementById("confNoTouchTags");
@@ -735,17 +785,25 @@
 
         // 特定玩法项目
         const acceptsTags = document.getElementById("confAcceptsTags");
-        if (item.accepts && item.accepts.length > 0) {
-          acceptsTags.innerHTML = item.accepts.map(acc => {
-            return `<span class="tag-pill purple"><i class="fas fa-check"></i>${acceptMap[acc] || acc}</span>`;
+        let htmlTags = "";
+
+        if (item.accepts && Array.isArray(item.accepts)) {
+          const cleanAccepts = item.accepts.filter(acc => acc && acc.trim() !== "");
+          htmlTags += cleanAccepts.map(acc => {
+            const label = acceptMap[acc] || acc;
+            return `<span class="tag-pill purple"><i class="fas fa-check"></i>${label}</span>`;
           }).join("");
-        } else {
-          acceptsTags.innerHTML = `<span class="tag-pill gray">未选择特定项目</span>`;
         }
+
+        if (item.other_accepts && item.other_accepts.trim() !== "") {
+          htmlTags += `<span class="tag-pill purple"><i class="fas fa-comment-dots"></i>补充：${item.other_accepts.trim()}</span>`;
+        }
+
+        acceptsTags.innerHTML = htmlTags || `<span class="tag-pill gray">未选择特定项目</span>`;
 
         // 4. 互动偏好模块
         document.getElementById("confHug").innerText = item.hug === "yes" ? "可以" : "不可以";
-        document.getElementById("confSensory").innerText = item.sensory_deprivation === "yes" ? "是" : "否";
+        document.getElementById("confSensory").innerText = item.sensory_deprivation === "yes" ? "感兴趣" : "不感兴趣";
         document.getElementById("confBlindfold").innerText = blindfoldMap[item.blindfold] || item.blindfold || "未选择";
         document.getElementById("confGag").innerText = gagMap[item.gag] || item.gag || "未选择";
         document.getElementById("confBreath").innerText = breathControlMap[item.breath_control] || item.breath_control || "未选择";
@@ -755,17 +813,15 @@
         if (item.feelings && item.feelings.length > 0) {
           feelingsContainer.innerHTML = item.feelings.map(feel => {
             const val = typeof feel === 'object' ? feel.value : feel;
-            return `<div style="font-size:0.85rem; color:#1e293b; padding:4px 8px; background:#f8fafc; border-radius:6px; margin-bottom:4px; border:1px solid #f1f5f9;">• <strong>${val}</strong></div>`;
+            return `<div style="font-size:0.85rem; color:#1e293b; padding:6px 10px; background:#f8fafc; border-radius:6px; margin-bottom:5px; border:1px solid #f1f5f9; line-height: 1.4;">• <strong>${val}</strong></div>`;
           }).join("");
         } else {
           feelingsContainer.innerHTML = `<span style="font-size:0.85rem; color:#888;">无特殊偏好</span>`;
         }
 
-        // 🌟 1. 先显示弹窗（确保 DOM 节点可见）
         const modal = document.getElementById("detailModal");
         modal.style.display = "flex";
 
-        // 🌟 2. 弹窗显示后，强制将滚动条归零回到最顶端！
         setTimeout(() => {
           const modalContainer = document.querySelector(".modal-container");
           if (modalContainer) modalContainer.scrollTop = 0;
