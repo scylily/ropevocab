@@ -1,8 +1,102 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"><link rel="stylesheet" href="ibti_style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" /><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" /><title>IBTI 潜向行为性格指标测试</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script><script src="ibti_js.js"></script></head><body><div id="loading-overlay" class="loading-overlay" style="display: none;"><div class="spinner"></div><p id="loading-text">正在通信云端数据库...</p></div><div class="container" id="main-container"><div id="quiz-section" class="section active"><header><h1>IBTI
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <link rel="stylesheet" href="ibti_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <title>IBTI 潜向行为性格指标测试</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="ibti_js.js"></script>
+  </head>
+
+  <body>
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+      <div class="spinner"></div>
+      <p id="loading-text">正在通信云端数据库...</p>
+    </div>
+    <div class="container" id="main-container">
+      <div id="quiz-section" class="section active">
+        <header>
+          <h1>IBTI
             <p>潜向行为性格指标测试
-          </h1><div class="sub-title">Inclination Behavior Type Indicator</div><p><button class="modal-btn" onclick="openIntroModal()">
+          </h1>
+          <div class="sub-title">Inclination Behavior Type Indicator</div>
+          <p><button class="modal-btn" onclick="openIntroModal()">
               📖 查看测试说明与维度解析
-            </button></p></header><div id="quiz-container"></div><div class="btn-group"><button class="btn" onclick="showReview()">核对选择并继续</button></div></div><div id="review-section" class="section"><header><h1>所选内容确认清单</h1><div class="sub-title">请核对您的倾向选择</div></header><div id="review-list"></div><div class="share-qr-footer"><div class="share-qr-container"><img src="../assets/images/IBTI_web_qr.jpg" alt="网站二维码" class="share-qr-img" /><div class="share-qr-text">扫码进行 IBTI 潜向行为性格测试</div><div class="share-qr-subtext">探索你底层的心理原动力与互动偏好</div></div></div><div class="btn-group"><button class="btn btn-outline" onclick="downloadImage('review-section', 'IBTI确认清单')">保存清单长图</button><button class="btn btn-gold" onclick="generateReport()">确认无误，生成报告</button><button class="btn btn-outline" onclick="backToQuiz()">返回修改</button></div></div><div id="result-section" class="section"><div id="capture-area"><header><h1>IBTI 结果报告</h1><div class="sub-title">Personal Inclination Mapping</div><p><button class="modal-btn" onclick="openIntroModal()">
+            </button></p>
+        </header>
+        <div id="quiz-container"></div>
+        <div class="btn-group"><button class="btn" onclick="showReview()">核对选择并继续</button></div>
+        <button class="btn btn-outline" onclick="resetQuizAndDraft()" style="margin-top: 10px;">清空重新测试</button>
+      </div>
+      <div id="review-section" class="section">
+        <header>
+          <h1>所选内容确认清单</h1>
+          <div class="sub-title">请核对您的倾向选择</div>
+        </header>
+        <div id="review-list"></div>
+        <div class="share-qr-footer">
+          <div class="share-qr-container"><img src="../assets/images/IBTI_web_qr.jpg" alt="网站二维码" class="share-qr-img" />
+            <div class="share-qr-text">扫码进行 IBTI 潜向行为性格测试</div>
+            <div class="share-qr-subtext">探索你底层的心理原动力与互动偏好</div>
+          </div>
+        </div>
+        <div class="btn-group"><button class="btn btn-outline" onclick="downloadImage('review-section', 'IBTI确认清单')">保存清单长图</button><button class="btn btn-gold" onclick="generateReport()">确认无误，生成报告</button><button class="btn btn-outline" onclick="backToQuiz()">返回修改</button></div>
+      </div>
+      <div id="result-section" class="section">
+        <div id="capture-area">
+          <header>
+            <h1>IBTI 结果报告</h1>
+            <div class="sub-title">Personal Inclination Mapping</div>
+            <p><button class="modal-btn" onclick="openIntroModal()">
                 📖 查看测试说明与维度解析
-              </button></p></header><div class="res-code" id="res-code"></div><div class="res-tag" id="res-tag"></div><div class="chart-box"><canvas id="radarChart"></canvas></div><div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div><div class="desc-box" id="res-desc"></div><div class="share-qr-footer"><div class="share-qr-container"><img src="../assets/images/IBTI_web_qr.jpg" alt="网站二维码" class="share-qr-img" /><div class="share-qr-text">扫码进行 IBTI 潜向行为性格测试</div><div class="share-qr-subtext">探索你底层的心理原动力与互动偏好</div></div></div></div><div class="btn-group"><button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存结果报告全案长图</button><button class="btn btn-outline" onclick="location.reload()">重新测试</button></div></div><footer class="site-footer"><div class="footer-container"><div class="footer-links"><a href="javascript:void(0)" onclick="openContactModal()">联系我们</a></div><div class="footer-section"><p class="copyright">© 2026 IBTI Project. All Rights Reserved.</p><p class="creator">Designed by 绳声蛮&绳声点点 | <span class="version">Version v2.0 Cloud</span></p></div><div class="footer-section disclaimer-box"><strong>免责声明：</strong>本测试结果仅供娱乐与自我探索参考，不作为专业心理诊断建议。我们尊重并保护您的隐私，答题数据仅用于本地结果生成。
-          </div></div></footer></div><div id="intro-modal" class="modal-overlay" onclick="closeModal('intro-modal')"><div class="modal-content" onclick="event.stopPropagation()"><span class="modal-close" onclick="closeModal('intro-modal')">&times;</span><div class="modal-header">关于 IBTI 测试</div><div class="modal-body" id="intro-modal-body" style="line-height: 1.6;"></div></div></div><div id="contact-modal" class="modal-overlay" onclick="closeModal('contact-modal')"><div class="modal-content" onclick="event.stopPropagation()"><span class="modal-close" onclick="closeModal('contact-modal')">&times;</span><div class="modal-header">欢迎通过以下平台与我们交流</div><div class="modal-body"><p style="text-align:center; color:#999; padding:20px;">正在获取联系方式...</p></div></div></div></body></html>
+              </button></p>
+          </header>
+          <div class="res-code" id="res-code"></div>
+          <div class="res-tag" id="res-tag"></div>
+          <div class="chart-box"><canvas id="radarChart"></canvas></div>
+          <div id="score-summary" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;"></div>
+          <div class="desc-box" id="res-desc"></div>
+          <div class="share-qr-footer">
+            <div class="share-qr-container"><img src="../assets/images/IBTI_web_qr.jpg" alt="网站二维码" class="share-qr-img" />
+              <div class="share-qr-text">扫码进行 IBTI 潜向行为性格测试</div>
+              <div class="share-qr-subtext">探索你底层的心理原动力与互动偏好</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-group"><button class="btn btn-gold" onclick="downloadImage('capture-area', 'IBTI结果报告')">保存结果报告全案长图</button><button class="btn btn-outline" onclick="location.reload()">重新测试</button></div>
+      </div>
+      <footer class="site-footer">
+        <div class="footer-container">
+          <div class="footer-links"><a href="javascript:void(0)" onclick="openContactModal()">联系我们</a></div>
+          <div class="footer-section">
+            <p class="copyright">© 2026 IBTI Project. All Rights Reserved.</p>
+            <p class="creator">Designed by 绳声蛮&绳声点点 | <span class="version">Version v2.0 Cloud</span></p>
+          </div>
+          <div class="footer-section disclaimer-box"><strong>免责声明：</strong>本测试结果仅供娱乐与自我探索参考，不作为专业心理诊断建议。我们尊重并保护您的隐私，答题数据仅用于本地结果生成。
+          </div>
+        </div>
+      </footer>
+    </div>
+    <div id="intro-modal" class="modal-overlay" onclick="closeModal('intro-modal')">
+      <div class="modal-content" onclick="event.stopPropagation()"><span class="modal-close" onclick="closeModal('intro-modal')">&times;</span>
+        <div class="modal-header">关于 IBTI 测试</div>
+        <div class="modal-body" id="intro-modal-body" style="line-height: 1.6;"></div>
+      </div>
+    </div>
+    <div id="contact-modal" class="modal-overlay" onclick="closeModal('contact-modal')">
+      <div class="modal-content" onclick="event.stopPropagation()"><span class="modal-close" onclick="closeModal('contact-modal')">&times;</span>
+        <div class="modal-header">欢迎通过以下平台与我们交流</div>
+        <div class="modal-body">
+          <p style="text-align:center; color:#999; padding:20px;">正在获取联系方式...</p>
+        </div>
+      </div>
+    </div>
+  </body>
+
+</html>
