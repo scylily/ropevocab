@@ -13,7 +13,7 @@ const overlay = document.getElementById("loading-overlay");
 if (overlay) overlay.style.display = "none";
 }
 async function initQuiz() {
-showLoading("正在安全生成抽取题目...");
+showLoading("正在为您生成测试题目...");
 try {
 const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_quiz`, {
 method: "POST",
@@ -98,14 +98,14 @@ document.getElementById("quiz-section").classList.remove("active");
 document.getElementById("review-section").classList.add("active");
 window.scrollTo(0, 0);
 const sideNameMap = {
-'M': '要掌控',
-'S': '听安排',
+'M': '寻求掌控',
+'S': '听从安排',
 'I': '主导引领',
 'R': '愿意顺从',
 'C': '讲道理',
 'O': '看感觉',
-'G': '要安全感',
-'D': '寻找刺激'
+'G': '需要安全感',
+'D': '喜欢寻求刺激'
 };
 const list = document.getElementById("review-list");
 list.innerHTML = currentQuiz
