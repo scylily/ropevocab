@@ -175,6 +175,17 @@ function clearDraft() {
   } catch (e) {}
 }
 
+function resetFormAndDraft() {
+  if (confirm("确定要清空当前已填写的所有内容并重新填写吗？")) {
+    clearDraft(); // 擦除本地草稿
+    window.location.reload(); // 刷新页面恢复初始状态
+  }
+}
+
+// 草稿有效期设置：7 天 (7 * 24小时 * 60分 * 60秒 * 1000毫秒)
+// 如果想改为 24 小时，可以写成：24 * 60 * 60 * 1000
+const DRAFT_TTL = 7 * 24 * 60 * 60 * 1000;
+
 function restoreDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -182,10 +193,18 @@ function restoreDraft() {
     const draft = JSON.parse(raw);
     if (!draft || !draft.data) return;
 
+    // ⏱️【新增】检查草稿是否已超过 7 天有效期
+    if (draft.savedAt && Date.now() - draft.savedAt > DRAFT_TTL) {
+      console.log("草稿已超过 7 天有效期，已自动清空");
+      clearDraft(); // 自动擦除过期草稿
+      return;
+    }
+
     const data = draft.data;
     const form = document.getElementById("ropeForm");
     if (!form) return;
 
+    // A. 还原单选框与多选框
     form
       .querySelectorAll('input[type="radio"], input[type="checkbox"]')
       .forEach((input) => {
@@ -209,6 +228,7 @@ function restoreDraft() {
         }
       });
 
+    // B. 还原普通文本框与长文本框
     form.querySelectorAll('input[type="text"], textarea').forEach((input) => {
       const name = input.name;
       if (data[name] !== undefined) {
@@ -216,6 +236,7 @@ function restoreDraft() {
       }
     });
 
+    // C. 还原网格部位选择
     if (Array.isArray(data.noTouchItems)) {
       const touchContainer = document.getElementById("noTouchAreas");
       if (touchContainer) {
@@ -238,7 +259,7 @@ function restoreDraft() {
       }
     }
 
-    console.log("💡 已自动为您恢复上次未提交的草稿记录！");
+    console.log("💡 已自动恢复未提交的草稿记录！");
   } catch (e) {
     console.warn("恢复草稿失败:", e);
   }
