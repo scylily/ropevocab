@@ -277,6 +277,9 @@ ignoreElements: (el) => el.id === "image-processing-toast" || el.id === "image-d
 onclone: (clonedDoc) => {
 const clonedElement = clonedDoc.getElementById(id);
 if (clonedElement) {
+  clonedElement.style.paddingLeft = "20px";
+  clonedElement.style.paddingRight = "20px";
+  clonedElement.style.boxSizing = "border-box";
 const qrFooter = clonedElement.querySelector('.share-qr-footer');
 if (qrFooter) qrFooter.style.display = 'block';
 }
