@@ -1,10 +1,3 @@
-// =============================================================
-// 🛠️ 确认页调试模式开关
-// 设为 true 时：刷新页面【无需填表，直进确认页】方便实时调 CSS
-// 设为 false 时：恢复正常流程（必须填表提交后才看确认页）
-// =============================================================
-const DEBUG_MODE = false;
-
 // ==================== Supabase 初始化配置 ====================
 const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
@@ -627,49 +620,6 @@ document.addEventListener("DOMContentLoaded", function () {
     ropeForm.addEventListener("change", saveDraft);
   }
   restoreDraft();
-
-  // 🛠️ 调试模式触发逻辑
-  if (typeof DEBUG_MODE !== "undefined" && DEBUG_MODE) {
-    const mainHeader = document.querySelector(".header");
-    if (mainHeader) mainHeader.style.display = "none";
-
-    userFormData = {
-      nickname: "u哦iu额万人计划",
-      adult: "yes",
-      safety_acknowledged: "是，我已理解并同意",
-      recording: "yes",
-      medical_history: "是的V步打撒快乐就好",
-      piercings: "阿瓦尔我去二",
-      safeword: "黄灯红了",
-      topless: "not_accept",
-      marks: "accept",
-      no_marks_areas: "脸上不可以",
-      noTouchItems: [
-        { id: "面部", name: "面部" },
-        { id: "手指", name: "手指" },
-      ],
-      noBondageItems: [
-        { id: "胸部", name: "胸部" },
-        { id: "私密部位", name: "私密部位" },
-      ],
-      other_pain: "yes",
-      pain_tolerance: "不怕痛",
-      accepts: ["拉头发", "SP"],
-      other_accepts: "",
-      hug: "yes",
-      sensory_deprivation: "yes",
-      blindfold: "能接受但会不安",
-      gag: "享受",
-      breath_control: "neck",
-      feelingItems: [],
-    };
-
-    document.getElementById("formContent").style.display = "none";
-    if (document.querySelector(".status-bar"))
-      document.querySelector(".status-bar").style.display = "none";
-    document.getElementById("confirmationPage").style.display = "block";
-    populateConfirmationPage();
-  }
 
   // 滚动状态栏 IntersectionObserver 联动
   const sections = document.querySelectorAll(".form-section");
