@@ -1102,3 +1102,13 @@ h1 {
   margin-top: 6px !important;    /* 对应箭头 1：标题【上方】的间距（数字越小越紧） */
   margin-bottom: 4px !important;   /* 对应箭头 2：标题【下方】的间距（数字越小越紧） */
 }
+
+/* 🎯 精确调整“关于 IBTI 测试”标题下方的间距 */
+.modal-header {
+  margin-bottom: 0.5rem !important; /* 原来是 1.2rem，数字越小间距越紧凑 */
+}
+
+/* 确保第一段文字顶部没有多余的外边距 */
+#intro-modal-body p:first-child {
+  margin-top: 0 !important;
+}
