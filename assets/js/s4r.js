@@ -53,6 +53,7 @@ function initBodyPartSelectors() {
       touchDiv.classList.toggle("selected");
       updateHiddenInput("no_touch_input", "noTouchAreas");
     });
+    saveDraft();
     noTouchContainer.appendChild(touchDiv);
 
     // 2. 不可捆绑网格项
@@ -65,6 +66,7 @@ function initBodyPartSelectors() {
       bondageDiv.classList.toggle("selected");
       updateHiddenInput("no_bondage_input", "noBondageAreas");
     });
+    saveDraft();
     noBondageContainer.appendChild(bondageDiv);
   });
 }
@@ -141,9 +143,114 @@ function collectFormData() {
   return userFormData;
 }
 
-// ==================== 确认页展现与填充逻辑 ====================
+const DRAFT_KEY = "s4r_form_draft_v1";
 
-// 切换至确认页显示（隐藏主页大 Banner）
+// 1. 保存草稿到本地
+function saveDraft() {
+  try {
+    const data = collectFormData();
+
+    if (
+      !data.nickname &&
+      !data.safeword &&
+      (!data.accepts || data.accepts.length === 0) &&
+      (!data.feelingItems || data.feelingItems.length === 0)
+    ) {
+      return;
+    }
+    localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({
+        savedAt: Date.now(),
+        data: data,
+      }),
+    );
+  } catch (e) {
+    console.warn("草稿保存失败:", e);
+  }
+}
+
+let draftSaveTimer = null;
+function saveDraftDebounced() {
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(saveDraft, 300);
+}
+
+function clearDraft() {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch (e) {}
+}
+
+function restoreDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const draft = JSON.parse(raw);
+    if (!draft || !draft.data) return;
+
+    const data = draft.data;
+    const form = document.getElementById("ropeForm");
+    if (!form) return;
+
+    form
+      .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+      .forEach((input) => {
+        const name = input.name;
+        const val = input.value;
+
+        if (input.type === "radio" && data[name] === val) {
+          input.checked = true;
+        } else if (input.type === "checkbox") {
+          if (
+            name === "accepts" &&
+            Array.isArray(data.accepts) &&
+            data.accepts.includes(val)
+          ) {
+            input.checked = true;
+          } else if (name === "feelings" && Array.isArray(data.feelingItems)) {
+            if (data.feelingItems.some((item) => item.value === val)) {
+              input.checked = true;
+            }
+          }
+        }
+      });
+
+    form.querySelectorAll('input[type="text"], textarea').forEach((input) => {
+      const name = input.name;
+      if (data[name] !== undefined) {
+        input.value = data[name];
+      }
+    });
+
+    if (Array.isArray(data.noTouchItems)) {
+      const touchContainer = document.getElementById("noTouchAreas");
+      if (touchContainer) {
+        data.noTouchItems.forEach((item) => {
+          const el = touchContainer.querySelector(`[data-id="${item.id}"]`);
+          if (el) el.classList.add("selected");
+        });
+        updateHiddenInput("no_touch_input", "noTouchAreas");
+      }
+    }
+
+    if (Array.isArray(data.noBondageItems)) {
+      const bondageContainer = document.getElementById("noBondageAreas");
+      if (bondageContainer) {
+        data.noBondageItems.forEach((item) => {
+          const el = bondageContainer.querySelector(`[data-id="${item.id}"]`);
+          if (el) el.classList.add("selected");
+        });
+        updateHiddenInput("no_bondage_input", "noBondageAreas");
+      }
+    }
+
+    console.log("💡 已自动为您恢复上次未提交的草稿记录！");
+  } catch (e) {
+    console.warn("恢复草稿失败:", e);
+  }
+}
+
 function showConfirmation() {
   document.getElementById("successMessage").style.display = "none";
   const mainHeader = document.querySelector(".header");
@@ -489,6 +596,8 @@ document
       if (error) throw error;
       console.log("表单数据已安全备份至云端！");
 
+      clearDraft();
+
       document.getElementById("formContent").style.display = "none";
       if (document.querySelector(".status-bar")) {
         document.querySelector(".status-bar").style.display = "none";
@@ -511,6 +620,13 @@ document
 // ==================== 页面加载初始化 ====================
 document.addEventListener("DOMContentLoaded", function () {
   initBodyPartSelectors();
+
+  const ropeForm = document.getElementById("ropeForm");
+  if (ropeForm) {
+    ropeForm.addEventListener("input", saveDraftDebounced);
+    ropeForm.addEventListener("change", saveDraft);
+  }
+  restoreDraft();
 
   // 🛠️ 调试模式触发逻辑
   if (typeof DEBUG_MODE !== "undefined" && DEBUG_MODE) {
@@ -580,16 +696,20 @@ document.addEventListener("DOMContentLoaded", function () {
   sections.forEach((section) => observer.observe(section));
 });
 
-// ==================== 长图生成与全平台统一弹窗预览 ====================
+// ==================== 长图生成与全平台统一弹窗预览 (全逻辑保留版) ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
 
   // 1. 动态生成自定义文件名（如：绳缚体验知情同意书_用户名_20260729.png）
-  const nick = (userFormData && userFormData.nickname) ? userFormData.nickname.trim() : "未命名";
+  const nick =
+    userFormData && userFormData.nickname
+      ? userFormData.nickname.trim()
+      : "未命名";
   const now = new Date();
-  const dateStr = now.getFullYear() +
-    String(now.getMonth() + 1).padStart(2, '0') +
-    String(now.getDate()).padStart(2, '0');
+  const dateStr =
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0");
   const fileName = `绳缚体验知情同意书_${nick}_${dateStr}.png`;
 
   // 2. 弹出“正在生成”提示
@@ -604,14 +724,20 @@ function downloadS4RImage(id) {
     `;
     Object.assign(processToast.style, {
       position: "fixed",
-      top: 0, left: 0, width: "100vw", height: "100vh",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
       backgroundColor: "rgba(255,255,255,0.1)",
-      display: "flex", justifyContent: "center", alignItems: "center",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       zIndex: "10000",
     });
     document.body.appendChild(processToast);
   } else {
-    document.getElementById("toast-text").innerText = "正在生成精致长图，请稍候片刻...";
+    document.getElementById("toast-text").innerText =
+      "正在生成精致长图，请稍候片刻...";
     processToast.style.display = "flex";
   }
 
@@ -645,7 +771,7 @@ function downloadS4RImage(id) {
 
         const imgDisplay = document.getElementById("generated-image");
         imgDisplay.src = imageData;
-        imgDisplay.alt = fileName;   // 将自定义文件名挂载至图片 alt 属性
+        imgDisplay.alt = fileName; // 将自定义文件名挂载至图片 alt 属性
         imgDisplay.title = fileName; // 将自定义文件名挂载至图片 title 属性
 
         processToast.style.display = "none";
@@ -655,7 +781,8 @@ function downloadS4RImage(id) {
       })
       .catch((err) => {
         console.error("生成长图失败:", err);
-        document.getElementById("toast-text").innerText = "生成失败，请刷新重试";
+        document.getElementById("toast-text").innerText =
+          "生成失败，请刷新重试";
         setTimeout(() => {
           processToast.style.display = "none";
         }, 1500);
