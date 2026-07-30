@@ -427,6 +427,26 @@
       let stageExpandState = { 0: false, 1: false, 2: false };
       let safetyAgreementData = null;
 
+      // 🌐 统一 Supabase 英文错误提示转中文
+      function translateError(errOrMsg) {
+        if (!errOrMsg) return '操作失败，请重试';
+        const text = typeof errOrMsg === 'string' ? errOrMsg : (errOrMsg.message || errOrMsg.toString());
+
+        if (text.includes('Invalid login credentials')) return '邮箱或密码不正确，请重新输入';
+        if (text.includes('User already registered')) return '该邮箱已经被注册，请直接登录';
+        if (text.includes('Email not confirmed')) return '邮箱尚未验证，请查收邮件完成激活';
+        if (text.includes('Password should be at least')) return '密码长度不能少于 6 个字符';
+        if (text.includes('Unable to validate email address')) return '请输入有效的电子邮箱地址';
+        if (text.includes('rate limit') || text.includes('Rate limit') || text.includes('every 60 seconds')) {
+          return '请求过于频繁，请稍等 60 秒后再试';
+        }
+        if (text.includes('User not found')) return '未找到该邮箱对应的账号';
+        if (text.includes('JWT expired') || text.includes('token is expired')) return '登录凭证已过期，请重新登录';
+        if (text.includes('Failed to fetch') || text.includes('NetworkError')) return '网络连接异常，请检查网络后再试';
+
+        return text;
+      }
+
       async function initApp() {
         await checkCurrentSession();
         await fetchCurriculumFromSupabase();
@@ -771,7 +791,7 @@
         updateProgressUI();
       }
 
-      // 👑 教师极简通道（口令直达登录，自动无感授权）
+      // 👑 导师极简无感通道（无需事先登录，凭口令直达最高导师权限）
       async function loginAsTeacherByPasscode() {
         const code = document.getElementById('input-teacher-passcode').value.trim();
         if (!code) {
@@ -780,13 +800,16 @@
         }
 
         try {
+          // 1. 向 Supabase 发起口令校验
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('teacher_passcode_login', { passcode: code });
 
           if (rpcErr || !rpcRes.success) {
-            alert('❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '口令验证失败')));
+            const rawMsg = rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '口令验证失败');
+            alert('❌ ' + translateError(rawMsg));
             return;
           }
 
+          // 2. 口令正确，利用返回的虚拟导师凭证无感登录 Supabase 官方 Session
           const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
             email: rpcRes.email,
             password: rpcRes.password
@@ -794,6 +817,7 @@
 
           if (authErr) throw authErr;
 
+          // 3. 登录成功，切换全局为 master 最高状态
           currentUser = authData.user;
           userLevel = 'master';
           localStorage.setItem('shibari_user_level', 'master');
@@ -805,11 +829,11 @@
           await fetchCurriculumFromSupabase();
           openSafetyModal();
 
-          alert('👑 欢迎导师！口令验证成功，已直达最高导师权限。');
+          alert('👑 欢迎导师！口令验证成功，已为您开启全盘最高权限。');
 
         } catch (err) {
           console.error('导师极简登录报错:', err);
-          alert('❌ 登录失败: ' + (err.message || '系统异常'));
+          alert('❌ 登录失败: ' + translateError(err));
         }
       }
 
@@ -940,7 +964,8 @@
 
             const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
             if (rpcErr || !rpcRes.success) {
-              throw new Error(rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败'));
+              const rawMsg = rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败');
+              throw new Error(translateError(rawMsg));
             }
 
             userLevel = rpcRes.role;
@@ -956,7 +981,7 @@
           }
         } catch (err) {
           console.error("Auth 报错:", err);
-          errDiv.textContent = '❌ ' + (err.message || '操作失败');
+          errDiv.textContent = '❌ ' + translateError(err);
           errDiv.classList.remove('hidden');
         }
       }
@@ -965,7 +990,7 @@
         const email = document.getElementById('auth-email').value.trim();
         if (!email) { alert('请先输入您的注册邮箱！'); return; }
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-        if (error) alert('发送失败: ' + error.message);
+        if (error) alert('发送失败: ' + translateError(error));
         else alert('📧 重置邮件已发送至邮箱，请查收！');
       }
 
@@ -992,7 +1017,8 @@
         try {
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: code });
           if (rpcErr || !rpcRes.success) {
-            errDiv.textContent = '❌ ' + (rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '升级失败'));
+            const rawMsg = rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '升级失败');
+            errDiv.textContent = '❌ ' + translateError(rawMsg);
             errDiv.classList.remove('hidden');
             return;
           }
@@ -1005,7 +1031,7 @@
           updateProgressUI();
           alert('🎉 成功升级至：' + userLevel);
         } catch (err) {
-          errDiv.textContent = '❌ ' + (err.message || '升级失败');
+          errDiv.textContent = '❌ ' + translateError(err);
           errDiv.classList.remove('hidden');
         }
       }
