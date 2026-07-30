@@ -25,35 +25,37 @@ function hideLoading() {
   if (overlay) overlay.style.display = "none";
 }
 
-// 1. 初始化抽取题目 (优先加载上次抽取的题目草稿)
+// 1. 初始化抽取题目 (有答题记录才恢复草稿，无记录则每次刷新重新抽题)
 async function initQuiz() {
-  // 💾 第一步：优先检查本地是否有未完成的“题目草稿”
+  // 💾 第一步：优先检查本地是否有【包含答题记录】的草稿
   const rawDraft = localStorage.getItem(DRAFT_KEY);
   if (rawDraft) {
     try {
       const draft = JSON.parse(rawDraft);
-      // 如果草稿存在、包含题目，且未超过 7 天有效期
-      if (draft && draft.questions && draft.questions.length > 0 && draft.savedAt && (Date.now() - draft.savedAt <= DRAFT_TTL)) {
-        console.log("💡 检出未完成的答题草稿，直接加载上次抽取的 20 道题目");
-        currentQuiz = draft.questions; // 还原上次抽出的题目
+      // 🎯【核心修改】：判断 answersMap 是否存在且至少选过 1 道题
+      const hasAnswers = draft && draft.answersMap && Object.keys(draft.answersMap).length > 0;
 
-        // 还原测试说明文档文案
+      // 只有【有答题记录】且未超过 7 天时，才锁题恢复
+      if (hasAnswers && draft.questions && draft.questions.length > 0 && draft.savedAt && (Date.now() - draft.savedAt <= DRAFT_TTL)) {
+        console.log("💡 检出包含答题记录的草稿，锁定加载上次抽取的 20 道题目");
+        currentQuiz = draft.questions;
+
         if (draft.intro) {
           window.cachedIntro = draft.intro;
           const modalBody = document.getElementById("intro-modal-body");
           if (modalBody) modalBody.innerHTML = marked.parse(draft.intro);
         }
 
-        renderQuiz(); // 渲染题目 (内部会自动触发 restoreDraft 还原答案)
+        renderQuiz(); // 渲染题目并还原答案
         hideLoading();
-        return; // 🎯 成功载入草稿，不再向云端重新抽取！
+        return; // 🎯 恢复草稿成功，直接结束
       }
     } catch (e) {
       console.warn("读取本地草稿题目异常，将重新向云端抽取", e);
     }
   }
 
-  // 第二步：如果没有草稿或已过期，则正常向云端重新抽取全新的 20 题
+  // 第二步：如果没有答题记录，则每次刷新都向云端重新抽取全新 20 题
   showLoading("正在为您生成测试题目...");
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_quiz`, {
@@ -78,7 +80,7 @@ async function initQuiz() {
     }
 
     renderQuiz();
-    saveDraft(); // 首次抽题成功后存入草稿
+    // 🎯【核心修改】：删除了这里的 saveDraft()！纯新打开不答题时，绝不留草稿！
   } catch (error) {
     console.error(error);
     alert("题库加载失败，请检查网络后刷新重试！");
@@ -154,13 +156,17 @@ function saveDraft() {
       }
     });
 
-    if (currentQuiz && currentQuiz.length > 0) {
+    // 🎯【核心修改】：只有当用户【至少答了 1 道题】(count > 0) 时，才保存草稿！
+    if (count > 0 && currentQuiz && currentQuiz.length > 0) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify({
         savedAt: Date.now(),
         questions: currentQuiz, // 锁定这 20 道题目列表
         answersMap: answersMap,
         intro: window.cachedIntro || ""
       }));
+    } else if (count === 0) {
+      // 如果用户没有选择任何选项，确保清除本地旧草稿
+      clearDraft();
     }
   } catch (e) {
     console.warn("草稿保存失败:", e);
