@@ -642,31 +642,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   restoreDraft();
 
-  // 滚动状态栏 IntersectionObserver 联动
-  const sections = document.querySelectorAll(".form-section");
-  const statusItems = document.querySelectorAll(".status-item");
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const index = Array.from(sections).indexOf(entry.target);
-          statusItems.forEach((item, i) => {
-            if (i <= index) {
-              item.classList.add("active");
-            } else {
-              item.classList.remove("active");
-            }
-          });
-        }
-      });
-    },
-    { threshold: 0.5 },
-  );
-
-  sections.forEach((section) => observer.observe(section));
-});
-
 // ==================== 长图生成与全平台统一弹窗预览 (全逻辑保留版) ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
