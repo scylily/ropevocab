@@ -45,8 +45,8 @@ function initBodyPartSelectors() {
     touchDiv.addEventListener("click", () => {
       touchDiv.classList.toggle("selected");
       updateHiddenInput("no_touch_input", "noTouchAreas");
+      saveDraft();
     });
-    saveDraft();
     noTouchContainer.appendChild(touchDiv);
 
     // 2. 不可捆绑网格项
@@ -58,8 +58,8 @@ function initBodyPartSelectors() {
     bondageDiv.addEventListener("click", () => {
       bondageDiv.classList.toggle("selected");
       updateHiddenInput("no_bondage_input", "noBondageAreas");
+      saveDraft();
     });
-    saveDraft();
     noBondageContainer.appendChild(bondageDiv);
   });
 }
@@ -136,9 +136,9 @@ function collectFormData() {
   return userFormData;
 }
 
+// ==================== 草稿自动保存与恢复 ====================
 const DRAFT_KEY = "s4r_form_draft_v1";
 
-// 1. 保存草稿到本地
 function saveDraft() {
   try {
     const data = collectFormData();
@@ -177,13 +177,12 @@ function clearDraft() {
 
 function resetFormAndDraft() {
   if (confirm("确定要清空当前已填写的所有内容并重新填写吗？")) {
-    clearDraft(); // 擦除本地草稿
-    window.location.reload(); // 刷新页面恢复初始状态
+    clearDraft();
+    window.location.reload();
   }
 }
 
-// 草稿有效期设置：7 天 (7 * 24小时 * 60分 * 60秒 * 1000毫秒)
-// 如果想改为 24 小时，可以写成：24 * 60 * 60 * 1000
+// 草稿有效期设置：7 天
 const DRAFT_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function restoreDraft() {
@@ -193,10 +192,9 @@ function restoreDraft() {
     const draft = JSON.parse(raw);
     if (!draft || !draft.data) return;
 
-    // ⏱️【新增】检查草稿是否已超过 7 天有效期
     if (draft.savedAt && Date.now() - draft.savedAt > DRAFT_TTL) {
       console.log("草稿已超过 7 天有效期，已自动清空");
-      clearDraft(); // 自动擦除过期草稿
+      clearDraft();
       return;
     }
 
@@ -265,6 +263,9 @@ function restoreDraft() {
   }
 }
 
+// ==================== 确认页展现与填充逻辑 ====================
+
+// 切换至确认页显示（隐藏主页大 Banner）
 function showConfirmation() {
   document.getElementById("successMessage").style.display = "none";
   const mainHeader = document.querySelector(".header");
@@ -610,7 +611,7 @@ document
       if (error) throw error;
       console.log("表单数据已安全备份至云端！");
 
-      clearDraft();
+      clearDraft(); // 提交成功清除草稿
 
       document.getElementById("formContent").style.display = "none";
       if (document.querySelector(".status-bar")) {
@@ -635,14 +636,16 @@ document
 document.addEventListener("DOMContentLoaded", function () {
   initBodyPartSelectors();
 
+  // 监听输入并自动备份草稿
   const ropeForm = document.getElementById("ropeForm");
   if (ropeForm) {
     ropeForm.addEventListener("input", saveDraftDebounced);
     ropeForm.addEventListener("change", saveDraft);
   }
-  restoreDraft();
+  restoreDraft(); // 加载自动恢复未提交草稿
+});
 
-// ==================== 长图生成与全平台统一弹窗预览 (全逻辑保留版) ====================
+// ==================== 长图生成与全平台统一弹窗预览 ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
 
