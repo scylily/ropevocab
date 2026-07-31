@@ -341,7 +341,7 @@
         color: #991b1b;
       }
 
-      /* 精致胶囊标签组 (已加粗 font-weight: 600) */
+      /* 精致胶囊标签组 */
       .tag-group {
         display: flex;
         flex-wrap: wrap;
@@ -357,7 +357,6 @@
         border-radius: 20px;
         font-size: 0.82rem;
         font-weight: 600;
-        /* 👈 胶囊文字加粗 */
       }
 
       .tag-pill.purple {
@@ -612,7 +611,7 @@
         "【程度1：舒缓接纳】 安全茧房：被妥帖守护的松弛": {
           code: "1-2", title: "安全茧房：被妥帖守护的松弛",
           desc: "绳索温和地包裹，如云朵拥抱，不同松紧的张力状态，带来身心极致的松弛与安全感",
-          level: "舒缓接纳", color: "#7cb342", badgeBg: "#dcfce7", badgeColor: "#15803d", icon: "fas fa-shield-alt"
+          level: "舒缓接纳", color: "#7cb342", badgeBg: "#dcfce7", badgeColor: "#15803d", icon: "fas fa-spa"
         },
         "【程度2：灵蕴交流】 趣味互动：跃动的好奇心探索": {
           code: "2-1", title: "趣味互动：跃动的好奇心探索",
@@ -655,6 +654,7 @@
       let allResponses = [];
       let filteredResponses = [];
       let currentSelectedId = null;
+      let currentAdminPass = ''; // 🔑 保存验证通过的口令
       let currentPage = 1;
       const pageSize = 12;
 
@@ -671,6 +671,7 @@
           if (error) throw error;
 
           if (isMatched === true) {
+            currentAdminPass = inputPass; // 记录口令
             document.getElementById("authOverlay").style.display = "none";
             loadDataFromSupabase();
           } else {
@@ -691,10 +692,8 @@
 
       async function loadDataFromSupabase() {
         try {
-          const { data, error } = await _supabase
-            .from('responses')
-            .select('*')
-            .order('created_at', { ascending: false });
+          // 调用带口令鉴权的安全 RPC 函数获取档案列表
+          const { data, error } = await _supabase.rpc('get_responses_for_admin', { input_pass: currentAdminPass });
 
           if (error) throw error;
 
@@ -706,7 +705,7 @@
           renderPagedCustomerCards();
         } catch (err) {
           console.error("加载数据失败:", err);
-          alert("加载数据失败，请检查网络或 Supabase 配置！");
+          alert("加载数据失败: " + (err.message || "请检查网络或 Supabase 配置！"));
         }
       }
 
@@ -888,7 +887,7 @@
           ? `<span class="tag-pill purple">${breathControlMap[item.breath_control] || item.breath_control}</span>`
           : `<span class="tag-pill gray">未选择</span>`;
 
-        // 5. 期望体验模块（复刻 s4r 精致卡片渲染）
+        // 5. 期望体验模块
         const feelingsContainer = document.getElementById("confFeelingsCompact");
         if (item.feelings && item.feelings.length > 0) {
           feelingsContainer.innerHTML = item.feelings.map(feel => {
@@ -964,10 +963,11 @@
         }
 
         try {
-          const { error } = await _supabase
-            .from('responses')
-            .delete()
-            .eq('id', currentSelectedId);
+          // 调用带口令鉴权的安全 RPC 函数执行删除
+          const { error } = await _supabase.rpc('delete_response_for_admin', {
+            input_pass: currentAdminPass,
+            response_id: currentSelectedId
+          });
 
           if (error) throw error;
 
@@ -976,7 +976,7 @@
           loadDataFromSupabase();
         } catch (err) {
           console.error("删除失败:", err);
-          alert("删除失败，请检查数据库权限配置！\n详细信息: " + err.message);
+          alert("删除失败: " + (err.message || "请检查数据库权限配置！"));
         }
       }
 
