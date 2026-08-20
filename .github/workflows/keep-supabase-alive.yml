@@ -1,18 +1,45 @@
-name: Keep Supabase Alive
+name: Keep Multiple Supabase Projects Alive
 
 on:
   schedule:
-    # 设定 Cron 表达式：每周一和周四的中午 12:00 (UTC) 自动触发
+    # 每周一和周四的中午 12:00 (UTC) 自动触发
     - cron: '0 12 * * 1,4'
-  workflow_dispatch: # 支持在 GitHub 网页上随时手动触发测试
+  workflow_dispatch:
 
 jobs:
   ping-db:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase REST API
+      - name: Ping Project 1
         run: |
-          # 发送轻量级的 API 请求，仅读取 1 条记录，足以激活数据库
-          curl -s -f -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/terms?select=id&limit=1" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
+          URL="${{ secrets.SUPABASE_URL_1 }}"
+          KEY="${{ secrets.SUPABASE_ANON_KEY_1 }}"
+          
+          # 防御性逻辑：去除 URL 末尾可能多余的斜杠
+          URL="${URL%/}"
+          
+          if [ -z "$URL" ]; then
+            echo "❌ 错误：SUPABASE_URL_1 未配置或读到的为空值！请检查 GitHub Secrets 名称。"
+            exit 1
+          fi
+          
+          # 请求 Supabase 官方 Health 探针接口
+          curl -s -f -X GET "$URL/auth/v1/health" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY"
+
+      - name: Ping Project 2
+        run: |
+          URL="${{ secrets.SUPABASE_URL_2 }}"
+          KEY="${{ secrets.SUPABASE_ANON_KEY_2 }}"
+          
+          URL="${URL%/}"
+          
+          if [ -z "$URL" ]; then
+            echo "❌ 错误：SUPABASE_URL_2 未配置或读到的为空值！请检查 GitHub Secrets 名称。"
+            exit 1
+          fi
+          
+          curl -s -f -X GET "$URL/auth/v1/health" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY"
