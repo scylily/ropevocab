@@ -291,6 +291,94 @@ a.logo:visited {
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* 流程图组件 */
+.rack-flowchart {
+  margin-top: 20px;
+}
+
+.flow-step {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  border: 2px solid #e9ecef;
+  position: relative;
+}
+
+.step-number {
+  background: #667eea;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex-grow: 1;
+}
+
+.step-content h4 {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* 👉 【融合补全】整合了后半部分关于流程步骤描述文字的样式 */
+.step-content p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.step-arrow {
+  color: #667eea;
+  font-size: 1rem;
+  margin-left: 20px;
+}
+
+/* 内容文章区域与通用列表整合 */
+.content-section {
+  margin-bottom: 40px;
+}
+
+.content-section h2 {
+  font-size: 1.7rem;
+  margin-bottom: 15px;
+  color: #667eea;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 8px;
+}
+
+.content-section p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+/* 将文章内列表与底部重复定义的列表样式完美融合 */
+.content-section ul,
+.content-section ol,
+.rack-element ul {
+  padding-left: 10px;
+  margin-left: 10px;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.content-section li,
+.rack-element li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 @media (min-width: 768px) {
   .site-footer .footer-top {
     flex-direction: row;
