@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>词条详情 - 常用绳缚词汇库</title>
+    <link rel="stylesheet" href="../assets/css/v4r-h2.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <style>
+      .state-container {
+        text-align: center;
+        padding: 60px 15px;
+      }
+
+      .spinner {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 15px;
+        animation: fa-spin 1s infinite linear;
+      }
+
+      .error-card {
+        background: #fff0f0;
+        border: 1px solid #fecaca;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 500px;
+        margin: 0 auto;
+        color: #c62828;
+      }
+
+      /* 智能返回按钮重置 */
+      button.back-button {
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-family: inherit;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+      <div class="container">
+        <a class="logo" href="../index.html">
+          <i class="fas fa-book"></i>
+          <span>常用绳缚词汇库</span>
+        </a>
+        <div class="nav-links">
+          <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+          <!-- 动态当前词条高亮标签 -->
+          <a class="active" id="nav-active-tag"><i class="fas fa-bookmark"></i> 词条详情</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- 3 层面包屑导航容器 (首页 > 上级分类Hub > 词条标题) -->
+    <div class="breadcrumb">
+      <div class="container" id="breadcrumb-container">
+        <a href="../index.html">首页</a> &gt;
+        <span id="breadcrumb-term-title">加载中...</span>
+      </div>
+    </div>
+
+    <!-- 加载中状态 -->
+    <div id="detail-loading" class="container state-container">
+      <i class="fas fa-spinner spinner"></i>
+      <p style="color: #666;">正在加载词条数据...</p>
+    </div>
+
+    <!-- 错误状态 -->
+    <div id="detail-error" class="container state-container" style="display: none;">
+      <div class="error-card">
+        <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+        <h3 style="margin-bottom: 10px;">词条加载失败</h3>
+        <p class="error-message">请求的资源不存在或网络连接中断。</p>
+        <a href="../index.html" class="back-button" style="margin-top: 20px;">返回首页</a>
+      </div>
+    </div>
+
+    <!-- 主渲染区 -->
+    <main id="detail-main-content" style="display: none;">
+      <!-- 1. 页头标头 -->
+      <header class="term-header">
+        <div class="container">
+          <h1 id="term-title">-</h1>
+          <div class="term-origin">
+            <i class="fas fa-language"></i> <span id="term-subtitle-badge">-</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 2. 多语言表述 -->
+      <section class="container">
+        <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
+          <i class="fas fa-globe-asia"></i> 多语言表述
+        </h2>
+        <div class="language-expressions">
+          <div class="language-card">
+            <h3><i class="fas fa-language"></i> 中文表述</h3>
+            <div class="expression" id="lang-cn">-</div>
+          </div>
+
+          <div class="language-card">
+            <h3><i class="fas fa-language"></i> 英文表述</h3>
+            <div class="expression" id="lang-en">-</div>
+          </div>
+
+          <div class="language-card">
+            <h3><i class="fas fa-language"></i> 日文表述</h3>
+            <div class="expression" id="lang-jp">-</div>
+            <div class="pronunciation" id="lang-romaji">-</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 详细介绍 4 大核心板块 -->
+      <section class="container">
+        <div class="content-section">
+          <h2><i class="fas fa-info-circle"></i> 定义与概述</h2>
+          <div id="sec-description"></div>
+        </div>
+
+        <div class="content-section">
+          <h2><i class="fas fa-star"></i> 技术特征</h2>
+          <ul id="sec-features-list"></ul>
+        </div>
+
+        <div class="content-section">
+          <h2><i class="fas fa-list-ol"></i> 主要应用场景</h2>
+          <ol id="sec-applications-list"></ol>
+        </div>
+
+        <div class="content-section">
+          <h2><i class="fas fa-shield-alt"></i> 安全注意事项</h2>
+          <div id="sec-safety-notes"></div>
+        </div>
+      </section>
+
+      <!-- 4. 多图自适应画廊 -->
+      <section class="container">
+        <div class="content-section" style="background: transparent; box-shadow: none; padding: 0;">
+          <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
+            <i class="fas fa-images"></i> 示意图展示
+          </h2>
+          <div class="image-gallery" id="image-gallery-container"></div>
+        </div>
+      </section>
+
+      <!-- 5. 智能返回按钮 (返回上一级历史记录/分类页) -->
+      <div class="container" style="text-align: center;">
+        <button type="button" id="btn-back-history" class="back-button">
+          <i class="fas fa-arrow-left"></i> 返回
+        </button>
+      </div>
+    </main>
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/supabase-js/2.39.8/supabase.min.js"></script>
+    <script>
+      if (typeof supabase === 'undefined') {
+        document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
+      }
+    </script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/term-renderer.js"></script>
+    <!-- 子页面引入路径补全 ../ -->
+    <script src="../assets/js/footer.js"></script>
+  </body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>绳缚者、角色、活动 - 常用绳缚词汇库</title>
+    <link rel="stylesheet" href="../assets/css/v4r-t1.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <style>
+      .state-container {
+        text-align: center;
+        padding: 60px 15px;
+      }
+
+      .spinner {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 15px;
+        animation: fa-spin 1s infinite linear;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar">
+      <div class="container">
+        <a class="logo" href="../index.html">
+          <i class="fas fa-book"></i>
+          <span>常用绳缚词汇库</span>
+        </a>
+        <div class="nav-links">
+          <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+          <a href="#" class="active"><i class="fas fa-users"></i> 角色与活动</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="breadcrumb">
+      <div class="container">
+        <a href="../index.html">首页</a> &gt; 绳缚者、角色、活动
+      </div>
+    </div>
+
+    <header class="hero-section">
+      <div class="container">
+        <h1>绳缚者、角色、活动</h1>
+        <p>介绍绳缚实践中常见的参与者角色、身份称谓以及相关活动形式，帮助理解绳缚社区的交流用语和文化背景。</p>
+        <p><strong>**旋转手机可获得更好体验**</strong></p>
+      </div>
+    </header>
+
+    <main class="container">
+      <div id="table-loading" class="state-container">
+        <i class="fas fa-spinner spinner"></i>
+        <p style="color: #666;">正在加载角色与活动数据...</p>
+      </div>
+
+      <div id="roles-tables-container" style="display: none;"></div>
+
+      <div class="container" style="text-align: center">
+        <a href="../index.html" class="back-button">
+          <i class="fas fa-arrow-left"></i> 返回首页
+        </a>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/hub-renderer.js"></script>
+    <!-- 子页面引入路径补全 ../ -->
+    <script src="../assets/js/footer.js"></script>
+  </body>
+
+</html>
