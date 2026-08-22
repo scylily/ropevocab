@@ -1,18 +1,20 @@
+/* ==============================================================================
+   ROPEVOCAB PROJECT - LOCATIONS & ROLES TABLES STYLE
+   File: v2/assets/css/v4r-t1.css
+   ============================================================================== */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* === 全局基础设置 (采用 ihead 基准) === */
 html {
   font-size: 16px;
-  /* 统一为 16px */
 }
 
 body {
   font-family: "Noto Sans SC", "微软雅黑", sans-serif;
-  /* 优先使用 Noto Sans SC */
   line-height: 1.5;
   color: #333;
   -webkit-text-size-adjust: 100%;
@@ -25,57 +27,85 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 15px;
+  padding: 0 20px;
 }
 
-/* === 导航栏 (采用 ihead 基准) === */
+/* 导航栏：独立渐变背景 */
 .navbar {
-  background: #667eea;
-  padding: 12px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  padding: 12px 0 !important;
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
 }
 
 .navbar .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0 20px !important;
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
 }
 
-.logo {
+.logo,
+a.logo,
+.logo:hover,
+a.logo:hover,
+.logo:focus,
+a.logo:focus,
+.logo:active,
+a.logo:active,
+.logo:visited,
+a.logo:visited {
   font-size: 1.2rem;
   font-weight: bold;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .nav-links {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  display: flex !important;
+  gap: 10px;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
 }
 
 .nav-links a {
-  color: white;
-  text-decoration: none;
+  color: #ffffff !important;
+  text-decoration: none !important;
   font-size: 0.9rem;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap !important;
+  transition: background 0.2s;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22) !important;
 }
 
-/* === 面包屑导航 (保留 rhead 特有) === */
 .breadcrumb {
-  background: #f5f5f5;
-  padding: 12px 0;
-  font-size: 0.85rem;
+  background: #f1f5f9 !important;
+  padding: 12px 0 !important;
+  font-size: 0.85rem !important;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .breadcrumb a {
@@ -87,22 +117,22 @@ body {
   text-decoration: underline;
 }
 
-/* === 位置分类页头 (保留 rhead 特有) === */
-.locations-header {
-  background: #667eea;
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white;
-  padding: 30px 0;
+  padding: 30px 0 !important;
+  margin-top: 0 !important; /* 彻底移除负外边距 */
   margin-bottom: 30px;
   text-align: center;
 }
 
-.locations-header h1 {
+.hero-section h1 {
   font-size: 2rem;
   margin-bottom: 12px;
   padding: 0 15px;
 }
 
-.locations-header p {
+.hero-section p {
   font-size: 1rem;
   max-width: 800px;
   margin: 0 auto;
@@ -110,13 +140,11 @@ body {
   padding: 0 15px;
 }
 
-/* === 响应式表格容器 === */
 .table-responsive {
   width: 100%;
-  overflow-x: visible; /* 依然不需要左右滑动 */
+  overflow-x: auto;
 }
 
-/* === 表格样式 === */
 .locations-table {
   background: white;
   border-radius: 10px;
@@ -140,15 +168,10 @@ body {
   gap: 10px;
 }
 
-.table-header h2 i {
-  color: #667eea;
-}
-
-/* ✨ 核心优化 1：改为 auto 模式，让浏览器根据内容多少自动分配列宽 */
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto; /* 开启根据内容多寡自适应宽度 */
+  table-layout: auto;
 }
 
 thead {
@@ -166,40 +189,18 @@ th {
   word-break: break-all;
 }
 
-/* ✨ 核心优化 2：通过约束最小和最大条件，确保自动适应时不挤压不顶变形 */
 td {
   padding: 14px 6px;
   border-bottom: 1px solid #e9ecef;
   vertical-align: middle;
-
-  /* 允许内容多的地方换行 */
   word-wrap: break-word;
   word-break: break-all;
   white-space: normal;
-
-  /* 给短内容列一个最小安全宽度，防止中文字符被挤成单字垂直排列 */
   min-width: 45px;
-}
-
-/* 💡 既然改为了内容自适应，我们需要【删除】原先写死的那些 width: 14% 等百分比代码。
-         这里只需要给“备注”和“英文/罗马音”指定一个基础的倾向，其余让它全自动分配即可 */
-table th:nth-child(5) {
-  width: 35%; /* 给备注一个较大的基础空间，内容越多它会自动撑得越大 */
 }
 
 tbody tr:hover {
   background: #f8f9fa;
-}
-
-.location-category {
-  font-weight: 600;
-  color: #667eea;
-  background: #f0f4ff;
-}
-
-.location-category td {
-  padding-top: 20px;
-  padding-bottom: 20px;
 }
 
 .chinese-name {
@@ -234,268 +235,27 @@ tbody tr:hover {
   text-align: left;
 }
 
+/* 核心 4 种色彩胶囊徽章 */
 .location-type {
-  display: block;
+  display: inline-block;
   text-align: center;
-  padding: 3px 4px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.75rem;
-  font-weight: 500;
-  margin: 5px auto 0;
-  width: max-content; /* 宽度根据类型字数自动紧凑包裹 */
-  max-width: 75px;
+  font-weight: 600;
 }
 
-.type-primary {
-  background: #e8f5e9;
-  color: #2e7d32;
-}
-
-.type-decorative {
-  background: #fff3e0;
-  color: #ef6c00;
-}
-
-.type-support {
-  background: #e3f2fd;
-  color: #1565c0;
-}
-
-/* === 首页特有样式 (采用 ihead 基准) === */
-.hero-section {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(102, 126, 234, 0.9) 0%,
-      rgba(118, 75, 162, 0.9) 100%
-    ),
-    url("assets/images/hero-bg.jpg") center/cover no-repeat;
-  color: white;
-  padding: 40px 0;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.hero-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.hero-subtitle {
-  font-size: 1rem;
-  max-width: 800px;
-  margin: 0 auto 20px;
-  line-height: 1.5;
-  opacity: 0.95;
-}
-
-.search-box {
-  max-width: 500px;
-  margin: 20px auto;
-  position: relative;
-}
-
-.search-box input {
-  width: 100%;
-  padding: 12px 15px;
-  padding-left: 45px;
-  border: none;
-  border-radius: 25px;
-  font-size: 0.95rem;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-
-.search-box i {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #667eea;
-  font-size: 1rem;
-}
-
-.category-nav {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin: 30px 0;
-}
-
-.category-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px 15px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  border: 2px solid transparent;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-  border-color: #667eea;
-}
-
-.category-icon {
-  font-size: 2rem;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.category-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.category-card p {
-  color: #666;
-  font-size: 0.85rem;
-  line-height: 1.4;
-}
-
-.statistics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 12px;
-  padding: 20px;
-  margin: 30px 0;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-number {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #667eea;
-  display: block;
-}
-
-.stat-label {
-  color: #666;
-  font-size: 0.85rem;
-  margin-top: 5px;
-}
-
-/* 术语列表 */
-.term-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.term-card {
-  background: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-}
-
-.term-card h3 {
-  font-size: 1.3rem;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.term-card p {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.tag {
-  background: #4caf50;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 15px;
-  font-size: 0.75rem;
-}
-
-.quick-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
-  margin: 30px 0;
-}
-
-.quick-link {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s;
-}
-
-.quick-link:hover {
-  transform: translateX(3px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.quick-link i {
-  font-size: 1.5rem;
-  color: #667eea;
-}
-
-.quick-link h4 {
-  font-size: 1rem;
-  margin-bottom: 3px;
-  color: #333;
-}
-
-.quick-link p {
-  color: #666;
-  font-size: 0.8rem;
-}
-
-/* === 页脚 (采用 ihead 基准) === */
-.footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 25px 0;
-  margin-top: 40px;
-}
-
-.footer h4 {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-}
-
-.footer a {
-  color: #bdc3c7;
-  text-decoration: none;
-  font-size: 0.85rem;
-  display: block;
-  margin-bottom: 5px;
-}
-
-.copyright {
-  margin-top: 5px;
-  font-size: 0.85rem;
-  color: #bdc3c7;
-}
+.type-primary { background: #e8f5e9; color: #2e7d32; } /* 绿 */
+.type-support { background: #e3f2fd; color: #1565c0; } /* 蓝 */
+.type-decorative { background: #fff3e0; color: #ef6c00; } /* 橙 */
+.type-danger { background: #ffebee; color: #c62828; } /* 红 */
 
 .back-button {
   display: inline-block;
   background: #667eea;
   color: white;
   text-decoration: none;
-  padding: 10px 20px;
+  padding: 10px 24px;
   border-radius: 25px;
   font-weight: 500;
   margin: 20px 0;
@@ -507,190 +267,144 @@ tbody tr:hover {
   transform: translateX(-3px);
 }
 
-/* === 响应式调整 === */
-@media (max-width: 768px) {
-  html {
-    font-size: 15px;
+.site-footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 40px 0 25px;
+  margin-top: 60px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+  width: 100%;
+}
+
+.site-footer .footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.site-footer .footer-top {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  justify-content: space-between;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 768px) {
+  .site-footer .footer-top {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.site-footer .footer-brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-footer .footer-brand-title i {
+  color: #ffffff !important;
+}
+
+.site-footer .footer-desc {
+  color: #e2e8f0 !important;
+  font-size: 0.82rem;
+  max-width: 580px;
+  margin-bottom: 6px;
+}
+
+.site-footer .author-title {
+  color: #e2e8f0 !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.site-footer .footer-social-links {
+  font-size: 0.82rem;
+  color: #e2e8f0 !important;
+}
+
+.site-footer .footer-social-links a {
+  color: #90caf9 !important;
+  text-decoration: underline !important;
+  font-weight: 600;
+  margin-left: 6px;
+  transition: color 0.2s;
+}
+
+.site-footer .footer-social-links a:hover {
+  color: #ffffff !important;
+}
+
+.site-footer .footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  font-size: 0.8rem;
+  color: #e2e8f0 !important;
+}
+
+@media (min-width: 640px) {
+  .site-footer .footer-bottom {
+    flex-direction: row;
+  }
+}
+
+.site-footer .motto-tag {
+  font-weight: 600;
+  color: #ffffff !important;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 0 16px;
   }
 
-  .hero-title {
-    font-size: 1.8rem;
-    padding: 0 10px;
+  .navbar {
+    padding: 8px 0 !important;
   }
 
-  .hero-subtitle {
-    font-size: 0.95rem;
-    padding: 0 10px;
-  }
-
-  .category-nav {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-  }
-
-  .category-card {
-    padding: 15px 10px;
-  }
-
-  .category-card h3 {
-    font-size: 1.1rem;
-  }
-
-  .category-card p {
-    font-size: 0.8rem;
-  }
-
-  .statistics {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 15px;
-    gap: 10px;
-  }
-
-  .stat-number {
-    font-size: 1.5rem;
-  }
-
-  .stat-label {
-    font-size: 0.8rem;
-  }
-
-  .term-list {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .term-card {
-    padding: 15px;
-  }
-
-  .term-card h3 {
-    font-size: 1.2rem;
-  }
-
-  .term-card p {
-    font-size: 0.85rem;
-  }
-
-  .quick-links {
-    grid-template-columns: 1fr;
-  }
-
-  .nav-links {
-    gap: 8px;
-  }
-
-  .nav-links a {
-    font-size: 0.9rem;
-    padding: 4px 8px;
+  .navbar .container {
+    padding: 0 16px !important;
   }
 
   .logo {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 0.95rem !important;
   }
 
-  section h2 {
-    font-size: 1.5rem !important;
-    margin: 30px 0 20px !important;
+  .nav-links {
+    gap: 3px !important;
   }
 
-  /* ✨ 核心优化 3：手机/平板端清空手动指定的列宽，交给浏览器 100% 自动按内容多寡伸缩分配 */
-  table th:nth-child(5) {
-    width: auto;
+  .nav-links a {
+    font-size: 0.78rem !important;
+    padding: 4px 7px !important;
   }
 
-  th,
-  td {
-    padding: 10px 3px; /* 移动端压减内边距，释放更多横向自适应空间 */
-    font-size: 0.78rem; /* 稍微压缩字体，给多国语言列留出呼吸空间 */
-  }
-  .notes {
+  th, td {
+    padding: 10px 3px;
     font-size: 0.78rem;
   }
 }
 
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
+@media (max-width: 360px) {
+  .logo span {
+    display: none !important;
   }
-
-  .hero-title {
-    font-size: 1.6rem;
-  }
-
-  .hero-section {
-    padding: 30px 0;
-  }
-
-  .category-nav {
-    grid-template-columns: 1fr;
-  }
-
-  .statistics {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .navbar .container {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .search-box input {
-    padding: 10px 12px;
-    padding-left: 40px;
-    font-size: 0.9rem;
-  }
-
-  .container {
-    padding: 0 10px;
-  }
-
-  section h2 {
-    font-size: 1.4rem !important;
-  }
-
-  .category-card h3 {
-    font-size: 1.1rem;
-  }
-
-  /* ✨ 核心优化 4：针对小屏幕超窄手机的极端情况优化 */
-  th,
-  td {
+  th, td {
     padding: 8px 2px;
     font-size: 0.72rem;
-  }
-  .notes {
-    font-size: 0.72rem;
-  }
-  .location-type {
-    font-size: 0.68rem;
-    padding: 1px 2px;
-  }
-}
-
-@media (max-width: 360px) {
-  html {
-    font-size: 13px;
-  }
-
-  .hero-title {
-    font-size: 1.4rem;
-  }
-
-  .category-icon {
-    font-size: 1.8rem;
-  }
-
-  .stat-number {
-    font-size: 1.3rem;
-  }
-
-  .nav-links a {
-    font-size: 0.8rem;
-    padding: 3px 6px;
   }
 }
