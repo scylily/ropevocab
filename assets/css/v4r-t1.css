@@ -164,6 +164,8 @@ table {
 }
 
 thead {
+  font-size: 0.85rem;
+  color: #667eea;
   background: #f8f9fa;
 }
 
