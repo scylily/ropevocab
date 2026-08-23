@@ -1,7 +1,7 @@
 /* ==============================================================================
    ROPEVOCAB PROJECT - LOCATIONS & ROLES TABLES STYLE
    File: assets/css/v4r-t1.css
-   版本：v6.6.1 单一样式可信源整理版
+   版本：v6.6.2 (补全页脚 Flex 布局 + 中文名加粗 + 小屏 16px 留白)
    ============================================================================== */
 
 * {
@@ -160,15 +160,14 @@ a.logo {
 table {
   width: 100% !important;
   border-collapse: collapse !important;
-  table-layout: fixed !important; /* 锁定比例防止长文本挤压破形 */
+  table-layout: fixed !important;
 }
 
 thead {
   background: #f8f9fa;
 }
 
-th,
-td {
+th, td {
   padding: 14px 10px;
   border-bottom: 1px solid #e9ecef;
   vertical-align: middle;
@@ -178,42 +177,22 @@ tbody tr:hover {
   background: #f8f9fa;
 }
 
-/* 桌面端列宽精准黄金分割 (合计 100%) */
-th.v4r-col-zh {
-  width: 16% !important;
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-th.v4r-col-en {
-  width: 24% !important;
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-th.v4r-col-ja {
-  width: 16% !important;
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-th.v4r-col-roma {
-  width: 18% !important;
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-th.v4r-col-notes {
-  width: 13% !important;
-  text-align: center !important;
-}
-th.v4r-col-type {
-  width: 13% !important;
-  text-align: center !important;
-}
+/* 桌面端列宽黄金分割 (合计 100%) */
+th.v4r-col-zh   { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
+th.v4r-col-en   { width: 24% !important; text-align: left !important; padding-left: 16px !important; }
+th.v4r-col-ja   { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
+th.v4r-col-roma { width: 18% !important; text-align: left !important; padding-left: 16px !important; }
+th.v4r-col-notes{ width: 13% !important; text-align: center !important; }
+th.v4r-col-type { width: 13% !important; text-align: center !important; }
 
-/* 文本与排版控制 */
+/* 文本与排版控制：强制 PC 端中文名称加粗 */
 .chinese-name {
   text-align: left !important;
-  padding-left: 16px !important; /* 保证与卡片左壁保持安全比例间距 */
-  font-weight: 700 !important;
+  padding-left: 16px !important;
+  font-weight: 700 !important; /* PC 端中文名称加粗 */
   color: #0f172a !important;
+  word-break: normal !important;
+  word-wrap: break-word !important;
 }
 
 .english-name,
@@ -243,32 +222,14 @@ th.v4r-col-type {
   white-space: nowrap !important;
 }
 
-.type-primary {
-  background: #e8f5e9;
-  color: #2e7d32;
-} /* 绿 */
-.type-support {
-  background: #e3f2fd;
-  color: #1565c0;
-} /* 蓝 */
-.type-decorative {
-  background: #fff3e0;
-  color: #ef6c00;
-} /* 橙 */
-.type-danger {
-  background: #ffebee;
-  color: #c62828;
-} /* 红 */
+.type-primary    { background: #e8f5e9; color: #2e7d32; } /* 绿 */
+.type-support    { background: #e3f2fd; color: #1565c0; } /* 蓝 */
+.type-decorative { background: #fff3e0; color: #ef6c00; } /* 橙 */
+.type-danger     { background: #ffebee; color: #c62828; } /* 红 */
 
-.v4r-desktop-header {
-  display: inline !important;
-}
-.v4r-mobile-header {
-  display: none !important;
-}
-.v4r-mobile-lang-stack {
-  display: none;
-}
+.v4r-desktop-header { display: inline !important; }
+.v4r-mobile-header  { display: none !important; }
+.v4r-mobile-lang-stack { display: none; }
 
 /* ==========================================================================
    手风琴抽屉行配套 CSS（统一大标题主主题蓝 #667eea 视觉）
@@ -287,10 +248,7 @@ th.v4r-col-type {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition:
-    max-height 0.35s ease,
-    opacity 0.25s ease,
-    padding 0.25s ease;
+  transition: max-height 0.35s ease, opacity 0.25s ease, padding 0.25s ease;
   padding: 0 16px;
 }
 
@@ -303,7 +261,7 @@ th.v4r-col-type {
 .v4r-light-note-box {
   background: transparent !important;
   border: none !important;
-  border-left: 4px solid #667eea !important; /* 主主题蓝高亮竖杠 */
+  border-left: 4px solid #667eea !important;
   color: #334155 !important;
   padding: 4px 0 4px 14px !important;
   margin: 4px 0 !important;
@@ -320,7 +278,7 @@ th.v4r-col-type {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #667eea !important; /* 与表格大标题 h2 统一蓝字 */
+  color: #667eea !important;
 }
 
 .note-content {
@@ -328,7 +286,6 @@ th.v4r-col-type {
   word-break: break-word !important;
 }
 
-/* 展开控制按钮 */
 .btn-v4r-note-toggle {
   background: #f1f5f9;
   color: #667eea;
@@ -361,7 +318,6 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
   transform: rotate(180deg);
 }
 
-/* 页脚与通用返回按钮 */
 .back-button {
   display: inline-block;
   background: #667eea;
@@ -373,12 +329,108 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
   margin: 20px 0;
 }
 
+/* ==========================================================================
+   全量还原补全：页脚 (Footer) 完整 Flex 布局系统
+   ========================================================================== */
+
 .site-footer {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: rgba(255, 255, 255, 0.9) !important;
   padding: 40px 0 25px;
   margin-top: 60px;
   font-size: 0.88rem;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+  width: 100%;
+}
+
+.site-footer .footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.site-footer .footer-top {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  justify-content: space-between;
+  padding-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (min-width: 768px) {
+  .site-footer .footer-top {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.site-footer .footer-brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-footer .footer-brand-title i {
+  color: #ffffff !important;
+}
+
+.site-footer .footer-desc {
+  color: #e2e8f0 !important;
+  font-size: 0.82rem;
+  max-width: 580px;
+  margin-bottom: 6px;
+}
+
+.site-footer .author-title {
+  color: #e2e8f0 !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.site-footer .footer-social-links {
+  font-size: 0.82rem;
+  color: #e2e8f0 !important;
+}
+
+.site-footer .footer-social-links a {
+  color: #90caf9 !important;
+  text-decoration: underline !important;
+  font-weight: 600;
+  margin-left: 6px;
+  transition: color 0.2s;
+}
+
+.site-footer .footer-social-links a:hover {
+  color: #ffffff !important;
+}
+
+.site-footer .footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  font-size: 0.8rem;
+  color: #e2e8f0 !important;
+}
+
+@media (min-width: 640px) {
+  .site-footer .footer-bottom {
+    flex-direction: row;
+  }
+}
+
+.site-footer .motto-tag {
+  font-weight: 600;
+  color: #ffffff !important;
+  letter-spacing: 1px;
 }
 
 /* ==========================================================================
@@ -386,42 +438,23 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
    ========================================================================== */
 
 @media (max-width: 768px) {
-  /* 外层容器边距 */
   .container {
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
 
-  /* 彻底关闭横向滚动 */
   .table-responsive {
     overflow-x: hidden !important;
   }
 
-  /* 列宽动态重分配（合计 100%） */
-  th.v4r-col-zh {
-    width: 56% !important;
-    padding-left: 16px !important;
-  }
-  th.v4r-col-notes {
-    width: 22% !important;
-  }
-  th.v4r-col-type {
-    width: 22% !important;
-    padding-right: 16px !important;
-  }
+  th.v4r-col-zh   { width: 56% !important; padding-left: 16px !important; }
+  th.v4r-col-notes{ width: 22% !important; }
+  th.v4r-col-type { width: 22% !important; padding-right: 16px !important; }
 
-  /* 切换表头与隐藏平行语言列 */
-  .v4r-desktop-header {
-    display: none !important;
-  }
-  .v4r-mobile-header {
-    display: inline !important;
-  }
-  .v4r-desktop-col {
-    display: none !important;
-  }
+  .v4r-desktop-header { display: none !important; }
+  .v4r-mobile-header  { display: inline !important; }
+  .v4r-desktop-col    { display: none !important; }
 
-  /* 显示移动端多语言 Stack 层级 */
   .v4r-mobile-lang-stack {
     display: block;
     margin-top: 4px;
@@ -431,41 +464,27 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
     font-weight: 400;
   }
 
-  .v4r-mobile-lang-stack .en-str {
-    display: block;
-    color: #475569;
-    word-break: break-word;
-  }
-  .v4r-mobile-lang-stack .ja-str {
-    display: block;
-    color: #94a3b8;
-    font-size: 0.74rem;
-    word-break: break-word;
-  }
+  .v4r-mobile-lang-stack .en-str { display: block; color: #475569; word-break: break-word; }
+  .v4r-mobile-lang-stack .ja-str { display: block; color: #94a3b8; font-size: 0.74rem; word-break: break-word; }
 
-  /* 第一列（中文表述）左边缘留白 */
   td.chinese-name {
     text-align: left !important;
-    padding-left: 16px !important; /* 保证与卡片左壁保持安全比例间距 */
+    padding-left: 16px !important;
     font-weight: 700 !important;
     color: #0f172a !important;
     font-size: 0.92rem !important;
   }
 
-  /* 最后一列（类型胶囊）右边缘留白 */
   td:last-child {
-    padding-right: 16px !important; /* 保证胶囊不紧贴卡片右壁 */
+    padding-right: 16px !important;
   }
 
-  th,
-  td {
+  th, td {
     padding-top: 12px !important;
     padding-bottom: 12px !important;
   }
 
-  .location-type,
-  .v4r-type-badge,
-  .btn-v4r-note-toggle {
+  .location-type, .v4r-type-badge, .btn-v4r-note-toggle {
     font-size: 0.75rem !important;
     padding: 3px 8px !important;
   }
