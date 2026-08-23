@@ -33,7 +33,6 @@
         </a>
         <div class="nav-links">
           <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
-          <!-- 动态分类名称高亮标签 -->
           <a class="active" id="nav-active-cat-tag"><i class="fas fa-folder-open"></i> 分类详情</a>
         </div>
       </div>
@@ -86,17 +85,17 @@
       </div>
     </main>
 
-    <!-- 国内高可用 CDN + 自动备用降级 -->
+    <!-- 高可用 CDN 下沉引入 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/supabase-js/2.39.8/supabase.min.js"></script>
     <script>
       if (typeof supabase === 'undefined') {
         document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
       }
     </script>
-    <script src="/assets/js/supabase-config.js"></script>
-    <script src="/assets/js/term-renderer.js"></script>
-    <!-- 子页面引入路径补全 ../ -->
-    <script src="/assets/js/footer.js"></script>
+    <!-- 防御性修正：使用相对路径 ../ 确保 GitHub Pages / 本地运行皆可加载 -->
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/term-renderer.js"></script>
+    <script src="../assets/js/footer.js"></script>
   </body>
 
 </html>
