@@ -6,7 +6,7 @@
  */
 
 // 1. Supabase 项目凭证
-const SUPABASE_URL = "https://gfhgwqjvxyyanumbwibe.supabase.co";
+const SUPABASE_URL = "https://supabase.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
 
 // 防御性校验
