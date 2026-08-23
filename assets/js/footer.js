@@ -11,9 +11,6 @@
 (function () {
   'use strict';
 
-  /**
-   * 1. 自动注入高权重 CSS 样式 (html body 提权，免疫一切外部 CSS 加载顺序干扰)
-   */
   function injectFooterStyles() {
     if (document.getElementById('v4r-unified-footer-styles')) return;
 
@@ -153,7 +150,7 @@
           <div class="footer-top">
             <div class="footer-brand">
               <div class="footer-brand-title">
-                <i class="fas fa-book"></i> 常用绳缚词汇库
+                常用绳缚词汇库
               </div>
               <p class="footer-desc">本指南致力于为同好提供严谨、理智的安全指引，倡导 SSC（安全、理智、知情同意）与 RACK（风险认知下的知情同意）原则。</p>
               <p class="footer-desc">请时刻谨记：生命安全高于一切，风险只能降低，无法彻底消除。</p>
