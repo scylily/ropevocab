@@ -170,7 +170,14 @@
       if (groupName.includes('身体')) groupIcon = 'fa-child';
       if (groupName.includes('家居')) groupIcon = 'fa-home';
       if (groupName.includes('建筑')) groupIcon = 'fa-building';
-      if (groupName.includes('角色') || groupName.includes('实践者')) groupIcon = 'fa-user-tag';
+      if (groupName.includes('自然')) groupIcon = 'fa-tree';
+      if (groupName.includes('实践者')) groupIcon = 'fa-user-tag';
+      if (groupName.includes('参与者')) groupIcon = 'fa-user-check';
+      if (groupName.includes('关系')) groupIcon = 'fa-user-friends';
+      if (groupName.includes('动态')) groupIcon = 'fa-user-clock';
+      if (groupName.includes('活动')) groupIcon = 'fa-user-edit';
+      if (groupName.includes('节庆')) groupIcon = 'fa-calendar-alt';
+      if (groupName.includes('社区')) groupIcon = 'fa-city';
 
       fullHtml += `
         <div class="locations-table">
