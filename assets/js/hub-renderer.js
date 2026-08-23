@@ -254,7 +254,7 @@
                 <div class="v4r-drawer-container">
                   <div class="v4r-light-note-box ${isDangerNote ? 'danger-theme' : ''}">
                     <div class="note-title">
-                      <i class="fas fa-exclamation-triangle"></i> 安全与操作备注说明
+                      <i class="fas fa-exclamation-triangle"></i> 备注说明
                     </div>
                     <div class="note-content">${notesContent}</div>
                   </div>
