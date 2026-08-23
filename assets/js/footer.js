@@ -1,8 +1,7 @@
 /**
  * ROPEVOCAB PROJECT - UNIFIED FOOTER COMPONENT
  * File: assets/js/footer.js
- * 功能：全站统一页脚组件（提权防覆盖 + 消除下划线 + 一站式注入）
- * 修复：升级 CSS 选择器权重至 html body .site-footer，免疫 GitHub Pages 环境下外部 CSS 的加载覆盖
+ * 功能：全站统一页脚组件（包含自动智能计算关于我们等页面的跳转路径）
  *
  * @version 7.0.2
  * @author Senior Architect (Defense Grade)
@@ -11,6 +10,28 @@
 (function () {
   'use strict';
 
+  /**
+   * 1. 智能计算 pages/ 目录下页面的跳转相对路径
+   * 无论在 index.html、pages/*.html 还是 admin/*.html 均能精准定位
+   */
+  function getPagesUrl(pageName) {
+    const path = window.location.pathname.toLowerCase();
+
+    if (path.includes('/pages/')) {
+      // 当前就在 pages/ 文件夹内部（如 locations.html）
+      return pageName;
+    } else if (path.includes('/admin/') || path.includes('/ibti/')) {
+      // 在 admin/ 或 IBTI/ 子目录下
+      return '../pages/' + pageName;
+    } else {
+      // 在外层根目录（如 index.html）
+      return 'pages/' + pageName;
+    }
+  }
+
+  /**
+   * 2. 自动注入页脚 CSS 样式（html body 提权）
+   */
   function injectFooterStyles() {
     if (document.getElementById('v4r-unified-footer-styles')) return;
 
@@ -96,7 +117,6 @@
         color: #90caf9 !important;
         text-decoration: none !important;
         font-weight: 600 !important;
-        margin-left: 6px !important;
         transition: color 0.2s !important;
       }
 
@@ -143,7 +163,13 @@
     document.head.appendChild(style);
   }
 
+  /**
+   * 3. 构建标准统一的 Footer HTML 结构（使用 getPagesUrl 动态嵌入关于我们链接）
+   */
   function buildFooterHtml() {
+    // 动态算出来的“关于我们”跳转链接
+    const aboutUrl = getPagesUrl('about.html');
+
     return `
       <footer class="site-footer">
         <div class="footer-container">
@@ -152,15 +178,14 @@
               <div class="footer-brand-title">
                 常用绳缚词汇库
               </div>
-              <p class="footer-desc">我们是绳缚游戏的爱好者，致力于整理和分享专业实用的绳缚知识。</p>
-              <p class="footer-desc">众多绳缚术语，中、日、英多语对照。</p>
+              <p class="footer-desc">致力于整理与分享专业实用的绳缚知识，探索绳缚艺术与文化。</p>
+              <p class="footer-desc">支持中、英、日多语对照，助力理性沟通与安全实践。</p>
             </div>
             <div class="footer-contact">
               <div class="author-title">作者：绳声蛮 绳声点点</div>
               <div class="footer-social-links">
-                联系 X (Twitter):
-                <a href="https://x.com/Ropeart_Emon" target="_blank" rel="noopener">@Ropeart_Emon</a>
-                <a href="https://x.com/Rdooprea" target="_blank" rel="noopener">@Rdooprea</a>
+                <!-- 动态安全的关于我们跳转链接 -->
+                <a href="${aboutUrl}" style="margin-right: 0px;">关于我们</a>
               </div>
             </div>
           </div>
@@ -173,6 +198,9 @@
     `;
   }
 
+  /**
+   * 4. 挂载执行器
+   */
   function renderFooter() {
     injectFooterStyles();
 
