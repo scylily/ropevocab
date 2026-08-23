@@ -1,10 +1,10 @@
 /**
- * ropevocab - Hub 渲染引擎 (hub-renderer.js) - v6.5.1 响应式防坍塌修复版
- * 1. 彻底解决移动端因 3 列隐藏导致的列宽 42% 坍塌与展开抽屉时的二次重绘错位
- * 2. 引入 Responsive Column Classes 架构，实现桌面端(6列:100%)与移动端(3列:100%)解耦适配
- * 3. 像素级统一 th 与 td 内边距，彻底消除表头与内容的水平错位
+ * ropevocab - Hub 渲染引擎 (hub-renderer.js) - v6.5.2 绝对门禁加固版
+ * 1. 增加严格 Guard Clause，非 locations.html/roles.html 页面绝对静默退出
+ * 2. 彻底解决越界加载导致的 category.html / term.html 渲染挂起问题
+ * 3. 保持桌面(6列)与移动(3列)黄金比例与平滑抽屉动画
  *
- * @version 6.5.1
+ * @version 6.5.2
  * @author Senior Architect (Defense Grade)
  */
 
@@ -14,19 +14,35 @@
   const SUPABASE_URL = "https://gfhgwqjvxyyanumbwibe.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
 
+  /**
+   * 防御性页面类型检测 (Strict Guard Clause)
+   * 必须精确识别当前页面，非 locations/roles 必须返回 null，防止越界污染 category/term 等页面
+   */
+  function detectPageType() {
+    const path = window.location.pathname.toLowerCase();
+    const title = (document.title || '').toLowerCase();
+
+    const isRoles = path.includes('roles') || title.includes('角色');
+    const isLocations = path.includes('locations') || title.includes('场地') || title.includes('部位');
+
+    if (isRoles) return 'roles';
+    if (isLocations) return 'locations';
+
+    // 致命隐患防御：既非 roles 也非 locations 时，必须显式返回 null
+    return null;
+  }
+
   function injectCleanThemeStyles() {
     if (document.getElementById('v4r-clean-theme-styles')) return;
     const style = document.createElement('style');
     style.id = 'v4r-clean-theme-styles';
     style.textContent = `
-      /* --- 表格布局防重绘抖动基准 --- */
       .locations-table table {
         width: 100% !important;
         table-layout: fixed !important;
         border-collapse: collapse !important;
       }
 
-      /* --- 桌面端 (>768px) 6列黄金宽度比例 (合计 100%) --- */
       th.v4r-col-zh { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
       th.v4r-col-en { width: 24% !important; text-align: left !important; padding-left: 16px !important; }
       th.v4r-col-ja { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
@@ -41,7 +57,6 @@
       .v4r-desktop-header { display: inline !important; }
       .v4r-mobile-lang-stack { display: none; }
 
-      /* --- 抽屉行样式与平滑动画 --- */
       .v4r-drawer-row { background: #fafafa !important; border-bottom: 1px solid #e9ecef !important; }
       .v4r-drawer-row.d-none { display: none !important; }
       .v4r-drawer-container {
@@ -69,7 +84,6 @@
       .v4r-light-note-box.danger-theme .note-title { color: #dc2626 !important; }
       .note-content { color: #475569 !important; word-break: break-word !important; }
 
-      /* --- 展开按钮与胶囊标签 --- */
       .btn-v4r-note-toggle {
         background: #f1f5f9; color: #667eea; border: 1px solid #cbd5e1;
         padding: 3px 9px; font-size: 0.78rem; font-weight: 600;
@@ -90,9 +104,7 @@
         white-space: nowrap !important; display: inline-block !important;
       }
 
-      /* --- 移动端 (<=768px) 强制 3 列响应式适配重构 (合计 100%) --- */
       @media (max-width: 768px) {
-        /* 列宽防塌陷重新分配 */
         th.v4r-col-zh { width: 56% !important; padding-left: 10px !important; }
         th.v4r-col-notes { width: 22% !important; }
         th.v4r-col-type { width: 22% !important; }
@@ -158,7 +170,7 @@
 
     } else {
       drawerRow.classList.remove('d-none');
-      void drawerRow.offsetWidth; // 触发 Reflow 保证 CSS transition 生效
+      void drawerRow.offsetWidth;
 
       drawerRow.classList.add('is-active');
       masterRow.classList.add('is-expanded');
@@ -259,7 +271,6 @@
       if (groupName.includes('建筑')) groupIcon = 'fa-building';
       if (groupName.includes('角色') || groupName.includes('实践者')) groupIcon = 'fa-user-tag';
 
-      // ---【彻底解耦内联 style 宽度，改由 CSS Class 掌控 桌面/移动 响应式比例】---
       fullHtml += `
         <div class="locations-table">
           <div class="table-header">
@@ -271,7 +282,7 @@
                 <tr>
                   <th class="v4r-col-zh">
                     <span class="v4r-desktop-header">中文表述</span>
-                    <span class="v4r-mobile-header">名称 (中/英/日)</span>
+                    <span class="v4r-mobile-header">名称 (中/英/日/罗马音)</span>
                   </th>
                   <th class="v4r-col-en v4r-desktop-col">英文表述</th>
                   <th class="v4r-col-ja v4r-desktop-col">日文表述</th>
@@ -317,23 +328,23 @@
     return null;
   }
 
-  function detectPageType() {
-    const path = window.location.pathname.toLowerCase();
-    if (path.includes('roles') || document.title.includes('角色')) return 'roles';
-    return 'locations';
-  }
-
   function initEngine() {
+    // 致命隐患防御 1：检测页面类型，若非 Hub 页面直接中断执行，绝对不污染 category/term 等页面
+    const pageType = detectPageType();
+    if (!pageType) {
+      return;
+    }
+
     injectCleanThemeStyles();
 
-    const pageType = detectPageType();
     const tableName = pageType === 'locations' ? 'ropevocab_locations' : 'ropevocab_roles';
-    const cacheKey = `ropevocab_native_cache_v651_${tableName}`;
+    const cacheKey = `ropevocab_native_cache_v652_${tableName}`;
 
     const loadingEl = document.getElementById('table-loading');
     const errorEl = document.getElementById('locations-error') || document.getElementById('roles-error');
     const tableEl = document.getElementById('locations-tables-container') || document.getElementById('roles-tables-container') || document.getElementById('table-container');
 
+    // 致命隐患防御 2：DOM 节点匹配不完全时拒绝静默清空
     if (!tableEl) return;
 
     if (typeof window.swrFetch !== 'function') {
@@ -382,6 +393,9 @@
   }
 
   function bootstrap() {
+    // 防御检查：若不是 locations/roles 页，直接中断不注册定时器
+    if (!detectPageType()) return;
+
     let attempts = 0;
     const check = () => {
       const client = getOrInitSupabaseClient();
