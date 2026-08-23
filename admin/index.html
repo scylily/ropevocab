@@ -114,14 +114,14 @@
         margin-bottom: 15px;
       }
 
-      /* 管理后台主布局（改为纵向 Stack） */
+      /* 管理后台主布局 */
       .dashboard-layout {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
       }
 
-      /* 顶部全新 Header 导航栏 */
+      /* 顶部 Header 导航栏 */
       .admin-header {
         height: 64px;
         background: var(--header-bg);
@@ -407,23 +407,72 @@
         padding: 30px;
         border-radius: 12px;
         width: 90%;
-        max-width: 700px;
+        max-width: 800px;
         max-height: 90vh;
         overflow-y: auto;
       }
 
-      .builder-row {
+      /* 动态项目块 (Block) 卡片样式 */
+      .block-card {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s ease;
+      }
+
+      .block-card:hover {
+        border-color: #a5b4fc;
+      }
+
+      .block-header {
         display: flex;
         gap: 10px;
-        margin-bottom: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+        background: #f8fafc;
+        padding: 8px 12px;
+        border-radius: 6px;
+      }
+
+      .block-title-input {
+        flex: 1;
+        font-weight: bold;
+        color: #1e293b;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+
+      .block-title-input:focus {
+        border-color: var(--primary);
+        outline: none;
+      }
+
+      .block-type-select {
+        padding: 6px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        background: white;
+      }
+
+      .block-actions {
+        display: flex;
+        gap: 5px;
+      }
+
+      .block-item-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
         align-items: center;
       }
 
-      .builder-row input {
+      .block-item-row input {
         flex: 1;
-        padding: 8px;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
       }
 
       .builder-image-card {
@@ -456,21 +505,6 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
-      }
-
-      .flex-gap {
-        display: flex;
-        gap: 8px;
-      }
-
-      .btn-upload {
-        background: #475569;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.8rem;
-        white-space: nowrap;
       }
     </style>
   </head>
@@ -646,11 +680,12 @@
       </main>
     </div>
 
-    <!-- 词条编辑弹窗 -->
+    <!-- 词条编辑弹窗（已升级平假名与无限自定义动态区块） -->
     <div id="modal-term-form" class="modal-overlay">
       <div class="modal-body-form">
         <h3 id="modal-term-title" style="margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">词条编辑</h3>
         <form id="form-term" onsubmit="saveTermForm(event)">
+
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="form-group">
               <label>词条标识 ID (如: agura, sct)</label>
@@ -677,17 +712,22 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-            <div class="form-group">
-              <label>日文表述 (name_jp)</label>
-              <input type="text" id="term-field-name-jp" class="input-control" />
+          <!-- 日语多音轨表达（日文汉字 + 平假名 + 罗马音） + 排序 -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+            <div class="form-group" style="margin: 0;">
+              <label>日文汉字 (name_jp)</label>
+              <input type="text" id="term-field-name-jp" class="input-control" placeholder="縛り" />
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin: 0;">
+              <label>平假名 (hiragana)</label>
+              <input type="text" id="term-field-hiragana" class="input-control" placeholder="しばり" />
+            </div>
+            <div class="form-group" style="margin: 0;">
               <label>罗马音 (romaji)</label>
-              <input type="text" id="term-field-romaji" class="input-control" />
+              <input type="text" id="term-field-romaji" class="input-control" placeholder="Shibari" />
             </div>
-            <div class="form-group">
-              <label>排序权重 (`sort_order` 数字)</label>
+            <div class="form-group" style="margin: 0;">
+              <label>排序权重 (sort_order)</label>
               <input type="number" id="term-field-sort" class="input-control" value="10" />
             </div>
           </div>
@@ -697,33 +737,23 @@
             <input type="text" id="term-field-badge" class="input-control" placeholder="日式绳缚盘腿坐姿缚法" />
           </div>
 
-          <div class="form-group">
-            <label>定义与概述 (description)</label>
-            <textarea id="term-field-description" class="input-control" rows="4"></textarea>
+          <!-- 核心升级：自定义名称 / 排序 / 增减的内容项目块 -->
+          <div class="form-group" style="margin-top: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;">
+              <label style="font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0;">
+                <i class="fas fa-layer-group" style="color: var(--primary);"></i> 词条内容项目块管理 (支持自定义标题/增减/排序)
+              </label>
+              <button type="button" class="btn-sm btn-add" onclick="addCustomBlockSection()">
+                <i class="fas fa-plus-circle"></i> 新增项目块
+              </button>
+            </div>
+
+            <!-- 动态项目块放置容器 -->
+            <div id="container-dynamic-blocks" style="display: flex; flex-direction: column; gap: 16px;"></div>
           </div>
 
-          <div class="form-group">
-            <label style="display: flex; justify-content: space-between; align-items: center;">
-              <span>技术特征 (JSONB 数组)</span>
-              <button type="button" class="btn-sm btn-edit" onclick="addDynamicInputRow('container-features-builder')">+ 新增特征</button>
-            </label>
-            <div id="container-features-builder" style="margin-top: 8px;"></div>
-          </div>
-
-          <div class="form-group">
-            <label style="display: flex; justify-content: space-between; align-items: center;">
-              <span>主要应用场景 (JSONB 数组)</span>
-              <button type="button" class="btn-sm btn-edit" onclick="addDynamicInputRow('container-apps-builder')">+ 新增场景</button>
-            </label>
-            <div id="container-apps-builder" style="margin-top: 8px;"></div>
-          </div>
-
-          <div class="form-group">
-            <label>安全注意事项 (safety_notes)</label>
-            <textarea id="term-field-safety" class="input-control" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
+          <!-- 多图画廊与字幕管理 -->
+          <div class="form-group" style="margin-top: 25px;">
             <label style="display: flex; justify-content: space-between; align-items: center;">
               <span>多图画廊与字幕管理</span>
               <button type="button" class="btn-sm btn-edit" onclick="addImageRowBuilder()">+ 添加图片</button>
@@ -932,6 +962,136 @@
         document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
       }
     </script>
+
+    <!-- 动态项目块构建核心辅助脚本 -->
+    <script>
+      const DEFAULT_PRESET_BLOCKS = [
+        { title: '定义与概述', type: 'text', content: '' },
+        { title: '技术特征', type: 'list', items: [''] },
+        { title: '主要应用场景', type: 'list', items: [''] },
+        { title: '安全注意事项', type: 'text', content: '' }
+      ];
+
+      function addCustomBlockSection(data = null) {
+        const container = document.getElementById('container-dynamic-blocks');
+        if (!container) return;
+
+        const blockId = 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+        const title = data ? data.title : '自定义项目块';
+        const type = data ? data.type : 'list';
+        const content = data && data.content ? data.content : '';
+        const items = data && data.items ? data.items : [''];
+
+        const blockCard = document.createElement('div');
+        blockCard.className = 'block-card';
+        blockCard.id = blockId;
+
+        blockCard.innerHTML = `
+          <div class="block-header">
+            <i class="fas fa-grip-vertical" style="color: #94a3b8; cursor: move;"></i>
+            <input type="text" class="block-title-input" value="${title}" placeholder="项目块标题 (如: 历史背景)" />
+
+            <select class="block-type-select" onchange="switchBlockType('${blockId}', this.value)">
+              <option value="list" ${type === 'list' ? 'selected' : ''}>📋 列表清单 (Array)</option>
+              <option value="text" ${type === 'text' ? 'selected' : ''}>📝 长文本段落 (Text)</option>
+            </select>
+
+            <div class="block-actions">
+              <button type="button" class="btn-sm btn-reorder" onclick="moveBlock('${blockId}', -1)" title="上移"><i class="fas fa-arrow-up"></i></button>
+              <button type="button" class="btn-sm btn-reorder" onclick="moveBlock('${blockId}', 1)" title="下移"><i class="fas fa-arrow-down"></i></button>
+              <button type="button" class="btn-sm btn-danger" onclick="removeBlock('${blockId}')" title="删除整个块"><i class="fas fa-trash-can"></i></button>
+            </div>
+          </div>
+          <div class="block-body" id="body_${blockId}"></div>
+        `;
+
+        container.appendChild(blockCard);
+        renderBlockBody(blockId, type, { content, items });
+      }
+
+      function switchBlockType(blockId, type) {
+        renderBlockBody(blockId, type, { content: '', items: [''] });
+      }
+
+      function renderBlockBody(blockId, type, data) {
+        const bodyEl = document.querySelector(`#${blockId} .block-body`);
+        if (!bodyEl) return;
+
+        if (type === 'text') {
+          bodyEl.innerHTML = `
+            <textarea class="input-control block-text-content" rows="3" placeholder="请输入该项目块的具体说明文本...">${data.content || ''}</textarea>
+          `;
+        } else {
+          bodyEl.innerHTML = `
+            <div class="block-list-container" id="list_container_${blockId}"></div>
+            <button type="button" class="btn-sm btn-edit" style="margin-top: 6px;" onclick="addBlockListItem('${blockId}')">
+              + 新增列表项
+            </button>
+          `;
+          const listContainer = document.getElementById(`list_container_${blockId}`);
+          const items = data.items && data.items.length > 0 ? data.items : [''];
+          items.forEach(itemText => {
+            addBlockListItemRow(listContainer, itemText);
+          });
+        }
+      }
+
+      function addBlockListItem(blockId) {
+        const listContainer = document.getElementById(`list_container_${blockId}`);
+        if (listContainer) addBlockListItemRow(listContainer, '');
+      }
+
+      function addBlockListItemRow(container, value = '') {
+        const row = document.createElement('div');
+        row.className = 'block-item-row';
+        row.innerHTML = `
+          <input type="text" class="input-control block-list-item-val" value="${value}" placeholder="输入列表项内容..." />
+          <button type="button" class="btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
+        `;
+        container.appendChild(row);
+      }
+
+      function removeBlock(blockId) {
+        if (confirm('确定要删除这个项目块及其所有内容吗？')) {
+          const el = document.getElementById(blockId);
+          if (el) el.remove();
+        }
+      }
+
+      function moveBlock(blockId, direction) {
+        const el = document.getElementById(blockId);
+        if (!el) return;
+        if (direction === -1 && el.previousElementSibling) {
+          el.parentNode.insertBefore(el, el.previousElementSibling);
+        } else if (direction === 1 && el.nextElementSibling) {
+          el.parentNode.insertBefore(el.nextElementSibling, el);
+        }
+      }
+
+      function collectAllBlocksData() {
+        const blocks = [];
+        const cards = document.querySelectorAll('#container-dynamic-blocks .block-card');
+
+        cards.forEach(card => {
+          const title = card.querySelector('.block-title-input').value.trim();
+          const type = card.querySelector('.block-type-select').value;
+
+          if (type === 'text') {
+            const content = card.querySelector('.block-text-content').value;
+            blocks.push({ title, type, content });
+          } else {
+            const items = [];
+            card.querySelectorAll('.block-list-item-val').forEach(input => {
+              if (input.value.trim()) items.push(input.value.trim());
+            });
+            blocks.push({ title, type, items });
+          }
+        });
+
+        return blocks;
+      }
+    </script>
+
     <script src="../assets/js/supabase-config.js"></script>
     <script src="../assets/js/admin-engine.js"></script>
   </body>
