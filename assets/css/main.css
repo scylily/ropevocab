@@ -43,7 +43,7 @@ body {
 
 .navbar .container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 0 20px;
 }
@@ -424,7 +424,7 @@ body.home-page .navbar .container,
 
 /* 非首页导航两端靠齐 */
 .navbar .container {
-  justify-content: space-between;
+  justify-content: center;
 }
 
 /* 4. 页脚保留统一步调的渐变 */

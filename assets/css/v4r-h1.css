@@ -48,7 +48,7 @@ main, .main-content {
 
 .navbar .container {
   display: flex !important;
-  justify-content: space-between !important; /* 左居左，右靠右 */
+  justify-content: center !important; /* 左居左，右靠右 */
   align-items: center !important;
   padding: 0 20px !important;
   width: 100% !important;
@@ -85,7 +85,7 @@ a.logo:visited {
   gap: 10px;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
 }
 
 .nav-links a {

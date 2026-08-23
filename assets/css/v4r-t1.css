@@ -44,7 +44,7 @@ body {
 
 .navbar .container {
   display: flex !important;
-  justify-content: space-between !important;
+  justify-content: center !important;
   align-items: center !important;
   padding: 0 20px !important;
   width: 100% !important;
@@ -70,7 +70,7 @@ a.logo {
   gap: 10px;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
 }
 
 .nav-links a {

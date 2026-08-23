@@ -86,7 +86,7 @@ a.logo:visited {
   gap: 10px;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  justify-content: flex-end !important;
+  justify-content: center !important;
 }
 
 .nav-links a {
