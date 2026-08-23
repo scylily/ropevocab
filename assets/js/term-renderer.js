@@ -1,41 +1,207 @@
 /**
  * ==============================================================================
- * ROPEVOCAB PROJECT - TERM DETAIL RENDERER ENGINE
- * File: v2/assets/js/term-renderer.js
- * 功能：前台词条详情页渲染引擎（支持平假名 + 无限动态 custom_blocks 区块）
+ * ROPEVOCAB PROJECT - FRONTEND RENDERER ENGINE (term-renderer.js)
+ * File: assets/js/term-renderer.js
+ * 功能：前台词条系统综合渲染引擎（自动调度 category.html 分类页 与 term.html 详情页）
+ * 修复：100% 还原数据库原始 term.emoji，彻底移除任何图标篡改逻辑，解决Unicode乱码框框
  * ==============================================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initTermDetailPage();
+  const isCategoryPage = Boolean(document.getElementById('hub-loading') || document.getElementById('term-cards-grid'));
+  const isDetailPage = Boolean(document.getElementById('detail-loading') || document.getElementById('term-dynamic-sections'));
+
+  if (isCategoryPage) {
+    initCategoryPage();
+  } else if (isDetailPage) {
+    initTermDetailPage();
+  }
 });
 
+function getSupabaseClient() {
+  if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+    return window.supabaseClient;
+  }
+  if (typeof supabaseClient !== 'undefined' && supabaseClient && typeof supabaseClient.from === 'function') {
+    return supabaseClient;
+  }
+  return null;
+}
+
+// ==============================================================================
+// 1. 分类列表页渲染引擎 (category.html)
+// ==============================================================================
+async function initCategoryPage() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const catId = urlParams.get('id') || 'techniques';
+
+  const client = getSupabaseClient();
+  if (!client) {
+    showHubErrorState('Supabase SDK 未正确加载，请刷新页面重试');
+    return;
+  }
+
+  try {
+    const { data: category } = await client
+      .from('ropevocab_categories')
+      .select('*')
+      .eq('id', catId)
+      .maybeSingle();
+
+    const catTitle = category ? (category.title || category.name || catId) : catId;
+    const catDesc = category ? (category.description || '暂无该分类的详细说明记录。') : '常用绳缚技术与知识汇编分类。';
+
+    renderCategoryHeader(catTitle, catDesc);
+
+    let { data: terms, error: termErr } = await client
+      .from('ropevocab_terms')
+      .select('*')
+      .eq('category_id', catId)
+      .order('sort_order', { ascending: true });
+
+    if (termErr) {
+      const fallback = await client
+        .from('ropevocab_terms')
+        .select('*')
+        .eq('category_id', catId)
+        .order('id', { ascending: true });
+      terms = fallback.data;
+      termErr = fallback.error;
+    }
+
+    if (termErr) {
+      showHubErrorState(`无法获取分类词条: ${termErr.message}`);
+      return;
+    }
+
+    renderTermCardsGrid(terms || []);
+
+    const loadingEl = document.getElementById('hub-loading');
+    const mainEl = document.getElementById('hub-main-content');
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (mainEl) mainEl.style.display = 'block';
+
+  } catch (err) {
+    showHubErrorState(`数据加载异常: ${err.message}`);
+  }
+}
+
+function renderCategoryHeader(title, description) {
+  const breadcrumbEl = document.getElementById('breadcrumb-cat-title');
+  const titleEl = document.getElementById('hub-title');
+  const descEl = document.getElementById('hub-description');
+  const navTagEl = document.getElementById('nav-active-cat-tag');
+
+  if (breadcrumbEl) breadcrumbEl.textContent = title;
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = description;
+  if (navTagEl) navTagEl.innerHTML = `<i class="fas fa-folder-open"></i> ${escapeHtml(title)}`;
+}
+
+/**
+ * 核心渲染卡片网格函数（直通数据库原始 term.emoji，绝不覆盖篡改）
+ */
+function renderTermCardsGrid(terms) {
+  const gridContainer = document.getElementById('term-cards-grid');
+  if (!gridContainer) return;
+
+  if (!Array.isArray(terms) || terms.length === 0) {
+    gridContainer.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #64748b; background: #f8fafc; border-radius: 12px;">
+        <i class="fas fa-folder-open" style="font-size: 2.5rem; margin-bottom: 12px; color: #cbd5e1;"></i>
+        <p>该分类下暂无任何词条数据</p>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  terms.forEach((term) => {
+    // 1. 中文名称 (Middle)
+    const titleZh = escapeHtml(term.title || term.chinese_name || term.name || '-');
+
+    // 2. 英文名称 (Bottom) - 优先匹配英文字段
+    let titleEn = term.name_en || term.english_name || '';
+    if (!titleEn && term.subtitle_badge && /^[A-Za-z0-9\s\-_/]+$/.test(term.subtitle_badge.trim())) {
+      titleEn = term.subtitle_badge.trim();
+    }
+    if (!titleEn) {
+      titleEn = term.romaji || term.id || '';
+    }
+    const titleEnEscaped = escapeHtml(titleEn);
+
+    // 3. Emoji 图标 (Top) - 100% 读取数据库真实配置，绝不上门替换或修改！
+    const rawEmoji = (term.emoji || '').trim();
+    const emojiDisplay = rawEmoji ? escapeHtml(rawEmoji) : '🔖';
+
+    html += `
+      <a href="term.html?id=${escapeHtml(term.id)}" class="subcategory-card" style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 22px 16px;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        text-decoration: none;
+        transition: all 0.25s ease;
+      ">
+        <div class="card-icon" style="font-size: 2.2rem; margin-bottom: 10px; line-height: 1;">${emojiDisplay}</div>
+        <h3 style="margin: 0 0 6px 0; font-size: 1.12rem; font-weight: 700; color: #0f172a; line-height: 1.3;">${titleZh}</h3>
+        <p style="margin: 0; font-size: 0.86rem; color: #64748b; font-weight: 500; line-height: 1.2;">${titleEnEscaped}</p>
+      </a>
+    `;
+  });
+
+  gridContainer.innerHTML = html;
+}
+
+function showHubErrorState(msg) {
+  const loadingEl = document.getElementById('hub-loading');
+  const errorEl = document.getElementById('hub-error');
+  if (loadingEl) loadingEl.style.display = 'none';
+  if (errorEl) {
+    errorEl.style.display = 'block';
+    const msgEl = errorEl.querySelector('.error-message');
+    if (msgEl) msgEl.textContent = msg;
+  }
+}
+
+// ==============================================================================
+// 2. 词条详情页渲染引擎 (term.html)
+// ==============================================================================
 async function initTermDetailPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const termId = urlParams.get('id');
 
   if (!termId) {
-    showErrorState('未提供有效的词条 ID！');
+    showDetailErrorState('未提供有效的词条 ID！');
+    return;
+  }
+
+  const client = getSupabaseClient();
+  if (!client) {
+    showDetailErrorState('Supabase SDK 未正确初始化');
     return;
   }
 
   try {
-    // 1. 从 Supabase 查询词条详情数据
-    const { data: term, error } = await supabaseClient
+    const { data: term, error } = await client
       .from('ropevocab_terms')
       .select('*')
       .eq('id', termId)
       .maybeSingle();
 
     if (error || !term) {
-      showErrorState(error ? error.message : '未找到对应的词条数据！');
+      showDetailErrorState(error ? error.message : '未找到对应的词条数据！');
       return;
     }
 
-    // 2. 查询所属分类标题（用于 3 层面包屑）
     let categoryTitle = '分类列表';
     if (term.category_id) {
-      const { data: cat } = await supabaseClient
+      const { data: cat } = await client
         .from('ropevocab_categories')
         .select('title')
         .eq('id', term.category_id)
@@ -43,18 +209,17 @@ async function initTermDetailPage() {
       if (cat && cat.title) categoryTitle = cat.title;
     }
 
-    // 3. 渲染页面各个模块
     renderBreadcrumb(categoryTitle, term);
     renderTermHeader(term);
     renderMultilingualCards(term);
     renderDynamicSections(term);
     renderImageGallery(term);
 
-    // 4. 显示主界面
-    document.getElementById('detail-loading').style.display = 'none';
-    document.getElementById('detail-main-content').style.display = 'block';
+    const loadingEl = document.getElementById('detail-loading');
+    const mainEl = document.getElementById('detail-main-content');
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (mainEl) mainEl.style.display = 'block';
 
-    // 5. 绑定智能返回按钮
     const backBtn = document.getElementById('btn-back-history');
     if (backBtn) {
       backBtn.addEventListener('click', () => {
@@ -67,11 +232,10 @@ async function initTermDetailPage() {
     }
 
   } catch (err) {
-    showErrorState('数据加载过程发生异常: ' + err.message);
+    showDetailErrorState('数据加载过程发生异常: ' + err.message);
   }
 }
 
-// 渲染 3 层面包屑导航 (首页 > 分类 Hub > 词条标题)
 function renderBreadcrumb(categoryTitle, term) {
   const container = document.getElementById('breadcrumb-container');
   if (!container) return;
@@ -83,7 +247,6 @@ function renderBreadcrumb(categoryTitle, term) {
   `;
 }
 
-// 渲染页头标头
 function renderTermHeader(term) {
   const titleEl = document.getElementById('term-title');
   const badgeEl = document.getElementById('term-subtitle-badge');
@@ -91,7 +254,6 @@ function renderTermHeader(term) {
   if (badgeEl) badgeEl.textContent = term.subtitle_badge || term.name_en || term.id;
 }
 
-// 渲染多语言表述（含平假名与罗马音组合）
 function renderMultilingualCards(term) {
   const cnEl = document.getElementById('lang-cn');
   const enEl = document.getElementById('lang-en');
@@ -124,7 +286,6 @@ function renderMultilingualCards(term) {
   }
 }
 
-// 核心升级：遍历渲染自定义内容区块 (custom_blocks)
 function renderDynamicSections(term) {
   const container = document.getElementById('term-dynamic-sections');
   if (!container) return;
@@ -133,7 +294,6 @@ function renderDynamicSections(term) {
   const blocks = parseJsonArray(term.custom_blocks);
 
   if (blocks && blocks.length > 0) {
-    // 优先按 Blocks 数组顺序渲染（完全动态）
     blocks.forEach(block => {
       if (block.type === 'text' && block.content && block.content.trim()) {
         container.appendChild(createTextSectionNode(block.title, block.content));
@@ -142,7 +302,6 @@ function renderDynamicSections(term) {
       }
     });
   } else {
-    // 降级回退支持老数据
     if (term.description) {
       container.appendChild(createTextSectionNode('定义与概述', term.description));
     }
@@ -160,7 +319,6 @@ function renderDynamicSections(term) {
   }
 }
 
-// 创建长文本段落 DOM 节点
 function createTextSectionNode(title, content) {
   const div = document.createElement('div');
   div.className = 'content-section';
@@ -171,7 +329,6 @@ function createTextSectionNode(title, content) {
   return div;
 }
 
-// 创建列表清单 DOM 节点
 function createListSectionNode(title, items) {
   const div = document.createElement('div');
   div.className = 'content-section';
@@ -188,7 +345,6 @@ function createListSectionNode(title, items) {
   return div;
 }
 
-// 渲染图片画廊
 function renderImageGallery(term) {
   const galleryContainer = document.getElementById('image-gallery-container');
   const gallerySection = document.getElementById('section-gallery');
@@ -219,7 +375,7 @@ function renderImageGallery(term) {
   galleryContainer.innerHTML = html;
 }
 
-function showErrorState(msg) {
+function showDetailErrorState(msg) {
   const loadingEl = document.getElementById('detail-loading');
   const errorEl = document.getElementById('detail-error');
   if (loadingEl) loadingEl.style.display = 'none';
