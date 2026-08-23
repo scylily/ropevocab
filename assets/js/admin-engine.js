@@ -1,7 +1,7 @@
 /**
  * ==============================================================================
- * ROPEVOCAB PROJECT - ADMIN ENGINE (WITH EXPLICIT BADGE COLOR SELECTOR)
- * File: v2/assets/js/admin-engine.js
+ * ROPEVOCAB PROJECT - ADMIN ENGINE (UPGRADED WITH HIRAGANA & DYNAMIC BLOCKS)
+ * File: admin-engine.js
  * ==============================================================================
  */
 
@@ -18,6 +18,8 @@ let cachedTermsList = [];
 let cachedCategoriesList = [];
 let cachedLocationsList = [];
 let cachedRolesList = [];
+
+let editingEntityId = null;
 
 // 降级兜底关键字匹配
 function getBadgeClass(typeText, explicitStyle) {
@@ -38,7 +40,7 @@ function getBadgeClass(typeText, explicitStyle) {
 
 async function initAdminEngine() {
     if (!IS_CONFIGURED || !supabaseClient) {
-        showAuthView(false, "请先在 v2/assets/js/supabase-config.js 中配置真实的 SUPABASE_URL 与 ANON_KEY。");
+        showAuthView(false, "请先在 supabase-config.js 中配置真实的 SUPABASE_URL 与 ANON_KEY。");
         return;
     }
 
@@ -304,6 +306,7 @@ async function moveTermOrder(currentIndex, direction) {
     }
 }
 
+/* 升级版 openTermEditModal：支持平假名与动态区块加载 */
 async function openTermEditModal(termId = null) {
     const modal = document.getElementById("modal-term-form");
     const form = document.getElementById("form-term");
@@ -312,9 +315,12 @@ async function openTermEditModal(termId = null) {
     modal.style.display = "flex";
     form.reset();
 
-    document.getElementById("container-features-builder").innerHTML = "";
-    document.getElementById("container-apps-builder").innerHTML = "";
-    document.getElementById("container-images-builder").innerHTML = "";
+    // 清空动态容器
+    const blocksContainer = document.getElementById("container-dynamic-blocks");
+    if (blocksContainer) blocksContainer.innerHTML = "";
+
+    const imgContainer = document.getElementById("container-images-builder");
+    if (imgContainer) imgContainer.innerHTML = "";
 
     await populateCategorySelect("term-field-category");
 
@@ -340,19 +346,47 @@ async function openTermEditModal(termId = null) {
             document.getElementById("term-field-title").value = data.title || "";
             document.getElementById("term-field-name-en").value = data.name_en || "";
             document.getElementById("term-field-name-jp").value = data.name_jp || "";
+
+            // 👇 回显平假名字段 (hiragana)
+            const hiraganaInput = document.getElementById("term-field-hiragana");
+            if (hiraganaInput) hiraganaInput.value = data.hiragana || "";
+
             document.getElementById("term-field-romaji").value = data.romaji || "";
             document.getElementById("term-field-badge").value = data.subtitle_badge || "";
             document.getElementById("term-field-emoji").value = data.emoji || "";
-            document.getElementById("term-field-sort").value = data.sort_order || 10;
-            document.getElementById("term-field-description").value = data.description || "";
-            document.getElementById("term-field-safety").value = data.safety_notes || "";
+            document.getElementById("term-field-sort").value = data.sort_order !== undefined ? data.sort_order : 10;
 
-            parseJsonArray(data.technical_features).forEach(feat => addDynamicInputRow("container-features-builder", feat));
-            parseJsonArray(data.applications).forEach(app => addDynamicInputRow("container-apps-builder", app));
+            // 👇 加载自定义动态内容区块 (Blocks)
+            const customBlocks = parseJsonArray(data.custom_blocks);
+            if (customBlocks && customBlocks.length > 0) {
+                customBlocks.forEach(b => addCustomBlockSection(b));
+            } else {
+                // 如果数据库无 custom_blocks，将已有老字段转换为 Block 呈现（无缝兼容）
+                if (data.description) {
+                    addCustomBlockSection({ title: '定义与概述', type: 'text', content: data.description });
+                }
+                const features = parseJsonArray(data.technical_features);
+                if (features.length > 0) {
+                    addCustomBlockSection({ title: '技术特征', type: 'list', items: features });
+                }
+                const apps = parseJsonArray(data.applications);
+                if (apps.length > 0) {
+                    addCustomBlockSection({ title: '主要应用场景', type: 'list', items: apps });
+                }
+                if (data.safety_notes) {
+                    addCustomBlockSection({ title: '安全注意事项', type: 'text', content: data.safety_notes });
+                }
+                // 若依然没有任何区块，加载默认模板
+                if (blocksContainer && blocksContainer.children.length === 0) {
+                    DEFAULT_PRESET_BLOCKS.forEach(b => addCustomBlockSection(b));
+                }
+            }
 
+            // 回显多图画廊
             const images = parseJsonArray(data.images);
             const captions = parseJsonArray(data.image_captions);
             images.forEach((img, idx) => addImageRowBuilder(img, captions[idx] || ""));
+
         } catch (err) {
             alert("读取词条失败: " + err.message);
             closeAdminModal("modal-term-form");
@@ -364,9 +398,13 @@ async function openTermEditModal(termId = null) {
             document.getElementById("term-field-category").value = currentTermCategoryFilter;
         }
         document.getElementById("term-field-sort").value = (cachedTermsList.length + 1) * 10;
+
+        // 新增时加载默认 4 个通用区块
+        DEFAULT_PRESET_BLOCKS.forEach(b => addCustomBlockSection(b));
     }
 }
 
+/* 升级版 saveTermForm：支持平假名与动态区块数据的提取保存 */
 async function saveTermForm(e) {
     e.preventDefault();
     const id = document.getElementById("term-field-id").value.trim();
@@ -377,21 +415,50 @@ async function saveTermForm(e) {
         return;
     }
 
+    // 1. 收集全量动态区块 Block
+    const customBlocks = typeof collectAllBlocksData === 'function' ? collectAllBlocksData() : [];
+
+    // 2. 为了保证向前兼容（旧前台页面正常展示），自动从区块中抽离老字段
+    let descriptionVal = "";
+    let safetyNotesVal = "";
+    let technicalFeaturesArr = [];
+    let applicationsArr = [];
+
+    customBlocks.forEach(b => {
+        if (b.title === "定义与概述" && b.type === "text") descriptionVal = b.content || "";
+        if (b.title === "安全注意事项" && b.type === "text") safetyNotesVal = b.content || "";
+        if (b.title === "技术特征" && b.type === "list") technicalFeaturesArr = b.items || [];
+        if (b.title === "主要应用场景" && b.type === "list") applicationsArr = b.items || [];
+    });
+
+    const hiraganaInput = document.getElementById("term-field-hiragana");
+
     const payload = {
         id: id,
         category_id: categoryId,
         title: document.getElementById("term-field-title").value.trim(),
         name_en: document.getElementById("term-field-name-en").value.trim(),
         name_jp: document.getElementById("term-field-name-jp").value.trim(),
+
+        // 👇 新增平假名提交
+        hiragana: hiraganaInput ? hiraganaInput.value.trim() : null,
+
         romaji: document.getElementById("term-field-romaji").value.trim(),
         subtitle_badge: document.getElementById("term-field-badge").value.trim(),
-        emoji: document.getElementById("term-field-emoji").value.trim(),
+        emoji: document.getElementById("term-field-emoji").value.trim() || '🪢',
         sort_order: parseInt(document.getElementById("term-field-sort").value) || 10,
-        description: document.getElementById("term-field-description").value.trim(),
-        safety_notes: document.getElementById("term-field-safety").value.trim(),
-        technical_features: collectDynamicInputs("container-features-builder"),
-        applications: collectDynamicInputs("container-apps-builder"),
-        ...collectImageRows()
+
+        // 👇 新增全量 Blocks JSONB 提交
+        custom_blocks: customBlocks,
+
+        // 兼容旧字段
+        description: descriptionVal || null,
+        safety_notes: safetyNotesVal || null,
+        technical_features: technicalFeaturesArr,
+        applications: applicationsArr,
+
+        ...collectImageRows(),
+        updated_at: new Date().toISOString()
     };
 
     try {
@@ -549,7 +616,7 @@ async function saveCategoryForm(e) {
 }
 
 /* ==============================================================================
-   5. 常见位置表管理 (`ropevocab_locations` - 支持显式胶囊颜色保存)
+   5. 常见位置表管理 (`ropevocab_locations`)
    ============================================================================== */
 
 async function renderLocationsGroupFilterBar() {
@@ -749,7 +816,7 @@ async function deleteLocation(locId) {
 }
 
 /* ==============================================================================
-   6. 角色与活动表管理 (`ropevocab_roles` - 支持显式胶囊颜色保存)
+   6. 角色与活动表管理 (`ropevocab_roles`)
    ============================================================================== */
 
 async function renderRolesGroupFilterBar() {
@@ -989,32 +1056,6 @@ async function uploadImageToStorage(fileInput, targetUrlInputId) {
     }
 }
 
-function addDynamicInputRow(containerId, initialValue = "") {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    const div = document.createElement("div");
-    div.className = "builder-row";
-    div.innerHTML = `
-        <input type="text" class="input-builder-text" value="${escapeHtml(initialValue)}" placeholder="请输入条目内容..." />
-        <button type="button" class="btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
-    `;
-    container.appendChild(div);
-}
-
-function collectDynamicInputs(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return [];
-
-    const inputs = container.querySelectorAll(".input-builder-text");
-    const result = [];
-    inputs.forEach(input => {
-        const val = input.value.trim();
-        if (val) result.push(val);
-    });
-    return result;
-}
-
 function addImageRowBuilder(imageUrl = "", caption = "") {
     const container = document.getElementById("container-images-builder");
     if (!container) return;
@@ -1028,13 +1069,13 @@ function addImageRowBuilder(imageUrl = "", caption = "") {
         </div>
         <div class="img-inputs-box">
             <div class="flex-gap">
-                <input type="text" id="url-${rowId}" class="input-img-url" value="${escapeHtml(imageUrl)}" placeholder="图片URL或相对路径 (如 assets/images/vocs/Agura_1.jpg)" onchange="document.getElementById('preview-${rowId}').src=this.value;" />
+                <input type="text" id="url-${rowId}" class="input-img-url input-control" value="${escapeHtml(imageUrl)}" placeholder="图片URL或相对路径 (如 assets/images/vocs/Agura_1.jpg)" onchange="document.getElementById('preview-${rowId}').src=this.value;" />
                 <label class="btn-sm btn-upload">
                     上传
                     <input type="file" accept="image/*" style="display:none;" onchange="uploadImageToStorage(this, 'url-${rowId}')" />
                 </label>
             </div>
-            <input type="text" class="input-img-caption" value="${escapeHtml(caption)}" placeholder="图片配图说明/字幕..." />
+            <input type="text" class="input-img-caption input-control" value="${escapeHtml(caption)}" placeholder="图片配图说明/字幕..." />
         </div>
         <button type="button" class="btn-sm btn-danger" onclick="this.parentElement.remove()">删除</button>
     `;
