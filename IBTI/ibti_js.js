@@ -1,7 +1,7 @@
 // ============================================================
 // 🔑 Supabase 配置凭证
 // ============================================================
-const SUPABASE_URL = "https://gfhgwqjvxyyanumbwibe.supabase.co";
+const SUPABASE_URL = "https://supabase.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
 
 // 💾【新增】草稿机制配置：7 天自动过期 (7 * 24小时 * 60分 * 60秒 * 1000毫秒)
