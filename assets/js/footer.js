@@ -152,8 +152,8 @@
               <div class="footer-brand-title">
                 常用绳缚词汇库
               </div>
-              <p class="footer-desc">本指南致力于为同好提供严谨、理智的安全指引，倡导 SSC（安全、理智、知情同意）与 RACK（风险认知下的知情同意）原则。</p>
-              <p class="footer-desc">请时刻谨记：生命安全高于一切，风险只能降低，无法彻底消除。</p>
+              <p class="footer-desc">我们是绳缚游戏的爱好者，致力于整理和分享专业实用的绳缚知识。</p>
+              <p class="footer-desc">众多绳缚术语，中、日、英多语对照。</p>
             </div>
             <div class="footer-contact">
               <div class="author-title">作者：绳声蛮 绳声点点</div>
