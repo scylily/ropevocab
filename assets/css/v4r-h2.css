@@ -1,5 +1,5 @@
 /* ==============================================================================
-   ROPEVOCAB PROJECT - TERM DETAIL PAGE STYLE
+   ROPEVOCAB PROJECT - TERM DETAIL PAGE STYLE (FULL OVERWRITE VERSION)
    File: v2/assets/css/v4r-h2.css
    ============================================================================== */
 
@@ -181,6 +181,32 @@ a.logo:visited {
   color: #666;
   font-size: 0.9rem;
   margin-top: 5px;
+}
+
+/* 平假名与罗马音组合视效扩展 */
+.pronunciation-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.hiragana-badge {
+  background: #f1f5f9;
+  color: #6366f1;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  border: 1px solid #e0e7ff;
+}
+
+.romaji-text {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 
 .content-section {
