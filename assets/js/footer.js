@@ -1,10 +1,10 @@
 /**
  * ROPEVOCAB PROJECT - UNIFIED FOOTER COMPONENT
  * File: assets/js/footer.js
- * 功能：全站统一页脚组件（一站式自动注入 原版 1:1 CSS 样式与 HTML 结构）
- * 架构：彻底剥离其他 CSS 文件中的 Footer 代码，实现全站单源控制
+ * 功能：全站统一页脚组件（提权防覆盖 + 消除下划线 + 一站式注入）
+ * 修复：升级 CSS 选择器权重至 html body .site-footer，免疫 GitHub Pages 环境下外部 CSS 的加载覆盖
  *
- * @version 7.0.0
+ * @version 7.0.2
  * @author Senior Architect (Defense Grade)
  */
 
@@ -12,7 +12,7 @@
   'use strict';
 
   /**
-   * 1. 自动注入 index.html 原版 1:1 页脚 CSS 样式
+   * 1. 自动注入高权重 CSS 样式 (html body 提权，免疫一切外部 CSS 加载顺序干扰)
    */
   function injectFooterStyles() {
     if (document.getElementById('v4r-unified-footer-styles')) return;
@@ -20,7 +20,7 @@
     const style = document.createElement('style');
     style.id = 'v4r-unified-footer-styles';
     style.textContent = `
-      .site-footer {
+      html body .site-footer {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: rgba(255, 255, 255, 0.9) !important;
         padding: 40px 0 25px !important;
@@ -33,14 +33,14 @@
         clear: both !important;
       }
 
-      .site-footer .footer-container {
+      html body .site-footer .footer-container {
         max-width: 1200px !important;
         margin: 0 auto !important;
         padding: 0 20px !important;
         box-sizing: border-box !important;
       }
 
-      .site-footer .footer-top {
+      html body .site-footer .footer-top {
         display: flex !important;
         flex-direction: column !important;
         gap: 25px !important;
@@ -50,17 +50,17 @@
       }
 
       @media (min-width: 768px) {
-        .site-footer .footer-top {
+        html body .site-footer .footer-top {
           flex-direction: row !important;
           align-items: flex-start !important;
         }
-        .site-footer .footer-top > .footer-contact {
+        html body .site-footer .footer-top > .footer-contact {
           text-align: right !important;
           flex-shrink: 0 !important;
         }
       }
 
-      .site-footer .footer-brand-title {
+      html body .site-footer .footer-brand-title {
         font-size: 1.15rem !important;
         font-weight: 700 !important;
         color: #ffffff !important;
@@ -70,11 +70,11 @@
         gap: 8px !important;
       }
 
-      .site-footer .footer-brand-title i {
+      html body .site-footer .footer-brand-title i {
         color: #ffffff !important;
       }
 
-      .site-footer .footer-desc {
+      html body .site-footer .footer-desc {
         color: #e2e8f0 !important;
         font-size: 0.82rem !important;
         max-width: 580px !important;
@@ -83,19 +83,19 @@
         line-height: 1.6 !important;
       }
 
-      .site-footer .author-title {
+      html body .site-footer .author-title {
         color: #e2e8f0 !important;
         font-weight: 600 !important;
         font-size: 0.92rem !important;
         margin-bottom: 6px !important;
       }
 
-      .site-footer .footer-social-links {
+      html body .site-footer .footer-social-links {
         font-size: 0.82rem !important;
         color: #e2e8f0 !important;
       }
 
-      .site-footer .footer-social-links a {
+      html body .site-footer .footer-social-links a {
         color: #90caf9 !important;
         text-decoration: none !important;
         font-weight: 600 !important;
@@ -103,11 +103,12 @@
         transition: color 0.2s !important;
       }
 
-      .site-footer .footer-social-links a:hover {
+      html body .site-footer .footer-social-links a:hover {
         color: #ffffff !important;
+        text-decoration: none !important;
       }
 
-      .site-footer .footer-bottom {
+      html body .site-footer .footer-bottom {
         display: flex !important;
         flex-direction: column !important;
         gap: 12px !important;
@@ -119,25 +120,25 @@
       }
 
       @media (min-width: 640px) {
-        .site-footer .footer-bottom {
+        html body .site-footer .footer-bottom {
           flex-direction: row !important;
         }
       }
 
-      .site-footer .motto-tag {
+      html body .site-footer .motto-tag {
         font-weight: 600 !important;
         color: #ffffff !important;
         letter-spacing: 1px !important;
       }
 
       @media (max-width: 768px) {
-        .site-footer .footer-container {
+        html body .site-footer .footer-container {
           padding-left: 16px !important;
           padding-right: 16px !important;
         }
-        .site-footer .footer-desc,
-        .site-footer .author-title,
-        .site-footer .footer-social-links {
+        html body .site-footer .footer-desc,
+        html body .site-footer .author-title,
+        html body .site-footer .footer-social-links {
           text-align: left !important;
         }
       }
@@ -145,9 +146,6 @@
     document.head.appendChild(style);
   }
 
-  /**
-   * 2. 构建标准统一的 Footer HTML 结构
-   */
   function buildFooterHtml() {
     return `
       <footer class="site-footer">
@@ -155,7 +153,7 @@
           <div class="footer-top">
             <div class="footer-brand">
               <div class="footer-brand-title">
-                常用绳缚词汇库
+                <i class="fas fa-book"></i> 常用绳缚词汇库
               </div>
               <p class="footer-desc">本指南致力于为同好提供严谨、理智的安全指引，倡导 SSC（安全、理智、知情同意）与 RACK（风险认知下的知情同意）原则。</p>
               <p class="footer-desc">请时刻谨记：生命安全高于一切，风险只能降低，无法彻底消除。</p>
@@ -178,13 +176,9 @@
     `;
   }
 
-  /**
-   * 3. 挂载执行器
-   */
   function renderFooter() {
     injectFooterStyles();
 
-    // 优先替换已有节点，避免重复挂载
     const existingFooter = document.querySelector('footer, .site-footer');
     if (existingFooter) {
       existingFooter.outerHTML = buildFooterHtml();
