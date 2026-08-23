@@ -1,7 +1,7 @@
 /* ==============================================================================
    ROPEVOCAB PROJECT - LOCATIONS & ROLES TABLES STYLE
    File: assets/css/v4r-t1.css
-   版本：v6.6.2 (补全页脚 Flex 布局 + 中文名加粗 + 小屏 16px 留白)
+   版本：v6.6.3 (全兼容万能 Footer 修复 + 移动端 16px 留白 + 中文名加粗)
    ============================================================================== */
 
 * {
@@ -222,10 +222,10 @@ th.v4r-col-type { width: 13% !important; text-align: center !important; }
   white-space: nowrap !important;
 }
 
-.type-primary    { background: #e8f5e9; color: #2e7d32; } /* 绿 */
-.type-support    { background: #e3f2fd; color: #1565c0; } /* 蓝 */
-.type-decorative { background: #fff3e0; color: #ef6c00; } /* 橙 */
-.type-danger     { background: #ffebee; color: #c62828; } /* 红 */
+.type-primary    { background: #e8f5e9; color: #2e7d32; }
+.type-support    { background: #e3f2fd; color: #1565c0; }
+.type-decorative { background: #fff3e0; color: #ef6c00; }
+.type-danger     { background: #ffebee; color: #c62828; }
 
 .v4r-desktop-header { display: inline !important; }
 .v4r-mobile-header  { display: none !important; }
@@ -330,107 +330,99 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
 }
 
 /* ==========================================================================
-   全量还原补全：页脚 (Footer) 完整 Flex 布局系统
+   防死角万能全兼容 FOOTER 样式表（彻底解决文字贴紧屏幕极左侧问题）
    ========================================================================== */
 
-.site-footer {
+/* 1. 外层容器全宽铺满 */
+footer,
+.site-footer,
+.footer {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  padding: 40px 0 25px;
-  margin-top: 60px;
-  font-size: 0.88rem;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92) !important;
+  padding: 35px 0 25px 0 !important;
+  margin-top: 60px !important;
+  font-size: 0.88rem !important;
+  line-height: 1.7 !important;
   border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
-  width: 100%;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.site-footer .footer-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* 2. 内层绝对强制 1200px 居中及左右 20px 安全留白（解决贴边病灶） */
+footer > div,
+.site-footer div,
+.footer div,
+.site-footer .footer-container,
+.site-footer .container,
+.footer .container {
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 20px !important;  /* 强制拉开左壁距离 */
+  padding-right: 20px !important; /* 强制拉开右壁距离 */
+  box-sizing: border-box !important;
 }
 
-.site-footer .footer-top {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  justify-content: space-between;
-  padding-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+/* 3. 段落与文本流离间距微调 */
+footer p,
+.site-footer p,
+.footer p {
+  margin-bottom: 8px !important;
+  color: #e2e8f0 !important;
+}
+
+footer a,
+.site-footer a,
+.footer a {
+  color: #90caf9 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
+}
+
+footer a:hover,
+.site-footer a:hover,
+.footer a:hover {
+  color: #ffffff !important;
+}
+
+/* 4. 多栏 Flex 结构适配 */
+.footer-top {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  justify-content: space-between !important;
+  padding-bottom: 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 @media (min-width: 768px) {
-  .site-footer .footer-top {
-    flex-direction: row;
-    align-items: flex-start;
+  .footer-top {
+    flex-direction: row !important;
+    align-items: flex-start !important;
   }
 }
 
-.site-footer .footer-brand-title {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #ffffff !important;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.site-footer .footer-brand-title i {
-  color: #ffffff !important;
-}
-
-.site-footer .footer-desc {
-  color: #e2e8f0 !important;
-  font-size: 0.82rem;
-  max-width: 580px;
-  margin-bottom: 6px;
-}
-
-.site-footer .author-title {
-  color: #e2e8f0 !important;
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-
-.site-footer .footer-social-links {
-  font-size: 0.82rem;
-  color: #e2e8f0 !important;
-}
-
-.site-footer .footer-social-links a {
-  color: #90caf9 !important;
-  text-decoration: underline !important;
-  font-weight: 600;
-  margin-left: 6px;
-  transition: color 0.2s;
-}
-
-.site-footer .footer-social-links a:hover {
-  color: #ffffff !important;
-}
-
-.site-footer .footer-bottom {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 20px;
-  font-size: 0.8rem;
-  color: #e2e8f0 !important;
+.footer-bottom {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-top: 15px !important;
+  font-size: 0.8rem !important;
 }
 
 @media (min-width: 640px) {
-  .site-footer .footer-bottom {
-    flex-direction: row;
+  .footer-bottom {
+    flex-direction: row !important;
   }
 }
 
-.site-footer .motto-tag {
-  font-weight: 600;
+.footer-brand-title {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
   color: #ffffff !important;
-  letter-spacing: 1px;
+  margin-bottom: 8px !important;
 }
 
 /* ==========================================================================
@@ -438,7 +430,10 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
    ========================================================================== */
 
 @media (max-width: 768px) {
-  .container {
+  .container,
+  footer > div,
+  .site-footer div,
+  .footer div {
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
