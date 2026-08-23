@@ -1,5 +1,5 @@
 // ==================== Supabase 初始化配置 ====================
-const SUPABASE_URL = "https://cpjjmuzrcvgbaekiqkrx.supabase.co";
+const SUPABASE_URL = "s4rstudy.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
 
 const { createClient } = supabase;
