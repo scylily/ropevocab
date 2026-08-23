@@ -185,7 +185,7 @@
               <div class="author-title">作者：绳声蛮 绳声点点</div>
               <div class="footer-social-links">
                 <!-- 动态安全的关于我们跳转链接 -->
-                <a href="${aboutUrl}" style="margin-right: 0px;">📧 联系我们</a>
+                <a href="${aboutUrl}" style="margin-right: 0px;">✉️ 联系我们</a>
               </div>
             </div>
           </div>
