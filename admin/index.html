@@ -3,7 +3,7 @@
 
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>绳缚词汇库 - 管理后台</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -29,7 +29,6 @@
         min-height: 100vh;
       }
 
-      /* 登录认证界面样式 */
       .auth-wrapper {
         display: flex;
         justify-content: center;
@@ -114,14 +113,12 @@
         margin-bottom: 15px;
       }
 
-      /* 管理后台主布局 */
       .dashboard-layout {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
       }
 
-      /* 顶部 Header 导航栏 */
       .admin-header {
         height: 64px;
         background: var(--header-bg);
@@ -233,7 +230,6 @@
         border-color: #dc2626;
       }
 
-      /* 主工作区域 */
       .main-content {
         flex: 1;
         padding: 28px 32px;
@@ -263,6 +259,7 @@
         font-size: 0.88rem;
         cursor: pointer;
         transition: all 0.2s;
+        white-space: nowrap;
       }
 
       .filter-pill.active {
@@ -283,6 +280,10 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+      }
+
+      .table-responsive {
+        width: 100%;
       }
 
       .data-table {
@@ -306,12 +307,16 @@
       }
 
       .btn-sm {
-        padding: 5px 10px;
+        padding: 6px 12px;
         border-radius: 6px;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         border: none;
         cursor: pointer;
         font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
       }
 
       .btn-edit {
@@ -338,6 +343,7 @@
         border-radius: 8px;
         border: none;
         cursor: pointer;
+        white-space: nowrap;
       }
 
       .badge-tag {
@@ -346,6 +352,7 @@
         border-radius: 4px;
         font-size: 0.75rem;
         color: #475569;
+        white-space: nowrap;
       }
 
       .badge-position {
@@ -356,9 +363,9 @@
         font-weight: 600;
         font-size: 0.8rem;
         display: inline-block;
+        white-space: nowrap;
       }
 
-      /* 4 色类型胶囊 */
       .location-type {
         display: inline-block;
         text-align: center;
@@ -366,6 +373,7 @@
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 600;
+        white-space: nowrap;
       }
 
       .type-primary {
@@ -388,7 +396,6 @@
         color: #c62828;
       }
 
-      /* Modal 弹窗样式 */
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -412,7 +419,6 @@
         overflow-y: auto;
       }
 
-      /* 动态项目块 (Block) 卡片样式 */
       .block-card {
         border: 1px solid #cbd5e1;
         background: #ffffff;
@@ -506,6 +512,266 @@
         flex-direction: column;
         gap: 8px;
       }
+
+      .mobile-filter-select {
+        display: none;
+      }
+
+      /* ==========================================================================
+         移动端 (<=768px) Option A 原生下拉菜单 + 右上角 Tag/位次 上下叠放重构
+         ========================================================================== */
+      @media (max-width: 768px) {
+        .admin-header {
+          height: auto !important;
+          padding: 6px 10px !important;
+          gap: 6px !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+        }
+
+        .header-left,
+        .header-right {
+          width: 100% !important;
+          justify-content: space-between !important;
+          gap: 6px !important;
+        }
+
+        .header-brand {
+          border-right: none !important;
+          padding-right: 0 !important;
+          font-size: 0.88rem !important;
+        }
+
+        .header-nav {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 4px !important;
+          width: 100% !important;
+        }
+
+        .admin-tab-btn {
+          justify-content: center !important;
+          padding: 5px 6px !important;
+          font-size: 0.75rem !important;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 4px !important;
+        }
+
+        /* Option A：移动端自动切换为原生全宽下拉 Select 控件 */
+        .filter-bar {
+          background: transparent !important;
+          padding: 0 !important;
+          margin-bottom: 8px !important;
+          border-radius: 0 !important;
+        }
+
+        .filter-bar .filter-pill {
+          display: none !important;
+        }
+
+        .filter-bar .mobile-filter-select {
+          display: block !important;
+          width: 100% !important;
+          padding: 8px 12px !important;
+          font-size: 0.85rem !important;
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          border-radius: 8px !important;
+          color: #0f172a !important;
+          font-weight: 600 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        .main-content {
+          padding: 6px 4px !important;
+        }
+
+        .panel-card {
+          padding: 8px 6px !important;
+          border-radius: 6px !important;
+        }
+
+        .card-header-action {
+          margin-bottom: 6px !important;
+        }
+
+        .card-header-action h3 {
+          font-size: 0.92rem !important;
+        }
+
+        .btn-add {
+          padding: 4px 8px !important;
+          font-size: 0.78rem !important;
+        }
+
+        .table-responsive {
+          overflow-x: visible !important;
+          width: 100% !important;
+        }
+
+        .data-table {
+          min-width: 0 !important;
+          width: 100% !important;
+          display: block !important;
+        }
+
+        .data-table thead {
+          display: none !important;
+        }
+
+        .data-table tbody {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 6px !important;
+          width: 100% !important;
+          margin-top: 4px !important;
+        }
+
+        /* 卡片重构为 3 行高密度结构，右上角元素【上下叠放】 */
+        .data-table tr {
+          display: grid !important;
+          grid-template-columns: 1fr auto !important;
+          grid-template-areas:
+            "title-box  cat-badge-box"
+            "meta-box   order-badge-box"
+            "reorder-box action-box";
+          background: #ffffff !important;
+          border: 1px solid #cbd5e1 !important;
+          border-radius: 6px !important;
+          padding: 6px 8px !important;
+          gap: 2px 6px !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+          width: 100% !important;
+        }
+
+        .data-table td {
+          padding: 0 !important;
+          border-bottom: none !important;
+          background: transparent !important;
+          font-size: 0.8rem !important;
+          line-height: 1.25 !important;
+          min-height: 0 !important;
+          width: auto !important;
+        }
+
+        /* 行 1 左侧：Emoji + 中文标题 */
+        .data-table td:nth-child(2) {
+          grid-area: title-box;
+          font-size: 0.95rem !important;
+          font-weight: 700 !important;
+          color: #0f172a !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 4px !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+
+        .data-table td:nth-child(1) {
+          display: inline-block !important;
+          font-size: 0.72rem !important;
+          color: #94a3b8 !important;
+          font-family: monospace;
+          margin-right: 4px;
+        }
+
+        /* 核心修复：右上角上层 —— 分类 Tag (独占一行，100% 完整显示不截断 spe) */
+        .data-table td:nth-child(4) {
+          grid-area: cat-badge-box;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          flex-shrink: 0 !important;
+        }
+
+        /* 核心修复：右上角下层 —— 位次 Badge (独占下一行，上下错开决不重叠) */
+        .data-table td:nth-child(5) {
+          grid-area: order-badge-box;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          flex-shrink: 0 !important;
+        }
+
+        /* 行 2 左侧：英文名 */
+        .data-table td:nth-child(3) {
+          grid-area: meta-box;
+          font-size: 0.78rem !important;
+          color: #64748b !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+
+        /* 行 3 左侧：位移按键 [↑ 上移] [↓ 下移] */
+        .data-table td:nth-last-child(2) {
+          grid-area: reorder-box;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-start !important;
+          gap: 4px !important;
+          padding-top: 4px !important;
+          margin-top: 2px !important;
+          border-top: 1px solid #f1f5f9 !important;
+        }
+
+        /* 行 3 右侧：操作按键 [编辑] [删除] */
+        .data-table td:last-child {
+          grid-area: action-box;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: flex-end !important;
+          gap: 6px !important;
+          padding-top: 4px !important;
+          margin-top: 2px !important;
+          border-top: 1px solid #f1f5f9 !important;
+        }
+
+        .btn-sm {
+          padding: 4px 8px !important;
+          font-size: 0.75rem !important;
+          border-radius: 4px !important;
+          line-height: 1.15 !important;
+          white-space: nowrap !important;
+        }
+
+        .badge-tag,
+        .badge-position,
+        .location-type {
+          padding: 2px 6px !important;
+          font-size: 0.72rem !important;
+          border-radius: 4px !important;
+          white-space: nowrap !important;
+        }
+
+        .modal-body-form {
+          padding: 12px 10px !important;
+          width: 95% !important;
+          max-height: 94vh !important;
+          border-radius: 8px !important;
+        }
+
+        .form-group {
+          margin-bottom: 8px !important;
+        }
+
+        .modal-body-form div[style*="grid-template-columns"] {
+          grid-template-columns: 1fr !important;
+          gap: 6px !important;
+        }
+
+        .builder-image-card {
+          flex-direction: column !important;
+          gap: 6px !important;
+          padding: 6px !important;
+        }
+
+        .img-preview-box {
+          width: 100% !important;
+          height: 90px !important;
+        }
+      }
     </style>
   </head>
 
@@ -582,20 +848,22 @@
 
             <div id="terms-category-filter-bar" class="filter-bar"></div>
 
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th width="10%">ID</th>
-                  <th width="18%">标题</th>
-                  <th width="18%">英文名</th>
-                  <th width="12%">所属 Hub</th>
-                  <th width="12%">在 Hub 页呈现顺序</th>
-                  <th width="14%">位移操作</th>
-                  <th width="16%">操作</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-terms"></tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th width="10%">ID</th>
+                    <th width="18%">标题</th>
+                    <th width="18%">英文名</th>
+                    <th width="12%">所属 Hub</th>
+                    <th width="12%">在 Hub 页呈现顺序</th>
+                    <th width="14%">位移操作</th>
+                    <th width="16%">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-terms"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -605,19 +873,21 @@
             <div class="card-header-action">
               <h3>子分类 Hub 管理 (`ropevocab_categories`)</h3>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th width="15%">ID</th>
-                  <th width="20%">标题</th>
-                  <th width="20%">英文名</th>
-                  <th width="15%">在首页呈现顺序</th>
-                  <th width="15%">位移操作</th>
-                  <th width="15%">操作</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-categories"></tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th width="15%">ID</th>
+                    <th width="20%">标题</th>
+                    <th width="20%">英文名</th>
+                    <th width="15%">在首页呈现顺序</th>
+                    <th width="15%">位移操作</th>
+                    <th width="15%">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-categories"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -631,21 +901,23 @@
 
             <div id="locations-group-filter-bar" class="filter-bar"></div>
 
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th width="12%">分组</th>
-                  <th width="15%">中文名</th>
-                  <th width="15%">英文名</th>
-                  <th width="16%">日文/罗马音</th>
-                  <th width="12%">色彩胶囊标签</th>
-                  <th width="10%">呈现顺序</th>
-                  <th width="10%">位移</th>
-                  <th width="10%">操作</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-locations"></tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th width="12%">分组</th>
+                    <th width="15%">中文名</th>
+                    <th width="15%">英文名</th>
+                    <th width="16%">日文/罗马音</th>
+                    <th width="12%">色彩胶囊标签</th>
+                    <th width="10%">呈现顺序</th>
+                    <th width="10%">位移</th>
+                    <th width="10%">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-locations"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -659,21 +931,23 @@
 
             <div id="roles-group-filter-bar" class="filter-bar"></div>
 
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th width="12%">分组</th>
-                  <th width="15%">中文名</th>
-                  <th width="15%">英文名</th>
-                  <th width="16%">日文/罗马音</th>
-                  <th width="12%">色彩胶囊标签</th>
-                  <th width="10%">呈现顺序</th>
-                  <th width="10%">位移</th>
-                  <th width="10%">操作</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-roles"></tbody>
-            </table>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th width="12%">分组</th>
+                    <th width="15%">中文名</th>
+                    <th width="15%">英文名</th>
+                    <th width="16%">日文/罗马音</th>
+                    <th width="12%">色彩胶囊标签</th>
+                    <th width="10%">呈现顺序</th>
+                    <th width="10%">位移</th>
+                    <th width="10%">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-roles"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -1089,6 +1363,63 @@
         });
 
         return blocks;
+      }
+
+      /* Option A 智能防锁死移动端原生下拉菜单同步绑定脚本 */
+      function initMobileFilterSelectSync() {
+        const filterBars = document.querySelectorAll('.filter-bar');
+        filterBars.forEach(bar => {
+          let isUpdating = false;
+          const observer = new MutationObserver(() => {
+            if (isUpdating) return;
+            isUpdating = true;
+            observer.disconnect(); // 防死锁熔断：修改 DOM 前断开观察
+            updateMobileSelectForBar(bar);
+            observer.observe(bar, { childList: true });
+            isUpdating = false;
+          });
+          observer.observe(bar, { childList: true });
+          updateMobileSelectForBar(bar);
+        });
+      }
+
+      function updateMobileSelectForBar(bar) {
+        const pills = bar.querySelectorAll('.filter-pill');
+        if (pills.length === 0) return;
+
+        let select = bar.querySelector('.mobile-filter-select');
+        if (!select) {
+          select = document.createElement('select');
+          select.className = 'input-control mobile-filter-select';
+          select.addEventListener('change', (e) => {
+            const val = e.target.value;
+            const targetPill = Array.from(pills).find(p => p.textContent.trim() === val);
+            if (targetPill) targetPill.click();
+          });
+          bar.prepend(select);
+        }
+
+        // 签名防重写比对
+        const currentSig = Array.from(select.options).map(o => o.value).join('|');
+        const newSig = Array.from(pills).map(p => p.textContent.trim()).join('|');
+
+        if (currentSig !== newSig) {
+          select.innerHTML = '';
+          pills.forEach(pill => {
+            const opt = document.createElement('option');
+            const text = pill.textContent.trim();
+            opt.value = text;
+            opt.textContent = text;
+            if (pill.classList.contains('active')) opt.selected = true;
+            select.appendChild(opt);
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileFilterSelectSync);
+      } else {
+        initMobileFilterSelectSync();
       }
     </script>
 
