@@ -1,7 +1,7 @@
 /**
  * ROPEVOCAB PROJECT - UNIFIED FOOTER COMPONENT
  * File: assets/js/footer.js
- * 功能：全站统一页脚组件（包含自动智能计算关于我们等页面的跳转路径）
+ * 功能：全站统一页脚组件（防防御级高紧凑排版 & 智能路径计算）
  *
  * @version 7.0.2
  * @author Senior Architect (Defense Grade)
@@ -11,66 +11,86 @@
   'use strict';
 
   /**
-   * 1. 智能计算 pages/ 目录下页面的跳转相对路径
-   * 无论在 index.html、pages/*.html 还是 admin/*.html 均能精准定位
+   * 1. 智能计算 pages/ 目录下页面的跳转相对路径（带防御性入参校验）
+   * @param {string} pageName - 目标文件名（如 'about.html'）
+   * @returns {string} 相对路径
    */
   function getPagesUrl(pageName) {
-    const path = window.location.pathname.toLowerCase();
+    // 防御性校验：避免空值或非字符串引发报错
+    if (typeof pageName !== 'string' || !pageName.trim()) {
+      pageName = 'about.html';
+    }
 
-    if (path.includes('/pages/')) {
-      // 当前就在 pages/ 文件夹内部（如 locations.html）
-      return pageName;
-    } else if (path.includes('/admin/') || path.includes('/ibti/')) {
-      // 在 admin/ 或 IBTI/ 子目录下
-      return '../pages/' + pageName;
-    } else {
-      // 在外层根目录（如 index.html）
-      return 'pages/' + pageName;
+    // 清理首尾空格与危险字符（防简单注入）
+    const cleanPage = pageName.trim().replace(/[^\w\.\-]/g, '');
+
+    try {
+      const path = window.location.pathname.toLowerCase();
+
+      if (path.includes('/pages/')) {
+        // 当前就在 pages/ 文件夹内部
+        return cleanPage;
+      } else if (path.includes('/admin/') || path.includes('/ibti/')) {
+        // 在 admin/ 或 ibti/ 子目录下
+        return '../pages/' + cleanPage;
+      } else {
+        // 在外层根目录（如 index.html）
+        return 'pages/' + cleanPage;
+      }
+    } catch (e) {
+      // 容错降级：在极少见的无 location 环境下降级返回默认路径
+      console.warn('[Footer] Location URL resolve fallback triggered:', e);
+      return 'pages/' + cleanPage;
     }
   }
 
   /**
-   * 2. 自动注入页脚 CSS 样式（html body 提权）
+   * 2. 自动注入紧凑版页脚 CSS 样式（html body 提权与样式防污染）
    */
   function injectFooterStyles() {
-    if (document.getElementById('v4r-unified-footer-styles')) return;
+    const styleId = 'v4r-unified-footer-styles';
+    if (document.getElementById(styleId)) return;
 
     const style = document.createElement('style');
-    style.id = 'v4r-unified-footer-styles';
+    style.id = styleId;
     style.textContent = `
+      /* 容器外层紧凑化 */
       html body .site-footer {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: rgba(255, 255, 255, 0.9) !important;
-        padding: 40px 0 25px !important;
-        margin-top: 60px !important;
-        font-size: 0.88rem !important;
-        line-height: 1.6 !important;
+        padding: 18px 0 12px !important; /* 原: 40px 0 25px */
+        margin-top: 25px !important;    /* 原: 60px */
+        font-size: 0.85rem !important;  /* 原: 0.88rem */
+        line-height: 1.45 !important;   /* 原: 1.6 */
         border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
         width: 100% !important;
         box-sizing: border-box !important;
         clear: both !important;
+        word-break: break-word !important; /* 防极长字符溢出 */
       }
 
       html body .site-footer .footer-container {
         max-width: 1200px !important;
         margin: 0 auto !important;
-        padding: 0 20px !important;
+        padding: 0 16px !important; /* 原: 0 20px */
         box-sizing: border-box !important;
       }
 
+      /* 顶部信息区紧凑化 */
       html body .site-footer .footer-top {
         display: flex !important;
         flex-direction: column !important;
-        gap: 25px !important;
+        gap: 12px !important;          /* 原: 25px */
         justify-content: space-between !important;
-        padding-bottom: 25px !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding-bottom: 12px !important;/* 原: 25px */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important; /* 保留分隔线 */
       }
 
       @media (min-width: 768px) {
         html body .site-footer .footer-top {
           flex-direction: row !important;
           align-items: flex-start !important;
+          gap: 20px !important;
         }
         html body .site-footer .footer-top > .footer-contact {
           text-align: right !important;
@@ -79,13 +99,13 @@
       }
 
       html body .site-footer .footer-brand-title {
-        font-size: 1.15rem !important;
+        font-size: 1.05rem !important;  /* 原: 1.15rem */
         font-weight: 700 !important;
         color: #ffffff !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 4px !important;  /* 原: 10px */
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
+        gap: 6px !important;
       }
 
       html body .site-footer .footer-brand-title i {
@@ -94,22 +114,22 @@
 
       html body .site-footer .footer-desc {
         color: #e2e8f0 !important;
-        font-size: 0.82rem !important;
+        font-size: 0.8rem !important;  /* 原: 0.82rem */
         max-width: 580px !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 3px !important;  /* 原: 6px */
         text-align: left !important;
-        line-height: 1.6 !important;
+        line-height: 1.45 !important;
       }
 
       html body .site-footer .author-title {
         color: #e2e8f0 !important;
         font-weight: 600 !important;
-        font-size: 0.92rem !important;
-        margin-bottom: 6px !important;
+        font-size: 0.88rem !important; /* 原: 0.92rem */
+        margin-bottom: 3px !important;  /* 原: 6px */
       }
 
       html body .site-footer .footer-social-links {
-        font-size: 0.82rem !important;
+        font-size: 0.8rem !important;
         color: #e2e8f0 !important;
       }
 
@@ -122,17 +142,18 @@
 
       html body .site-footer .footer-social-links a:hover {
         color: #ffffff !important;
-        text-decoration: none !important;
+        text-decoration: underline !important;
       }
 
+      /* 底部版权区紧凑化 */
       html body .site-footer .footer-bottom {
         display: flex !important;
         flex-direction: column !important;
-        gap: 12px !important;
+        gap: 6px !important;           /* 原: 12px */
         align-items: center !important;
         justify-content: space-between !important;
-        padding-top: 20px !important;
-        font-size: 0.8rem !important;
+        padding-top: 10px !important;   /* 原: 20px */
+        font-size: 0.78rem !important;  /* 原: 0.8rem */
         color: #e2e8f0 !important;
       }
 
@@ -145,18 +166,31 @@
       html body .site-footer .motto-tag {
         font-weight: 600 !important;
         color: #ffffff !important;
-        letter-spacing: 1px !important;
+        letter-spacing: 0.5px !important;
       }
 
-      @media (max-width: 768px) {
+      /* 移动端（屏幕宽度 < 768px）极致紧凑适配 */
+      @media (max-width: 767px) {
+        html body .site-footer {
+          padding: 14px 0 10px !important;
+          margin-top: 20px !important;
+        }
         html body .site-footer .footer-container {
-          padding-left: 16px !important;
-          padding-right: 16px !important;
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
+        html body .site-footer .footer-top {
+          gap: 10px !important;
+          padding-bottom: 10px !important;
         }
         html body .site-footer .footer-desc,
         html body .site-footer .author-title,
         html body .site-footer .footer-social-links {
           text-align: left !important;
+        }
+        html body .site-footer .footer-bottom {
+          padding-top: 8px !important;
+          gap: 4px !important;
         }
       }
     `;
@@ -164,10 +198,9 @@
   }
 
   /**
-   * 3. 构建标准统一的 Footer HTML 结构（使用 getPagesUrl 动态嵌入关于我们链接）
+   * 3. 构建紧凑标准 Footer HTML 结构
    */
   function buildFooterHtml() {
-    // 动态算出来的“关于我们”跳转链接
     const aboutUrl = getPagesUrl('about.html');
 
     return `
@@ -184,8 +217,7 @@
             <div class="footer-contact">
               <div class="author-title">作者：绳声蛮 绳声点点</div>
               <div class="footer-social-links">
-                <!-- 动态安全的关于我们跳转链接 -->
-                <a href="${aboutUrl}" style="margin-right: 0px;">✉️ 联系我们</a>
+                <a href="${aboutUrl}">✉️ 联系我们</a>
               </div>
             </div>
           </div>
@@ -199,19 +231,26 @@
   }
 
   /**
-   * 4. 挂载执行器
+   * 4. 挂载渲染执行器（具备 DOM 防错机制）
    */
   function renderFooter() {
-    injectFooterStyles();
+    try {
+      if (!document.body) return; // 防御：确保 DOM 存在
 
-    const existingFooter = document.querySelector('footer, .site-footer');
-    if (existingFooter) {
-      existingFooter.outerHTML = buildFooterHtml();
-    } else {
-      document.body.insertAdjacentHTML('beforeend', buildFooterHtml());
+      injectFooterStyles();
+
+      const existingFooter = document.querySelector('footer, .site-footer');
+      if (existingFooter) {
+        existingFooter.outerHTML = buildFooterHtml();
+      } else {
+        document.body.insertAdjacentHTML('beforeend', buildFooterHtml());
+      }
+    } catch (error) {
+      console.error('[Footer] Render failed unexpectedly:', error);
     }
   }
 
+  // 绑定加载事件
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', renderFooter);
   } else {
