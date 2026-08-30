@@ -1,18 +1,18 @@
-// ============================================================
-// 🔑 Supabase 配置凭证
-// ============================================================
+
+
+
 const SUPABASE_URL = "https://supabase.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
 
-// 💾【新增】草稿机制配置：7 天自动过期 (7 * 24小时 * 60分 * 60秒 * 1000毫秒)
+
 const DRAFT_KEY = "ibti_quiz_draft_v1";
 const DRAFT_TTL = 7 * 24 * 60 * 60 * 1000;
 
 let currentQuiz = [];
 let userAnswers = [];
-window.cachedIntro = ""; // 缓存测试说明文档
+window.cachedIntro = ""; 
 
-// 显示/隐藏加载动画
+
 function showLoading(text = "加载中...") {
   const overlay = document.getElementById("loading-overlay");
   const textElem = document.getElementById("loading-text");
@@ -25,17 +25,17 @@ function hideLoading() {
   if (overlay) overlay.style.display = "none";
 }
 
-// 1. 初始化抽取题目 (有答题记录才恢复草稿，无记录则每次刷新重新抽题)
+
 async function initQuiz() {
-  // 💾 第一步：优先检查本地是否有【包含答题记录】的草稿
+  
   const rawDraft = localStorage.getItem(DRAFT_KEY);
   if (rawDraft) {
     try {
       const draft = JSON.parse(rawDraft);
-      // 🎯【核心修改】：判断 answersMap 是否存在且至少选过 1 道题
+      
       const hasAnswers = draft && draft.answersMap && Object.keys(draft.answersMap).length > 0;
 
-      // 只有【有答题记录】且未超过 7 天时，才锁题恢复
+      
       if (hasAnswers && draft.questions && draft.questions.length > 0 && draft.savedAt && (Date.now() - draft.savedAt <= DRAFT_TTL)) {
         console.log("💡 检出包含答题记录的草稿，锁定加载上次抽取的 20 道题目");
         currentQuiz = draft.questions;
@@ -46,16 +46,16 @@ async function initQuiz() {
           if (modalBody) modalBody.innerHTML = marked.parse(draft.intro);
         }
 
-        renderQuiz(); // 渲染题目并还原答案
+        renderQuiz(); 
         hideLoading();
-        return; // 🎯 恢复草稿成功，直接结束
+        return; 
       }
     } catch (e) {
       console.warn("读取本地草稿题目异常，将重新向云端抽取", e);
     }
   }
 
-  // 第二步：如果没有答题记录，则每次刷新都向云端重新抽取全新 20 题
+  
   showLoading("正在为您生成测试题目...");
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_quiz`, {
@@ -80,7 +80,7 @@ async function initQuiz() {
     }
 
     renderQuiz();
-    // 🎯【核心修改】：删除了这里的 saveDraft()！纯新打开不答题时，绝不留草稿！
+    
   } catch (error) {
     console.error(error);
     alert("题库加载失败，请检查网络后刷新重试！");
@@ -89,7 +89,7 @@ async function initQuiz() {
   }
 }
 
-// 渲染题目列表 (选项随机化)
+
 function renderQuiz() {
   const container = document.getElementById("quiz-container");
   if (!container) return;
@@ -101,7 +101,7 @@ function renderQuiz() {
     div.className = "q-item";
     div.id = "q-" + qIdx;
 
-    // 生成 0-4 的随机索引数组，实现选项乱序
+    
     let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
 
     let optionsHtml = optIdxs
@@ -122,11 +122,11 @@ function renderQuiz() {
     container.appendChild(div);
   });
 
-  // 💾 DOM 渲染完毕后，触发自动恢复答案
+  
   restoreDraft();
 }
 
-// 记录选中的选项
+
 function selectOpt(el, qIdx, weightIdx) {
   const parent = el.parentElement;
   parent.querySelectorAll(".option-label").forEach((child) => child.classList.remove("selected"));
@@ -138,13 +138,13 @@ function selectOpt(el, qIdx, weightIdx) {
     optText: currentQuiz[qIdx].options[weightIdx]
   };
 
-  // 💾 每次点击选项时，实时静默保存草稿
+  
   saveDraft();
 }
 
-// ==================== 💾 IBTI 本地草稿四大核心逻辑 ====================
 
-// 1. 保存当前已选答案与题目列表到本地
+
+
 function saveDraft() {
   try {
     const answersMap = {};
@@ -156,16 +156,16 @@ function saveDraft() {
       }
     });
 
-    // 🎯【核心修改】：只有当用户【至少答了 1 道题】(count > 0) 时，才保存草稿！
+    
     if (count > 0 && currentQuiz && currentQuiz.length > 0) {
       localStorage.setItem(DRAFT_KEY, JSON.stringify({
         savedAt: Date.now(),
-        questions: currentQuiz, // 锁定这 20 道题目列表
+        questions: currentQuiz, 
         answersMap: answersMap,
         intro: window.cachedIntro || ""
       }));
     } else if (count === 0) {
-      // 如果用户没有选择任何选项，确保清除本地旧草稿
+      
       clearDraft();
     }
   } catch (e) {
@@ -173,14 +173,14 @@ function saveDraft() {
   }
 }
 
-// 2. 清除本地草稿
+
 function clearDraft() {
   try {
     localStorage.removeItem(DRAFT_KEY);
   } catch (e) {}
 }
 
-// 3. 页面渲染后自动恢复上次选中的答案
+
 function restoreDraft() {
   try {
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -188,7 +188,7 @@ function restoreDraft() {
     const draft = JSON.parse(raw);
     if (!draft || !draft.answersMap) return;
 
-    // ⏱️ 检查是否超过 7 天有效期
+    
     if (draft.savedAt && (Date.now() - draft.savedAt > DRAFT_TTL)) {
       console.log("草稿已超过 7 天，自动清除");
       clearDraft();
@@ -203,7 +203,7 @@ function restoreDraft() {
       if (savedWeight !== undefined) {
         const qElem = document.getElementById("q-" + qIdx);
         if (qElem) {
-          // 哪怕选项打乱了，通过 input[value=weight] 依然精确还原
+          
           const inputElem = qElem.querySelector(`input[value="${savedWeight}"]`);
           if (inputElem) {
             const labelElem = inputElem.closest(".option-label");
@@ -231,7 +231,7 @@ function restoreDraft() {
   }
 }
 
-// 4. 手动清空草稿并重置测试
+
 function resetQuizAndDraft() {
   if (confirm("确定要清空已选择的所有答案并重新测试吗？")) {
     clearDraft();
@@ -239,7 +239,7 @@ function resetQuizAndDraft() {
   }
 }
 
-// 确认清单展示
+
 function showReview() {
   let unanswered = [];
   for (let i = 0; i < currentQuiz.length; i++) {
@@ -334,7 +334,7 @@ async function generateReport() {
 
     const result = await response.json();
     renderResultView(result);
-    clearDraft(); // 💾 成功生成报告后，擦除本地草稿
+    clearDraft(); 
   } catch (error) {
     console.error(error);
     alert("报告生成失败，请重试！");

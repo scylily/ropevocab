@@ -1,19 +1,6 @@
-/**
- * IBTI PROJECT - BLACK-GOLD UNIFIED FOOTER COMPONENT
- * File: ibti_footer.js
- * 功能：基于 IBTI 页眉视觉基因构建的黑金页脚（精致小按钮版）
- *
- * @version 1.3.0
- * @author Senior Architect (Defense Grade)
- */
-
 (function () {
   'use strict';
 
-  /**
-   * 1. 安全触发联系我们弹窗（带防御性类型检查）
-   * @param {Event} event - 触发的 DOM 事件对象
-   */
   function safeOpenContactModal(event) {
     if (event && typeof event.preventDefault === 'function') {
       event.preventDefault();
@@ -27,12 +14,8 @@
     }
   }
 
-  // 挂载至全局安全入口
   window.ibtiSafeOpenContact = safeOpenContactModal;
 
-  /**
-   * 2. 自动注入 IBTI 黑金视觉 CSS 样式（小巧按钮调优版）
-   */
   function injectIbtiFooterStyles() {
     const styleId = 'ibti-unified-footer-styles';
     if (document.getElementById(styleId)) return;
@@ -40,9 +23,7 @@
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
-      /* ============================================================
-         IBTI 页眉孪生黑金页脚 - 精致小按钮版
-         ============================================================ */
+
       html body .ibti-site-footer {
         width: 100% !important;
         background: #ffffff !important;
@@ -69,7 +50,6 @@
         box-sizing: border-box !important;
       }
 
-      /* 主标题：复用 Header 宽字间距特征 */
       html body .ibti-site-footer .ibti-footer-title {
         font-size: 1.1rem !important;
         font-weight: 700 !important;
@@ -86,30 +66,28 @@
         margin-top: -10px !important;
       }
 
-      /* 🎯 重点改动：缩小按钮外围包裹容器 (从 320px 缩至 200px) */
       html body .ibti-site-footer .ibti-footer-btn-wrap {
         width: 100% !important;
-        max-width: 200px !important; /* 原: 320px */
+        max-width: 200px !important;
         margin: 0 auto !important;
       }
 
-      /* 🎯 重点改动：缩小按钮内边距与字号 */
       html body .ibti-site-footer .ibti-footer-btn {
         width: 100% !important;
-        padding: 6px 14px !important;   /* 原: 10px 18px */
+        padding: 6px 14px !important;
         background: #fdfbf7 !important;
         border: 1px solid #c5a059 !important;
         color: #c5a059 !important;
-        border-radius: 6px !important;  /* 原: 8px */
+        border-radius: 6px !important;
         cursor: pointer !important;
-        font-size: 0.82rem !important;  /* 原: 0.88rem */
+        font-size: 0.82rem !important;
         font-weight: 500 !important;
         transition: all 0.25s ease !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 6px !important;
-        white-space: nowrap !important; /* 防打字折行 */
+        white-space: nowrap !important;
         box-shadow: 0 1px 4px rgba(197, 160, 89, 0.08) !important;
       }
 
@@ -118,7 +96,6 @@
         border-color: #b38f46 !important;
       }
 
-      /* 极简符号前缀平铺区 */
       html body .ibti-site-footer .ibti-disclaimer-inline {
         max-width: 680px !important;
         width: 100% !important;
@@ -139,13 +116,11 @@
         word-break: break-word !important;
       }
 
-      /* 符号与标题组合包 */
       html body .ibti-site-footer .ibti-prefix-wrap {
         white-space: nowrap !important;
         display: inline !important;
       }
 
-      /* 金色菱形符号 */
       html body .ibti-site-footer .ibti-symbol {
         color: #c5a059 !important;
         font-size: 0.65rem !important;
@@ -154,14 +129,12 @@
         display: inline-block !important;
       }
 
-      /* 深金粗体标题 */
       html body .ibti-site-footer .ibti-prefix {
         color: #c5a059 !important;
         font-weight: 600 !important;
         display: inline !important;
       }
 
-      /* 底部分割线与版权 */
       html body .ibti-site-footer .ibti-copyright-group {
         border-top: 1px dashed #eeeeee !important;
         padding-top: 10px !important;
@@ -188,7 +161,6 @@
         font-weight: 500 !important;
       }
 
-      /* 移动端适配 */
       @media (max-width: 600px) {
         html body .ibti-site-footer {
           padding: 18px 0 12px !important;
@@ -210,9 +182,6 @@
     document.head.appendChild(style);
   }
 
-  /**
-   * 3. 构建 HTML 结构
-   */
   function buildIbtiFooterHtml() {
     return `
       <footer class="ibti-site-footer">
@@ -248,9 +217,6 @@
     `;
   }
 
-  /**
-   * 4. 挂载渲染执行器
-   */
   function renderIbtiFooter() {
     try {
       if (!document.body) return;
