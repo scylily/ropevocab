@@ -1,8 +1,6 @@
 /**
  * ROPEVOCAB PROJECT - UNIFIED FOOTER COMPONENT
  * File: assets/js/footer.js
- * 功能：全站统一页脚组件（防防御级高紧凑排版 & 智能路径计算）
- *
  * @version 7.0.2
  * @author Senior Architect (Defense Grade)
  */
@@ -11,42 +9,32 @@
   'use strict';
 
   /**
-   * 1. 智能计算 pages/ 目录下页面的跳转相对路径（带防御性入参校验）
-   * @param {string} pageName - 目标文件名（如 'about.html'）
-   * @returns {string} 相对路径
+   * @param {string} pageName
+   * @returns {string}
    */
   function getPagesUrl(pageName) {
-    // 防御性校验：避免空值或非字符串引发报错
     if (typeof pageName !== 'string' || !pageName.trim()) {
       pageName = 'about.html';
     }
 
-    // 清理首尾空格与危险字符（防简单注入）
     const cleanPage = pageName.trim().replace(/[^\w\.\-]/g, '');
 
     try {
       const path = window.location.pathname.toLowerCase();
 
       if (path.includes('/pages/')) {
-        // 当前就在 pages/ 文件夹内部
         return cleanPage;
       } else if (path.includes('/admin/') || path.includes('/ibti/')) {
-        // 在 admin/ 或 ibti/ 子目录下
         return '../pages/' + cleanPage;
       } else {
-        // 在外层根目录（如 index.html）
         return 'pages/' + cleanPage;
       }
     } catch (e) {
-      // 容错降级：在极少见的无 location 环境下降级返回默认路径
       console.warn('[Footer] Location URL resolve fallback triggered:', e);
       return 'pages/' + cleanPage;
     }
   }
 
-  /**
-   * 2. 自动注入紧凑版页脚 CSS 样式（html body 提权与样式防污染）
-   */
   function injectFooterStyles() {
     const styleId = 'v4r-unified-footer-styles';
     if (document.getElementById(styleId)) return;
@@ -197,9 +185,6 @@
     document.head.appendChild(style);
   }
 
-  /**
-   * 3. 构建紧凑标准 Footer HTML 结构
-   */
   function buildFooterHtml() {
     const aboutUrl = getPagesUrl('about.html');
 
@@ -230,12 +215,9 @@
     `;
   }
 
-  /**
-   * 4. 挂载渲染执行器（具备 DOM 防错机制）
-   */
   function renderFooter() {
     try {
-      if (!document.body) return; // 防御：确保 DOM 存在
+      if (!document.body) return;
 
       injectFooterStyles();
 
@@ -250,7 +232,6 @@
     }
   }
 
-  // 绑定加载事件
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', renderFooter);
   } else {

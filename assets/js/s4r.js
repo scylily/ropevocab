@@ -1,4 +1,3 @@
-// ==================== Supabase 初始化配置 ====================
 const SUPABASE_URL = "https://s4rstudy.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
 
@@ -7,7 +6,6 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   db: { schema: "s4r" },
 });
 
-// ==================== 身体部位数据定义 ====================
 const bodyParts = [
   { id: "头发", name: "头发", icon: "fas fa-cut" },
   { id: "面部", name: "面部", icon: "fas fa-smile" },
@@ -23,12 +21,8 @@ const bodyParts = [
   { id: "无", name: "无", icon: "fas fa-user-secret" },
 ];
 
-// 全局表达数据缓存
 let userFormData = {};
 
-// ==================== 表单交互逻辑 ====================
-
-// 初始化身体部位网格选择
 function initBodyPartSelectors() {
   const noTouchContainer = document.getElementById("noTouchAreas");
   const noBondageContainer = document.getElementById("noBondageAreas");
@@ -36,7 +30,6 @@ function initBodyPartSelectors() {
   if (!noTouchContainer || !noBondageContainer) return;
 
   bodyParts.forEach((part) => {
-    // 1. 不希望被触碰网格项
     const touchDiv = document.createElement("div");
     touchDiv.className = "body-part-item";
     touchDiv.dataset.id = part.id;
@@ -49,7 +42,6 @@ function initBodyPartSelectors() {
     });
     noTouchContainer.appendChild(touchDiv);
 
-    // 2. 不可捆绑网格项
     const bondageDiv = document.createElement("div");
     bondageDiv.className = "body-part-item";
     bondageDiv.dataset.id = part.id;
@@ -64,7 +56,6 @@ function initBodyPartSelectors() {
   });
 }
 
-// 更新隐藏 input 的逗号分隔字符串
 function updateHiddenInput(inputId, containerId) {
   const input = document.getElementById(inputId);
   const container = document.getElementById(containerId);
@@ -75,7 +66,6 @@ function updateHiddenInput(inputId, containerId) {
   input.value = values.join(",");
 }
 
-// 收集表单完整数据
 function collectFormData() {
   const form = document.getElementById("ropeForm");
   const formData = new FormData(form);
@@ -90,12 +80,10 @@ function collectFormData() {
     }
   }
 
-  // 收集“其他特定项目”输入框
   userFormData.other_accepts = formData.get("other_accepts")
     ? formData.get("other_accepts").trim()
     : "";
 
-  // 收集禁忌部位
   const noTouchItems = document.querySelectorAll("#noTouchAreas .selected");
   userFormData.noTouchItems = Array.from(noTouchItems).map((item) => ({
     id: item.dataset.id,
@@ -108,7 +96,6 @@ function collectFormData() {
     name: item.dataset.name,
   }));
 
-  // 收集感官体验多选项（分层解析主副标题与描述）
   const feelingItems = document.querySelectorAll(
     '.feeling-option input[type="checkbox"]:checked',
   );
@@ -136,7 +123,6 @@ function collectFormData() {
   return userFormData;
 }
 
-// ==================== 草稿自动保存与恢复 ====================
 const DRAFT_KEY = "s4r_form_draft_v1";
 
 function saveDraft() {
@@ -182,7 +168,6 @@ function resetFormAndDraft() {
   }
 }
 
-// 草稿有效期设置：7 天
 const DRAFT_TTL = 7 * 24 * 60 * 60 * 1000;
 
 function restoreDraft() {
@@ -202,7 +187,6 @@ function restoreDraft() {
     const form = document.getElementById("ropeForm");
     if (!form) return;
 
-    // A. 还原单选框与多选框
     form
       .querySelectorAll('input[type="radio"], input[type="checkbox"]')
       .forEach((input) => {
@@ -226,7 +210,6 @@ function restoreDraft() {
         }
       });
 
-    // B. 还原普通文本框与长文本框
     form.querySelectorAll('input[type="text"], textarea').forEach((input) => {
       const name = input.name;
       if (data[name] !== undefined) {
@@ -234,7 +217,6 @@ function restoreDraft() {
       }
     });
 
-    // C. 还原网格部位选择
     if (Array.isArray(data.noTouchItems)) {
       const touchContainer = document.getElementById("noTouchAreas");
       if (touchContainer) {
@@ -263,9 +245,6 @@ function restoreDraft() {
   }
 }
 
-// ==================== 确认页展现与填充逻辑 ====================
-
-// 切换至确认页显示（隐藏主页大 Banner）
 function showConfirmation() {
   document.getElementById("successMessage").style.display = "none";
   const mainHeader = document.querySelector(".header");
@@ -275,16 +254,13 @@ function showConfirmation() {
   populateConfirmationPage();
 }
 
-// 填充确认页数据
 function populateConfirmationPage() {
   const nick = userFormData.nickname || "未填写";
   document.getElementById("confDocName").textContent = nick;
 
-  // 1. 安全词 (顶置红框)
   document.getElementById("confSafeword").innerHTML =
     `<strong style="font-size:1.15rem; color:#be123c;">${userFormData.safeword || "未设置"}</strong>`;
 
-  // 2. 基本信息与健康声明
   document.getElementById("confNickname").innerHTML =
     `<strong>${nick}</strong>`;
 
@@ -310,7 +286,6 @@ function populateConfirmationPage() {
     ? `<strong>${userFormData.piercings}</strong>`
     : `<span>无</span>`;
 
-  // 3. 身体界限与限制设置
   document.getElementById("confTopless").innerHTML =
     userFormData.topless === "accept"
       ? `<span class="badge-pill badge-purple">接受上半身赤裸</span>`
@@ -333,7 +308,6 @@ function populateConfirmationPage() {
     confirmationNoMarksAreas.style.display = "none";
   }
 
-  // 不希望触碰部位
   let noTouchHtml = "";
   if (userFormData.noTouchItems && userFormData.noTouchItems.length > 0) {
     userFormData.noTouchItems.forEach((item) => {
@@ -346,7 +320,6 @@ function populateConfirmationPage() {
   }
   document.getElementById("confNoTouch").innerHTML = noTouchHtml;
 
-  // 不可捆绑部位
   let noBondageHtml = "";
   if (userFormData.noBondageItems && userFormData.noBondageItems.length > 0) {
     userFormData.noBondageItems.forEach((item) => {
@@ -359,7 +332,6 @@ function populateConfirmationPage() {
   }
   document.getElementById("confNoBondage").innerHTML = noBondageHtml;
 
-  // 4. 痛感与特定玩法偏好
   document.getElementById("confPainOther").innerHTML =
     userFormData.other_pain === "yes"
       ? `<strong>希望体验除捆绑感外疼痛</strong>`
@@ -377,7 +349,6 @@ function populateConfirmationPage() {
   document.getElementById("confPainTolerance").innerHTML =
     `<span class="badge-pill badge-purple">${painToleranceMap[userTolerance] || userTolerance || "未选择"}</span>`;
 
-  // 4.9 能接受的特定项目 + “其他”输入框渲染逻辑
   let acceptsHtml = "";
   const checkedAccepts = userFormData.accepts || [];
   const otherAcceptsText = userFormData.other_accepts
@@ -409,7 +380,6 @@ function populateConfirmationPage() {
   }
   document.getElementById("confAccepts").innerHTML = acceptsHtml;
 
-  // 5. 互动偏好明细
   document.getElementById("confHug").innerHTML =
     userFormData.hug === "yes"
       ? `<span class="badge-pill badge-green">可以</span>`
@@ -461,7 +431,6 @@ function populateConfirmationPage() {
       ? `<span class="badge-pill badge-red">${breathVal}</span>`
       : `<span class="badge-pill badge-purple">${breathVal}</span>`;
 
-  // 6. 期望的绳缚体验感受（编号前置 + 纯净阶段胶囊）
   let feelingsHtml = "";
   if (userFormData.feelingItems && userFormData.feelingItems.length > 0) {
     userFormData.feelingItems.forEach((item) => {
@@ -531,7 +500,6 @@ function populateConfirmationPage() {
   document.getElementById("confFeelings").innerHTML = feelingsHtml;
 }
 
-// 从确认页返回修改（恢复主页大 Banner）
 function goBackToForm() {
   document.getElementById("confirmationPage").style.display = "none";
   const mainHeader = document.querySelector(".header");
@@ -543,7 +511,6 @@ function goBackToForm() {
   }
 }
 
-// 打印确认页
 function printConfirmation() {
   const printContent = document.getElementById("confirmationPage").innerHTML;
   const originalContent = document.body.innerHTML;
@@ -560,7 +527,6 @@ function printConfirmation() {
   window.location.reload();
 }
 
-// ==================== 表单提交与 Supabase 数据备份 ====================
 document
   .getElementById("ropeForm")
   .addEventListener("submit", async function (e) {
@@ -611,7 +577,7 @@ document
       if (error) throw error;
       console.log("表单数据已安全备份至云端！");
 
-      clearDraft(); // 提交成功清除草稿
+      clearDraft();
 
       document.getElementById("formContent").style.display = "none";
       if (document.querySelector(".status-bar")) {
@@ -632,24 +598,20 @@ document
     }
   });
 
-// ==================== 页面加载初始化 ====================
 document.addEventListener("DOMContentLoaded", function () {
   initBodyPartSelectors();
 
-  // 监听输入并自动备份草稿
   const ropeForm = document.getElementById("ropeForm");
   if (ropeForm) {
     ropeForm.addEventListener("input", saveDraftDebounced);
     ropeForm.addEventListener("change", saveDraft);
   }
-  restoreDraft(); // 加载自动恢复未提交草稿
+  restoreDraft();
 });
 
-// ==================== 长图生成与全平台统一弹窗预览 ====================
 function downloadS4RImage(id) {
   const element = document.getElementById(id) || document.body;
 
-  // 1. 动态生成自定义文件名（如：绳缚体验知情同意书_用户名_20260729.png）
   const nick =
     userFormData && userFormData.nickname
       ? userFormData.nickname.trim()
@@ -661,7 +623,6 @@ function downloadS4RImage(id) {
     String(now.getDate()).padStart(2, "0");
   const fileName = `绳缚体验知情同意书_${nick}_${dateStr}.png`;
 
-  // 2. 弹出“正在生成”提示
   let processToast = document.getElementById("image-processing-toast");
   if (!processToast) {
     processToast = document.createElement("div");
@@ -690,7 +651,6 @@ function downloadS4RImage(id) {
     processToast.style.display = "flex";
   }
 
-  // 3. 渲染图片并展示统一遮罩弹窗（无任何 JavaScript 自动下载触发，彻底根治所有拦截 BUG）
   setTimeout(() => {
     html2canvas(element, {
       scale: 2,
@@ -720,8 +680,8 @@ function downloadS4RImage(id) {
 
         const imgDisplay = document.getElementById("generated-image");
         imgDisplay.src = imageData;
-        imgDisplay.alt = fileName; // 将自定义文件名挂载至图片 alt 属性
-        imgDisplay.title = fileName; // 将自定义文件名挂载至图片 title 属性
+        imgDisplay.alt = fileName;
+        imgDisplay.title = fileName;
 
         processToast.style.display = "none";
         overlay.style.display = "flex";

@@ -1,11 +1,3 @@
-/**
- * ==============================================================================
- * ROPEVOCAB PROJECT - HOME ENGINE & SEARCH ENGINE
- * File: assets/js/home-engine.js
- * 支持：全语种模糊检索 (中文, 英文, 日文汉字, 平假名 hiragana, 罗马音, ID, 徽章)
- * ==============================================================================
- */
-
 document.addEventListener("DOMContentLoaded", () => {
     initHomeEngine();
 });
@@ -23,11 +15,9 @@ async function initHomeEngine() {
         });
     }
 
-    // 加载首页数据统计
     loadHomeStats();
 }
 
-// 加载动态词条总数统计
 async function loadHomeStats() {
     const totalTermsEl = document.getElementById("stat-total-terms");
     if (!totalTermsEl || typeof supabaseClient === 'undefined') return;
@@ -45,7 +35,6 @@ async function loadHomeStats() {
     }
 }
 
-// 搜索引擎核心逻辑 (支持平假名检索)
 async function handleHomeSearch(keyword) {
     const resultsSection = document.getElementById("search-results-section");
     const resultsGrid = document.getElementById("search-results-grid");
@@ -53,7 +42,6 @@ async function handleHomeSearch(keyword) {
 
     if (!resultsSection || !resultsGrid) return;
 
-    // 若搜索框为空，隐藏搜索结果区，还原分类目录
     if (!keyword) {
         resultsSection.style.display = "none";
         resultsGrid.innerHTML = "";
@@ -61,7 +49,6 @@ async function handleHomeSearch(keyword) {
         return;
     }
 
-    // 显示搜索结果区域，隐藏分类目录
     resultsSection.style.display = "block";
     if (categoriesSection) categoriesSection.style.display = "none";
     resultsGrid.innerHTML = `
@@ -72,10 +59,8 @@ async function handleHomeSearch(keyword) {
     `;
 
     try {
-        // 安全转义字符
         const cleanKey = keyword.replace(/[%_]/g, "\\$&");
 
-        // 全多语种字段并发 OR 模糊匹配（含 hiragana 平假名）
         const orCondition = [
             `title.ilike.%${cleanKey}%`,
             `name_en.ilike.%${cleanKey}%`,
@@ -106,7 +91,6 @@ async function handleHomeSearch(keyword) {
             return;
         }
 
-        // 渲染搜索到的词条卡片
         let html = "";
         data.forEach(item => {
             const title = item.title || item.id;

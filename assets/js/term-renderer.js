@@ -1,12 +1,3 @@
-/**
- * ==============================================================================
- * ROPEVOCAB PROJECT - FRONTEND RENDERER ENGINE (term-renderer.js)
- * File: assets/js/term-renderer.js
- * 功能：前台词条系统综合渲染引擎（自动调度 category.html 分类页 与 term.html 详情页）
- * 修复：100% 还原数据库原始 term.emoji，彻底移除任何图标篡改逻辑，解决Unicode乱码框框
- * ==============================================================================
- */
-
 document.addEventListener('DOMContentLoaded', () => {
   const isCategoryPage = Boolean(document.getElementById('hub-loading') || document.getElementById('term-cards-grid'));
   const isDetailPage = Boolean(document.getElementById('detail-loading') || document.getElementById('term-dynamic-sections'));
@@ -28,9 +19,6 @@ function getSupabaseClient() {
   return null;
 }
 
-// ==============================================================================
-// 1. 分类列表页渲染引擎 (category.html)
-// ==============================================================================
 async function initCategoryPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const catId = urlParams.get('id') || 'techniques';
@@ -98,9 +86,6 @@ function renderCategoryHeader(title, description) {
   if (navTagEl) navTagEl.innerHTML = `<i class="fas fa-folder-open"></i> ${escapeHtml(title)}`;
 }
 
-/**
- * 核心渲染卡片网格函数（直通数据库原始 term.emoji，绝不覆盖篡改）
- */
 function renderTermCardsGrid(terms) {
   const gridContainer = document.getElementById('term-cards-grid');
   if (!gridContainer) return;
@@ -116,10 +101,8 @@ function renderTermCardsGrid(terms) {
 
   let html = '';
   terms.forEach((term) => {
-    // 1. 中文名称 (Middle)
     const titleZh = escapeHtml(term.title || term.chinese_name || term.name || '-');
 
-    // 2. 英文名称 (Bottom) - 优先匹配英文字段
     let titleEn = term.name_en || term.english_name || '';
     if (!titleEn && term.subtitle_badge && /^[A-Za-z0-9\s\-_/]+$/.test(term.subtitle_badge.trim())) {
       titleEn = term.subtitle_badge.trim();
@@ -129,7 +112,6 @@ function renderTermCardsGrid(terms) {
     }
     const titleEnEscaped = escapeHtml(titleEn);
 
-    // 3. Emoji 图标 (Top) - 100% 读取数据库真实配置，绝不上门替换或修改！
     const rawEmoji = (term.emoji || '').trim();
     const emojiDisplay = rawEmoji ? escapeHtml(rawEmoji) : '🔖';
 
@@ -169,9 +151,6 @@ function showHubErrorState(msg) {
   }
 }
 
-// ==============================================================================
-// 2. 词条详情页渲染引擎 (term.html)
-// ==============================================================================
 async function initTermDetailPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const termId = urlParams.get('id');

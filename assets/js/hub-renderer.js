@@ -1,9 +1,4 @@
 /**
- * ropevocab - Hub 渲染引擎 (hub-renderer.js) - v6.6.1 完全解耦纯净版
- * 1. 彻底移除 CSS 字符串注入，遵循样式归 CSS、逻辑归 JS 的架构原则
- * 2. 仅保留页面类型检测、数据获取、DOM 组装与手风琴开关逻辑
- * 3. 依赖 assets/css/v4r-t1.css 提供全量视觉样式
- *
  * @version 6.6.1
  * @author Senior Architect (Defense Grade)
  */
@@ -14,9 +9,6 @@
   const SUPABASE_URL = "https://gfhgwqjvxyyanumbwibe.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
 
-  /**
-   * 严格防护门禁 (Guard Clause)
-   */
   function detectPageType() {
     const path = window.location.pathname.toLowerCase();
     const title = (document.title || '').toLowerCase();
@@ -37,9 +29,6 @@
 
   const timerRegistry = new Map();
 
-  /**
-   * 手风琴抽屉展开/收起核心交互
-   */
   window.v4rToggleNoteDrawer = function (itemId) {
     const masterRow = document.getElementById(`v4r-master-${itemId}`);
     const drawerRow = document.getElementById(`v4r-drawer-${itemId}`);
@@ -69,7 +58,7 @@
 
     } else {
       drawerRow.classList.remove('d-none');
-      void drawerRow.offsetWidth; // 触发 Reflow 保证 CSS transition 动画平滑生效
+      void drawerRow.offsetWidth;
 
       drawerRow.classList.add('is-active');
       masterRow.classList.add('is-expanded');
@@ -77,9 +66,6 @@
     }
   };
 
-  /**
-   * 构建分组表格 HTML DOM 结构
-   */
   function buildNativeGroupedTablesHtml(data) {
     if (!Array.isArray(data) || data.length === 0) {
       return `
