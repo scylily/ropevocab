@@ -41,7 +41,7 @@
   </head>
 
   <body>
-    <!-- 顶部导航栏 -->
+
     <nav class="navbar" style="padding: 10px 0;">
       <div class="container" style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 auto; padding: 0 10px;">
         <div class="nav-links" style="display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 6px; width: 100%; margin: 0 auto;">
@@ -51,7 +51,6 @@
       </div>
     </nav>
 
-    <!-- 3 层面包屑导航容器 (首页 > 上级分类Hub > 词条标题) -->
     <div class="breadcrumb">
       <div class="container" id="breadcrumb-container">
         <a href="../index.html">首页</a> &gt;
@@ -59,13 +58,11 @@
       </div>
     </div>
 
-    <!-- 加载中状态 -->
     <div id="detail-loading" class="container state-container">
       <i class="fas fa-spinner spinner"></i>
       <p style="color: #666;">正在加载词条数据...</p>
     </div>
 
-    <!-- 错误状态 -->
     <div id="detail-error" class="container state-container" style="display: none;">
       <div class="error-card">
         <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
@@ -75,9 +72,8 @@
       </div>
     </div>
 
-    <!-- 主渲染区 -->
     <main id="detail-main-content" style="display: none;">
-      <!-- 1. 页头标头 -->
+
       <header class="term-header">
         <div class="container">
           <h1 id="term-title">-</h1>
@@ -87,7 +83,6 @@
         </div>
       </header>
 
-      <!-- 2. 多语言表述 -->
       <section class="container">
         <h2 style="text-align: center; margin-bottom: 20px; font-size: 1.6rem; color: #333;">
           <i class="fas fa-globe-asia"></i> 多语言表述
@@ -103,7 +98,6 @@
             <div class="expression" id="lang-en">-</div>
           </div>
 
-          <!-- 日文表述动态卡片 (含平假名) -->
           <div class="language-card" id="lang-jp-box">
             <h3><i class="fas fa-language"></i> 日文表述</h3>
             <div class="expression" id="lang-jp">-</div>
@@ -112,10 +106,8 @@
         </div>
       </section>
 
-      <!-- 3. 动态正文区块挂载容器 (彻底解绑硬编码容器) -->
       <section class="container" id="term-dynamic-sections"></section>
 
-      <!-- 4. 多图自适应画廊 -->
       <section class="container" id="section-gallery">
         <div class="content-section" style="background: transparent; box-shadow: none; padding: 0;">
           <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.6rem; color: #333;">
@@ -125,7 +117,6 @@
         </div>
       </section>
 
-      <!-- 5. 智能返回按钮 -->
       <div class="container" style="text-align: center;">
         <button type="button" id="btn-back-history" class="back-button">
           <i class="fas fa-arrow-left"></i> 返回
