@@ -11,7 +11,7 @@
   </head>
 
   <body class="home-page">
-    <!-- 导航栏 (彻底移除左侧幽灵空 Logo，实现 4 按钮绝对居中) -->
+
     <nav class="navbar" style="padding: 10px 0;">
       <div class="container" style="display: flex; justify-content: center; align-items: center; width: 100%; margin: 0 auto; padding: 0 10px;">
         <div class="nav-links" style="display: flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; gap: 6px; width: 100%; margin: 0 auto;">
@@ -23,17 +23,15 @@
       </div>
     </nav>
 
-    <!-- 主横幅区域与精致胶囊搜索框 -->
     <section class="hero-section">
       <div class="container">
         <h1 class="hero-title">常用绳缚词汇库</h1>
-        <!-- 核心：精致胶囊搜索框 -->
+
         <div class="search-box">
           <i class="fas fa-search"></i>
           <input type="text" id="home-search-input" placeholder="输入词汇名称、日文、罗马音或关键词搜索..." autocomplete="off" />
         </div>
 
-        <!-- 动态数据统计 -->
         <div class="statistics">
           <div class="stat-item">
             <span class="stat-number" id="stat-total-terms">50+</span>
@@ -55,7 +53,6 @@
       </div>
     </section>
 
-    <!-- 动态搜索结果展示区 -->
     <section class="container" id="search-results-section" style="display: none;">
       <h2 style="margin: 20px 0 15px; font-size: 1.5rem; color: #333;">
         <i class="fas fa-list-ul" style="color: #667eea; margin-right: 8px;"></i> 搜索结果
@@ -63,7 +60,6 @@
       <div class="term-list" id="search-results-grid"></div>
     </section>
 
-    <!-- SSC & RACK 提醒 -->
     <section class="container">
       <h2 style="text-align: center; margin: 40px 0 20px; font-size: 1.8rem; color: #333;">
         <a href="pages/ssc.html" style="color: #000000; text-decoration: none; font-size: 1.5rem">
@@ -89,7 +85,6 @@
       </div>
     </section>
 
-    <!-- 5 大分类导航入口 -->
     <section class="container" id="categories">
       <h2 style="text-align: center; margin: 30px 0 20px; font-size: 1.8rem; color: #333;">
         <i class="fas fa-folder-open" style="color: #667eea; margin-right: 10px"></i>
@@ -129,7 +124,6 @@
       </div>
     </section>
 
-    <!-- Supabase Client & 首页搜索引擎 -->
     <script src="https://cdn.bootcdn.net/ajax/libs/supabase-js/2.39.8/supabase.min.js"></script>
     <script>
       if (typeof supabase === 'undefined') {
