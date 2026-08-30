@@ -1,6 +1,4 @@
 /**
- * ROPEVOCAB PROJECT - UNIFIED FOOTER COMPONENT
- * File: assets/js/footer.js
  * @version 7.0.2
  * @author Senior Architect (Defense Grade)
  */
@@ -42,36 +40,34 @@
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
-      /* 容器外层紧凑化 */
       html body .site-footer {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: rgba(255, 255, 255, 0.9) !important;
-        padding: 18px 0 12px !important; /* 原: 40px 0 25px */
-        margin-top: 25px !important;    /* 原: 60px */
-        font-size: 0.85rem !important;  /* 原: 0.88rem */
-        line-height: 1.45 !important;   /* 原: 1.6 */
+        padding: 18px 0 12px !important;
+        margin-top: 25px !important;
+        font-size: 0.85rem !important;
+        line-height: 1.45 !important;
         border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
         width: 100% !important;
         box-sizing: border-box !important;
         clear: both !important;
-        word-break: break-word !important; /* 防极长字符溢出 */
+        word-break: break-word !important;
       }
 
       html body .site-footer .footer-container {
         max-width: 1200px !important;
         margin: 0 auto !important;
-        padding: 0 16px !important; /* 原: 0 20px */
+        padding: 0 16px !important;
         box-sizing: border-box !important;
       }
 
-      /* 顶部信息区紧凑化 */
       html body .site-footer .footer-top {
         display: flex !important;
         flex-direction: column !important;
-        gap: 12px !important;          /* 原: 25px */
+        gap: 12px !important;
         justify-content: space-between !important;
-        padding-bottom: 12px !important;/* 原: 25px */
-        border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important; /* 保留分隔线 */
+        padding-bottom: 12px !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
       }
 
       @media (min-width: 768px) {
@@ -87,10 +83,10 @@
       }
 
       html body .site-footer .footer-brand-title {
-        font-size: 1.05rem !important;  /* 原: 1.15rem */
+        font-size: 1.05rem !important;
         font-weight: 700 !important;
         color: #ffffff !important;
-        margin-bottom: 4px !important;  /* 原: 10px */
+        margin-bottom: 4px !important;
         display: flex !important;
         align-items: center !important;
         gap: 6px !important;
@@ -102,9 +98,9 @@
 
       html body .site-footer .footer-desc {
         color: #e2e8f0 !important;
-        font-size: 0.8rem !important;  /* 原: 0.82rem */
+        font-size: 0.8rem !important;
         max-width: 580px !important;
-        margin-bottom: 3px !important;  /* 原: 6px */
+        margin-bottom: 3px !important;
         text-align: left !important;
         line-height: 1.45 !important;
       }
@@ -112,8 +108,8 @@
       html body .site-footer .author-title {
         color: #e2e8f0 !important;
         font-weight: 600 !important;
-        font-size: 0.88rem !important; /* 原: 0.92rem */
-        margin-bottom: 3px !important;  /* 原: 6px */
+        font-size: 0.88rem !important;
+        margin-bottom: 3px !important;
       }
 
       html body .site-footer .footer-social-links {
@@ -137,11 +133,11 @@
       html body .site-footer .footer-bottom {
         display: flex !important;
         flex-direction: column !important;
-        gap: 6px !important;           /* 原: 12px */
+        gap: 6px !important;
         align-items: center !important;
         justify-content: space-between !important;
-        padding-top: 10px !important;   /* 原: 20px */
-        font-size: 0.78rem !important;  /* 原: 0.8rem */
+        padding-top: 10px !important;
+        font-size: 0.78rem !important;
         color: #e2e8f0 !important;
       }
 
@@ -157,7 +153,6 @@
         letter-spacing: 0.5px !important;
       }
 
-      /* 移动端（屏幕宽度 < 768px）极致紧凑适配 */
       @media (max-width: 767px) {
         html body .site-footer {
           padding: 14px 0 10px !important;
