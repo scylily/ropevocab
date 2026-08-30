@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>张力与感官：绳缚入门到精通</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       tailwind.config = {
@@ -63,11 +61,9 @@
 
   <body class="bg-shibariBg-light dark:bg-shibariBg-dark text-stone-800 dark:text-stone-200 min-h-screen transition-colors duration-200 flex flex-col">
 
-    <!-- 📱/🖥️ 移动端极窄 / PC端旗舰 响应式吸顶导航栏 -->
     <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-md border-b border-stone-800/80">
       <div class="max-w-7xl mx-auto px-3 sm:px-4 py-1.5 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-6">
 
-        <!-- 1. 品牌标题区域 (手机端仅展示主标题以极大地节省高度，PC端展示副标题) -->
         <div class="flex items-center justify-between w-full sm:w-auto">
           <div onclick="switchTab('home')" class="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer hover:opacity-90" title="返回首页">
             <span class="text-jute-500 text-lg sm:text-xl md:text-2xl font-black tracking-wider whitespace-nowrap">张力与感官</span>
@@ -75,7 +71,6 @@
             <span class="text-xs sm:text-sm text-stone-400 font-semibold whitespace-nowrap">绳缚入门到精通</span>
           </div>
 
-          <!-- 移动端显示的快捷按钮 -->
           <div class="flex items-center gap-1 sm:hidden">
             <button onclick="toggleTheme()" class="p-1 text-stone-400 hover:text-white text-xs">🌓</button>
             <button onclick="openProfileDrawer()" class="flex items-center gap-1 px-2 py-0.5 bg-stone-800 text-amber-400 rounded-full text-[11px] font-bold border border-stone-700">
@@ -84,7 +79,6 @@
           </div>
         </div>
 
-        <!-- 2. 阶段导航轨道 (手机端超紧凑平铺，PC端分段胶囊) -->
         <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto pt-1 sm:pt-0 border-t sm:border-t-0 border-stone-800/60">
           <nav class="flex items-center justify-between sm:justify-start gap-1 w-full sm:w-auto text-[11px] sm:text-sm font-bold bg-stone-800/90 sm:bg-stone-800/80 p-0.5 sm:p-1 rounded-lg sm:rounded-xl border border-stone-700/60 shadow-inner">
             <button onclick="switchTab('home')" id="tab-home" class="tab-btn flex-1 sm:flex-initial px-2 sm:px-4 py-1 sm:py-1.5 rounded-md sm:rounded-lg transition-all bg-jute-750 text-white font-bold flex items-center justify-center gap-1 whitespace-nowrap shadow-sm">
@@ -113,20 +107,16 @@
       </div>
     </header>
 
-    <!-- 主体视图区域 -->
     <main class="max-w-7xl mx-auto px-2.5 sm:px-4 py-3 sm:py-6 flex-1 w-full">
 
-      <!-- ================= 首页视图 (Home View) ================= -->
       <div id="view-home" class="space-y-4 sm:space-y-6">
 
-        <!-- 核心内容与导览卡片 -->
         <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl p-3.5 sm:p-6 shadow-sm space-y-2.5 sm:space-y-3">
           <div class="border-b border-jute-500/30 pb-2 flex items-center justify-between gap-2">
             <h2 class="text-sm sm:text-xl font-black text-jute-750 dark:text-jute-600 tracking-wide whitespace-nowrap">🔺你能学到🔻</h2>
             <button onclick="openAuthModal('login')" id="home-login-btn" class="px-2.5 py-1 bg-jute-750 text-white rounded-md text-[11px] sm:text-xs font-bold hover:bg-jute-900 whitespace-nowrap shadow-sm">🔑 登录/注册账号</button>
           </div>
 
-          <!-- 合并为 1 个统一的极简底框 -->
           <div class="p-3 sm:p-3.5 bg-stone-50 dark:bg-zinc-900/50 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col sm:flex-row items-center justify-center sm:justify-around gap-2 sm:gap-4 text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-200">
             <div class="flex gap-3 w-full sm:w-auto">
               <span>⚙️</span><span>掌握物理力学与解剖安全</span>
@@ -142,12 +132,10 @@
           </div>
         </div>
 
-        <!-- 三大阶段路线图 -->
         <div class="space-y-2.5 sm:space-y-3">
           <h3 class="text-base sm:text-lg font-bold text-stone-800 dark:text-stone-200">🚩 课程级别阶段</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6">
 
-            <!-- 阶段一卡片 -->
             <div onclick="switchTab('stage-0')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-jute-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
               <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
@@ -162,7 +150,6 @@
               </div>
             </div>
 
-            <!-- 阶段二卡片 -->
             <div onclick="switchTab('stage-1')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-amber-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
               <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
@@ -177,7 +164,6 @@
               </div>
             </div>
 
-            <!-- 阶段三卡片 -->
             <div onclick="switchTab('stage-2')" class="cursor-pointer bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark hover:border-red-500 rounded-xl p-3.5 sm:p-5 shadow-sm transition-all flex flex-col justify-between">
               <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
@@ -196,7 +182,6 @@
         </div>
       </div>
 
-      <!-- ================= 阶段一：独立页面 ================= -->
       <div id="view-stage-0" class="stage-view hidden space-y-3 sm:space-y-6">
         <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
           <div class="space-y-0.5">
@@ -221,7 +206,6 @@
         </div>
       </div>
 
-      <!-- ================= 阶段二：独立页面 ================= -->
       <div id="view-stage-1" class="stage-view hidden space-y-3 sm:space-y-6">
         <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
           <div class="space-y-0.5">
@@ -246,7 +230,6 @@
         </div>
       </div>
 
-      <!-- ================= 阶段三：独立页面 ================= -->
       <div id="view-stage-2" class="stage-view hidden space-y-3 sm:space-y-6">
         <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 sm:p-4 flex items-center justify-between gap-2 shadow-sm">
           <div class="space-y-0.5">
@@ -273,7 +256,6 @@
 
     </main>
 
-    <!-- 👤 侧滑个人中心抽屉 Drawer -->
     <div id="drawer-profile" class="fixed top-0 right-0 h-full w-[85vw] max-w-xs bg-stone-50 dark:bg-zinc-950 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out border-l border-shibariBorder-light dark:border-shibariBorder-dark flex flex-col hidden">
       <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
         <h3 class="text-xs sm:text-sm font-bold text-stone-800 dark:text-stone-100 flex items-center gap-1.5">
@@ -303,7 +285,6 @@
           <div id="drawer-progress-text" class="text-[11px] text-stone-500 text-right">已完成 0 / 26 课时</div>
         </div>
 
-        <!-- 👑 教师极简通道 -->
         <div id="drawer-teacher-box" class="p-2.5 sm:p-3 bg-purple-500/10 rounded-lg border border-purple-500/30 space-y-1.5">
           <div class="font-bold text-purple-700 dark:text-purple-400 flex items-center justify-between">
             <span>👑 教师通道</span>
@@ -323,7 +304,6 @@
       </div>
     </div>
 
-    <!-- 🔑 登录 / 邀请码注册弹窗 -->
     <div id="modal-auth" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
       <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl">
         <div class="flex border-b border-shibariBorder-light dark:border-shibariBorder-dark text-xs sm:text-sm font-bold">
@@ -361,7 +341,6 @@
       </div>
     </div>
 
-    <!-- 🎓 学员升级弹窗 -->
     <div id="modal-upgrade" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
       <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-sm w-full p-4 sm:p-5 space-y-3.5 shadow-2xl">
         <div class="flex justify-between items-center border-b pb-2 border-shibariBorder-light dark:border-shibariBorder-dark">
@@ -378,7 +357,6 @@
       </div>
     </div>
 
-    <!-- 🛡️ 完整版《安全防护承诺书》弹窗 -->
     <div id="modal-safety-pledge" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
       <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
 
@@ -406,17 +384,13 @@
       </div>
     </div>
 
-    <!-- 背景遮罩 -->
     <div id="drawer-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 hidden" onclick="closeAllDrawers()"></div>
 
-    <!-- ==================== JS 核心逻辑 (已被 Supabase 防盗安全引擎强力驱动) ==================== -->
     <script>
-      // 🔗 Supabase 配置
       const SUPABASE_URL = "https://s4rstudy.v4rope.com";
       const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
       const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      // 全局状态
       let curriculumData = [];
       let userProgressSet = new Set();
       let userLevel = localStorage.getItem('shibari_user_level') || 'visitor';
@@ -427,7 +401,6 @@
       let stageExpandState = { 0: false, 1: false, 2: false };
       let safetyAgreementData = null;
 
-      // 🌐 统一 Supabase 英文错误提示转中文
       function translateError(errOrMsg) {
         if (!errOrMsg) return '操作失败，请重试';
         const text = typeof errOrMsg === 'string' ? errOrMsg : (errOrMsg.message || errOrMsg.toString());
@@ -453,7 +426,6 @@
         await fetchSafetyAgreementFromSupabase();
       }
 
-      // 🛡️ 严格基于 Supabase 真实 Auth 状态建立 Session（杜绝伪造）
       async function checkCurrentSession() {
         const { data } = await supabaseClient.auth.getSession();
         if (data && data.session) {
@@ -475,7 +447,6 @@
         }
       }
 
-      // 🛡️ 查询数据库防偷窥安全视图 v_lessons
       async function fetchCurriculumFromSupabase() {
         try {
           const { data, error } = await supabaseClient
@@ -590,7 +561,6 @@
           const tocList = document.getElementById(`toc-list-${item.stage}`);
           if (!container) return;
 
-          // 🛡️ 由数据库视图根据权限直接下发的 is_unlocked 决定
           const isUnlocked = item.is_unlocked === true;
           const isChecked = userProgressSet.has(item.id);
 
@@ -713,15 +683,12 @@
           if (body) {
             const isHidden = body.classList.contains('hidden');
 
-            // 切换展开/收起状态
             body.classList.toggle('hidden');
 
-            // 如果是从“收起”切换为“展开”，则平滑滚动定位到该卡片
             if (isHidden) {
               card.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           } else {
-            // 针对未解锁的课程（没有 body 详情），直接滚动定位过去
             card.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }
@@ -791,7 +758,6 @@
         updateProgressUI();
       }
 
-      // 👑 导师极简无感通道（无需事先登录，凭口令直达最高导师权限）
       async function loginAsTeacherByPasscode() {
         const code = document.getElementById('input-teacher-passcode').value.trim();
         if (!code) {
@@ -800,7 +766,6 @@
         }
 
         try {
-          // 1. 向 Supabase 发起口令校验
           const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('teacher_passcode_login', { passcode: code });
 
           if (rpcErr || !rpcRes.success) {
@@ -809,7 +774,6 @@
             return;
           }
 
-          // 2. 口令正确，利用返回的虚拟导师凭证无感登录 Supabase 官方 Session
           const { data: authData, error: authErr } = await supabaseClient.auth.signInWithPassword({
             email: rpcRes.email,
             password: rpcRes.password
@@ -817,7 +781,6 @@
 
           if (authErr) throw authErr;
 
-          // 3. 登录成功，切换全局为 master 最高状态
           currentUser = authData.user;
           userLevel = 'master';
           localStorage.setItem('shibari_user_level', 'master');
@@ -921,7 +884,6 @@
         }
       }
 
-      // 🛡️ 注册与登录（通过后端安全 RPC 激活邀请码）
       async function handleAuthSubmit() {
         const email = document.getElementById('auth-email').value.trim();
         const password = document.getElementById('auth-password').value.trim();
@@ -1036,7 +998,6 @@
         }
       }
 
-      // 🚪 安全退出
       async function logout() {
         if (supabaseClient) await supabaseClient.auth.signOut();
         currentUser = null;
@@ -1054,7 +1015,6 @@
 
       window.addEventListener('DOMContentLoaded', initApp);
 
-      // 从 Supabase 拉取安全条款
       async function fetchSafetyAgreementFromSupabase() {
         try {
           const { data, error } = await supabaseClient

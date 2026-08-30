@@ -6,13 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>绳缚体验知情同意与偏好调查表</title>
 
-    <!-- 外部样式与 Icon -->
     <link rel="stylesheet" href="assets/css/s4r_style.css" />
     <link rel="icon" href="image/favicon.ico" />
     <link rel="stylesheet" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&amp;display=swap" />
 
-    <!-- 核心 JS 脚本依赖 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script defer src="assets/js/s4r.js"></script>
@@ -21,7 +19,6 @@
   <body>
     <div class="container">
 
-      <!-- 主页大 Header -->
       <div class="header">
         <h1>绳缚体验知情同意与偏好调查表</h1>
         <p>基于 RACK "风险认知下的知情同意" 原则
@@ -29,7 +26,6 @@
         </p>
       </div>
 
-      <!-- 顶栏状态指示器 -->
       <div class="status-bar">
         <div class="status-item active">
           <i class="fas fa-exclamation-triangle"></i>
@@ -45,11 +41,9 @@
         </div>
       </div>
 
-      <!-- ==================== 表单填写主体 ==================== -->
       <form id="ropeForm" method="POST" action="#">
         <div class="content" id="formContent">
 
-          <!-- 第一部分：安全须知与准备事项 -->
           <div class="form-section">
             <div class="section-title">
               <i class="fas fa-exclamation-triangle"></i>
@@ -82,7 +76,6 @@
             </div>
           </div>
 
-          <!-- 第二部分：基本信息与健康声明 -->
           <div class="form-section">
             <div class="section-title">
               <i class="fas fa-heartbeat"></i>
@@ -116,7 +109,6 @@
             </div>
           </div>
 
-          <!-- 第三部分：偏好程度与界限设置 -->
           <div class="form-section">
             <div class="section-title">
               <i class="fas fa-sliders-h"></i>
@@ -205,7 +197,6 @@
               </div>
             </div>
 
-            <!-- 4.9 可接受特定项目 + 其他补充输入框 -->
             <div class="form-group">
               <label class="form-label-g">可接受以下哪些项目（可多选）？：</label>
               <div class="checkbox-group">
@@ -311,7 +302,7 @@
                   <span>轻度呼吸控制</span>
                 </label>
                 <label class="radio-label">
-                  <input name="breath_control" type="radio" value="能接受但会不安" /> <!-- 彻底改为中文，不再依赖英文字典转化 -->
+                  <input name="breath_control" type="radio" value="能接受但会不安" />
                   <span>能接受但会不安</span>
                 </label>
                 <label class="radio-label">
@@ -334,14 +325,12 @@
               </div>
             </div>
 
-            <!-- 感官体验多选包裹模块 -->
             <div class="form-group">
               <label class="form-label-g">您希望在绳缚体验中主要感受到哪些程度或体验（可多选）？</label>
               <div class="form-help">绳缚是一场由浅入深、层层递进的感官旅程。下面为您呈现四个程度的体验坐标，您可以根据当下的心态进行单选或多选。</div>
 
               <div class="feeling-module-box">
 
-                <!-- 程度 1 -->
                 <div class="level-group">
                   <div class="level-group-title" style="color: #7cb342;">🟢 程度1：舒缓接纳 · 身体着陆</div>
                   <div class="level-group-desc">这是所有探索的基石，重点在全然放松中，建立信任与最深层的安全感，是初窥绳缚之门的体验</div>
@@ -369,7 +358,6 @@
                   </div>
                 </div>
 
-                <!-- 程度 2 -->
                 <div class="level-group">
                   <div class="level-group-title" style="color: #ffb74d;">🟡 程度2：灵蕴交流 · 感官觉醒</div>
                   <div class="level-group-desc">似微风在肌肤上的安抚，通过触觉互动，在安全感之上开启一场充满好奇的乐趣探索，是有趣的非语言触觉对话</div>
@@ -397,7 +385,6 @@
                   </div>
                 </div>
 
-                <!-- 程度 3 -->
                 <div class="level-group">
                   <div class="level-group-title" style="color: #ff7043;">🟠 程度3：浸漫共鸣 · 意识交融</div>
                   <div class="level-group-desc">（本层级涵盖程度1-2）在需要全神贯注的协同中，达到身心合一的深度心流状态</div>
@@ -425,7 +412,6 @@
                   </div>
                 </div>
 
-                <!-- 程度 4 -->
                 <div class="level-group">
                   <div class="level-group-title" style="color: #e53935;">🔴 程度4：沉淬突破 · 身心重塑</div>
                   <div class="level-group-desc">（本层级深度涵盖程度1-3）在安全框架下，觉醒感官，极致挑战受压的磨炼，实现生理极限的突破与转化</div>
@@ -453,7 +439,6 @@
                   </div>
                 </div>
 
-                <!-- 底部探索指南内嵌框 -->
                 <div class="feeling-guide-box">
                   <i class="fas fa-bell text-purple"></i> <strong>【探索指南】</strong>
                   <p style="margin-top: 6px; font-size: 0.82rem; line-height: 1.5; color: #475569;">
@@ -465,12 +450,10 @@
               </div>
             </div>
 
-            <!-- 主页隐私声明 -->
             <div class="privacy-note">
               <p><strong>隐私声明：</strong>本人确认，以上所填内容均真实有效。本人理解并同意 RACK "风险认知下的知情同意" 的原则，知晓在活动开始前或过程中，可随时撤回同意，活动结束后，不可撤回已发生之同意。</p>
             </div>
 
-            <!-- 提交按钮 -->
             <button class="btn-submit" type="submit">
               <i class="fas fa-paper-plane"></i> 提交问卷
             </button>
@@ -484,7 +467,6 @@
       </form>
     </div>
 
-    <!-- ==================== 提交成功提示界面 ==================== -->
     <div class="success-message" id="successMessage">
       <i class="fas fa-check-circle"></i>
       <h2>提交成功！</h2>
@@ -500,10 +482,8 @@
       </div>
     </div>
 
-    <!-- ==================== 720px 精致确认页/截图导出区域 ==================== -->
     <div class="confirmation-page" id="confirmationPage">
 
-      <!-- 顶部档案 Title Banner -->
       <div class="conf-header-card">
         <div class="conf-header-title">
           <i class="fas fa-id-card"></i>
@@ -514,18 +494,15 @@
         </div>
       </div>
 
-      <!-- 居中签署状态行 -->
       <div class="signed-status-row">
         <span class="badge-pill badge-green"><i class="fas fa-shield-alt"></i> 档案状态：已签署确认</span>
       </div>
 
-      <!-- 1. 顶置安全词横幅 -->
       <div class="safeword-banner-top">
         <span class="safeword-label"><i class="fas fa-exclamation-triangle"></i> 安全词 / 安全动作：</span>
         <span class="safeword-val" id="confSafeword">--</span>
       </div>
 
-      <!-- 2. 基本信息与健康声明 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-user text-purple"></i>
@@ -559,7 +536,6 @@
         </div>
       </div>
 
-      <!-- 3. 身体界限与限制设置 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-ban text-purple"></i>
@@ -589,7 +565,6 @@
         </div>
       </div>
 
-      <!-- 4. 痛感与特定玩法偏好 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-bolt text-purple"></i>
@@ -611,7 +586,6 @@
         </div>
       </div>
 
-      <!-- 5. 互动偏好明细 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-heart text-purple"></i>
@@ -641,7 +615,6 @@
         </div>
       </div>
 
-      <!-- 6. 期望的绳缚体验感受 -->
       <div class="conf-card">
         <div class="conf-card-header">
           <i class="fas fa-feather-alt text-purple"></i>
@@ -650,12 +623,10 @@
         <div class="feelings-rich-container" id="confFeelings">--</div>
       </div>
 
-      <!-- 最终确认条款 -->
       <div class="privacy-note">
         <p><strong>最终确认：</strong>本人确认，以上所填内容均真实有效。本人理解并认同 RACK "风险认知下的知情同意" 的原则，知晓在活动开始前或过程中，可随时撤回同意，活动结束后，不可撤回已发生的同意。</p>
       </div>
 
-      <!-- 操作按钮组 -->
       <div class="action-buttons">
         <button class="btn-action btn-secondary" onclick="goBackToForm()">
           <i class="fas fa-arrow-left"></i><span>返回修改</span>
@@ -668,7 +639,6 @@
         </button>
       </div>
 
-      <!-- Footer 说明区 -->
       <div class="footer">
         <p>© 2026 绳缚体验知情同意与偏好调查表 | Designed by 绳声蛮&amp;绳声点点 |</p>
         <p>| 基于 RACK "风险认知下的知情同意" 原则 |</p>
