@@ -1,9 +1,3 @@
-/* ==============================================================================
-   ROPEVOCAB PROJECT - LOCATIONS & ROLES TABLES STYLE
-   File: assets/css/v4r-t1.css
-   版本：v6.6.4 (100% 对齐 index.html 原版 Footer + 中文名加粗 + 移动端 16px 留白)
-   ============================================================================== */
-
 * {
   margin: 0;
   padding: 0;
@@ -31,7 +25,6 @@ body {
   padding: 0 20px;
 }
 
-/* 导航栏：独立渐变背景 */
 .navbar {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   padding: 12px 0 !important;
@@ -125,10 +118,6 @@ a.logo {
   padding: 0 15px;
 }
 
-/* ==========================================================================
-   表格主容器与对齐基准
-   ========================================================================== */
-
 .table-responsive {
   width: 100%;
 }
@@ -179,7 +168,6 @@ tbody tr:hover {
   background: #f8f9fa;
 }
 
-/* 桌面端列宽黄金分割 (合计 100%) */
 th.v4r-col-zh   { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
 th.v4r-col-en   { width: 24% !important; text-align: left !important; padding-left: 16px !important; }
 th.v4r-col-ja   { width: 16% !important; text-align: left !important; padding-left: 16px !important; }
@@ -187,11 +175,10 @@ th.v4r-col-roma { width: 18% !important; text-align: left !important; padding-le
 th.v4r-col-notes{ width: 13% !important; text-align: center !important; }
 th.v4r-col-type { width: 13% !important; text-align: center !important; }
 
-/* 文本与排版控制：PC 端中文名称加粗 */
 .chinese-name {
   text-align: left !important;
   padding-left: 16px !important;
-  font-weight: 700 !important; /* PC 端中文名称加粗 */
+  font-weight: 700 !important;
   color: #0f172a !important;
   word-break: normal !important;
   word-wrap: break-word !important;
@@ -212,7 +199,6 @@ th.v4r-col-type { width: 13% !important; text-align: center !important; }
   text-align: center !important;
 }
 
-/* 核心 4 种色彩胶囊徽章 */
 .location-type,
 .v4r-type-badge {
   display: inline-block !important;
@@ -232,10 +218,6 @@ th.v4r-col-type { width: 13% !important; text-align: center !important; }
 .v4r-desktop-header { display: inline !important; }
 .v4r-mobile-header  { display: none !important; }
 .v4r-mobile-lang-stack { display: none; }
-
-/* ==========================================================================
-   手风琴抽屉行配套 CSS（统一大标题主主题蓝 #667eea 视觉）
-   ========================================================================== */
 
 .v4r-drawer-row {
   background: #fafafa !important;
@@ -330,12 +312,6 @@ tr.is-expanded .btn-v4r-note-toggle .toggle-icon {
   font-weight: 500;
   margin: 20px 0;
 }
-
-
-
-/* ==========================================================================
-   移动端 (<=768px) 无滑动 3 列自适应排版 & 边缘留白精准微调
-   ========================================================================== */
 
 @media (max-width: 768px) {
   .container,

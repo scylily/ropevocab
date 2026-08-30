@@ -1,9 +1,4 @@
-/* ==============================================================================
-   ROPEVOCAB PROJECT - ABOUT PAGE STYLE
-   File: v2/assets/css/about.css
-   ============================================================================== */
 
-/* 1. 基础重置与布局 */
 * {
   margin: 0;
   padding: 0;
@@ -35,7 +30,6 @@ main, .main-content {
   padding: 0 20px;
 }
 
-/* 2. 导航栏 (赋予独立紫蓝渐变背景，彻底解决白底隐形问题) */
 .navbar {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   padding: 12px 0 !important;
@@ -56,7 +50,6 @@ main, .main-content {
   margin: 0 auto !important;
 }
 
-/* Logo 全状态无下划线 */
 .logo,
 a.logo,
 .logo:hover,
@@ -123,7 +116,6 @@ a.logo:visited {
   text-decoration: underline;
 }
 
-/* 4. 关于我们与社交媒体板块 */
 .social-media-section {
   padding: 30px 20px;
   background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
@@ -202,7 +194,6 @@ a.logo:visited {
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* 各平台品牌渐变色彩 */
 .instagram { background: linear-gradient(45deg, #405de6, #833ab4, #fd1d1d); }
 .twitter { background: linear-gradient(45deg, #1da1f2, #14171a); }
 .telegram { background: linear-gradient(45deg, #0088cc, #2aabee); }
@@ -210,7 +201,6 @@ a.logo:visited {
 .qq { background: linear-gradient(45deg, #12b7f5, #1f9be0); }
 .wechat { background: linear-gradient(45deg, #07c160, #09bb07); }
 
-/* 5. 微信二维码弹窗 */
 .modal {
   display: none;
   position: fixed;
@@ -267,7 +257,6 @@ a.logo:visited {
 .qr-tip { color: #1e293b; font-size: 1rem; font-weight: 600; margin-top: 8px; }
 .qr-tip-small { color: #64748b; font-size: 0.85rem; margin-top: 6px; }
 
-/* 6. 返回按钮 */
 .back-button {
   display: inline-block;
   background: #667eea;
@@ -286,7 +275,6 @@ a.logo:visited {
 }
 
 
-/* 8. 移动端 (<= 576px) 导航与卡片布局 */
 @media (max-width: 576px) {
   .container {
     padding: 0 16px;

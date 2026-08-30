@@ -1,9 +1,3 @@
-/* ==========================================================================
-   ROPEVOCAB PROJECT - MAIN STYLE (HOME PAGE)
-   File: v2/assets/css/main.css
-   ========================================================================== */
-
-/* 1. 基础重置与全局变量 */
 * {
   margin: 0;
   padding: 0;
@@ -28,10 +22,9 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px; /* 全站统一标准左右留白 */
+  padding: 0 20px;
 }
 
-/* 2. 导航栏 (Navbar) */
 .navbar {
   background: #667eea;
   padding: 12px 0;
@@ -48,7 +41,6 @@ body {
   padding: 0 20px;
 }
 
-/* Logo 及链接全状态彻底无下划线 */
 .logo,
 a.logo,
 .logo:hover,
@@ -98,7 +90,6 @@ a.logo:visited {
   background: rgba(255, 255, 255, 0.22);
 }
 
-/* 3. 巨幕区与胶囊搜索框 (Hero & Search Box) */
 .hero-section {
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
   color: white;
@@ -162,7 +153,6 @@ a.logo:visited {
   pointer-events: none;
 }
 
-/* 4. 分类卡片与统计 */
 .category-nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -237,7 +227,6 @@ a.logo:visited {
   margin-top: 5px;
 }
 
-/* 5. 术语列表 (Term Card) */
 .term-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -281,7 +270,6 @@ a.logo:visited {
 }
 
 
-/* 7. 移动端 (<= 576px) 导航与布局自适应 */
 @media (max-width: 576px) {
   .container {
     padding: 0 16px;
@@ -333,7 +321,7 @@ a.logo:visited {
 
 @media (max-width: 360px) {
   .logo span {
-    display: none; /* 极窄屏隐藏 logo 冗余文字仅留图标 */
+    display: none;
   }
   .nav-links a {
     font-size: 0.72rem;
@@ -341,7 +329,6 @@ a.logo:visited {
   }
 }
 
-/* 首页导航栏绝对居中与防偏斜补丁 */
 .navbar {
   background: #667eea;
   padding: 10px 0;
@@ -353,7 +340,7 @@ a.logo:visited {
 
 .navbar .container {
   display: flex !important;
-  justify-content: center !important; /* 核心：死封居中 */
+  justify-content: center !important;
   align-items: center !important;
   padding: 0 10px !important;
   width: 100% !important;
@@ -365,7 +352,7 @@ a.logo:visited {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
-  justify-content: center !important; /* 核心：死封居中 */
+  justify-content: center !important;
   align-items: center !important;
   margin: 0 auto !important;
   gap: 6px !important;
@@ -384,29 +371,22 @@ a.logo:visited {
   }
 }
 
-/* ==============================================================================
-   ROPEVOCAB PROJECT - SEAMLESS NAVBAR & HERO GRADIENT MERGE
-   ============================================================================== */
-
-/* 1. 导航栏置为无缝透明，彻底移除下边框与独立渐变 */
 .navbar {
   background: transparent !important;
   border-bottom: none !important;
   box-shadow: none !important;
-  position: relative !important; /* 保持在巨幕上方层级 */
+  position: relative !important;
   z-index: 1000 !important;
 }
 
-/* 2. 巨幕区与分类页头向上倒扣，延伸至导航栏下方，融合为一个连续渐变整体 */
 .hero-section,
 .techniques-header,
 .term-header {
-  margin-top: -65px !important; /* 负外边距向上提升，吃掉 Navbar 高度 */
-  padding-top: 65px !important; /* 补回内边距，确保标题与搜索框不被 Navbar 遮挡 */
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; /* 全局唯一连续渐变 */
+  margin-top: -65px !important;
+  padding-top: 65px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
 }
 
-/* 3. 首页与子页面导航栏容器布局 */
 .navbar .container {
   display: flex !important;
   align-items: center !important;
@@ -416,18 +396,15 @@ a.logo:visited {
   margin: 0 auto !important;
 }
 
-/* 首页导航按钮组保持绝对居中 */
 body.home-page .navbar .container,
 .navbar-home .container {
   justify-content: center !important;
 }
 
-/* 非首页导航两端靠齐 */
 .navbar .container {
   justify-content: center;
 }
 
-/* 4. 页脚保留统一步调的渐变 */
 .site-footer,
 .footer {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
