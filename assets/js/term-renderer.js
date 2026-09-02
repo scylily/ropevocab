@@ -19,6 +19,19 @@ function getSupabaseClient() {
   return null;
 }
 
+/**
+ * 智能解析图标路径 (支持网络外链、多级子目录、本地相对路径)
+ */
+function getVocLogoUrl(iconImgPath) {
+  if (!iconImgPath) return '';
+  const clean = iconImgPath.trim();
+  if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+  if (clean.startsWith('assets/') || clean.startsWith('/assets/')) {
+    return '../' + clean.replace(/^\//, '');
+  }
+  return '../assets/images/voc-logos/' + clean;
+}
+
 async function initCategoryPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const catId = urlParams.get('id') || 'techniques';
@@ -113,7 +126,24 @@ function renderTermCardsGrid(terms) {
     const titleEnEscaped = escapeHtml(titleEn);
 
     const rawEmoji = (term.emoji || '').trim();
-    const emojiDisplay = rawEmoji ? escapeHtml(rawEmoji) : '🔖';
+    const emojiFallback = rawEmoji ? escapeHtml(rawEmoji) : '🔖';
+
+    // 智能构建 PNG 自定义透明图标 (支持外链、本地多级目录与 Emoji 降级回退)
+    let iconHtml = '';
+    if (term.icon_image && term.icon_image.trim()) {
+      const imgSrc = getVocLogoUrl(term.icon_image);
+      iconHtml = `
+        <div class="term-icon-box">
+          <img src="${escapeHtml(imgSrc)}" class="term-icon-img" alt="${titleZh}" onerror="this.parentElement.innerHTML='<span class=\\'term-icon-emoji\\'>${emojiFallback}</span>'" />
+        </div>
+      `;
+    } else {
+      iconHtml = `
+        <div class="term-icon-box">
+          <span class="term-icon-emoji">${emojiFallback}</span>
+        </div>
+      `;
+    }
 
     html += `
       <a href="term.html?id=${escapeHtml(term.id)}" class="subcategory-card" style="
@@ -130,7 +160,7 @@ function renderTermCardsGrid(terms) {
         text-decoration: none;
         transition: all 0.25s ease;
       ">
-        <div class="card-icon" style="font-size: 2.2rem; margin-bottom: 10px; line-height: 1;">${emojiDisplay}</div>
+        ${iconHtml}
         <h3 style="margin: 0 0 6px 0; font-size: 1.12rem; font-weight: 700; color: #0f172a; line-height: 1.3;">${titleZh}</h3>
         <p style="margin: 0; font-size: 0.86rem; color: #64748b; font-weight: 500; line-height: 1.2;">${titleEnEscaped}</p>
       </a>
@@ -229,7 +259,16 @@ function renderBreadcrumb(categoryTitle, term) {
 function renderTermHeader(term) {
   const titleEl = document.getElementById('term-title');
   const badgeEl = document.getElementById('term-subtitle-badge');
-  if (titleEl) titleEl.textContent = `${term.emoji || '🪢'} ${term.title}`;
+
+  if (titleEl) {
+    if (term.icon_image && term.icon_image.trim()) {
+      const imgSrc = getVocLogoUrl(term.icon_image);
+      titleEl.innerHTML = `<img src="${escapeHtml(imgSrc)}" style="width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:8px;" onerror="this.style.display='none'" />${escapeHtml(term.title)}`;
+    } else {
+      titleEl.textContent = `${term.emoji || '🪢'} ${term.title}`;
+    }
+  }
+
   if (badgeEl) badgeEl.textContent = term.subtitle_badge || term.name_en || term.id;
 }
 

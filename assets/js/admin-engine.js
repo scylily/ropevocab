@@ -1,6 +1,6 @@
 /**
  * ==============================================================================
- * ROPEVOCAB PROJECT - ADMIN ENGINE (UPGRADED WITH HIRAGANA & DYNAMIC BLOCKS)
+ * ROPEVOCAB PROJECT - ADMIN ENGINE (UPGRADED WITH HIRAGANA, DYNAMIC BLOCKS & VOC-LOGOS PNG)
  * File: admin-engine.js
  * ==============================================================================
  */
@@ -190,7 +190,7 @@ async function renderTermsCategoryFilterBar() {
     try {
         const { data: categories } = await supabaseClient
             .from("ropevocab_categories")
-            .select("id, title, emoji")
+            .select("id, title, emoji, icon_image")
             .order("sort_order", { ascending: true });
 
         let html = `
@@ -201,9 +201,13 @@ async function renderTermsCategoryFilterBar() {
 
         if (categories) {
             categories.forEach(cat => {
+                const iconDisplay = cat.icon_image
+                    ? `<img src="../assets/images/voc-logos/${cat.icon_image}" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;margin-right:4px;" onerror="this.style.display='none'" />`
+                    : (cat.emoji || "🏷️");
+
                 html += `
                     <button class="filter-pill ${currentTermCategoryFilter === cat.id ? 'active' : ''}" onclick="filterTermsByCategory('${escapeHtml(cat.id)}')">
-                        ${escapeHtml(cat.emoji || "🏷️")} ${escapeHtml(cat.title)}
+                        ${iconDisplay} ${escapeHtml(cat.title)}
                     </button>
                 `;
             });
@@ -230,7 +234,7 @@ async function loadTermsData() {
     try {
         let query = supabaseClient
             .from("ropevocab_terms")
-            .select("id, category_id, title, name_en, emoji, sort_order, updated_at");
+            .select("id, category_id, title, name_en, emoji, icon_image, sort_order, updated_at");
 
         if (currentTermCategoryFilter !== "all") {
             query = query.eq("category_id", currentTermCategoryFilter);
@@ -251,10 +255,15 @@ async function loadTermsData() {
             const isFirst = index === 0;
             const isLast = index === cachedTermsList.length - 1;
 
+            // 优先展示 PNG 专属小图标，无则显示 Emoji
+            const iconDisplay = item.icon_image
+                ? `<img src="../assets/images/voc-logos/${item.icon_image}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'" />`
+                : `<span style="margin-right:4px;">${escapeHtml(item.emoji || "🏷️")}</span>`;
+
             html += `
                 <tr>
                     <td><code>${escapeHtml(item.id)}</code></td>
-                    <td>${escapeHtml(item.emoji || "🏷️")} <strong>${escapeHtml(item.title)}</strong></td>
+                    <td>${iconDisplay}<strong>${escapeHtml(item.title)}</strong></td>
                     <td>${escapeHtml(item.name_en || "-")}</td>
                     <td><span class="badge-tag">${escapeHtml(item.category_id || "-")}</span></td>
                     <td><span class="badge-position">第 ${index + 1} 位</span></td>
@@ -306,7 +315,7 @@ async function moveTermOrder(currentIndex, direction) {
     }
 }
 
-/* 升级版 openTermEditModal：支持平假名与动态区块加载 */
+/* 升级版 openTermEditModal：支持平假名、PNG 图标与动态区块加载 */
 async function openTermEditModal(termId = null) {
     const modal = document.getElementById("modal-term-form");
     const form = document.getElementById("form-term");
@@ -347,21 +356,30 @@ async function openTermEditModal(termId = null) {
             document.getElementById("term-field-name-en").value = data.name_en || "";
             document.getElementById("term-field-name-jp").value = data.name_jp || "";
 
-            // 👇 回显平假名字段 (hiragana)
+            // 回显平假名字段 (hiragana)
             const hiraganaInput = document.getElementById("term-field-hiragana");
             if (hiraganaInput) hiraganaInput.value = data.hiragana || "";
 
             document.getElementById("term-field-romaji").value = data.romaji || "";
             document.getElementById("term-field-badge").value = data.subtitle_badge || "";
             document.getElementById("term-field-emoji").value = data.emoji || "";
+
+            // 👇 回显并即时预览 PNG 图标
+            const iconImgInput = document.getElementById("term-field-icon-image");
+            if (iconImgInput) {
+                iconImgInput.value = data.icon_image || "";
+                if (typeof previewVocLogo === "function") {
+                    previewVocLogo(data.icon_image || "", "term-icon-preview");
+                }
+            }
+
             document.getElementById("term-field-sort").value = data.sort_order !== undefined ? data.sort_order : 10;
 
-            // 👇 加载自定义动态内容区块 (Blocks)
+            // 加载自定义动态内容区块 (Blocks)
             const customBlocks = parseJsonArray(data.custom_blocks);
             if (customBlocks && customBlocks.length > 0) {
                 customBlocks.forEach(b => addCustomBlockSection(b));
             } else {
-                // 如果数据库无 custom_blocks，将已有老字段转换为 Block 呈现（无缝兼容）
                 if (data.description) {
                     addCustomBlockSection({ title: '定义与概述', type: 'text', content: data.description });
                 }
@@ -376,7 +394,6 @@ async function openTermEditModal(termId = null) {
                 if (data.safety_notes) {
                     addCustomBlockSection({ title: '安全注意事项', type: 'text', content: data.safety_notes });
                 }
-                // 若依然没有任何区块，加载默认模板
                 if (blocksContainer && blocksContainer.children.length === 0) {
                     DEFAULT_PRESET_BLOCKS.forEach(b => addCustomBlockSection(b));
                 }
@@ -399,12 +416,21 @@ async function openTermEditModal(termId = null) {
         }
         document.getElementById("term-field-sort").value = (cachedTermsList.length + 1) * 10;
 
+        // 清空 PNG 预览
+        const iconImgInput = document.getElementById("term-field-icon-image");
+        if (iconImgInput) {
+            iconImgInput.value = "";
+            if (typeof previewVocLogo === "function") {
+                previewVocLogo("", "term-icon-preview");
+            }
+        }
+
         // 新增时加载默认 4 个通用区块
         DEFAULT_PRESET_BLOCKS.forEach(b => addCustomBlockSection(b));
     }
 }
 
-/* 升级版 saveTermForm：支持平假名与动态区块数据的提取保存 */
+/* 升级版 saveTermForm：支持平假名、PNG 图标与动态区块数据的提取保存 */
 async function saveTermForm(e) {
     e.preventDefault();
     const id = document.getElementById("term-field-id").value.trim();
@@ -415,10 +441,8 @@ async function saveTermForm(e) {
         return;
     }
 
-    // 1. 收集全量动态区块 Block
     const customBlocks = typeof collectAllBlocksData === 'function' ? collectAllBlocksData() : [];
 
-    // 2. 为了保证向前兼容（旧前台页面正常展示），自动从区块中抽离老字段
     let descriptionVal = "";
     let safetyNotesVal = "";
     let technicalFeaturesArr = [];
@@ -432,6 +456,7 @@ async function saveTermForm(e) {
     });
 
     const hiraganaInput = document.getElementById("term-field-hiragana");
+    const iconImgInput = document.getElementById("term-field-icon-image");
 
     const payload = {
         id: id,
@@ -439,19 +464,17 @@ async function saveTermForm(e) {
         title: document.getElementById("term-field-title").value.trim(),
         name_en: document.getElementById("term-field-name-en").value.trim(),
         name_jp: document.getElementById("term-field-name-jp").value.trim(),
-
-        // 👇 新增平假名提交
         hiragana: hiraganaInput ? hiraganaInput.value.trim() : null,
-
         romaji: document.getElementById("term-field-romaji").value.trim(),
         subtitle_badge: document.getElementById("term-field-badge").value.trim(),
         emoji: document.getElementById("term-field-emoji").value.trim() || '🪢',
-        sort_order: parseInt(document.getElementById("term-field-sort").value) || 10,
 
-        // 👇 新增全量 Blocks JSONB 提交
+        // 👇 提取并保存 PNG 图标文件名
+        icon_image: iconImgInput ? (iconImgInput.value.trim() || null) : null,
+
+        sort_order: parseInt(document.getElementById("term-field-sort").value) || 10,
         custom_blocks: customBlocks,
 
-        // 兼容旧字段
         description: descriptionVal || null,
         safety_notes: safetyNotesVal || null,
         technical_features: technicalFeaturesArr,
@@ -518,10 +541,14 @@ async function loadCategoriesData() {
             const isFirst = index === 0;
             const isLast = index === cachedCategoriesList.length - 1;
 
+            const iconDisplay = item.icon_image
+                ? `<img src="../assets/images/voc-logos/${item.icon_image}" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:6px;" onerror="this.style.display='none'" />`
+                : `<span style="margin-right:4px;">${escapeHtml(item.emoji || "")}</span>`;
+
             html += `
                 <tr>
                     <td><code>${escapeHtml(item.id)}</code></td>
-                    <td>${escapeHtml(item.emoji || "")} <strong>${escapeHtml(item.title)}</strong></td>
+                    <td>${iconDisplay} <strong>${escapeHtml(item.title)}</strong></td>
                     <td>${escapeHtml(item.name_en || "-")}</td>
                     <td><span class="badge-position">第 ${index + 1} 位</span></td>
                     <td>
@@ -582,6 +609,16 @@ async function openCategoryEditModal(catId) {
         document.getElementById("cat-field-title").value = data.title || "";
         document.getElementById("cat-field-name-en").value = data.name_en || "";
         document.getElementById("cat-field-emoji").value = data.emoji || "";
+
+        // 👇 回显分类 PNG 图标
+        const catIconInput = document.getElementById("cat-field-icon-image");
+        if (catIconInput) {
+            catIconInput.value = data.icon_image || "";
+            if (typeof previewVocLogo === "function") {
+                previewVocLogo(data.icon_image || "", "cat-icon-preview");
+            }
+        }
+
         document.getElementById("cat-field-sort").value = data.sort_order || 10;
         document.getElementById("cat-field-description").value = data.description || "";
     } catch (err) {
@@ -593,11 +630,13 @@ async function openCategoryEditModal(catId) {
 async function saveCategoryForm(e) {
     e.preventDefault();
     const id = document.getElementById("cat-field-id").value;
+    const catIconInput = document.getElementById("cat-field-icon-image");
 
     const payload = {
         title: document.getElementById("cat-field-title").value.trim(),
         name_en: document.getElementById("cat-field-name-en").value.trim(),
         emoji: document.getElementById("cat-field-emoji").value.trim(),
+        icon_image: catIconInput ? (catIconInput.value.trim() || null) : null,
         sort_order: parseInt(document.getElementById("cat-field-sort").value) || 10,
         description: document.getElementById("cat-field-description").value.trim()
     };
