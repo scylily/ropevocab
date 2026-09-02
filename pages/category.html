@@ -78,10 +78,16 @@
       </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="../assets/js/supabase-config.js"></script>
-    <script src="../assets/js/term-renderer.js"></script>
-    <script src="../assets/js/footer.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/supabase-js/2.39.8/supabase.min.js"></script>
+    <script>
+      if (typeof supabase === 'undefined') {
+        document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>');
+      }
+    </script>
+
+    <script src="/assets/js/supabase-config.js"></script>
+    <script src="/assets/js/term-renderer.js"></script>
+    <script src="/assets/js/footer.js?v=7.0.2"></script>
   </body>
 
 </html>
