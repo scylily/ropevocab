@@ -971,7 +971,7 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+          <div style="display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr 1.8fr; gap: 12px; align-items: start;">
             <div class="form-group">
               <label>中文标题</label>
               <input type="text" id="term-field-title" class="input-control" required />
@@ -981,8 +981,17 @@
               <input type="text" id="term-field-name-en" class="input-control" />
             </div>
             <div class="form-group">
-              <label>Emoji 图标</label>
+              <label>Emoji (备用)</label>
               <input type="text" id="term-field-emoji" class="input-control" placeholder="🧘‍♀️" />
+            </div>
+            <div class="form-group">
+              <label>PNG 图标文件名 (voc-logos/)</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="term-field-icon-image" class="input-control" placeholder="例: 绳艺a.png" oninput="previewVocLogo(this.value, 'term-icon-preview')" />
+                <div id="term-icon-preview" style="width: 38px; height: 38px; border-radius: 6px; border: 1px dashed #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                  <span style="font-size: 0.65rem; color: #94a3b8;">无图</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1201,14 +1210,23 @@
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+          <div style="display: grid; grid-template-columns: 1.2fr 0.8fr 1.8fr 1fr; gap: 12px; align-items: start;">
             <div class="form-group">
               <label>英文名 (name_en)</label>
               <input type="text" id="cat-field-name-en" class="input-control" />
             </div>
             <div class="form-group">
-              <label>Emoji 图标</label>
+              <label>Emoji (备用)</label>
               <input type="text" id="cat-field-emoji" class="input-control" />
+            </div>
+            <div class="form-group">
+              <label>PNG 图标文件名 (voc-logos/)</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="cat-field-icon-image" class="input-control" placeholder="例: 绳艺a.png" oninput="previewVocLogo(this.value, 'cat-icon-preview')" />
+                <div id="cat-icon-preview" style="width: 38px; height: 38px; border-radius: 6px; border: 1px dashed #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                  <span style="font-size: 0.65rem; color: #94a3b8;">无图</span>
+                </div>
+              </div>
             </div>
             <div class="form-group">
               <label>排序权重</label>
@@ -1239,6 +1257,29 @@
 
     <!-- 动态项目块构建核心辅助脚本 -->
     <script>
+      function resolveVocLogoSrc(name, isRootLevel = false) {
+          if (!name) return '';
+          const cleanName = name.trim();
+          if (cleanName.startsWith('http://') || cleanName.startsWith('https://')) return cleanName;
+          if (cleanName.startsWith('assets/') || cleanName.startsWith('/assets/')) {
+            return isRootLevel ? cleanName.replace(/^\//, '') : `../${cleanName.replace(/^\//, '')}`;
+          }
+          const prefix = isRootLevel ? 'assets/images/voc-logos/' : '../assets/images/voc-logos/';
+          return prefix + cleanName;
+        }
+
+        function previewVocLogo(filename, previewContainerId) {
+          const container = document.getElementById(previewContainerId);
+          if (!container) return;
+          const name = (filename || '').trim();
+          if (!name) {
+            container.innerHTML = '<span style="font-size: 0.65rem; color: #94a3b8;">无图</span>';
+            return;
+          }
+          const src = resolveVocLogoSrc(name, false);
+          container.innerHTML = `<img src="${src}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.parentElement.innerHTML='<span style=\\'color:#ef4444;font-size:0.65rem;\\'>失效</span>'" />`;
+        }
+
       const DEFAULT_PRESET_BLOCKS = [
         { title: '定义与概述', type: 'text', content: '' },
         { title: '技术特征', type: 'list', items: [''] },
@@ -1421,6 +1462,7 @@
       } else {
         initMobileFilterSelectSync();
       }
+
     </script>
 
     <script src="../assets/js/supabase-config.js"></script>
