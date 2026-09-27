@@ -2,9 +2,9 @@ name: Keep Multiple Supabase Projects Alive
 
 on:
   schedule:
-    # 每周一和周四的中午 12:00 (UTC) 自动触发
+    # 每周一、周四的中午 12:00 (UTC) 自动定时执行
     - cron: '0 12 * * 1,4'
-  workflow_dispatch:
+  workflow_dispatch: # 支持手动点按钮立即触发测试
 
 jobs:
   ping-db:
@@ -14,32 +14,54 @@ jobs:
         run: |
           URL="${{ secrets.SUPABASE_URL_1 }}"
           KEY="${{ secrets.SUPABASE_ANON_KEY_1 }}"
-          
-          # 防御性逻辑：去除 URL 末尾可能多余的斜杠
           URL="${URL%/}"
           
-          if [ -z "$URL" ]; then
-            echo "❌ 错误：SUPABASE_URL_1 未配置或读到的为空值！请检查 GitHub Secrets 名称。"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "❌ 错误：SUPABASE_URL_1 或 SUPABASE_ANON_KEY_1 未配置！"
             exit 1
           fi
           
-          # 请求 Supabase 官方 Health 探针接口
-          curl -s -f -X GET "$URL/auth/v1/health" \
+          echo "🚀 正在向 Project 1 发起保活查询..."
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY"
+            -H "Authorization: Bearer $KEY")
+          
+          echo "Project 1 响应状态码: $HTTP_STATUS"
+          cat response.json
+          echo ""
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Project 1 数据库保活成功！"
+          else
+            echo "❌ Project 1 保活失败，请核对 URL 或 Key 是否准确！"
+            exit 1
+          fi
 
       - name: Ping Project 2
         run: |
           URL="${{ secrets.SUPABASE_URL_2 }}"
           KEY="${{ secrets.SUPABASE_ANON_KEY_2 }}"
-          
           URL="${URL%/}"
           
-          if [ -z "$URL" ]; then
-            echo "❌ 错误：SUPABASE_URL_2 未配置或读到的为空值！请检查 GitHub Secrets 名称。"
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "❌ 错误：SUPABASE_URL_2 或 SUPABASE_ANON_KEY_2 未配置！"
             exit 1
           fi
           
-          curl -s -f -X GET "$URL/auth/v1/health" \
+          echo "🚀 正在向 Project 2 发起保活查询..."
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY"
+            -H "Authorization: Bearer $KEY")
+          
+          echo "Project 2 响应状态码: $HTTP_STATUS"
+          cat response.json
+          echo ""
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Project 2 数据库保活成功！"
+          else
+            echo "❌ Project 2 保活失败，请核对 URL 或 Key 是否准确！"
+            exit 1
+          fi
