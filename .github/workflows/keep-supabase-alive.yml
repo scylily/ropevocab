@@ -9,6 +9,11 @@ on:
 jobs:
   ping-db:
     runs-on: ubuntu-latest
+    # 授予操作权限，用于自动防 60 天休眠保活
+    permissions:
+      actions: write
+      contents: write
+
     steps:
       - name: Ping Project 1
         run: |
@@ -65,3 +70,13 @@ jobs:
             echo "❌ Project 2 保活失败，请核对 URL 或 Key 是否准确！"
             exit 1
           fi
+
+      # -----------------------------------------------------------
+      # 方案 A：防止 GitHub 60 天闲置自动休眠机制（无感保活）
+      # 平时完全静默，仅在接近 50 天无提交时自动通过 API 续期
+      # -----------------------------------------------------------
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+
+      - name: 防 GitHub 60天休眠保活
+        uses: gautamkrishnar/keepalive-workflow@v2
