@@ -52,7 +52,6 @@
 
       .brand-title span {
         color: #2563eb;
-        /* 让 Reader 显示为活力蓝 */
       }
 
       .brand-subtitle {
@@ -152,12 +151,9 @@
         background: #fff;
         z-index: 10;
         margin: 0 -18px 10px -18px;
-        /* 两侧撑满边框，贴合分界线 */
         padding: 12px 18px;
-        /* 上下 12px 严格等宽居中，左右对齐卡片 */
         border-bottom: 1px solid #e2e8f0;
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-        /* 优雅的悬浮分层投影 */
       }
 
       .transcript-sticky-header {
@@ -915,9 +911,10 @@
           <div class="mynotes-sticky-header">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; flex-wrap: wrap; gap: 8px;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <button class="btn btn-stamp" onclick="openAddNoteBox()">📍 标记时间点 (Alt+N)</button>
+                <!-- 快捷键更新为 Ctrl + M -->
+                <button class="btn btn-stamp" onclick="openAddNoteBox()">📍 标记时间点 (Ctrl+M)</button>
 
-                <!-- 手动时间码跳转输入框（支持 5.30、1.5.15、90，回车即跳） -->
+                <!-- 手动时间码跳转输入框 -->
                 <div class="time-jump-box" title="输入时间点并回车可直接跳转（支持 5.30、1.5.15 或 90s，按 Ctrl+G 快速呼出）">
                   <span style="font-size: 11px; color: #64748b;">⏱️</span>
                   <input type="text" id="quickTimeJumpInput" placeholder="输入时码跳转" onkeydown="handleQuickTimeJump(event)">
@@ -933,7 +930,6 @@
                 <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()">🗑️ 清空</button>
               </div>
             </div>
-
 
             <div id="addNoteBox" class="note-input-modal" style="display: none; margin-top: 10px; margin-bottom: 0;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -976,7 +972,7 @@
           </div>
 
           <div id="myNotesList">
-            <p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Alt + [ / ] 或 Alt + N 打点标记！</p>
+            <p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>
           </div>
         </div>
 
@@ -1038,7 +1034,7 @@
       </div>
     </div>
 
-    <!-- 快捷键指南 Modal -->
+    <!-- 快捷键指南 Modal（全面升级为 Ctrl 组合） -->
     <div id="shortcutsModal" class="modal-overlay" style="display: none;" onclick="closeShortcutsModal(event)">
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -1059,16 +1055,16 @@
                 <td>快速聚焦到时间跳转框（输入 5.30 回车即跳）</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + [</span></td>
+                <td><span class="shortcut-key">Ctrl + [</span></td>
                 <td>设定入点 (In-Point)，画面显示已定入点 A</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + ]</span></td>
+                <td><span class="shortcut-key">Ctrl + ]</span></td>
                 <td>设定出点 (Out-Point)，自动弹出手记保存框</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + N</span></td>
-                <td>单点快速打卡手记</td>
+                <td><span class="shortcut-key">Ctrl + M</span></td>
+                <td>单点快速打卡手记 (Mark)</td>
               </tr>
               <tr>
                 <td><span class="shortcut-key">Space 空格</span></td>
@@ -1091,15 +1087,15 @@
                 <td>音量调节：增加 5% / 减少 5%</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + ↑</span></td>
+                <td><span class="shortcut-key">Ctrl + ↑</span></td>
                 <td>加速 (+0.25x，最高 3.0x)</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + ↓</span></td>
+                <td><span class="shortcut-key">Ctrl + ↓</span></td>
                 <td>减速 (-0.25x，最低 0.25x)</td>
               </tr>
               <tr>
-                <td><span class="shortcut-key">Alt + 0</span></td>
+                <td><span class="shortcut-key">Ctrl + \</span></td>
                 <td>一键恢复 1.0x 原速</td>
               </tr>
               <tr>
@@ -1146,7 +1142,6 @@
       let currentSortMode = 'name-asc';
       let currentTab = 'mynotes';
 
-      // 编辑中的手记 ID（为 null 时表示新建）
       let editingNoteId = null;
 
       // 核心防冲突：强制剥夺原生视频控件焦点
@@ -1231,7 +1226,6 @@
         e.target.value = '';
       }
 
-      // 全局拖拽拦截
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
         document.body.addEventListener(evt, e => e.preventDefault(), false);
       });
@@ -1291,7 +1285,6 @@
         return fileList;
       }
 
-      // ==================== 选集构建、排序与智能文件分流 ====================
       function autoMatchAndLoad(files) {
         if (!files || files.length === 0) return;
 
@@ -1404,7 +1397,6 @@
         if (currentPlaylistIndex < playlist.length - 1) switchPlaylistItem(currentPlaylistIndex + 1);
       }
 
-      // ==================== 彻底自动清理机制 ====================
       function clearSubtitles() {
         subtitleData = [];
         assStatus.textContent = `📝 无字幕`;
@@ -1479,7 +1471,6 @@
         updateAIPromptButtonLabel();
       }
 
-      // ==================== AI 讲义本地记忆、清空与抹除 ====================
       function loadAINotesFromLocalStorage() {
         if (!currentVideoFileName) return;
         const key = `reader_ai_notes_${currentVideoFileName}`;
@@ -1531,7 +1522,6 @@
         reader.readAsText(file, 'utf-8');
       }
 
-      // ==================== 通用字幕解析 (SRT / VTT / ASS) ====================
       function parseSubtitleUniversal(text, filename) {
         subtitleData = [];
         if (text.includes('-->')) {
@@ -1656,7 +1646,6 @@
         }
       }
 
-      // ==================== 播放时间监听：画面字幕浮层与列表高亮滚动 ====================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
@@ -1712,7 +1701,6 @@
         }
       });
 
-      // ==================== 核心时间转换：区分标准字幕时间与用户手动输入 ====================
       function timeToSeconds(timeStr) {
         if (typeof timeStr === 'number') return timeStr;
         if (!timeStr) return 0;
@@ -1780,7 +1768,7 @@
           if (sec !== null && sec >= 0) {
             jumpToPoint(sec);
             showOSD(`⏱️ 跳转至 ${formatSeconds(sec)}`);
-            input.value = ''; // 👈 加入这行：跳转后清空刚才输入的内容
+            input.value = '';
             input.blur();
           } else {
             showOSD(`⚠️ 无法识别时间格式`);
@@ -1854,10 +1842,11 @@
         renderMyNotesList();
       }
 
-      // ==================== 全套高级快捷键监听系统 ====================
+      // ==================== 全套高级快捷键监听系统 (全线统一为 Ctrl) ====================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
-        // 快捷键：当打点面板打开时，按 Ctrl + Enter (或 Mac 的 Cmd + Enter) 直接保存
+
+        // Ctrl + Enter 保存打点笔记
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           const addNoteBox = document.getElementById('addNoteBox');
           if (addNoteBox && addNoteBox.style.display !== 'none') {
@@ -1867,6 +1856,7 @@
           }
         }
 
+        // Ctrl + G 快速聚焦到时间跳转框
         if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
           e.preventDefault();
           switchTab('mynotes');
@@ -1878,7 +1868,9 @@
           return;
         }
 
-        if (e.altKey) {
+        // Ctrl 组合快捷键体系 (全面替代 Alt)
+        if (e.ctrlKey || e.metaKey) {
+          // [1] Ctrl + [ : 设定入点 (In-Point)
           if (e.key === '[' || e.code === 'BracketLeft') {
             e.preventDefault();
             if (!video.src) return;
@@ -1887,6 +1879,7 @@
             return;
           }
 
+          // [2] Ctrl + ] : 设定出点 (Out-Point)
           if (e.key === ']' || e.code === 'BracketRight') {
             e.preventDefault();
             if (!video.src) return;
@@ -1897,12 +1890,14 @@
             return;
           }
 
-          if (e.key === 'n' || e.key === 'N') {
+          // [3] Ctrl + M : 单点快速打卡手记 (Mark)
+          if (e.key === 'm' || e.key === 'M') {
             e.preventDefault();
             openAddNoteBox();
             return;
           }
 
+          // [4] Ctrl + ↑ : 加速 (+0.25x)
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (!video.src) return;
@@ -1912,6 +1907,7 @@
             return;
           }
 
+          // [5] Ctrl + ↓ : 减速 (-0.25x)
           if (e.key === 'ArrowDown') {
             e.preventDefault();
             if (!video.src) return;
@@ -1921,7 +1917,8 @@
             return;
           }
 
-          if (e.key === '0' || e.code === 'Digit0' || e.code === 'Numpad0') {
+          // [6] Ctrl + \ : 一键恢复 1.0x 原速
+          if (e.key === '\\' || e.code === 'Backslash') {
             e.preventDefault();
             if (!video.src) return;
             video.playbackRate = 1.0;
@@ -1930,6 +1927,7 @@
           }
         }
 
+        // Esc 键退出
         if (e.key === 'Escape') {
           closeAddNoteBox();
           closeShortcutsModal();
@@ -1937,6 +1935,7 @@
           return;
         }
 
+        // 单键/方向键监听 (非文字输入状态下生效)
         if (!isTyping) {
           if (e.key === '?' || (e.shiftKey && e.key === '/')) {
             e.preventDefault();
@@ -1954,6 +1953,7 @@
             return;
           }
 
+          // 快退 (←) : 支持 5s / 15s (Ctrl) / 30s (Shift)
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
             e.stopPropagation();
@@ -1968,6 +1968,7 @@
             return;
           }
 
+          // 快进 (→) : 支持 5s / 15s (Ctrl) / 30s (Shift)
           if (e.key === 'ArrowRight') {
             e.preventDefault();
             e.stopPropagation();
@@ -1982,6 +1983,7 @@
             return;
           }
 
+          // 音量调节 (↑ / ↓)
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             e.stopPropagation();
@@ -2047,7 +2049,6 @@
         input.focus();
       }
 
-      // ==================== 编辑已存手记 ====================
       function editNote(id) {
         const note = myNotes.find(n => n.id === id);
         if (!note) return;
@@ -2055,7 +2056,6 @@
         editingNoteId = id;
         switchTab('mynotes');
 
-        // 设置类型
         if (note.type === 'interval') {
           document.getElementById('radioInterval').checked = true;
         } else {
@@ -2063,11 +2063,9 @@
         }
         toggleNoteTypeUI();
 
-        // 填入时间点
         document.getElementById('noteStartTimeInput').value = formatSeconds(note.start);
         document.getElementById('noteEndTimeInput').value = note.end ? formatSeconds(note.end) : formatSeconds(note.start + 10);
 
-        // 原声引用
         const quoteEl = document.getElementById('noteQuoteText');
         if (note.quote) {
           quoteEl.textContent = `🗣️ 原台词: "${note.quote}"`;
@@ -2076,7 +2074,6 @@
           quoteEl.style.display = 'none';
         }
 
-        // 内容与标题
         document.getElementById('noteContentInput').value = note.text;
         document.getElementById('noteModalTitle').textContent = `✏️ 正在编辑笔记 [${note.timeStr}]`;
         document.getElementById('saveNoteBtn').textContent = '保存修改 (Ctrl + Enter)';
@@ -2145,7 +2142,6 @@
           timeDisplay = `${formatSeconds(startSec)} ~ ${formatSeconds(endSec)}`;
         }
 
-        // 如果处于编辑状态，直接更新原对象
         if (editingNoteId) {
           const noteIndex = myNotes.findIndex(n => n.id === editingNoteId);
           if (noteIndex !== -1) {
@@ -2159,7 +2155,6 @@
           document.getElementById('saveNoteBtn').textContent = '保存打点笔记 (Ctrl + Enter)';
           document.getElementById('noteModalTitle').textContent = '';
         } else {
-          // 新建手记
           const cue = subtitleData.find(item => startSec >= item.start && startSec <= item.end);
           const quote = cue ? cue.cn : '';
 
@@ -2184,7 +2179,7 @@
         renderMyNotesList();
         closeAddNoteBox();
         updateAIPromptButtonLabel();
-        // 自动平滑滚动并聚焦到刚保存/修改的手记
+
         const targetId = editingNoteId || (myNotes.find(n => n.start === startSec)?.id);
         setTimeout(() => {
           const targetCard = document.getElementById(`note-card-${targetId}`);
@@ -2214,7 +2209,7 @@
         notesCountBadge.textContent = `(${myNotes.length})`;
 
         if (myNotes.length === 0) {
-          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Alt + [ / ] 或 Alt + N 打点标记！</p>';
+          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>';
           return;
         }
 
@@ -2377,7 +2372,6 @@
             text = body.replace(quoteMatch[0], '');
           }
 
-          // 核心修复：先裁掉空格，再精准剥离标题，彻底杜绝“📍 重点批注”残留在正文中
           text = text.trim().replace(/^(?:📍\s*重点批注|🔁\s*片段循环)\s*\n*/i, '').trim();
 
           imported.push({
@@ -2514,7 +2508,7 @@ ${notesText}`;
           return;
         }
 
-        alert('当前视频暂无字幕，且尚未记录任何时间戳手记！\n请先按 Alt + N 或 Alt + [ / ] 记录几条心得，AI 才能帮您整理升华讲义。');
+        alert('当前视频暂无字幕，且尚未记录任何时间戳手记！\n请先按 Ctrl + M 或 Ctrl + [ / ] 记录几条心得，AI 才能帮您整理升华讲义。');
       }
 
       function renderNotes(shouldSave = true) {
@@ -2606,7 +2600,6 @@ ${notesText}`;
           document.getElementById('tabBtnTranscript').classList.add('active');
           document.getElementById('transcriptTab').style.display = 'block';
 
-          // 切换到字幕页时，自动将当前激活的字幕滚动到视野中间
           const activeEl = document.querySelector('.transcript-item.active');
           if (activeEl) {
             setTimeout(() => activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
