@@ -850,7 +850,7 @@
           <span class="brand-subtitle">视频手记-智能字幕讲义阅读器</span>
         </div>
         <div class="brand-divider"></div>
-        <button class="btn btn-outline" onclick="document.getElementById('localFileInput').click()" title="支持同时多选视频+字幕+笔记">📂 打开文件</button>
+        <button class="btn btn-outline" onclick="document.getElementById('localFileInput').click()" title="支持同时多选视频+字幕+手记">📂 打开文件</button>
         <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()" title="直接选择完整的文件夹">📁 打开文件夹</button>
 
         <!-- 新增：自适应消除黑边按钮 -->
@@ -940,9 +940,9 @@
               </div>
 
               <div style="display: flex; gap: 6px;">
-                <button class="btn btn-outline" onclick="exportNotesToMarkdown()">💾 导出笔记 (.md)</button>
+                <button class="btn btn-outline" onclick="exportNotesToMarkdown()">💾 导出手记 (.md)</button>
                 <label class="btn btn-outline" style="cursor: pointer; margin: 0;">
-                  📂 导入笔记
+                  📂 导入手记
                   <input type="file" id="importNotesInput" accept=".md,.txt" style="display: none;" onchange="importNotesFromFile(event)">
                 </label>
                 <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()">🗑️ 清空</button>
@@ -984,13 +984,13 @@
 
               <div style="display: flex; justify-content: flex-end; gap: 6px;">
                 <button class="btn btn-outline" onclick="closeAddNoteBox()">取消</button>
-                <button id="saveNoteBtn" class="btn" onclick="saveNewNote()">保存打点笔记 (Ctrl + Enter)</button>
+                <button id="saveNoteBtn" class="btn" onclick="saveNewNote()">保存打点手记 (Ctrl + Enter)</button>
               </div>
             </div>
           </div>
 
           <div id="myNotesList">
-            <p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>
+            <p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>
           </div>
         </div>
 
@@ -1901,7 +1901,7 @@
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
-        // Ctrl + Enter 保存打点笔记
+        // Ctrl + Enter 保存打点手记
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           const addNoteBox = document.getElementById('addNoteBox');
           if (addNoteBox && addNoteBox.style.display !== 'none') {
@@ -2076,7 +2076,7 @@
 
         editingNoteId = null;
         document.getElementById('noteModalTitle').textContent = '记录此刻思考 / 重点标注';
-        document.getElementById('saveNoteBtn').textContent = '保存打点笔记 (Ctrl + Enter)';
+        document.getElementById('saveNoteBtn').textContent = '保存打点手记 (Ctrl + Enter)';
 
         document.getElementById('radioPoint').checked = true;
         toggleNoteTypeUI();
@@ -2096,7 +2096,7 @@
 
         editingNoteId = null;
         document.getElementById('noteModalTitle').textContent = '记录此刻思考 / 重点标注';
-        document.getElementById('saveNoteBtn').textContent = '保存打点笔记 (Ctrl + Enter)';
+        document.getElementById('saveNoteBtn').textContent = '保存打点手记 (Ctrl + Enter)';
 
         document.getElementById('radioInterval').checked = true;
         toggleNoteTypeUI();
@@ -2137,7 +2137,7 @@
         }
 
         document.getElementById('noteContentInput').value = note.text;
-        document.getElementById('noteModalTitle').textContent = `✏️ 正在编辑笔记 [${note.timeStr}]`;
+        document.getElementById('noteModalTitle').textContent = `✏️ 正在编辑手记 [${note.timeStr}]`;
         document.getElementById('saveNoteBtn').textContent = '保存修改 (Ctrl + Enter)';
 
         document.getElementById('addNoteBox').style.display = 'block';
@@ -2179,13 +2179,13 @@
       function closeAddNoteBox() {
         editingNoteId = null;
         document.getElementById('noteModalTitle').textContent = '';
-        document.getElementById('saveNoteBtn').textContent = '保存打点笔记 (Ctrl + Enter)';
+        document.getElementById('saveNoteBtn').textContent = '保存打点手记 (Ctrl + Enter)';
         document.getElementById('addNoteBox').style.display = 'none';
       }
 
       function saveNewNote() {
         const text = document.getElementById('noteContentInput').value.trim();
-        if (!text) { alert('请输入笔记内容！'); return; }
+        if (!text) { alert('请输入手记内容！'); return; }
 
         const type = document.querySelector('input[name="noteType"]:checked').value;
         const startStr = document.getElementById('noteStartTimeInput').value;
@@ -2214,7 +2214,7 @@
             myNotes[noteIndex].text = text;
           }
           editingNoteId = null;
-          document.getElementById('saveNoteBtn').textContent = '保存打点笔记 (Ctrl + Enter)';
+          document.getElementById('saveNoteBtn').textContent = '保存打点手记 (Ctrl + Enter)';
           document.getElementById('noteModalTitle').textContent = '';
         } else {
           const cue = subtitleData.find(item => startSec >= item.start && startSec <= item.end);
@@ -2254,7 +2254,7 @@
       }
 
       function deleteNote(id) {
-        if (confirm('确认删除此条笔记？')) {
+        if (confirm('确认删除此条手记？')) {
           if (activeLoop && activeLoop.id === id) stopLoop();
           myNotes = myNotes.filter(n => n.id !== id);
           saveNotesToLocalStorage();
@@ -2271,7 +2271,7 @@
         notesCountBadge.textContent = `(${myNotes.length})`;
 
         if (myNotes.length === 0) {
-          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属笔记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>';
+          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>';
           return;
         }
 
@@ -2347,13 +2347,13 @@
 
       function exportNotesToMarkdown() {
         if (myNotes.length === 0) {
-          alert('当前暂无笔记可导出！');
+          alert('当前暂无手记可导出！');
           return;
         }
 
-        let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习笔记";
+        let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习手记";
         let mdContent = '<!' + '-- type: user_notes --' + '>\n# ' + title + ' - 学习手记\n\n';
-        mdContent += `> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点笔记\n\n---\n\n`;
+        mdContent += `> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点手记\n\n---\n\n`;
 
         myNotes.forEach(note => {
           if (note.type === 'interval') {
