@@ -2295,7 +2295,7 @@
         }
 
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习笔记";
-        let mdContent = `<!-- type: user_notes -->\n# ${title} - 学习手记\n\n`;
+        let mdContent = '<!' + '-- type: user_notes --' + '>\n# ' + title + ' - 学习手记\n\n';
         mdContent += `> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点笔记\n\n---\n\n`;
 
         myNotes.forEach(note => {
@@ -2414,7 +2414,7 @@
       }
 
       function loadImportedAINotes(content) {
-        let cleanContent = content.replace(/<!--\s*type:\s*ai_notes\s*-->\n?/i, '').trim();
+        let cleanContent = content.replace(/<[!]--\s*type:\s*ai_notes\s*--[>]\n?/i, '').trim();
         document.getElementById('notesInput').value = cleanContent;
         renderNotes(true);
         switchTab('notes');
@@ -2429,7 +2429,7 @@
         }
 
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "课程讲义";
-        let mdContent = `<!-- type: ai_notes -->\n` + raw;
+        let mdContent = '<!' + '-- type: ai_notes --' + '>\n' + raw;
 
         const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
         const a = document.createElement('a');
