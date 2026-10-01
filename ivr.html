@@ -3,6 +3,7 @@
 
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>视频手记-智能字幕讲义阅读器</title>
     <style>
       * {
@@ -24,23 +25,51 @@
       header {
         background: #fff;
         border-bottom: 1px solid #e2e8f0;
-        padding: 8px 16px;
+        padding: 10px 16px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start; /* 改为起点对齐 */
+        gap: 10px;                   /* 统一各模块间距 */
         font-size: 13px;
         color: #64748b;
         flex-shrink: 0;
         z-index: 30;
+        box-sizing: border-box;
       }
 
-      /* 页面品牌标题样式 */
+      /* 状态胶囊自动推到屏幕最右侧 */
+      .status-tags {
+        margin-left: auto;
+      }
+
       .app-brand {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         gap: 8px;
-        margin-right: 6px;
         user-select: none;
+        flex-shrink: 0;
+      }
+
+/* 方案一核心：让标题与按钮单行水平并排 */
+      .header-top-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+
+      /* 标题右侧加上一道微光细分割线，拉开呼吸感 */
+      .app-brand {
+        border-right: 1px solid #e2e8f0;
+        padding-right: 10px;
+      }
+
+      /* 按钮组水平排列 */
+      .header-file-btns {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
       }
 
       .brand-title {
@@ -48,6 +77,8 @@
         font-weight: 800;
         color: #0f172a;
         letter-spacing: -0.3px;
+        line-height: 1;
+        white-space: nowrap;
       }
 
       .brand-title span {
@@ -58,25 +89,36 @@
         font-size: 11px;
         color: #94a3b8;
         font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
       }
 
       .brand-divider {
         width: 1px;
         height: 16px;
         background: #e2e8f0;
-        margin: 0 6px 0 2px;
+        margin: 0 4px;
+        flex-shrink: 0;
       }
 
       .header-left {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+        margin-right: 12px;
+      }
+
+      .header-left::-webkit-scrollbar {
+        display: none;
       }
 
       .status-tags {
         display: flex;
         gap: 6px;
         align-items: center;
+        flex-shrink: 0;
       }
 
       .status-badge {
@@ -94,9 +136,11 @@
         transition: all 0.15s ease;
         user-select: none;
         border: 1px solid transparent;
+        flex-shrink: 0;
       }
 
-      .status-badge:hover {
+      .status-badge:hover,
+      .status-badge:active {
         background: #e2e8f0;
         color: #1e293b;
         border-color: #cbd5e1;
@@ -107,20 +151,22 @@
         color: #15803d;
       }
 
-      .status-badge.loaded:hover {
+      .status-badge.loaded:hover,
+      .status-badge.loaded:active {
         background: #bbf7d0;
         border-color: #86efac;
       }
 
-      /* 选集控制器 */
       .playlist-bar {
         display: flex;
         align-items: center;
         gap: 4px;
         background: #f1f5f9;
-        padding: 2px 4px;
+        padding: 3px 6px;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
+        flex-shrink: 1;
+        min-width: 0;
       }
 
       .playlist-select,
@@ -134,10 +180,15 @@
         font-weight: 600;
         outline: none;
         cursor: pointer;
+        flex-shrink: 0;
       }
 
       .playlist-select {
-        max-width: 180px;
+        max-width: 220px;
+        min-width: 60px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .btn-ep {
@@ -152,13 +203,11 @@
         cursor: not-allowed;
       }
 
-      /* 取消手记和字幕容器的顶部透明缝隙 */
       #mynotesTab,
       #transcriptTab {
         padding-top: 0;
       }
 
-      /* 手记操作栏与字幕工具条 */
       .mynotes-sticky-header,
       .transcript-sticky-header {
         position: sticky;
@@ -211,10 +260,10 @@
         height: 100%;
       }
 
-      /* 左侧视频 */
       .left-panel {
         width: 50%;
         min-width: 280px;
+        height: 100%;
         background: #0f172a;
         display: flex;
         flex-direction: column;
@@ -227,7 +276,7 @@
       }
 
       .panel-smooth-transition {
-        transition: width 0.25s ease-out !important;
+        transition: width 0.25s ease-out, height 0.25s ease-out !important;
       }
 
       .video-wrapper {
@@ -241,8 +290,43 @@
 
       video {
         width: 100%;
-        max-height: 100%;
+        height: 100%;
+        object-fit: contain;
         outline: none;
+      }
+
+      .touch-fit-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(15, 23, 42, 0.7);
+        color: #f8fafc;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(6px);
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: none;
+        opacity: 0;
+        pointer-events: none;
+        align-items: center;
+        gap: 4px;
+        z-index: 18;
+        cursor: pointer;
+        transition: opacity 0.2s ease, background 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .touch-fit-btn.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .touch-fit-btn:active {
+        background: rgba(37, 99, 235, 0.9);
+        border-color: #fff;
+        transform: scale(0.96);
       }
 
       .video-osd {
@@ -304,6 +388,17 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        touch-action: none;
+      }
+
+      .resizer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -14px;
+        right: -14px;
+        z-index: 26;
       }
 
       .resizer::after {
@@ -389,7 +484,6 @@
         opacity: 1;
       }
 
-      /* 自适应提示文字层级：跟随前景色基准，以透明度阶梯自适应任意深浅背景 */
       .empty-tip {
         position: absolute;
         color: #f8fafc;
@@ -412,7 +506,6 @@
         margin-top: 2px;
       }
 
-      /* 右侧面板 */
       .right-panel {
         flex: 1;
         min-width: 320px;
@@ -452,6 +545,7 @@
         overflow-y: auto;
         padding: 15px 18px;
         scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
       }
 
       .btn {
@@ -466,6 +560,9 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
+        user-select: none;
+        white-space: nowrap !important;
+        flex-shrink: 0;
       }
 
       .btn:hover {
@@ -508,6 +605,7 @@
         border-radius: 4px;
         padding: 2px 7px;
         transition: border-color 0.2s;
+        flex-shrink: 0;
       }
 
       .time-jump-box:focus-within {
@@ -681,7 +779,6 @@
         margin: 8px 0;
       }
 
-      /* 我的手记卡片 */
       .my-note-card {
         background: #fff;
         border: 1px solid #e2e8f0;
@@ -769,7 +866,6 @@
         text-align: center;
       }
 
-      /* 统一通用 Modal 遮罩与弹窗基类 */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -858,7 +954,6 @@
         color: #334155;
       }
 
-      /* 方案 B：媒体资源详情面板专属样式 */
       .media-info-section {
         margin-bottom: 14px;
       }
@@ -921,6 +1016,172 @@
         color: #0f172a;
         word-break: break-all;
       }
+
+      /* 方案二专属：移动端手记更多管理抽屉 */
+      .mobile-notes-drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        z-index: 120;
+        display: none;
+        justify-content: flex-end;
+        flex-direction: column;
+        backdrop-filter: blur(2px);
+      }
+
+      .mobile-notes-drawer-content {
+        background: #fff;
+        border-radius: 16px 16px 0 0;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.15);
+        animation: drawerSlideUp 0.22s ease-out;
+      }
+
+      @keyframes drawerSlideUp {
+        from {
+          transform: translateY(100%);
+        }
+
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      /* 桌面端隐藏抽屉按钮 */
+      .mobile-only-btn {
+        display: none !important;
+      }
+
+      /* ==================== 方案 C：移动端极简纯操作流 (iPhone & 竖屏) ==================== */
+      @media (max-width: 768px) {
+        header {
+          padding: 6px 12px;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 5px;
+        }
+
+        /* 隐藏手机端无用的快捷键按键、副标与孤立分割线 */
+        .brand-subtitle,
+        .brand-divider,
+        #btnShortcutsDesktop {
+          display: none !important;
+        }
+
+        .app-brand {
+          border-right: none !important;
+          padding-right: 0 !important;
+        }
+
+        /* 方案 C 核心 1：第 1 行紧凑单行操作 (高度仅 36px) */
+        .header-top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          height: 32px;
+        }
+
+        .header-file-btns {
+          display: flex;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+
+        .header-file-btns .btn {
+          padding: 3px 8px;
+          font-size: 11px;
+          height: 24px;
+        }
+
+        /* 方案 C 核心 2：彻底去除重复冗余的状态标签行！单视频时顶栏总高仅 38px */
+        .status-tags {
+          display: none !important;
+        }
+
+        /* 选集控制器：有多集时才自然展开为第 2 行，文字锁死不撑破 */
+        .playlist-bar {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          box-sizing: border-box;
+          margin-top: 2px;
+        }
+
+        .playlist-select {
+          flex: 1 !important;
+          min-width: 0 !important;
+          width: 0 !important;
+          max-width: none !important;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        .sort-select {
+          max-width: 100px;
+          flex-shrink: 0;
+        }
+
+        .container {
+          flex-direction: column;
+        }
+
+        .left-panel {
+          width: 100% !important;
+          min-width: 100%;
+          height: auto;
+          min-height: 200px;
+        }
+
+        .resizer {
+          width: 100%;
+          height: 10px;
+          cursor: row-resize;
+        }
+
+        .resizer::before {
+          top: -12px;
+          bottom: -12px;
+          left: 0;
+          right: 0;
+        }
+
+        .resizer::after {
+          width: 36px;
+          height: 2px;
+        }
+
+        .right-panel {
+          min-width: 100%;
+          flex: 1;
+        }
+
+        .mynotes-sticky-header,
+        .transcript-sticky-header {
+          margin: 0 -15px 8px -15px;
+          padding: 8px 12px;
+        }
+
+        .notes-action-subtext {
+          display: none;
+        }
+
+        .notes-desktop-actions {
+          display: none !important;
+        }
+
+        .mobile-only-btn {
+          display: inline-flex !important;
+          height: 26px;
+          padding: 3px 8px;
+          font-size: 11px;
+        }
+      }
     </style>
   </head>
 
@@ -930,58 +1191,59 @@
     <input type="file" id="localFolderInput" webkitdirectory directory style="display: none;" onchange="handleFolderSelect(event)">
 
     <header>
-      <div class="header-left">
+      <!-- 移动端第 1 行：品牌标题 + 紧凑打开按钮 -->
+      <div class="header-top-row">
         <div class="app-brand">
           <span class="brand-title">iVideo <span>Reader</span></span>
           <span class="brand-subtitle">视频手记-智能字幕讲义阅读器</span>
         </div>
-        <div class="brand-divider"></div>
-        <button class="btn btn-outline" onclick="document.getElementById('localFileInput').click()" title="支持同时多选视频+字幕+手记">📂 打开文件</button>
-        <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()" title="直接选择完整的文件夹">📁 打开文件夹</button>
-
-        <!-- 选集控制器 -->
-        <div id="playlistControls" class="playlist-bar" style="display: none;">
-          <button class="btn btn-outline btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="上一集">⏮</button>
-          <select id="playlistSelect" class="playlist-select" onchange="switchPlaylistItem(parseInt(this.value))" title="切换集数"></select>
-          <button class="btn btn-outline btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="下一集">⏭</button>
-
-          <select id="sortSelect" class="sort-select" onchange="handleSortChange(this.value)" title="选择视频排序规则">
-            <option value="name-asc" selected>🔤 01→10 (名称升序)</option>
-            <option value="name-desc">🔤 10→01 (名称降序)</option>
-            <option value="date-desc">🕒 最近修改 (新→旧)</option>
-            <option value="date-asc">🕒 最早修改 (旧→新)</option>
-            <option value="original">📥 拖入原始顺序</option>
-          </select>
+        <div class="header-file-btns">
+          <button class="btn btn-outline" onclick="document.getElementById('localFileInput').click()" title="支持多选视频+字幕+手记">📂 打开文件</button>
+          <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()" title="选择完整文件夹">📁 打开文件夹</button>
+          <button id="btnShortcutsDesktop" class="btn btn-outline" onclick="openShortcutsModal()" title="快捷键速查">⌨️ 快捷键</button>
         </div>
-
-        <button class="btn btn-outline" onclick="openShortcutsModal()" title="快捷键速查">⌨️ 快捷键</button>
       </div>
 
-      <!-- 右上角状态徽章组：点击任意标签均可呼出完整元数据详情 (方案 B) -->
+      <!-- 选集控制器：独占行，长文件名自动以...截断，⏭ 按钮绝对不会被挤出屏幕 -->
+      <div id="playlistControls" class="playlist-bar" style="display: none;">
+        <button class="btn btn-outline btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="上一集">⏮</button>
+        <select id="playlistSelect" class="playlist-select" onchange="switchPlaylistItem(parseInt(this.value))" title="切换集数"></select>
+        <button class="btn btn-outline btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="下一集">⏭</button>
+
+        <select id="sortSelect" class="sort-select" onchange="handleSortChange(this.value)" title="选择排序规则">
+          <option value="name-asc" selected>🔤 01→10 (名称升序)</option>
+          <option value="name-desc">🔤 10→01 (名称降序)</option>
+          <option value="date-desc">🕒 最近修改 (新→旧)</option>
+          <option value="date-asc">🕒 最早修改 (旧→新)</option>
+          <option value="original">📥 拖入原始顺序</option>
+        </select>
+      </div>
+
+      <!-- 状态徽章条 -->
       <div class="status-tags">
         <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" title="点击查看媒体详情">📺 1/1 集</span>
-        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看完整文件名与视频规格">📹 视频未加载</span>
-        <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看字幕完整信息">📝 字幕未加载</span>
-        <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看手记与讲义状态">✍️ 手记: 0 条</span>
+        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">📹 视频未加载</span>
+        <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">📝 字幕未加载</span>
+        <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">✍️ 手记: 0 条</span>
       </div>
     </header>
 
     <div class="container" id="mainContainer">
-      <!-- 左侧视频区域 -->
       <div class="left-panel" id="videoZone">
         <div class="drop-overlay">📁 释放鼠标：自动装配视频与字幕</div>
 
         <div class="empty-tip" id="videoTip">
           <strong>🎥 拖拽【多视频 + ASS/SRT 字幕】或【文件夹】至此</strong>
-          <!-- 小字采用透明度阶梯实现自适应高对比度 -->
           <div class="empty-tip-sub">支持自动分流手记/讲义、全格式字幕与多集管理</div>
-          <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
+          <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
             <button class="btn" onclick="document.getElementById('localFileInput').click()">📂 选择多个文件</button>
             <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()">📁 选择文件夹</button>
           </div>
         </div>
 
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="videoWrapper">
+          <button id="touchFitBtn" class="touch-fit-btn" onclick="fitVideoRatio()" title="消除黑边 / 贴合画面">📐 贴合画面</button>
+
           <div id="loopBanner" class="loop-banner" onclick="stopLoop()">
             <span>🔁 正在循环播放片段 <span id="loopRangeText">00:00 - 00:00</span></span>
             <span style="background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 10px; font-size: 11px;">点击停止</span>
@@ -989,7 +1251,9 @@
 
           <div id="videoOSD" class="video-osd"></div>
 
-          <video id="videoPlayer" controls tabindex="-1" style="display: none;"></video>
+          <video id="videoPlayer" controls tabindex="-1" playsinline webkit-playsinline x5-playsinline style="display: none;">
+          </video>
+
           <div id="videoSubOverlay" class="video-sub-overlay">
             <div id="videoSubCn" class="v-cn"></div>
             <div id="videoSubForeign" class="v-foreign"></div>
@@ -997,10 +1261,8 @@
         </div>
       </div>
 
-      <!-- 中间拖动把手 (双击可直接贴合消除黑边) -->
       <div class="resizer" id="resizer" title="拖动调整大小 / 双击贴合画面消除黑边"></div>
 
-      <!-- 右侧区域 -->
       <div class="right-panel" id="notesZone">
         <div class="drop-overlay">📁 释放鼠标加载文件</div>
 
@@ -1010,27 +1272,34 @@
           <button id="tabBtnNotes" class="tab-btn" onclick="switchTab('notes')">📚 智能讲义</button>
         </div>
 
-        <!-- Tab 1: 我的时间戳手记 -->
         <div id="mynotesTab" class="tab-content">
           <div class="mynotes-sticky-header">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; flex-wrap: wrap; gap: 8px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <button class="btn btn-stamp" onclick="openAddNoteBox()">📍 标记时间点 (Ctrl+M)</button>
+              <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;">
+                <button class="btn btn-stamp" onclick="openAddNoteBox()">
+                  📍 标记时间<span class="notes-action-subtext">点 (Ctrl+M)</span>
+                </button>
 
-                <div class="time-jump-box" title="输入时间点并回车可直接跳转（支持 5.30、1.5.15 或 90s，按 Ctrl+G 快速呼出）">
+                <div class="time-jump-box" title="输入时间点回车直接跳转（支持 5.30、1.5.15 或 90s）">
                   <span style="font-size: 11px; color: #64748b;">⏱️</span>
-                  <input type="text" id="quickTimeJumpInput" placeholder="输入时码跳转" onkeydown="handleQuickTimeJump(event)">
+                  <input type="text" id="quickTimeJumpInput" placeholder="时码跳转" onkeydown="handleQuickTimeJump(event)">
                 </div>
               </div>
 
-              <div style="display: flex; gap: 6px;">
-                <button class="btn btn-outline" onclick="exportNotesToMarkdown()">💾 导出手记 (.md)</button>
+              <!-- 桌面端常规操作栏：在大屏幕上正常展开 -->
+              <div class="notes-desktop-actions" style="display: flex; gap: 6px;">
+                <button class="btn btn-outline" onclick="exportNotesToMarkdown()">💾 导出</button>
                 <label class="btn btn-outline" style="cursor: pointer; margin: 0;">
-                  📂 导入手记
+                  📂 导入
                   <input type="file" id="importNotesInput" accept=".md,.txt" style="display: none;" onchange="importNotesFromFile(event)">
                 </label>
                 <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()">🗑️ 清空</button>
               </div>
+
+              <!-- 方案二移动端专属：··· 更多操作按键，彻底防止宽度冒出截断 -->
+              <button class="btn btn-outline mobile-only-btn" onclick="toggleMobileNotesDrawer(true)">
+                ··· 更多
+              </button>
             </div>
 
             <div id="addNoteBox" class="note-input-modal" style="display: none; margin-top: 10px; margin-bottom: 0;">
@@ -1039,11 +1308,11 @@
                   <span>标记类型：</span>
                   <label>
                     <input type="radio" id="radioPoint" name="noteType" value="point" checked onchange="toggleNoteTypeUI()">
-                    📍 单点打卡（顺序播放）
+                    📍 单点打卡
                   </label>
                   <label>
                     <input type="radio" id="radioInterval" name="noteType" value="interval" onchange="toggleNoteTypeUI()">
-                    🔁 区间闭环（在此片段无限循环）
+                    🔁 片段无限循环
                   </label>
                 </div>
                 <span id="noteModalTitle" style="font-size: 11px; color: #64748b; font-weight: bold;"></span>
@@ -1053,13 +1322,13 @@
                 <div class="time-setter-item">
                   <span id="startLabel">入点 (A):</span>
                   <input type="text" id="noteStartTimeInput" value="00:00">
-                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('start')">⏱️ 抓取当前</button>
+                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('start')">⏱️ 抓取</button>
                 </div>
 
                 <div class="time-setter-item" id="endTimeContainer" style="display: none;">
                   <span>出点 (B):</span>
                   <input type="text" id="noteEndTimeInput" value="00:10">
-                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('end')">⏱️ 抓取当前</button>
+                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('end')">⏱️ 抓取</button>
                 </div>
               </div>
 
@@ -1074,11 +1343,10 @@
           </div>
 
           <div id="myNotesList">
-            <p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>
+            <p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时点击上方标记打点！</p>
           </div>
         </div>
 
-        <!-- Tab 2: 逐句字幕对照 -->
         <div id="transcriptTab" class="tab-content" style="display: none;">
           <div class="transcript-sticky-header">
             <span style="font-size: 12px; font-weight: 600; color: #475569;">字幕语言过滤：</span>
@@ -1094,7 +1362,6 @@
           </div>
         </div>
 
-        <!-- Tab 3: 智能结构化讲义 -->
         <div id="notesTab" class="tab-content" style="display: none;">
           <div id="inputBoxContainer">
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px;">
@@ -1123,7 +1390,7 @@
                 📂 导入
                 <input type="file" accept=".md,.txt" style="display: none;" onchange="importAINotesFromFile(event)">
               </label>
-              <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="toggleInputBox()">✏️ 重新粘贴 / 编辑</button>
+              <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="toggleInputBox()">✏️ 重新编辑</button>
               <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; color: #ef4444;" onclick="clearAINotes()">🗑️ 清空</button>
             </div>
           </div>
@@ -1136,7 +1403,28 @@
       </div>
     </div>
 
-    <!-- 方案 B：媒体与学习资源详情面板 Modal -->
+    <!-- 方案二移动端专属：手记更多管理抽屉 Modal -->
+    <div id="mobileNotesDrawer" class="mobile-notes-drawer-overlay" onclick="toggleMobileNotesDrawer(false)">
+      <div class="mobile-notes-drawer-content" onclick="event.stopPropagation()">
+        <div style="font-size: 13px; font-weight: 700; color: #0f172a; text-align: center; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9;">
+          手记快捷管理
+        </div>
+        <button class="btn btn-outline" style="height: 38px; font-size: 12px; justify-content: center;" onclick="exportNotesToMarkdown(); toggleMobileNotesDrawer(false);">
+          💾 导出手记为 Markdown (.md)
+        </button>
+        <button class="btn btn-outline" style="height: 38px; font-size: 12px; justify-content: center;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);">
+          📂 从本地文件导入手记
+        </button>
+        <button class="btn btn-outline" style="height: 38px; font-size: 12px; justify-content: center; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);">
+          🗑️ 清空当前视频所有手记
+        </button>
+        <button class="btn btn-outline" style="height: 34px; font-size: 12px; justify-content: center; background: #f8fafc;" onclick="toggleMobileNotesDrawer(false)">
+          取消
+        </button>
+      </div>
+    </div>
+
+    <!-- 媒体详情面板 Modal -->
     <div id="mediaInfoModal" class="modal-overlay" style="display: none;" onclick="closeMediaInfoModal(event)">
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -1144,7 +1432,6 @@
           <button class="modal-close-btn" onclick="closeMediaInfoModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <!-- 视频信息 -->
           <div class="media-info-section">
             <div class="media-info-title">📹 视频资源</div>
             <div class="media-info-card">
@@ -1165,7 +1452,6 @@
             </div>
           </div>
 
-          <!-- 字幕信息 -->
           <div class="media-info-section">
             <div class="media-info-title">📝 关联字幕</div>
             <div class="media-info-card">
@@ -1182,7 +1468,6 @@
             </div>
           </div>
 
-          <!-- 手记与讲义 -->
           <div class="media-info-section">
             <div class="media-info-title">✍️ 学习数据沉淀</div>
             <div class="media-info-card">
@@ -1296,6 +1581,8 @@
       const tabBtnTranscript = document.getElementById('tabBtnTranscript');
       const copyAIPromptBtn = document.getElementById('copyAIPromptBtn');
       const quickTimeJumpInput = document.getElementById('quickTimeJumpInput');
+      const touchFitBtn = document.getElementById('touchFitBtn');
+      const videoWrapper = document.getElementById('videoWrapper');
 
       const videoSubOverlay = document.getElementById('videoSubOverlay');
       const videoSubCn = document.getElementById('videoSubCn');
@@ -1314,8 +1601,9 @@
       let editingNoteId = null;
       let currentVideoFile = null;
       let currentSubFileName = "";
+      let touchFitTimer = null;
 
-      // 核心防冲突：强制剥夺原生视频控件焦点
+      // 强制剥夺原生视频控件键盘焦点
       ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(eventName => {
         video.addEventListener(eventName, () => {
           if (document.activeElement === video) video.blur();
@@ -1331,68 +1619,169 @@
         });
       });
 
-      // 左右分界线拖拽
+      // 方案二移动端抽屉控制函数
+      function toggleMobileNotesDrawer(show) {
+        const drawer = document.getElementById('mobileNotesDrawer');
+        if (drawer) {
+          drawer.style.display = show ? 'flex' : 'none';
+        }
+      }
+
+      // 贴合按钮与原生控制条严格同步显隐逻辑（1.5s闲置同步 + 离开画面即隐）
+      function showTouchFitBtn() {
+        if (!video.src) return;
+        touchFitBtn.style.display = 'inline-flex';
+        touchFitBtn.classList.add('visible');
+        clearTimeout(touchFitTimer);
+
+        if (!video.paused) {
+          touchFitTimer = setTimeout(() => {
+            touchFitBtn.classList.remove('visible');
+          }, 1500);
+        }
+      }
+
+      function hideTouchFitBtnInstantly() {
+        if (!video.paused) {
+          clearTimeout(touchFitTimer);
+          touchFitBtn.classList.remove('visible');
+        }
+      }
+
+      ['mousemove', 'touchstart', 'click'].forEach(evt => {
+        videoWrapper.addEventListener(evt, () => showTouchFitBtn(), { passive: true });
+      });
+
+      videoWrapper.addEventListener('mouseleave', () => hideTouchFitBtnInstantly());
+
+      video.addEventListener('play', () => showTouchFitBtn());
+      video.addEventListener('pause', () => {
+        touchFitBtn.classList.add('visible');
+        clearTimeout(touchFitTimer);
+      });
+
+      // 触控与鼠标兼备的分界线拖拽系统
       const resizer = document.getElementById('resizer');
       const leftPanel = document.getElementById('videoZone');
       const mainContainer = document.getElementById('mainContainer');
       let isResizing = false;
 
-      resizer.addEventListener('mousedown', (e) => {
-        isResizing = true;
-        resizer.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        document.body.style.userSelect = 'none';
-      });
+      function startResize() {
+          isResizing = true;
+          resizer.classList.add('dragging');
+          leftPanel.classList.remove('panel-smooth-transition'); // <-- 补上这一行：开始拖拽时立即剥离过渡动画，鼠标指哪到哪
+          document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
+          document.body.style.userSelect = 'none';
+        }
 
-      document.addEventListener('mousemove', (e) => {
+      function handleResizeMove(clientX, clientY) {
         if (!isResizing) return;
         const containerRect = mainContainer.getBoundingClientRect();
-        let newLeftWidth = e.clientX - containerRect.left;
-        const minLeft = 280;
-        const maxLeft = containerRect.width - 320;
-        if (newLeftWidth < minLeft) newLeftWidth = minLeft;
-        if (newLeftWidth > maxLeft) newLeftWidth = maxLeft;
-        leftPanel.style.width = `${newLeftWidth}px`;
-      });
 
-      document.addEventListener('mouseup', () => {
+        if (window.innerWidth <= 768) {
+          let newHeight = clientY - containerRect.top;
+          const minH = 180;
+          const maxH = containerRect.height - 180;
+          if (newHeight < minH) newHeight = minH;
+          if (newHeight > maxH) newHeight = maxH;
+          leftPanel.style.height = newHeight + 'px';
+        } else {
+          let newLeftWidth = clientX - containerRect.left;
+          const minLeft = 280;
+          const maxLeft = containerRect.width - 320;
+          if (newLeftWidth < minLeft) newLeftWidth = minLeft;
+          if (newLeftWidth > maxLeft) newLeftWidth = maxLeft;
+          leftPanel.style.width = newLeftWidth + 'px';
+        }
+      }
+
+      function stopResize() {
         if (isResizing) {
           isResizing = false;
           resizer.classList.remove('dragging');
           document.body.style.cursor = '';
           document.body.style.userSelect = '';
         }
-      });
+      }
 
-      // 双击分界线自适应贴合消除黑边
+      resizer.addEventListener('mousedown', startResize);
+      document.addEventListener('mousemove', (e) => handleResizeMove(e.clientX, e.clientY));
+      document.addEventListener('mouseup', stopResize);
+
+      resizer.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) startResize();
+      }, { passive: true });
+
+      document.addEventListener('touchmove', (e) => {
+        if (isResizing && e.touches.length > 0) {
+          handleResizeMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchend', stopResize);
+      document.addEventListener('touchcancel', stopResize);
+
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // ==================== 几何比例算法：自适应贴合画面消除黑边 ====================
+      // 跨端几何比例算法：横竖屏智能识别，彻底消除黑边与底部留白
       function fitVideoRatio() {
         if (!video.src || !video.videoWidth || !video.videoHeight) {
           showOSD('⚠️ 暂无视频或未就绪');
           return;
         }
 
-        const containerHeight = leftPanel.clientHeight;
+        const isMobileVertical = window.innerWidth <= 768;
         const ratio = video.videoWidth / video.videoHeight;
-        let targetWidth = Math.round(containerHeight * ratio);
 
-        const containerTotalWidth = mainContainer.clientWidth;
-        const minLeft = 280;
-        const maxLeft = containerTotalWidth - 320;
+        if (isMobileVertical) {
+          leftPanel.style.width = '';
+          const currentWidth = leftPanel.clientWidth;
+          let targetHeight = Math.round(currentWidth / ratio);
 
-        if (targetWidth < minLeft) targetWidth = minLeft;
-        if (targetWidth > maxLeft) targetWidth = maxLeft;
+          const maxAllowedHeight = ratio < 1.0 ? Math.round(window.innerHeight * 0.62) : Math.round(window.innerHeight * 0.45);
+          const minAllowedHeight = 180;
 
-        leftPanel.classList.add('panel-smooth-transition');
-        leftPanel.style.width = `${targetWidth}px`;
-        setTimeout(() => {
-          leftPanel.classList.remove('panel-smooth-transition');
-        }, 260);
+          if (targetHeight > maxAllowedHeight) targetHeight = maxAllowedHeight;
+          if (targetHeight < minAllowedHeight) targetHeight = minAllowedHeight;
 
-        showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight})`);
+          leftPanel.classList.add('panel-smooth-transition');
+          leftPanel.style.height = targetHeight + 'px';
+          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+
+          showOSD('📐 已贴合画面 (' + video.videoWidth + '×' + video.videoHeight + ')');
+        } else {
+          leftPanel.style.height = '';
+          const containerHeight = mainContainer.clientHeight;
+          let targetWidth = Math.round(containerHeight * ratio);
+
+          const containerTotalWidth = mainContainer.clientWidth;
+          const minLeft = 280;
+          const maxLeft = containerTotalWidth - 320;
+
+          if (targetWidth < minLeft) targetWidth = minLeft;
+          if (targetWidth > maxLeft) targetWidth = maxLeft;
+
+          leftPanel.classList.add('panel-smooth-transition');
+          leftPanel.style.width = targetWidth + 'px';
+          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+
+          showOSD('📐 已贴合画面 (' + video.videoWidth + '×' + video.videoHeight + ')');
+        }
       }
+
+      let prevIsMobileLayout = window.innerWidth <= 768;
+      window.addEventListener('resize', () => {
+        const curIsMobile = window.innerWidth <= 768;
+        if (curIsMobile !== prevIsMobileLayout) {
+          prevIsMobileLayout = curIsMobile;
+          if (curIsMobile) {
+            leftPanel.style.width = '';
+          } else {
+            leftPanel.style.height = '';
+          }
+          if (video.src) fitVideoRatio();
+        }
+      });
 
       let subtitleData = [];
       let currentLang = 'cn';
@@ -1403,7 +1792,6 @@
       let tempInPointSec = null;
       let myNotes = [];
 
-      // OSD 提示
       let osdTimeout = null;
       function showOSD(text) {
         videoOSD.innerHTML = text;
@@ -1415,7 +1803,6 @@
       function openShortcutsModal() { shortcutsModal.style.display = 'flex'; }
       function closeShortcutsModal() { shortcutsModal.style.display = 'none'; }
 
-      // ==================== 方案 B：媒体信息详情弹窗核心逻辑 ====================
       function openMediaInfoModal() {
         updateMediaInfoModalData();
         mediaInfoModal.style.display = 'flex';
@@ -1434,7 +1821,6 @@
       }
 
       function updateMediaInfoModalData() {
-        // 视频数据填充
         const infoVideoName = document.getElementById('infoVideoName');
         const infoVideoRes = document.getElementById('infoVideoRes');
         const infoVideoDuration = document.getElementById('infoVideoDuration');
@@ -1444,12 +1830,12 @@
         if (currentVideoFileName) {
           infoVideoName.textContent = currentVideoFileName;
           infoVideoRes.textContent = (video.videoWidth && video.videoHeight)
-            ? `${video.videoWidth} × ${video.videoHeight} 像素`
+            ? (video.videoWidth + ' × ' + video.videoHeight + ' 像素')
             : '正在解析规格...';
-          infoVideoDuration.textContent = video.duration ? `${formatSeconds(video.duration)} (${Math.round(video.duration)} 秒)` : '计算中...';
+          infoVideoDuration.textContent = video.duration ? (formatSeconds(video.duration) + ' (' + Math.round(video.duration) + ' 秒)') : '计算中...';
           infoVideoSize.textContent = currentVideoFile ? formatFileSize(currentVideoFile.size) : '本地流资源';
           infoVideoEp.textContent = playlist.length > 1
-            ? `第 ${currentPlaylistIndex + 1} / ${playlist.length} 集 (${playlist[currentPlaylistIndex].name})`
+            ? ('第 ' + (currentPlaylistIndex + 1) + ' / ' + playlist.length + ' 集 (' + playlist[currentPlaylistIndex].name + ')')
             : '单文件播放';
         } else {
           infoVideoName.textContent = '暂无加载视频';
@@ -1459,33 +1845,34 @@
           infoVideoEp.textContent = '-';
         }
 
-        // 字幕数据填充
         const infoSubName = document.getElementById('infoSubName');
         const infoSubCount = document.getElementById('infoSubCount');
         const infoSubFormat = document.getElementById('infoSubFormat');
 
         if (subtitleData && subtitleData.length > 0) {
           infoSubName.textContent = currentSubFileName || '已挂载字幕';
-          infoSubCount.textContent = `${subtitleData.length} 句文本行`;
+          infoSubCount.textContent = subtitleData.length + ' 句文本行';
           const ext = currentSubFileName ? currentSubFileName.split('.').pop().toUpperCase() : 'UNIVERSAL';
-          infoSubFormat.textContent = `${ext} 字幕格式`;
+          infoSubFormat.textContent = ext + ' 字幕格式';
         } else {
           infoSubName.textContent = '当前视频无外挂字幕';
           infoSubCount.textContent = '0 句';
           infoSubFormat.textContent = '-';
         }
 
-        // 手记与讲义状态
         const infoNotesCount = document.getElementById('infoNotesCount');
         const infoAINotesStatus = document.getElementById('infoAINotesStatus');
 
-        infoNotesCount.textContent = `${myNotes.length} 条已保存手记`;
+        infoNotesCount.textContent = myNotes.length + ' 条已保存手记';
         const aiRaw = document.getElementById('notesInput').value.trim();
         infoAINotesStatus.textContent = aiRaw ? '✅ 讲义已生成就绪' : '⚪ 尚未导入或生成';
       }
 
       video.addEventListener('loadedmetadata', () => {
         updateMediaInfoModalData();
+        if (window.innerWidth <= 768) {
+          fitVideoRatio();
+        }
       });
 
       function copyInfoText(elementId, btnElement) {
@@ -1575,7 +1962,6 @@
         return fileList;
       }
 
-      // ==================== 选集构建、排序与智能文件分流 ====================
       function autoMatchAndLoad(files) {
         if (!files || files.length === 0) return;
 
@@ -1632,7 +2018,7 @@
         }
 
         renderPlaylistUI();
-        showOSD(`已按规则重新排序`);
+        showOSD('已按规则重新排序');
       }
 
       function applySortOrder() {
@@ -1658,14 +2044,14 @@
 
         playlistControls.style.display = 'flex';
         playlistStatus.style.display = 'inline-block';
-        playlistStatus.textContent = `📺 ${currentPlaylistIndex + 1}/${playlist.length} 集`;
+        playlistStatus.textContent = '📺 ' + (currentPlaylistIndex + 1) + '/' + playlist.length + ' 集';
 
         playlistSelect.innerHTML = '';
         playlist.forEach((item, idx) => {
           const opt = document.createElement('option');
           opt.value = idx;
           const subFlag = item.subFile ? ' [📝字幕]' : '';
-          opt.textContent = `${idx + 1}. ${item.name}${subFlag}`;
+          opt.textContent = (idx + 1) + '. ' + item.name + subFlag;
           playlistSelect.appendChild(opt);
         });
 
@@ -1691,7 +2077,7 @@
       function clearSubtitles() {
         subtitleData = [];
         currentSubFileName = "";
-        assStatus.textContent = `📝 无字幕`;
+        assStatus.textContent = '📝 无字幕';
         assStatus.title = '点击查看详细信息（当前无字幕）';
         assStatus.classList.remove('loaded');
         videoSubOverlay.style.display = 'none';
@@ -1721,7 +2107,7 @@
         if (subtitleData && subtitleData.length > 0) {
           copyAIPromptBtn.innerHTML = '📋 复制“基于字幕全篇讲义”提示词';
         } else if (myNotes && myNotes.length > 0) {
-          copyAIPromptBtn.innerHTML = `📋 复制“基于我的手记整理讲义”提示词 (共 ${myNotes.length} 条)`;
+          copyAIPromptBtn.innerHTML = '📋 复制“基于我的手记整理讲义”提示词 (共 ' + myNotes.length + ' 条)';
         } else {
           copyAIPromptBtn.innerHTML = '📋 复制提示词 (待添加字幕或手记)';
         }
@@ -1752,8 +2138,10 @@
         video.src = URL.createObjectURL(file);
         video.style.display = 'block';
         videoTip.style.display = 'none';
-        videoStatus.textContent = `📹 视频已加载`;
-        videoStatus.title = `点击查看详细信息（${file.name}）`;
+        showTouchFitBtn();
+
+        videoStatus.textContent = '📹 视频已加载';
+        videoStatus.title = '点击查看详细信息（' + file.name + '）';
         videoStatus.classList.add('loaded');
         video.playbackRate = 1.0;
         video.play();
@@ -1766,7 +2154,7 @@
 
       function loadAINotesFromLocalStorage() {
         if (!currentVideoFileName) return;
-        const key = `reader_ai_notes_${currentVideoFileName}`;
+        const key = 'reader_ai_notes_' + currentVideoFileName;
         const saved = localStorage.getItem(key);
         if (saved) {
           document.getElementById('notesInput').value = saved;
@@ -1781,7 +2169,7 @@
 
       function clearAINotes() {
         if (!currentVideoFileName) return;
-        const key = `reader_ai_notes_${currentVideoFileName}`;
+        const key = 'reader_ai_notes_' + currentVideoFileName;
         const saved = localStorage.getItem(key);
         const raw = document.getElementById('notesInput').value.trim();
 
@@ -1825,8 +2213,8 @@
         }
 
         if (subtitleData.length > 0) {
-          assStatus.textContent = `📝 字幕已加载`;
-          assStatus.title = `点击查看详细信息（${filename}）`;
+          assStatus.textContent = '📝 字幕已加载';
+          assStatus.title = '点击查看详细信息（' + filename + '）';
           assStatus.classList.add('loaded');
           renderTranscriptList();
           updateSubtitleUIVisibility();
@@ -1914,6 +2302,7 @@
 
         const isJapanese = (t) => /[\u3040-\u309F\u30A0-\u30FF]/.test(t);
         const isKorean = (t) => /[\uAC00-\uD7AF]/.test(t);
+        const isWestern = (t) => /[a-zA-Z\u00C0-\u024F\u0400-\u04FF]/.test(t);
         const isChinese = (t) => /[\u4E00-\u9FA5]/.test(t) && !isJapanese(t);
 
         if (parts.length >= 2) {
@@ -1976,7 +2365,7 @@
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
             document.querySelectorAll('.transcript-item').forEach(el => el.classList.remove('active'));
-            const activeEl = document.getElementById(`sub-${currentCue.id}`);
+            const activeEl = document.getElementById('sub-' + currentCue.id);
             if (activeEl) {
               activeEl.classList.add('active');
               activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -2048,9 +2437,9 @@
         const m = Math.floor((sec % 3600) / 60);
         const s = Math.floor(sec % 60);
         if (h > 0) {
-          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
-        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
       }
 
       function handleQuickTimeJump(e) {
@@ -2060,11 +2449,11 @@
           const sec = parseSmartTimecode(input.value);
           if (sec !== null && sec >= 0) {
             jumpToPoint(sec);
-            showOSD(`⏱️ 跳转至 ${formatSeconds(sec)}`);
+            showOSD('⏱️ 跳转至 ' + formatSeconds(sec));
             input.value = '';
             input.blur();
           } else {
-            showOSD(`⚠️ 无法识别时间格式`);
+            showOSD('⚠️ 无法识别时间格式');
           }
         }
       }
@@ -2072,7 +2461,7 @@
       function setLanguage(lang) {
         currentLang = lang;
         document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById(`btn-${lang}`);
+        const activeBtn = document.getElementById('btn-' + lang);
         if (activeBtn) activeBtn.classList.add('active');
         renderTranscriptList();
       }
@@ -2089,20 +2478,17 @@
         subtitleData.forEach(item => {
           let contentHtml = '';
           if (currentLang === 'cn') {
-            contentHtml = `<div class="transcript-cn">${item.cn}</div>`;
+            contentHtml = '<div class="transcript-cn">' + item.cn + '</div>';
           } else if (currentLang === 'foreign') {
-            contentHtml = `<div class="transcript-foreign" style="color:#1e293b; font-size:13px;">${item.foreign || item.raw}</div>`;
+            contentHtml = '<div class="transcript-foreign" style="color:#1e293b; font-size:13px;">' + (item.foreign || item.raw) + '</div>';
           } else {
-            contentHtml = `
-            <div class="transcript-cn">${item.cn}</div>
-            ${item.foreign ? `<div class="transcript-foreign">${item.foreign}</div>` : ''}
-          `;
+            contentHtml = '<div class="transcript-cn">' + item.cn + '</div>' + (item.foreign ? ('<div class="transcript-foreign">' + item.foreign + '</div>') : '');
           }
 
           const div = document.createElement('div');
           div.className = 'transcript-item';
-          div.id = `sub-${item.id}`;
-          div.innerHTML = `<span class="time-tag" onclick="jumpToPoint(${item.start})">${item.timeStr}</span>` + contentHtml;
+          div.id = 'sub-' + item.id;
+          div.innerHTML = '<span class="time-tag" onclick="jumpToPoint(' + item.start + ')">' + item.timeStr + '</span>' + contentHtml;
           container.appendChild(div);
         });
       }
@@ -2124,7 +2510,7 @@
         video.currentTime = start;
         video.play();
 
-        loopRangeText.textContent = `${formatSeconds(start)} ~ ${formatSeconds(end)}`;
+        loopRangeText.textContent = formatSeconds(start) + ' ~ ' + formatSeconds(end);
         loopBanner.style.display = 'flex';
         renderMyNotesList();
       }
@@ -2135,7 +2521,6 @@
         renderMyNotesList();
       }
 
-      // ==================== 全套高级快捷键监听系统 ====================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
@@ -2170,7 +2555,7 @@
             e.preventDefault();
             if (!video.src) return;
             tempInPointSec = video.currentTime;
-            showOSD(`📍 已定入点 A: ${formatSeconds(tempInPointSec)}`);
+            showOSD('📍 已定入点 A: ' + formatSeconds(tempInPointSec));
             return;
           }
 
@@ -2179,7 +2564,7 @@
             if (!video.src) return;
             const outPointSec = video.currentTime;
             const inPointSec = tempInPointSec !== null ? tempInPointSec : Math.max(0, outPointSec - 10);
-            showOSD(`📍 已定出点 B: ${formatSeconds(outPointSec)}`);
+            showOSD('📍 已定出点 B: ' + formatSeconds(outPointSec));
             openAddNoteBoxWithInterval(inPointSec, outPointSec);
             return;
           }
@@ -2195,7 +2580,7 @@
             if (!video.src) return;
             let newRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
             video.playbackRate = newRate;
-            showOSD(`⚡ 倍速: ${newRate.toFixed(2)}x`);
+            showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
             return;
           }
 
@@ -2204,7 +2589,7 @@
             if (!video.src) return;
             let newRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
             video.playbackRate = newRate;
-            showOSD(`⚡ 倍速: ${newRate.toFixed(2)}x`);
+            showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
             return;
           }
 
@@ -2212,7 +2597,7 @@
             e.preventDefault();
             if (!video.src) return;
             video.playbackRate = 1.0;
-            showOSD(`⚡ 恢复原速: 1.00x`);
+            showOSD('⚡ 恢复原速: 1.00x');
             return;
           }
         }
@@ -2221,6 +2606,7 @@
           closeAddNoteBox();
           closeShortcutsModal();
           closeMediaInfoModal();
+          toggleMobileNotesDrawer(false);
           stopLoop();
           return;
         }
@@ -2251,7 +2637,7 @@
               else if (e.shiftKey) step = 30;
 
               video.currentTime = Math.max(0, video.currentTime - step);
-              showOSD(`⏪ -${step}s (${formatSeconds(video.currentTime)})`);
+              showOSD('⏪ -' + step + 's (' + formatSeconds(video.currentTime) + ')');
             }
             return;
           }
@@ -2265,18 +2651,19 @@
               else if (e.shiftKey) step = 30;
 
               video.currentTime = Math.min(video.duration || 999999, video.currentTime + step);
-              showOSD(`⏩ +${step}s (${formatSeconds(video.currentTime)})`);
+              showOSD('⏩ +' + step + 's (' + formatSeconds(video.currentTime) + ')');
             }
             return;
           }
 
+          // 音量调节 (↑ / ↓) 语法错误彻底修复
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             e.stopPropagation();
             if (video.src) {
               video.muted = false;
               video.volume = Math.min(1.0, Math.round((video.volume + 0.05) * 100) / 100);
-              showOSD(`🔊 音量: ${Math.round(video.volume * 100)}%`);
+              showOSD('🔊 音量: ' + Math.round(video.volume * 100) + '%');
             }
             return;
           }
@@ -2287,7 +2674,7 @@
             if (video.src) {
               video.volume = Math.max(0.0, Math.round((video.volume - 0.05) * 100) / 100);
               const icon = video.volume === 0 ? '🔇' : '🔉';
-              showOSD(`${icon} 音量: ${Math.round(video.volume * 100)}%`);
+              showOSD(icon + ' 音量: ' + Math.round(video.volume * 100) + '%');
             }
             return;
           }
@@ -2354,14 +2741,14 @@
 
         const quoteEl = document.getElementById('noteQuoteText');
         if (note.quote) {
-          quoteEl.textContent = `🗣️ 原台词: "${note.quote}"`;
+          quoteEl.textContent = '🗣️ 原台词: "' + note.quote + '"';
           quoteEl.style.display = 'block';
         } else {
           quoteEl.style.display = 'none';
         }
 
         document.getElementById('noteContentInput').value = note.text;
-        document.getElementById('noteModalTitle').textContent = `✏️ 正在编辑手记 [${note.timeStr}]`;
+        document.getElementById('noteModalTitle').textContent = '✏️ 正在编辑手记 [' + note.timeStr + ']';
         document.getElementById('saveNoteBtn').textContent = '保存修改 (Ctrl + Enter)';
 
         document.getElementById('addNoteBox').style.display = 'block';
@@ -2372,7 +2759,7 @@
         const cue = subtitleData.find(item => time >= item.start && time <= item.end);
         const quoteEl = document.getElementById('noteQuoteText');
         if (cue) {
-          quoteEl.textContent = `🗣️ 原台词: "${cue.cn}"`;
+          quoteEl.textContent = '🗣️ 原台词: "' + cue.cn + '"';
           quoteEl.style.display = 'block';
         } else {
           quoteEl.style.display = 'none';
@@ -2425,7 +2812,7 @@
             alert('出点时间必须大于入点时间！');
             return;
           }
-          timeDisplay = `${formatSeconds(startSec)} ~ ${formatSeconds(endSec)}`;
+          timeDisplay = formatSeconds(startSec) + ' ~ ' + formatSeconds(endSec);
         }
 
         if (editingNoteId) {
@@ -2468,7 +2855,7 @@
 
         const targetId = editingNoteId || (myNotes.find(n => n.start === startSec)?.id);
         setTimeout(() => {
-          const targetCard = document.getElementById(`note-card-${targetId}`);
+          const targetCard = document.getElementById('note-card-' + targetId);
           if (targetCard) {
             targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
             targetCard.style.borderColor = '#8b5cf6';
@@ -2491,11 +2878,11 @@
         const container = document.getElementById('myNotesList');
         container.innerHTML = '';
 
-        noteStatus.textContent = `✍️ 手记: ${myNotes.length} 条`;
-        notesCountBadge.textContent = `(${myNotes.length})`;
+        noteStatus.textContent = '✍️ 手记: ' + myNotes.length + ' 条';
+        notesCountBadge.textContent = '(' + myNotes.length + ')';
 
         if (myNotes.length === 0) {
-          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时按 Ctrl + [ / ] 或 Ctrl + M 打点标记！</p>';
+          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无专属手记。随时点击上方标记打点！</p>';
           return;
         }
 
@@ -2504,48 +2891,34 @@
           const isCurrentlyLooping = activeLoop && activeLoop.id === note.id;
 
           const card = document.createElement('div');
-          card.className = `my-note-card ${isCurrentlyLooping ? 'is-looping-card' : ''}`;
-          card.id = `note-card-${note.id}`;
+          card.className = 'my-note-card ' + (isCurrentlyLooping ? 'is-looping-card' : '');
+          card.id = 'note-card-' + note.id;
 
           let badgeHtml = '';
           const standardTimeStr = isLoop
-            ? (note.end ? `${formatSeconds(note.start)} ~ ${formatSeconds(note.end)}` : note.timeStr)
+            ? (note.end ? (formatSeconds(note.start) + ' ~ ' + formatSeconds(note.end)) : note.timeStr)
             : formatSeconds(note.start);
 
           if (isLoop) {
-            badgeHtml = `
-            <span class="time-tag-loop ${isCurrentlyLooping ? 'active-loop' : ''}" onclick="startIntervalLoop(${note.start}, ${note.end}, ${note.id})">
-              🔁 ${standardTimeStr} ${isCurrentlyLooping ? '(循环中...点击重头)' : '(循环播放)'}
-            </span>
-          `;
+            badgeHtml = '<span class="time-tag-loop ' + (isCurrentlyLooping ? 'active-loop' : '') + '" onclick="startIntervalLoop(' + note.start + ', ' + note.end + ', ' + note.id + ')">🔁 ' + standardTimeStr + (isCurrentlyLooping ? ' (循环中...点击重头)' : ' (循环播放)') + '</span>';
           } else {
-            badgeHtml = `<span class="time-tag" onclick="jumpToPoint(${note.start})">▶ ${standardTimeStr}</span>`;
+            badgeHtml = '<span class="time-tag" onclick="jumpToPoint(' + note.start + ')">▶ ' + standardTimeStr + '</span>';
           }
 
-          card.innerHTML = `
-          <div class="my-note-header">
-            <div>${badgeHtml}</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <span style="font-size: 11px; color: #2563eb; cursor: pointer;" onclick="editNote(${note.id})">✏️ 编辑</span>
-              <span style="font-size: 11px; color: #94a3b8; cursor: pointer;" onclick="deleteNote(${note.id})">❌ 删除</span>
-            </div>
-          </div>
-          ${note.quote ? `<div class="my-note-quote">🗣️ ${note.quote}</div>` : ''}
-          <div class="my-note-body">${note.text}</div>
-        `;
+          card.innerHTML = '<div class="my-note-header"><div>' + badgeHtml + '</div><div style="display: flex; gap: 8px; align-items: center;"><span style="font-size: 11px; color: #2563eb; cursor: pointer;" onclick="editNote(' + note.id + ')">✏️ 编辑</span><span style="font-size: 11px; color: #94a3b8; cursor: pointer;" onclick="deleteNote(' + note.id + ')">❌ 删除</span></div></div>' + (note.quote ? ('<div class="my-note-quote">🗣️ ' + note.quote + '</div>') : '') + '<div class="my-note-body">' + note.text + '</div>';
           container.appendChild(card);
         });
       }
 
       function saveNotesToLocalStorage() {
         if (!currentVideoFileName) return;
-        const key = `reader_notes_${currentVideoFileName}`;
+        const key = 'reader_notes_' + currentVideoFileName;
         localStorage.setItem(key, JSON.stringify(myNotes));
       }
 
       function loadNotesFromLocalStorage() {
         if (!currentVideoFileName) return;
-        const key = `reader_notes_${currentVideoFileName}`;
+        const key = 'reader_notes_' + currentVideoFileName;
         const saved = localStorage.getItem(key);
         if (saved) {
           try {
@@ -2576,25 +2949,25 @@
         }
 
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习手记";
-        let mdContent = '<!' + '-- type: user_notes --' + '>\n# ' + title + ' - 学习手记\n\n';
-        mdContent += `> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点手记\n\n---\n\n`;
+        let mdContent = '<!-- type: user_notes -->\n# ' + title + ' - 学习手记\n\n';
+        mdContent += '> 导出日期：' + new Date().toLocaleString() + ' | 共 ' + myNotes.length + ' 条打点手记\n\n---\n\n';
 
         myNotes.forEach(note => {
           if (note.type === 'interval') {
-            mdContent += `### [${note.timeStr}] 🔁 片段循环\n`;
+            mdContent += '### [' + note.timeStr + '] 🔁 片段循环\n';
           } else {
-            mdContent += `### [${note.timeStr}] 📍 重点批注\n`;
+            mdContent += '### [' + note.timeStr + '] 📍 重点批注\n';
           }
           if (note.quote) {
-            mdContent += `> 讲师原话："${note.quote}"\n\n`;
+            mdContent += '> 讲师原话："' + note.quote + '"\n\n';
           }
-          mdContent += `${note.text}\n\n`;
+          mdContent += note.text + '\n\n';
         });
 
         const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `${title}_专属手记.md`;
+        a.download = title + '_专属手记.md';
         a.click();
       }
 
@@ -2664,7 +3037,7 @@
             type: type,
             start: startSec,
             end: endSec,
-            timeStr: type === 'interval' ? `${formatSeconds(startSec)} ~ ${formatSeconds(endSec)}` : formatSeconds(startSec),
+            timeStr: type === 'interval' ? (formatSeconds(startSec) + ' ~ ' + formatSeconds(endSec)) : formatSeconds(startSec),
             quote: quote,
             text: text,
             createAt: new Date().toLocaleDateString()
@@ -2678,7 +3051,7 @@
           renderMyNotesList();
           switchTab('mynotes');
           updateAIPromptButtonLabel();
-          alert(`成功导入 ${imported.length} 条打点手记！`);
+          alert('成功导入 ' + imported.length + ' 条打点手记！');
         } else {
           alert('未能识别手记格式，已自动转存为讲义。');
           loadImportedAINotes(content);
@@ -2707,47 +3080,46 @@
         }
 
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "课程讲义";
-        let mdContent = '<!' + '-- type: ai_notes --' + '>\n' + raw;
+        let mdContent = '<!-- type: ai_notes -->\n' + raw;
 
         const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `${title}_AI讲义.md`;
+        a.download = title + '_AI讲义.md';
         a.click();
       }
 
       function copyAIPrompt() {
+        const tick = String.fromCharCode(96);
+        const fence = tick + tick + tick;
+
         if (subtitleData.length > 0) {
           let condensedText = "";
           subtitleData.forEach((item, idx) => {
             let textPart = "";
             if (currentLang === 'cn') textPart = item.cn;
             else if (currentLang === 'foreign') textPart = item.foreign || item.raw;
-            else textPart = item.cn + (item.foreign ? ` (${item.foreign})` : '');
+            else textPart = item.cn + (item.foreign ? (" (" + item.foreign + ")") : "");
 
-            if (idx % 3 === 0) condensedText += `\n[${item.timeStr}] `;
+            if (idx % 3 === 0) condensedText += "\n[" + item.timeStr + "] ";
             condensedText += textPart + " ";
           });
 
-          const prompt = `你是一个教学内容整理专家。请将以下带有时间戳的视频字幕文本，整理成一份清晰、紧凑高效的“结构化学习讲义”。
-
-当前课程文件：${currentVideoFileName}
-
-要求：
-1. 【大纲框架】：提炼核心逻辑，使用多级标题（#、##、###）和精炼的项目符号列表（-）梳理知识大纲。排版尽量紧凑，不要空过多无意义的空行。
-2. 【保留细节】：合并口语碎句为通顺的书面表达，完整保留专业术语、具体操作步骤、案例与讲师的核心论证，切勿过度简写。重点术语使用 **加粗**。
-3. 【保留关键时间戳】：在每个章节标题、核心概念或关键操作步骤后面，务必保留对应的原时间戳标签（例如 [03:25]），以便我跳转回原视频。
-4. 【输出格式要求（非常重要）】：
-   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 \`\`\`markdown 开头，以 \`\`\` 结尾）。
-   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。
-
-以下是字幕文本内容：
-${condensedText}`;
+          let prompt = "你是一个教学内容整理专家。请将以下带有时间戳的视频字幕文本，整理成一份清晰、紧凑高效的“结构化学习讲义”。\n\n";
+          prompt += "当前课程文件：" + currentVideoFileName + "\n\n";
+          prompt += "要求：\n";
+          prompt += "1. 【大纲框架】：提炼核心逻辑，使用多级标题（#、##、###）和精炼的项目符号列表（-）梳理知识大纲。排版尽量紧凑，不要空过多无意义的空行。\n";
+          prompt += "2. 【保留细节】：合并口语碎句为通顺的书面表达，完整保留专业术语、具体操作步骤、案例与讲师的核心论证，切勿过度简写。重点术语使用 **加粗**。\n";
+          prompt += "3. 【保留关键时间戳】：在每个章节标题、核心概念或关键操作步骤后面，务必保留对应的原时间戳标签（例如 [03:25]），以便我跳转回原视频。\n";
+          prompt += "4. 【输出格式要求（非常重要）】：\n";
+          prompt += "   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 " + fence + "markdown 开头，以 " + fence + " 结尾）。\n";
+          prompt += "   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。\n\n";
+          prompt += "以下是字幕文本内容：\n" + condensedText;
 
           navigator.clipboard.writeText(prompt).then(() => {
-            alert(`已成功复制【基于原声字幕】的讲义提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。`);
-          }).catch(err => {
-            alert('复制失败，请手动选择复制。');
+            alert("已成功复制【基于原声字幕】的讲义提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。");
+          }).catch(() => {
+            alert("复制失败，请手动选择复制。");
           });
           return;
         }
@@ -2756,42 +3128,37 @@ ${condensedText}`;
           let notesText = "";
           myNotes.forEach(note => {
             if (note.type === 'interval') {
-              notesText += `\n[${note.timeStr}] 【操作/演练区间】\n`;
+              notesText += "\n[" + note.timeStr + "] 【操作/演练区间】\n";
             } else {
-              notesText += `\n[${note.timeStr}] 【核心要点】\n`;
+              notesText += "\n[" + note.timeStr + "] 【核心要点】\n";
             }
             if (note.quote) {
-              notesText += `原声引用："${note.quote}"\n`;
+              notesText += "原声引用：\"" + note.quote + "\"\n";
             }
-            notesText += `批注思考：${note.text}\n`;
+            notesText += "批注思考：" + note.text + "\n";
           });
 
-          const prompt = `你是一个资深教学教案整理专家与学习导师。以下是我在观看教学视频时亲手记录的【带时间戳的重点手记与实操批注】。
-
-当前课程文件：${currentVideoFileName}
-
-请帮我将这些碎片化的思考、步骤记录与避坑点，整理、润色并扩充成一份逻辑清晰、条理严谨、专业度高的“结构化学习讲义”。
-
-要求：
-1. 【脉络与章节】：根据时间戳顺序梳理出系统化的知识大纲与知识点章节（使用 #、##、###）。
-2. 【润色与升华】：保留我记录的所有关键观点与操作结论，将口语或零散思考改写为书面规范表述，若有操作流程请整理为有序步骤（1、2、3...）。关键术语和避坑提示 **加粗** 显示。
-3. 【保留所有时间戳】：务必保留每一条手记对应的原时间戳标签（例如 [03:25] 或 [01:20 ~ 01:45]），以便我后续回跳视频核对。
-4. 【输出格式要求（非常重要）】：
-   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 \`\`\`markdown 开头，以 \`\`\` 结尾）。
-   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。
-
-以下是我记录的时间戳手记内容：
-${notesText}`;
+          let prompt = "你是一个资深教学教案整理专家与学习导师。以下是我在观看教学视频时亲手记录的【带时间戳的重点手记与实操批注】。\n\n";
+          prompt += "当前课程文件：" + currentVideoFileName + "\n\n";
+          prompt += "请帮我将这些碎片化的思考、步骤记录与避坑点，整理、润色并扩充成一份逻辑清晰、条理严谨、专业度高的“结构化学习讲义”。\n\n";
+          prompt += "要求：\n";
+          prompt += "1. 【脉络与章节】：根据时间戳顺序梳理出系统化的知识大纲与知识点章节（使用 #、##、###）。\n";
+          prompt += "2. 【润色与升华】：保留我记录的所有关键观点与操作结论，将口语或零散思考改写为书面规范表述，若有操作流程请整理为有序步骤（1、2、3...）。关键术语和避坑提示 **加粗** 显示。\n";
+          prompt += "3. 【保留所有时间戳】：务必保留每一条手记对应的原时间戳标签（例如 [03:25] 或 [01:20 ~ 01:45]），以便我后续回跳视频核对。\n";
+          prompt += "4. 【输出格式要求（非常重要）】：\n";
+          prompt += "   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 " + fence + "markdown 开头，以 " + fence + " 结尾）。\n";
+          prompt += "   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。\n\n";
+          prompt += "以下是我记录的时间戳手记内容：\n" + notesText;
 
           navigator.clipboard.writeText(prompt).then(() => {
-            alert(`已成功复制【基于你的 ${myNotes.length} 条打点手记】的讲义重构提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。`);
-          }).catch(err => {
-            alert('复制失败，请手动选择复制。');
+            alert("已成功复制【基于你的 " + myNotes.length + " 条打点手记】的讲义重构提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。");
+          }).catch(() => {
+            alert("复制失败，请手动选择复制。");
           });
           return;
         }
 
-        alert('当前视频暂无字幕，且尚未记录任何时间戳手记！\n请先按 Ctrl + M 或 Ctrl + [ / ] 记录几条心得，AI 才能帮您整理升华讲义。');
+        alert("当前视频暂无字幕，且尚未记录任何时间戳手记！\n请先按 Ctrl + M 或 Ctrl + [ / ] 记录几条心得，AI 才能帮您整理升华讲义。");
       }
 
       function renderNotes(shouldSave = true) {
@@ -2799,10 +3166,12 @@ ${notesText}`;
         if (!raw.trim()) return;
 
         if (shouldSave && currentVideoFileName) {
-          localStorage.setItem(`reader_ai_notes_${currentVideoFileName}`, raw);
+          localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
         }
 
-        raw = raw.trim().replace(/^```(?:markdown)?\s*\n?/i, '').replace(/\n?```$/i, '');
+        const tick = String.fromCharCode(96);
+        const fencePattern = new RegExp('^' + tick + '{3}(?:markdown)?\\s*\\n?|\\n?' + tick + '{3}$', 'gi');
+        raw = raw.trim().replace(fencePattern, '');
 
         const lines = raw.split('\n');
         let html = '';
@@ -2821,7 +3190,7 @@ ${notesText}`;
               inList = true;
             }
             let text = isBullet ? trimmed.substring(2) : trimmed.replace(/^\d+\.\s+/, '');
-            html += `<li>${formatInline(text)}</li>`;
+            html += '<li>' + formatInline(text) + '</li>';
             return;
           } else {
             if (inList) {
@@ -2831,15 +3200,15 @@ ${notesText}`;
           }
 
           if (trimmed.startsWith('### ')) {
-            html += `<h3>${formatInline(trimmed.substring(4))}</h3>`;
+            html += '<h3>' + formatInline(trimmed.substring(4)) + '</h3>';
           } else if (trimmed.startsWith('## ')) {
-            html += `<h2>${formatInline(trimmed.substring(3))}</h2>`;
+            html += '<h2>' + formatInline(trimmed.substring(3)) + '</h2>';
           } else if (trimmed.startsWith('# ')) {
-            html += `<h1>${formatInline(trimmed.substring(2))}</h1>`;
+            html += '<h1>' + formatInline(trimmed.substring(2)) + '</h1>';
           } else if (trimmed === '---' || trimmed === '***') {
-            html += `<hr>`;
+            html += '<hr>';
           } else {
-            html += `<p>${formatInline(trimmed)}</p>`;
+            html += '<p>' + formatInline(trimmed) + '</p>';
           }
         });
 
@@ -2847,7 +3216,7 @@ ${notesText}`;
 
         html = html.replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, function (match, timeStr) {
           const sec = timeToSeconds(timeStr);
-          return `<span class="time-tag" onclick="jumpToPoint(${sec})">${timeStr}</span>`;
+          return '<span class="time-tag" onclick="jumpToPoint(' + sec + ')">' + timeStr + '</span>';
         });
 
         document.getElementById('notesRendered').innerHTML = html;
@@ -2856,7 +3225,9 @@ ${notesText}`;
       }
 
       function formatInline(str) {
-        return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code>$1</code>');
+        const tick = String.fromCharCode(96);
+        const codePattern = new RegExp(tick + '([^' + tick + ']+)' + tick, 'g');
+        return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(codePattern, '<code>$1</code>');
       }
 
       function toggleInputBox() {
