@@ -80,6 +80,7 @@
         flex-shrink: 0;
       }
 
+
       /* 选集播放条 */
       .playlist-bar {
         display: flex;
@@ -89,7 +90,7 @@
         padding: 3px 6px;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
-        flex-shrink: 1;
+        flex: 1;                 /* 👈 改动点：PC 端吃满左右两边剩余空间 */
         min-width: 0;
         position: relative;
       }
@@ -109,14 +110,16 @@
       /* 现代定制集数下拉组件 */
       .custom-ep-wrapper {
         position: relative;
-        flex-shrink: 1;
+        flex: 1;                 /* 👈 改动点 1：外壳占满选集条内部可用空间 */
         min-width: 0;
+        display: flex;           /* 👈 改动点 2：弹性布局让内部按钮能撑满 */
       }
 
       .custom-ep-btn {
         height: 24px;
-        min-width: 80px;
-        max-width: 240px;
+        width: 100%;             /* 👈 改动点 3：宽度 100% 自适应 */
+        min-width: 0;
+        max-width: none;         /* 👈 改动点 4：解除原有的 240px 宽度限制 */
         background: #fff;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
