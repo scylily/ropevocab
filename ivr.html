@@ -1674,7 +1674,7 @@
 
       <div class="status-tags">
         <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" title="点击查看媒体详情">📺 1/1 集</span>
-        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">📹 视频未加载</span>
+        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">🎬 视频未加载</span>
         <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">📝 字幕未加载</span>
         <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">✍️ 手记: 0 条</span>
       </div>
@@ -1919,7 +1919,7 @@
         </div>
         <div class="modal-body">
           <div class="media-info-section">
-            <div class="media-info-title">📹 视频资源</div>
+            <div class="media-info-title">🎬 视频资源</div>
             <div class="media-info-card">
               <div class="media-filename-box">
                 <span id="infoVideoName" class="media-filename-text">未加载视频</span>
@@ -2757,7 +2757,7 @@
         videoTip.style.display = 'none';
         showTouchFitBtn();
 
-        videoStatus.textContent = '📹 视频已加载';
+        videoStatus.textContent = '🎬 视频已加载';
         videoStatus.title = '点击查看详细信息（' + file.name + '）';
         videoStatus.classList.add('loaded');
         video.playbackRate = 1.0;
