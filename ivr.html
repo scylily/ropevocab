@@ -94,24 +94,6 @@
         position: relative;
       }
 
-      .playlist-select {
-        padding: 3px 6px;
-        font-size: 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        background: #fff;
-        color: #1e293b;
-        font-weight: 600;
-        outline: none;
-        cursor: pointer;
-        flex-shrink: 0;
-        max-width: 220px;
-        min-width: 60px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
       .btn-ep {
         padding: 3px 7px;
         font-size: 11px;
@@ -122,6 +104,159 @@
       .btn-ep:disabled {
         opacity: 0.35;
         cursor: not-allowed;
+      }
+
+      /* 现代定制集数下拉组件 */
+      .custom-ep-wrapper {
+        position: relative;
+        flex-shrink: 1;
+        min-width: 0;
+      }
+
+      .custom-ep-btn {
+        height: 24px;
+        min-width: 80px;
+        max-width: 240px;
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 0 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1e293b;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease;
+      }
+
+      .custom-ep-btn:hover {
+        background: #ffffff;
+        border-color: #94a3b8;
+      }
+
+      .custom-ep-btn.active {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+      }
+
+      .custom-ep-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .custom-ep-arrow {
+        font-size: 8px;
+        color: #64748b;
+        transition: transform 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      .custom-ep-btn.active .custom-ep-arrow {
+        transform: rotate(180deg);
+      }
+
+      /* PC 端自适应内容宽度的悬浮面板：全显长文件名 + 充裕右边距 */
+      .custom-ep-popover {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        width: max-content;
+        min-width: 320px;
+        max-width: 90vw;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 12px 30px -5px rgba(15, 23, 42, 0.18), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+        padding: 5px;
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+        z-index: 1000;
+        max-height: 420px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        animation: popoverFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes popoverFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .ep-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 18px;
+        /* 关键：锁定 18px 优雅呼吸留白，绝不死板顶边 */
+        border-radius: 5px;
+        font-size: 12.5px;
+        color: #334155;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.15s ease;
+        gap: 24px;
+        white-space: nowrap;
+      }
+
+      .ep-item:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+
+      .ep-item.current {
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 600;
+      }
+
+      .ep-item-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .ep-check-icon {
+        width: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2563eb;
+        flex-shrink: 0;
+        text-align: center;
+      }
+
+      .ep-item-name {
+        white-space: nowrap;
+      }
+
+      .ep-item-badges {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .custom-ep-popover::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      .custom-ep-popover::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
       }
 
       /* 悬浮排序下拉菜单组件 */
@@ -534,13 +669,28 @@
         -webkit-overflow-scrolling: touch;
       }
 
-      /* ================= 通用按键与控制单元 ================= */
+      /* ================= 顶栏吸顶保持与无缝贴边核心样式 (Fluid Sticky) ================= */
+      .mynotes-sticky-header,
+      .transcript-sticky-header,
+      #collapsedToolbar {
+        position: sticky;
+        top: -15px;
+        background: #ffffff;
+        z-index: 10;
+        margin: -15px -18px 10px -18px;
+        width: calc(100% + 36px);
+        padding: 8px 14px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      /* ================= 通用按键与控制单元（极简科技风统一规范） ================= */
       .btn {
         background: #2563eb;
         color: #fff;
         border: none;
-        padding: 6px 11px;
-        border-radius: 4px;
+        padding: 0 10px;
+        height: 28px;
+        border-radius: 6px;
         cursor: pointer;
         font-size: 12px;
         font-weight: 500;
@@ -551,7 +701,7 @@
         user-select: none;
         white-space: nowrap !important;
         flex-shrink: 0;
-        transition: background 0.15s ease, border-color 0.15s ease, padding 0.15s ease;
+        transition: all 0.15s ease;
       }
 
       .btn:hover {
@@ -567,31 +717,36 @@
       }
 
       .btn-outline {
-        background: #f8fafc;
+        background: #f1f5f9;
         color: #475569;
-        border: 1px solid #cbd5e1;
+        border: none;
       }
 
       .btn-outline:hover {
-        background: #f1f5f9;
-        color: #1e293b;
+        background: #e2e8f0;
+        color: #0f172a;
+      }
+
+      .btn-outline.btn-danger:hover {
+        background: #fee2e2;
+        color: #ef4444;
       }
 
       .btn-stamp {
-        background: #8b5cf6;
+        background: #6366f1;
+        box-shadow: 0 1px 2px rgba(99, 102, 241, 0.25);
       }
 
       .btn-stamp:hover {
-        background: #7c3aed;
+        background: #4f46e5;
       }
 
-      /* 手记单行顶栏防重叠智能布局 */
       .mynotes-toolbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        gap: 5px;
+        gap: 6px;
         flex-wrap: nowrap;
       }
 
@@ -608,93 +763,181 @@
         align-items: center;
         gap: 4px;
         flex-shrink: 0;
+        margin-left: auto;
       }
 
       .time-jump-box {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 3px;
-        background: #f8fafc;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        padding: 3px 6px;
-        transition: border-color 0.2s;
+        background: #f1f5f9;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        padding: 0 6px;
+        transition: all 0.15s ease;
         flex-shrink: 1;
-        min-width: 50px;
+        min-width: 48px;
         height: 28px;
       }
 
       .time-jump-box:focus-within {
-        border-color: #2563eb;
+        border-color: #6366f1;
         background: #fff;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
       }
 
       .time-jump-box input {
-        width: 56px;
+        width: 48px;
         border: none;
         background: transparent;
         outline: none;
-        font-size: 11px;
+        font-size: 11.5px;
         font-family: monospace;
         color: #1e293b;
+        text-align: center;
       }
 
-      /* ================= 容器查询自适应规则 (按手记栏自身宽度动态演进) ================= */
+      .transcript-sticky-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        flex-wrap: nowrap;
+      }
+
+      .transcript-actions-right {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+
+      .lang-btn {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: #475569;
+        background: #f1f5f9;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: all 0.15s ease;
+        user-select: none;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .lang-btn:hover {
+        color: #0f172a;
+        background: #e2e8f0;
+      }
+
+      .lang-btn.active {
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 700;
+        box-shadow: inset 0 0 0 1px #bfdbfe;
+      }
+
+      /* ================= 容器查询自适应规则 ================= */
       .btn-lbl,
-      .btn-sub-lbl {
+      .btn-sub-lbl,
+      .desc-full {
         display: inline;
       }
 
-      /* 状态 1：面板宽度 <= 480px，隐藏快捷键提示等次要文字 */
-      @container notesPanel (max-width: 480px) {
+      .desc-short {
+        display: none;
+      }
+
+      @container notesPanel (max-width: 420px) {
         .btn-sub-lbl {
           display: none !important;
         }
 
+        .desc-full {
+          display: none !important;
+        }
+
+        .desc-short {
+          display: inline !important;
+        }
+
         .time-jump-box input {
-          width: 48px;
+          width: 40px;
         }
       }
 
-      /* 状态 2：面板宽度 <= 380px (横屏拉大极限挤压态)，按钮全员平滑收敛为纯图标胶囊，杜绝重叠与掉行 */
-      @container notesPanel (max-width: 380px) {
+      @container notesPanel (max-width: 340px) {
         .btn-lbl {
           display: none !important;
         }
 
         .btn-stamp {
-          padding: 6px 8px;
+          padding: 0 7px;
         }
 
         .mynotes-tool-right .btn {
-          padding: 6px 8px;
+          padding: 0 7px;
+        }
+
+        .lang-btn {
+          padding: 0 7px;
+        }
+
+        #collapsedToolbar .btn {
+          padding: 0 7px;
         }
 
         .time-jump-box {
-          padding: 3px 4px;
+          padding: 0 3px;
         }
 
         .time-jump-box input {
-          width: 38px;
+          width: 34px;
+        }
+
+        .mynotes-sticky-header,
+        .transcript-sticky-header,
+        #collapsedToolbar {
+          padding-left: 8px;
+          padding-right: 8px;
         }
       }
 
-      /* 状态 3：面板宽度 <= 300px 极度狭窄 */
-      @container notesPanel (max-width: 300px) {
+      @container notesPanel (max-width: 280px) {
         .mynotes-tool-left {
-          gap: 3px;
-        }
-
-        .mynotes-tool-right {
           gap: 2px;
         }
 
-        .mynotes-tool-right .btn {
-          padding: 6px 6px;
+        .mynotes-tool-right,
+        .transcript-actions-right,
+        #collapsedToolbar>div {
+          gap: 2px;
+        }
+
+        .mynotes-tool-right .btn,
+        .lang-btn,
+        #collapsedToolbar .btn {
+          padding: 0 5px;
         }
 
         .time-jump-box input {
-          width: 32px;
+          width: 28px;
+        }
+
+        .mynotes-sticky-header,
+        .transcript-sticky-header,
+        #collapsedToolbar {
+          padding-left: 6px;
+          padding-right: 6px;
         }
       }
 
@@ -761,7 +1004,6 @@
         }
       }
 
-      /* ================= 手记与字幕列表 ================= */
       .transcript-item {
         margin-bottom: 6px;
         padding: 4px 8px;
@@ -794,7 +1036,7 @@
         height: 110px;
         padding: 8px;
         border: 1px solid #cbd5e1;
-        border-radius: 4px;
+        border-radius: 6px;
         font-family: inherit;
         font-size: 12px;
         resize: vertical;
@@ -1126,6 +1368,119 @@
         }
       }
 
+      /* 移动端专属选集底部抽屉样式 */
+      .mobile-ep-drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        z-index: 120;
+        display: none;
+        justify-content: flex-end;
+        flex-direction: column;
+        backdrop-filter: blur(2px);
+      }
+
+      .mobile-ep-drawer-content {
+        background: #fff;
+        border-radius: 18px 18px 0 0;
+        padding: 12px 14px 20px 14px;
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+        animation: drawerSlideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .drawer-handle {
+        width: 36px;
+        height: 4px;
+        background: #cbd5e1;
+        border-radius: 2px;
+        margin: 0 auto 4px auto;
+      }
+
+      .drawer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .drawer-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .drawer-list {
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding-right: 2px;
+      }
+
+      .drawer-item {
+        padding: 10px 12px;
+        border-radius: 6px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        cursor: pointer;
+        background: #f8fafc;
+        border-left: 3px solid transparent;
+        transition: all 0.15s ease;
+      }
+
+      .drawer-item:hover,
+      .drawer-item:active {
+        background: #f1f5f9;
+      }
+
+      .drawer-item.active {
+        background: #eff6ff;
+        border-left-color: #2563eb;
+      }
+
+      .drawer-item-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .drawer-check {
+        color: #2563eb;
+        font-weight: 700;
+        font-size: 13px;
+        margin-top: 1px;
+        width: 14px;
+        flex-shrink: 0;
+      }
+
+      .drawer-name {
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: #1e293b;
+        word-break: break-all;
+      }
+
+      .drawer-item.active .drawer-name {
+        color: #2563eb;
+        font-weight: 600;
+      }
+
+      .drawer-badges {
+        font-size: 12px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-top: 1px;
+      }
+
       .mobile-only-btn {
         display: none !important;
       }
@@ -1164,7 +1519,7 @@
         }
 
         .header-file-btns .btn {
-          padding: 3px 8px;
+          padding: 0 8px;
           font-size: 11px;
           height: 24px;
         }
@@ -1182,14 +1537,10 @@
           margin-top: 2px;
         }
 
-        .playlist-select {
+        .custom-ep-btn {
           flex: 1 !important;
           min-width: 0 !important;
-          width: 0 !important;
           max-width: none !important;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
         }
 
         .sort-dropdown-menu {
@@ -1232,9 +1583,12 @@
         }
 
         .mynotes-sticky-header,
-        .transcript-sticky-header {
-          margin: 0 -15px 8px -15px;
-          padding: 8px 12px;
+        .transcript-sticky-header,
+        #collapsedToolbar {
+          top: -15px !important;
+          margin: -15px -12px 8px -12px !important;
+          width: calc(100% + 24px) !important;
+          padding: 8px 10px !important;
         }
 
         .notes-desktop-actions {
@@ -1244,7 +1598,7 @@
         .mobile-only-btn {
           display: inline-flex !important;
           height: 28px;
-          padding: 3px 8px;
+          padding: 0 8px;
           font-size: 11px;
         }
       }
@@ -1273,7 +1627,18 @@
 
       <div id="playlistControls" class="playlist-bar" style="display: none;">
         <button class="btn btn-outline btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="上一集">⏮</button>
-        <select id="playlistSelect" class="playlist-select" onchange="switchPlaylistItem(parseInt(this.value))" title="切换集数"></select>
+
+        <!-- 现代化定制集数下拉组件 -->
+        <div class="custom-ep-wrapper">
+          <div id="customEpBtn" class="custom-ep-btn" onclick="toggleEpMenu(event)" title="点击切换集数">
+            <span id="currentEpTitle" class="custom-ep-title">正在加载集数...</span>
+            <span class="custom-ep-arrow">▼</span>
+          </div>
+
+          <!-- PC 端自适应内容宽度的悬浮面板 (宽度随内容自然舒展，绝不截断) -->
+          <div id="customEpPopover" class="custom-ep-popover"></div>
+        </div>
+
         <button class="btn btn-outline btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="下一集">⏭</button>
 
         <!-- 紧凑悬浮排序胶囊按钮与浮层菜单 -->
@@ -1355,14 +1720,14 @@
 
         <div class="tabs">
           <button id="tabBtnMynotes" class="tab-btn active" onclick="switchTab('mynotes')">✍️ 我的手记 <span id="notesCountBadge" style="font-size:11px; opacity:0.8;">(0)</span></button>
-          <button id="tabBtnTranscript" class="tab-btn" onclick="switchTab('transcript')" style="display: none;">📜 字幕逐句对照</button>
+          <button id="tabBtnTranscript" class="tab-btn" onclick="switchTab('transcript')" style="display: none;">📝 字幕逐句对照</button>
           <button id="tabBtnNotes" class="tab-btn" onclick="switchTab('notes')">📚 智能讲义</button>
         </div>
 
         <!-- Tab 1: 我的手记 -->
         <div id="mynotesTab" class="tab-content">
           <div class="mynotes-sticky-header">
-            <!-- 智能抗压单行顶栏：超宽展示全名，极窄优雅收敛为纯图标胶囊，绝不重叠 -->
+            <!-- 智能抗压单行顶栏：流式弹性两端贴合，绝不重叠 -->
             <div class="mynotes-toolbar">
               <div class="mynotes-tool-left">
                 <button class="btn btn-stamp" onclick="openAddNoteBox()" title="标记当前时间点 (Ctrl+M)">
@@ -1375,7 +1740,7 @@
                 </div>
               </div>
 
-              <!-- 桌面端操作按钮组 -->
+              <!-- 桌面端操作按钮组：全员极简科技独立风 -->
               <div class="notes-desktop-actions mynotes-tool-right">
                 <button class="btn btn-outline" onclick="exportNotesToMarkdown()" title="导出手记为 Markdown (.md)">
                   <span>💾</span><span class="btn-lbl">导出</span>
@@ -1384,7 +1749,7 @@
                   <span>📂</span><span class="btn-lbl">导入</span>
                   <input type="file" id="importNotesInput" accept=".md,.txt" style="display: none;" onchange="importNotesFromFile(event)">
                 </label>
-                <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()" title="清空当前视频所有手记">
+                <button class="btn btn-outline btn-danger" onclick="clearAllNotes()" title="清空当前视频所有手记">
                   <span>🗑️</span><span class="btn-lbl">清空</span>
                 </button>
               </div>
@@ -1407,13 +1772,13 @@
                 <div class="time-setter-item">
                   <span id="startLabel">入点 (A):</span>
                   <input type="text" id="noteStartTimeInput" value="00:00">
-                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('start')">⏱️ 抓取</button>
+                  <button class="btn btn-outline" style="padding: 0 6px; height: 22px; font-size: 11px;" onclick="captureTimeToInput('start')">⏱️ 抓取</button>
                 </div>
 
                 <div class="time-setter-item" id="endTimeContainer" style="display: none;">
                   <span>出点 (B):</span>
                   <input type="text" id="noteEndTimeInput" value="00:10">
-                  <button class="btn btn-outline" style="padding: 1px 6px; font-size: 11px;" onclick="captureTimeToInput('end')">⏱️ 抓取</button>
+                  <button class="btn btn-outline" style="padding: 0 6px; height: 22px; font-size: 11px;" onclick="captureTimeToInput('end')">⏱️ 抓取</button>
                 </div>
               </div>
 
@@ -1432,14 +1797,22 @@
           </div>
         </div>
 
-        <!-- Tab 2: 字幕逐句对照 -->
+        <!-- Tab 2: 字幕逐句对照（流式无缝贴边，单行绝对不掉行） -->
         <div id="transcriptTab" class="tab-content" style="display: none;">
           <div class="transcript-sticky-header">
-            <span style="font-size: 12px; font-weight: 600; color: #475569;">字幕语言过滤：</span>
-            <div class="lang-switcher">
-              <button class="lang-btn active" id="btn-cn" onclick="setLanguage('cn')">🇨🇳 仅中文</button>
-              <button class="lang-btn" id="btn-bi" onclick="setLanguage('bi')">👪 双语对照</button>
-              <button class="lang-btn" id="btn-foreign" onclick="setLanguage('foreign')">🌍 仅外语</button>
+            <span style="font-size: 12px; font-weight: 600; color: #475569; white-space: nowrap;">
+              <span class="btn-lbl"></span>字幕语言：
+            </span>
+            <div class="transcript-actions-right">
+              <button class="lang-btn active" id="btn-cn" onclick="setLanguage('cn')" title="仅显示中文">
+                <span>🇨🇳</span><span class="btn-lbl">仅中文</span>
+              </button>
+              <button class="lang-btn" id="btn-bi" onclick="setLanguage('bi')" title="双语对照模式">
+                <span>👪</span><span class="btn-lbl">双语对照</span>
+              </button>
+              <button class="lang-btn" id="btn-foreign" onclick="setLanguage('foreign')" title="仅显示外语原声">
+                <span>🌍</span><span class="btn-lbl">仅外语</span>
+              </button>
             </div>
           </div>
 
@@ -1461,7 +1834,7 @@
                   📂 导入讲义 (.md)
                   <input type="file" id="importAINotesInput" accept=".md,.txt" style="display: none;" onchange="importAINotesFromFile(event)">
                 </label>
-                <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAINotes()">🗑️ 清空</button>
+                <button class="btn btn-outline btn-danger" onclick="clearAINotes()">🗑️ 清空</button>
               </div>
             </div>
 
@@ -1469,16 +1842,27 @@
             <button class="btn" onclick="renderNotes()">渲染生成交互讲义</button>
           </div>
 
-          <div id="collapsedToolbar" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0; flex-wrap: wrap; gap: 6px;">
-            <span style="font-size: 12px; color: #64748b;">📖 讲义已生成（点击时间戳可直接跳播）</span>
-            <div style="display: flex; gap: 6px;">
-              <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="exportAINotesToMarkdown()">💾 导出讲义 (.md)</button>
-              <label class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; cursor: pointer; margin: 0;">
-                📂 导入
+          <!-- 折叠吸顶工具栏：流式无缝贴边，永不溢出右边界 -->
+          <div id="collapsedToolbar" style="display: none; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 6px;">
+            <span style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <span>📖</span>
+              <span class="desc-full">讲义已生成 (点击跳播)</span>
+              <span class="desc-short">讲义</span>
+            </span>
+            <div style="display: flex; gap: 4px; flex-shrink: 0; margin-left: auto;">
+              <button class="btn btn-outline" onclick="exportAINotesToMarkdown()" title="导出讲义 (.md)">
+                <span>💾</span><span class="btn-lbl">导出</span>
+              </button>
+              <label class="btn btn-outline" style="cursor: pointer; margin: 0;" title="导入讲义 (.md)">
+                <span>📂</span><span class="btn-lbl">导入</span>
                 <input type="file" accept=".md,.txt" style="display: none;" onchange="importAINotesFromFile(event)">
               </label>
-              <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px;" onclick="toggleInputBox()">✏️ 重新编辑</button>
-              <button class="btn btn-outline" style="padding: 2px 8px; font-size: 11px; color: #ef4444;" onclick="clearAINotes()">🗑️ 清空</button>
+              <button class="btn btn-outline" onclick="toggleInputBox()" title="重新编辑 Markdown">
+                <span>✏️</span><span class="btn-lbl">编辑</span>
+              </button>
+              <button class="btn btn-outline btn-danger" onclick="clearAINotes()" title="清空当前视频讲义">
+                <span>🗑️</span><span class="btn-lbl">清空</span>
+              </button>
             </div>
           </div>
 
@@ -1502,12 +1886,24 @@
         <button class="btn btn-outline" style="height: 38px; font-size: 12px; justify-content: center;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);">
           📂 从本地文件导入手记
         </button>
-        <button class="btn btn-outline" style="height: 38px; font-size: 12px; justify-content: center; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);">
+        <button class="btn btn-outline btn-danger" style="height: 38px; font-size: 12px; justify-content: center;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);">
           🗑️ 清空当前视频所有手记
         </button>
         <button class="btn btn-outline" style="height: 34px; font-size: 12px; justify-content: center; background: #f8fafc;" onclick="toggleMobileNotesDrawer(false)">
           取消
         </button>
+      </div>
+    </div>
+
+    <!-- 移动端专属选集底部抽屉 Modal -->
+    <div id="mobileEpDrawer" class="mobile-ep-drawer-overlay" onclick="toggleMobileEpDrawer(false)">
+      <div class="mobile-ep-drawer-content" onclick="event.stopPropagation()">
+        <div class="drawer-handle"></div>
+        <div class="drawer-header">
+          <span id="mobileDrawerTitle" class="drawer-title">📺 切换视频选集</span>
+          <button class="modal-close-btn" onclick="toggleMobileEpDrawer(false)">&times;</button>
+        </div>
+        <div id="mobileDrawerList" class="drawer-list"></div>
       </div>
     </div>
 
@@ -1524,7 +1920,7 @@
             <div class="media-info-card">
               <div class="media-filename-box">
                 <span id="infoVideoName" class="media-filename-text">未加载视频</span>
-                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoVideoName', this)" title="复制完整文件名">📋 复制</button>
+                <button class="btn btn-outline" style="padding: 0 8px; height: 24px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoVideoName', this)" title="复制完整文件名">📋 复制</button>
               </div>
               <div class="media-info-grid" style="margin-top: 8px;">
                 <span class="media-info-label">画面分辨率:</span>
@@ -1544,7 +1940,7 @@
             <div class="media-info-card">
               <div class="media-filename-box">
                 <span id="infoSubName" class="media-filename-text">未挂载字幕</span>
-                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoSubName', this)" title="复制完整文件名">📋 复制</button>
+                <button class="btn btn-outline" style="padding: 0 8px; height: 24px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoSubName', this)" title="复制完整文件名">📋 复制</button>
               </div>
               <div class="media-info-grid" style="margin-top: 8px;">
                 <span class="media-info-label">字幕总句数:</span>
@@ -1662,12 +2058,18 @@
       const notesCountBadge = document.getElementById('notesCountBadge');
 
       const playlistControls = document.getElementById('playlistControls');
-      const playlistSelect = document.getElementById('playlistSelect');
       const playlistStatus = document.getElementById('playlistStatus');
       const prevEpisodeBtn = document.getElementById('prevEpisodeBtn');
       const nextEpisodeBtn = document.getElementById('nextEpisodeBtn');
       const sortDropdownMenu = document.getElementById('sortDropdownMenu');
       const sortMenuBtn = document.getElementById('sortMenuBtn');
+
+      const customEpBtn = document.getElementById('customEpBtn');
+      const currentEpTitle = document.getElementById('currentEpTitle');
+      const customEpPopover = document.getElementById('customEpPopover');
+      const mobileEpDrawer = document.getElementById('mobileEpDrawer');
+      const mobileDrawerTitle = document.getElementById('mobileDrawerTitle');
+      const mobileDrawerList = document.getElementById('mobileDrawerList');
 
       const tabBtnTranscript = document.getElementById('tabBtnTranscript');
       const copyAIPromptBtn = document.getElementById('copyAIPromptBtn');
@@ -1704,7 +2106,7 @@
         'date-asc': '🕒 最早修改 (旧→新)'
       };
 
-      // 剥夺原生视频控件焦点，避免按空格键时触发两次暂停冲突
+      // 剥夺原生视频控件焦点
       ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(name => {
         video.addEventListener(name, () => {
           if (document.activeElement === video) video.blur();
@@ -1723,6 +2125,10 @@
       function toggleMobileNotesDrawer(show) {
         const drawer = document.getElementById('mobileNotesDrawer');
         if (drawer) drawer.style.display = show ? 'flex' : 'none';
+      }
+
+      function toggleMobileEpDrawer(show) {
+        if (mobileEpDrawer) mobileEpDrawer.style.display = show ? 'flex' : 'none';
       }
 
       // 贴合按键与播放状态同步
@@ -1970,9 +2376,10 @@
         });
       }
 
-      // ================= 选集、排序与分流系统 =================
+      // ================= 选集、排序与双端自适应菜单系统 =================
       function toggleSortMenu(e) {
         if (e) e.stopPropagation();
+        closeEpMenu();
         if (!sortDropdownMenu) return;
         const isShown = sortDropdownMenu.style.display === 'flex';
         sortDropdownMenu.style.display = isShown ? 'none' : 'flex';
@@ -1980,6 +2387,29 @@
 
       function closeSortMenu() {
         if (sortDropdownMenu) sortDropdownMenu.style.display = 'none';
+      }
+
+      function toggleEpMenu(e) {
+        if (e) e.stopPropagation();
+        closeSortMenu();
+
+        // 手机移动端判断（≤ 768px）：呼出原生底部选集抽屉
+        if (window.innerWidth <= 768) {
+          toggleMobileEpDrawer(true);
+          return;
+        }
+
+        // PC 桌面端：呼出横向自然舒展的悬浮面板
+        if (!customEpPopover) return;
+        const isShown = customEpPopover.style.display === 'flex';
+        customEpPopover.style.display = isShown ? 'none' : 'flex';
+        customEpBtn.classList.toggle('active', !isShown);
+      }
+
+      function closeEpMenu() {
+        if (customEpPopover) customEpPopover.style.display = 'none';
+        if (customEpBtn) customEpBtn.classList.remove('active');
+        toggleMobileEpDrawer(false);
       }
 
       function updateSortMenuUI() {
@@ -2013,11 +2443,15 @@
         showOSD('已按“' + (sortLabels[mode] || mode) + '”排序');
       }
 
-      // 全局点击监听：点击外部关闭排序菜单
+      // 全局点击监听：点击外部关闭菜单
       document.addEventListener('click', (e) => {
-        const wrapper = document.querySelector('.sort-dropdown-wrapper');
-        if (wrapper && !wrapper.contains(e.target)) {
+        const sortWrapper = document.querySelector('.sort-dropdown-wrapper');
+        if (sortWrapper && !sortWrapper.contains(e.target)) {
           closeSortMenu();
+        }
+        const epWrapper = document.querySelector('.custom-ep-wrapper');
+        if (epWrapper && !epWrapper.contains(e.target)) {
+          closeEpMenu();
         }
       });
 
@@ -2149,6 +2583,40 @@
         }
       }
 
+      // 获取特定视频的学习资产徽标：严格按照 [ ✍️手记  📝字幕  📚讲义 ] 统一心智顺序排布
+      function getVideoAssetBadges(item) {
+        const badges = [];
+
+        // 1. 手记检测 (优先对齐 Tab 1: 手记 顺序)
+        const noteStorageKey = 'reader_notes_' + item.name;
+        const savedNotes = localStorage.getItem(noteStorageKey);
+        let hasNotes = false;
+        if (savedNotes) {
+          try {
+            const arr = JSON.parse(savedNotes);
+            if (Array.isArray(arr) && arr.length > 0) hasNotes = true;
+          } catch (e) { }
+        }
+        if (!hasNotes && item.noteFile) hasNotes = true;
+        if (hasNotes) {
+          badges.push('✍️');
+        }
+
+        // 2. 字幕检测 (对齐 Tab 2: 字幕 顺序)
+        if (item.subFile) {
+          badges.push('📝');
+        }
+
+        // 3. 讲义检测 (对齐 Tab 3: 讲义 顺序)
+        const aiStorageKey = 'reader_ai_notes_' + item.name;
+        const savedAiNotes = localStorage.getItem(aiStorageKey);
+        if (savedAiNotes && savedAiNotes.trim().length > 0) {
+          badges.push('📚');
+        }
+
+        return badges.length > 0 ? ('[ ' + badges.join(' ') + ' ]') : '';
+      }
+
       function renderPlaylistUI() {
         if (playlist.length <= 1) {
           playlistControls.style.display = 'none';
@@ -2160,16 +2628,59 @@
         playlistStatus.style.display = 'inline-block';
         playlistStatus.textContent = '📺 ' + (currentPlaylistIndex + 1) + '/' + playlist.length + ' 集';
 
-        playlistSelect.innerHTML = '';
+        // 渲染顶部触发胶囊当前名称
+        const currentItem = playlist[currentPlaylistIndex];
+        if (currentItem) {
+          currentEpTitle.textContent = (currentPlaylistIndex + 1) + '. ' + currentItem.name;
+        }
+
+        // 1. 渲染 PC 端悬浮弹层（width: max-content 内容自然舒展，绝不截断）
+        customEpPopover.innerHTML = '';
         playlist.forEach((item, idx) => {
-          const opt = document.createElement('option');
-          opt.value = idx;
-          const flag = item.subFile ? ' [📝字幕]' : '';
-          opt.textContent = (idx + 1) + '. ' + item.name + flag;
-          playlistSelect.appendChild(opt);
+          const isCurrent = (idx === currentPlaylistIndex);
+          const badgeStr = getVideoAssetBadges(item);
+
+          const itemEl = document.createElement('div');
+          itemEl.className = 'ep-item' + (isCurrent ? ' current' : '');
+          itemEl.onclick = () => {
+            switchPlaylistItem(idx);
+            closeEpMenu();
+          };
+
+          itemEl.innerHTML = `
+            <div class="ep-item-left">
+              <span class="ep-check-icon">${isCurrent ? '✓' : ''}</span>
+              <span class="ep-item-name">${idx + 1}. ${item.name}</span>
+            </div>
+            ${badgeStr ? `<div class="ep-item-badges">${badgeStr}</div>` : ''}
+          `;
+          customEpPopover.appendChild(itemEl);
         });
 
-        playlistSelect.value = currentPlaylistIndex;
+        // 2. 渲染 移动端专属底部抽屉列表（支持多行自适应折行完整阅读）
+        mobileDrawerTitle.textContent = '📺 切换视频选集 (共 ' + playlist.length + ' 集)';
+        mobileDrawerList.innerHTML = '';
+        playlist.forEach((item, idx) => {
+          const isCurrent = (idx === currentPlaylistIndex);
+          const badgeStr = getVideoAssetBadges(item);
+
+          const drawerItem = document.createElement('div');
+          drawerItem.className = 'drawer-item' + (isCurrent ? ' active' : '');
+          drawerItem.onclick = () => {
+            switchPlaylistItem(idx);
+            closeEpMenu();
+          };
+
+          drawerItem.innerHTML = `
+            <div class="drawer-item-left">
+              <span class="drawer-check">${isCurrent ? '✓' : ''}</span>
+              <span class="drawer-name">${idx + 1}. ${item.name}</span>
+            </div>
+            ${badgeStr ? `<div class="drawer-badges">${badgeStr}</div>` : ''}
+          `;
+          mobileDrawerList.appendChild(drawerItem);
+        });
+
         prevEpisodeBtn.disabled = (currentPlaylistIndex === 0);
         nextEpisodeBtn.disabled = (currentPlaylistIndex === playlist.length - 1);
       }
@@ -2287,6 +2798,7 @@
           document.getElementById('notesRendered').innerHTML = '<p style="color: #94a3b8; font-size: 12px;">暂无讲义内容。拖入文件并粘贴 AI 整理结果后即可查看。</p>';
           document.getElementById('inputBoxContainer').style.display = 'block';
           document.getElementById('collapsedToolbar').style.display = 'none';
+          renderPlaylistUI();
           showOSD('🗑️ 讲义已清空');
         }
       }
@@ -2485,7 +2997,7 @@
         }
       });
 
-      // 宽松时码转换（支持 01:20、5.30、90s）
+      // 宽松时码转换
       function timeToSeconds(timeStr) {
         if (typeof timeStr === 'number') return timeStr;
         if (!timeStr) return 0;
@@ -2711,6 +3223,7 @@
           closeShortcutsModal();
           closeMediaInfoModal();
           closeSortMenu();
+          closeEpMenu();
           toggleMobileNotesDrawer(false);
           stopLoop();
           return;
@@ -2956,6 +3469,7 @@
         renderMyNotesList();
         closeAddNoteBox();
         updateAIPromptButtonLabel();
+        renderPlaylistUI();
 
         const targetId = editingNoteId || (myNotes.find(n => n.start === startSec)?.id);
         setTimeout(() => {
@@ -2975,6 +3489,7 @@
           saveNotesToLocalStorage();
           renderMyNotesList();
           updateAIPromptButtonLabel();
+          renderPlaylistUI();
         }
       }
 
@@ -3043,6 +3558,7 @@
           saveNotesToLocalStorage();
           renderMyNotesList();
           updateAIPromptButtonLabel();
+          renderPlaylistUI();
         }
       }
 
@@ -3155,6 +3671,7 @@
           renderMyNotesList();
           switchTab('mynotes');
           updateAIPromptButtonLabel();
+          renderPlaylistUI();
           alert('成功导入 ' + imported.length + ' 条打点手记！');
         } else {
           alert('未能识别手记格式，已自动转存为讲义。');
@@ -3173,6 +3690,7 @@
         document.getElementById('notesInput').value = cleanContent;
         renderNotes(true);
         switchTab('notes');
+        renderPlaylistUI();
         alert('已成功导入并渲染 AI 讲义！');
       }
 
@@ -3274,6 +3792,7 @@
 
         if (shouldSave && currentVideoFileName) {
           localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
+          renderPlaylistUI();
         }
 
         const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
