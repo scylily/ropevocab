@@ -85,16 +85,31 @@
         font-weight: 600;
         background: #f1f5f9;
         color: #64748b;
-        max-width: 160px;
+        max-width: 180px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+        border: 1px solid transparent;
+      }
+
+      .status-badge:hover {
+        background: #e2e8f0;
+        color: #1e293b;
+        border-color: #cbd5e1;
       }
 
       .status-badge.loaded {
         background: #dcfce7;
         color: #15803d;
+      }
+
+      .status-badge.loaded:hover {
+        background: #bbf7d0;
+        border-color: #86efac;
       }
 
       /* 选集控制器 */
@@ -143,7 +158,7 @@
         padding-top: 0;
       }
 
-      /* 手记操作栏与字幕工具条：统一上下等宽居中、纯白遮盖、悬浮立体阴影 */
+      /* 手记操作栏与字幕工具条 */
       .mynotes-sticky-header,
       .transcript-sticky-header {
         position: sticky;
@@ -211,7 +226,6 @@
         container-type: inline-size;
       }
 
-      /* 平滑贴合过渡动画（仅在自动贴合时生效，完成后自动移除保证手动拖拽顺畅） */
       .panel-smooth-transition {
         transition: width 0.25s ease-out !important;
       }
@@ -375,18 +389,27 @@
         opacity: 1;
       }
 
+      /* 自适应提示文字层级：跟随前景色基准，以透明度阶梯自适应任意深浅背景 */
       .empty-tip {
         position: absolute;
-        color: #94a3b8;
+        color: #f8fafc;
         font-size: 14px;
         text-align: center;
         line-height: 1.8;
         z-index: 2;
+        padding: 0 16px;
       }
 
       .empty-tip strong {
-        color: #f1f5f9;
+        color: #ffffff;
         font-size: 15px;
+      }
+
+      .empty-tip-sub {
+        font-size: 12px;
+        color: inherit;
+        opacity: 0.75;
+        margin-top: 2px;
       }
 
       /* 右侧面板 */
@@ -476,7 +499,6 @@
         background: #7c3aed;
       }
 
-      /* 手动时间码快速跳转输入框样式 */
       .time-jump-box {
         display: inline-flex;
         align-items: center;
@@ -593,7 +615,6 @@
         margin-top: 1px;
       }
 
-      /* 讲义排版 */
       .notes-editor {
         width: 100%;
         height: 110px;
@@ -660,7 +681,7 @@
         margin: 8px 0;
       }
 
-      /* 我的手记 */
+      /* 我的手记卡片 */
       .my-note-card {
         background: #fff;
         border: 1px solid #e2e8f0;
@@ -748,7 +769,7 @@
         text-align: center;
       }
 
-      /* 快捷键指南 Modal */
+      /* 统一通用 Modal 遮罩与弹窗基类 */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -763,7 +784,7 @@
       .modal-content {
         background: #fff;
         width: 480px;
-        max-width: 90vw;
+        max-width: 92vw;
         border-radius: 8px;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         overflow: hidden;
@@ -782,6 +803,7 @@
         font-size: 14px;
         color: #0f172a;
         margin: 0;
+        font-weight: 700;
       }
 
       .modal-close-btn {
@@ -801,7 +823,7 @@
         padding: 16px 18px;
         font-size: 13px;
         line-height: 1.6;
-        max-height: 70vh;
+        max-height: 75vh;
         overflow-y: auto;
       }
 
@@ -835,6 +857,70 @@
         font-weight: bold;
         color: #334155;
       }
+
+      /* 方案 B：媒体资源详情面板专属样式 */
+      .media-info-section {
+        margin-bottom: 14px;
+      }
+
+      .media-info-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .media-info-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .media-info-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+
+      .media-info-grid {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        row-gap: 6px;
+        column-gap: 8px;
+        font-size: 12px;
+        align-items: baseline;
+      }
+
+      .media-info-label {
+        color: #64748b;
+      }
+
+      .media-info-val {
+        color: #0f172a;
+        font-weight: 600;
+        word-break: break-all;
+      }
+
+      .media-filename-box {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 6px 8px;
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .media-filename-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f172a;
+        word-break: break-all;
+      }
     </style>
   </head>
 
@@ -852,9 +938,6 @@
         <div class="brand-divider"></div>
         <button class="btn btn-outline" onclick="document.getElementById('localFileInput').click()" title="支持同时多选视频+字幕+手记">📂 打开文件</button>
         <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()" title="直接选择完整的文件夹">📁 打开文件夹</button>
-
-        <!-- 新增：自适应消除黑边按钮 -->
-        <!-- <button class="btn btn-outline" onclick="fitVideoRatio()" title="自适应视频比例消除黑边 (Ctrl+B / 双击分界线)">📐 消除黑边</button> -->
 
         <!-- 选集控制器 -->
         <div id="playlistControls" class="playlist-bar" style="display: none;">
@@ -874,11 +957,12 @@
         <button class="btn btn-outline" onclick="openShortcutsModal()" title="快捷键速查">⌨️ 快捷键</button>
       </div>
 
+      <!-- 右上角状态徽章组：点击任意标签均可呼出完整元数据详情 (方案 B) -->
       <div class="status-tags">
-        <span id="playlistStatus" class="status-badge" style="display: none;">📺 1/1 集</span>
-        <span id="videoStatus" class="status-badge">📹 视频未加载</span>
-        <span id="assStatus" class="status-badge">📝 字幕未加载</span>
-        <span id="noteStatus" class="status-badge">✍️ 手记: 0 条</span>
+        <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" title="点击查看媒体详情">📺 1/1 集</span>
+        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看完整文件名与视频规格">📹 视频未加载</span>
+        <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看字幕完整信息">📝 字幕未加载</span>
+        <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看手记与讲义状态">✍️ 手记: 0 条</span>
       </div>
     </header>
 
@@ -888,8 +972,9 @@
         <div class="drop-overlay">📁 释放鼠标：自动装配视频与字幕</div>
 
         <div class="empty-tip" id="videoTip">
-          <strong>🎥 拖拽【多视频 + ASS/SRT 字幕】或【文件夹】至此</strong><br>
-          <span style="font-size: 12px; color: #64748b;">支持自动分流手记/讲义、全格式字幕与多集管理</span>
+          <strong>🎥 拖拽【多视频 + ASS/SRT 字幕】或【文件夹】至此</strong>
+          <!-- 小字采用透明度阶梯实现自适应高对比度 -->
+          <div class="empty-tip-sub">支持自动分流手记/讲义、全格式字幕与多集管理</div>
           <div style="margin-top: 10px; display: flex; gap: 8px; justify-content: center;">
             <button class="btn" onclick="document.getElementById('localFileInput').click()">📂 选择多个文件</button>
             <button class="btn btn-outline" onclick="document.getElementById('localFolderInput').click()">📁 选择文件夹</button>
@@ -915,7 +1000,7 @@
       <!-- 中间拖动把手 (双击可直接贴合消除黑边) -->
       <div class="resizer" id="resizer" title="拖动调整大小 / 双击贴合画面消除黑边"></div>
 
-      <!-- 右侧区域：学习动线排布（手记最左且默认激活） -->
+      <!-- 右侧区域 -->
       <div class="right-panel" id="notesZone">
         <div class="drop-overlay">📁 释放鼠标加载文件</div>
 
@@ -932,7 +1017,6 @@
               <div style="display: flex; align-items: center; gap: 8px;">
                 <button class="btn btn-stamp" onclick="openAddNoteBox()">📍 标记时间点 (Ctrl+M)</button>
 
-                <!-- 手动时间码跳转输入框 -->
                 <div class="time-jump-box" title="输入时间点并回车可直接跳转（支持 5.30、1.5.15 或 90s，按 Ctrl+G 快速呼出）">
                   <span style="font-size: 11px; color: #64748b;">⏱️</span>
                   <input type="text" id="quickTimeJumpInput" placeholder="输入时码跳转" onkeydown="handleQuickTimeJump(event)">
@@ -994,7 +1078,7 @@
           </div>
         </div>
 
-        <!-- Tab 2: 逐句字幕对照 (吸顶置顶多语言栏) -->
+        <!-- Tab 2: 逐句字幕对照 -->
         <div id="transcriptTab" class="tab-content" style="display: none;">
           <div class="transcript-sticky-header">
             <span style="font-size: 12px; font-weight: 600; color: #475569;">字幕语言过滤：</span>
@@ -1049,6 +1133,68 @@
           </div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- 方案 B：媒体与学习资源详情面板 Modal -->
+    <div id="mediaInfoModal" class="modal-overlay" style="display: none;" onclick="closeMediaInfoModal(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3>🎬 当前媒体与资源详情</h3>
+          <button class="modal-close-btn" onclick="closeMediaInfoModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- 视频信息 -->
+          <div class="media-info-section">
+            <div class="media-info-title">📹 视频资源</div>
+            <div class="media-info-card">
+              <div class="media-filename-box">
+                <span id="infoVideoName" class="media-filename-text">未加载视频</span>
+                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoVideoName', this)" title="复制完整文件名">📋 复制</button>
+              </div>
+              <div class="media-info-grid" style="margin-top: 8px;">
+                <span class="media-info-label">画面分辨率:</span>
+                <span id="infoVideoRes" class="media-info-val">-</span>
+                <span class="media-info-label">总时长:</span>
+                <span id="infoVideoDuration" class="media-info-val">-</span>
+                <span class="media-info-label">文件体积:</span>
+                <span id="infoVideoSize" class="media-info-val">-</span>
+                <span class="media-info-label">多集状态:</span>
+                <span id="infoVideoEp" class="media-info-val">单文件</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 字幕信息 -->
+          <div class="media-info-section">
+            <div class="media-info-title">📝 关联字幕</div>
+            <div class="media-info-card">
+              <div class="media-filename-box">
+                <span id="infoSubName" class="media-filename-text">未挂载字幕</span>
+                <button class="btn btn-outline" style="padding: 2px 6px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoSubName', this)" title="复制完整文件名">📋 复制</button>
+              </div>
+              <div class="media-info-grid" style="margin-top: 8px;">
+                <span class="media-info-label">字幕总句数:</span>
+                <span id="infoSubCount" class="media-info-val">0 句</span>
+                <span class="media-info-label">字幕格式:</span>
+                <span id="infoSubFormat" class="media-info-val">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 手记与讲义 -->
+          <div class="media-info-section">
+            <div class="media-info-title">✍️ 学习数据沉淀</div>
+            <div class="media-info-card">
+              <div class="media-info-grid">
+                <span class="media-info-label">专属手记:</span>
+                <span id="infoNotesCount" class="media-info-val">0 条打点记录</span>
+                <span class="media-info-label">AI 讲义:</span>
+                <span id="infoAINotesStatus" class="media-info-val">未生成</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1158,6 +1304,7 @@
       const loopRangeText = document.getElementById('loopRangeText');
       const videoOSD = document.getElementById('videoOSD');
       const shortcutsModal = document.getElementById('shortcutsModal');
+      const mediaInfoModal = document.getElementById('mediaInfoModal');
 
       let playlist = [];
       let currentPlaylistIndex = 0;
@@ -1165,6 +1312,8 @@
       let currentTab = 'mynotes';
 
       let editingNoteId = null;
+      let currentVideoFile = null;
+      let currentSubFileName = "";
 
       // 核心防冲突：强制剥夺原生视频控件焦点
       ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(eventName => {
@@ -1231,12 +1380,11 @@
 
         const containerTotalWidth = mainContainer.clientWidth;
         const minLeft = 280;
-        const maxLeft = containerTotalWidth - 320; // 锁定右侧手记区至少320px安全宽度
+        const maxLeft = containerTotalWidth - 320;
 
         if (targetWidth < minLeft) targetWidth = minLeft;
         if (targetWidth > maxLeft) targetWidth = maxLeft;
 
-        // 丝滑动画过渡并在 0.26s 后移除，保证手动拖动不受丝毫影响
         leftPanel.classList.add('panel-smooth-transition');
         leftPanel.style.width = `${targetWidth}px`;
         setTimeout(() => {
@@ -1266,6 +1414,95 @@
 
       function openShortcutsModal() { shortcutsModal.style.display = 'flex'; }
       function closeShortcutsModal() { shortcutsModal.style.display = 'none'; }
+
+      // ==================== 方案 B：媒体信息详情弹窗核心逻辑 ====================
+      function openMediaInfoModal() {
+        updateMediaInfoModalData();
+        mediaInfoModal.style.display = 'flex';
+      }
+
+      function closeMediaInfoModal() {
+        mediaInfoModal.style.display = 'none';
+      }
+
+      function formatFileSize(bytes) {
+        if (!bytes || bytes === 0) return '未知大小';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function updateMediaInfoModalData() {
+        // 视频数据填充
+        const infoVideoName = document.getElementById('infoVideoName');
+        const infoVideoRes = document.getElementById('infoVideoRes');
+        const infoVideoDuration = document.getElementById('infoVideoDuration');
+        const infoVideoSize = document.getElementById('infoVideoSize');
+        const infoVideoEp = document.getElementById('infoVideoEp');
+
+        if (currentVideoFileName) {
+          infoVideoName.textContent = currentVideoFileName;
+          infoVideoRes.textContent = (video.videoWidth && video.videoHeight)
+            ? `${video.videoWidth} × ${video.videoHeight} 像素`
+            : '正在解析规格...';
+          infoVideoDuration.textContent = video.duration ? `${formatSeconds(video.duration)} (${Math.round(video.duration)} 秒)` : '计算中...';
+          infoVideoSize.textContent = currentVideoFile ? formatFileSize(currentVideoFile.size) : '本地流资源';
+          infoVideoEp.textContent = playlist.length > 1
+            ? `第 ${currentPlaylistIndex + 1} / ${playlist.length} 集 (${playlist[currentPlaylistIndex].name})`
+            : '单文件播放';
+        } else {
+          infoVideoName.textContent = '暂无加载视频';
+          infoVideoRes.textContent = '-';
+          infoVideoDuration.textContent = '-';
+          infoVideoSize.textContent = '-';
+          infoVideoEp.textContent = '-';
+        }
+
+        // 字幕数据填充
+        const infoSubName = document.getElementById('infoSubName');
+        const infoSubCount = document.getElementById('infoSubCount');
+        const infoSubFormat = document.getElementById('infoSubFormat');
+
+        if (subtitleData && subtitleData.length > 0) {
+          infoSubName.textContent = currentSubFileName || '已挂载字幕';
+          infoSubCount.textContent = `${subtitleData.length} 句文本行`;
+          const ext = currentSubFileName ? currentSubFileName.split('.').pop().toUpperCase() : 'UNIVERSAL';
+          infoSubFormat.textContent = `${ext} 字幕格式`;
+        } else {
+          infoSubName.textContent = '当前视频无外挂字幕';
+          infoSubCount.textContent = '0 句';
+          infoSubFormat.textContent = '-';
+        }
+
+        // 手记与讲义状态
+        const infoNotesCount = document.getElementById('infoNotesCount');
+        const infoAINotesStatus = document.getElementById('infoAINotesStatus');
+
+        infoNotesCount.textContent = `${myNotes.length} 条已保存手记`;
+        const aiRaw = document.getElementById('notesInput').value.trim();
+        infoAINotesStatus.textContent = aiRaw ? '✅ 讲义已生成就绪' : '⚪ 尚未导入或生成';
+      }
+
+      video.addEventListener('loadedmetadata', () => {
+        updateMediaInfoModalData();
+      });
+
+      function copyInfoText(elementId, btnElement) {
+        const text = document.getElementById(elementId).textContent;
+        if (!text || text.includes('未加载') || text.includes('暂无')) {
+          showOSD('⚠️ 暂无可复制的文本');
+          return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+          const oldText = btnElement.textContent;
+          btnElement.textContent = '✅ 已复制';
+          setTimeout(() => btnElement.textContent = oldText, 1200);
+          showOSD('📋 文件名已成功复制至剪贴板');
+        }).catch(() => {
+          showOSD('⚠️ 复制失败');
+        });
+      }
 
       function handleFileSelect(e) {
         if (!e.target.files || e.target.files.length === 0) return;
@@ -1451,11 +1688,11 @@
         if (currentPlaylistIndex < playlist.length - 1) switchPlaylistItem(currentPlaylistIndex + 1);
       }
 
-      // ==================== 彻底自动清理机制 ====================
       function clearSubtitles() {
         subtitleData = [];
+        currentSubFileName = "";
         assStatus.textContent = `📝 无字幕`;
-        assStatus.title = '当前视频无字幕';
+        assStatus.title = '点击查看详细信息（当前无字幕）';
         assStatus.classList.remove('loaded');
         videoSubOverlay.style.display = 'none';
         videoSubCn.textContent = '';
@@ -1510,12 +1747,13 @@
       }
 
       function loadVideoFile(file) {
+        currentVideoFile = file;
         currentVideoFileName = file.name;
         video.src = URL.createObjectURL(file);
         video.style.display = 'block';
         videoTip.style.display = 'none';
-        videoStatus.textContent = `📹 ${file.name}`;
-        videoStatus.title = file.name;
+        videoStatus.textContent = `📹 视频已加载`;
+        videoStatus.title = `点击查看详细信息（${file.name}）`;
         videoStatus.classList.add('loaded');
         video.playbackRate = 1.0;
         video.play();
@@ -1563,6 +1801,7 @@
       }
 
       function loadSubtitleFile(file) {
+        currentSubFileName = file.name;
         const reader = new FileReader();
         reader.onload = function (evt) {
           let content = evt.target.result;
@@ -1586,8 +1825,8 @@
         }
 
         if (subtitleData.length > 0) {
-          assStatus.textContent = `📝 ${filename} (${subtitleData.length}句)`;
-          assStatus.title = filename;
+          assStatus.textContent = `📝 字幕已加载`;
+          assStatus.title = `点击查看详细信息（${filename}）`;
           assStatus.classList.add('loaded');
           renderTranscriptList();
           updateSubtitleUIVisibility();
@@ -1675,7 +1914,6 @@
 
         const isJapanese = (t) => /[\u3040-\u309F\u30A0-\u30FF]/.test(t);
         const isKorean = (t) => /[\uAC00-\uD7AF]/.test(t);
-        const isWestern = (t) => /[a-zA-Z\u00C0-\u024F\u0400-\u04FF]/.test(t);
         const isChinese = (t) => /[\u4E00-\u9FA5]/.test(t) && !isJapanese(t);
 
         if (parts.length >= 2) {
@@ -1897,11 +2135,10 @@
         renderMyNotesList();
       }
 
-      // ==================== 全套高级快捷键监听系统 (全线统一为 Ctrl) ====================
+      // ==================== 全套高级快捷键监听系统 ====================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
-        // Ctrl + Enter 保存打点手记
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           const addNoteBox = document.getElementById('addNoteBox');
           if (addNoteBox && addNoteBox.style.display !== 'none') {
@@ -1911,7 +2148,6 @@
           }
         }
 
-        // Ctrl + G 快速聚焦到时间跳转框
         if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
           e.preventDefault();
           switchTab('mynotes');
@@ -1923,16 +2159,13 @@
           return;
         }
 
-        // Ctrl 组合快捷键体系 (全面替代 Alt)
         if (e.ctrlKey || e.metaKey) {
-          // [0] Ctrl + B : 自适应贴合画面消除黑边
           if (e.key === 'b' || e.key === 'B') {
             e.preventDefault();
             fitVideoRatio();
             return;
           }
 
-          // [1] Ctrl + [ : 设定入点 (In-Point)
           if (e.key === '[' || e.code === 'BracketLeft') {
             e.preventDefault();
             if (!video.src) return;
@@ -1941,7 +2174,6 @@
             return;
           }
 
-          // [2] Ctrl + ] : 设定出点 (Out-Point)
           if (e.key === ']' || e.code === 'BracketRight') {
             e.preventDefault();
             if (!video.src) return;
@@ -1952,14 +2184,12 @@
             return;
           }
 
-          // [3] Ctrl + M : 单点快速打卡手记 (Mark)
           if (e.key === 'm' || e.key === 'M') {
             e.preventDefault();
             openAddNoteBox();
             return;
           }
 
-          // [4] Ctrl + ↑ : 加速 (+0.25x)
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             if (!video.src) return;
@@ -1969,7 +2199,6 @@
             return;
           }
 
-          // [5] Ctrl + ↓ : 减速 (-0.25x)
           if (e.key === 'ArrowDown') {
             e.preventDefault();
             if (!video.src) return;
@@ -1979,7 +2208,6 @@
             return;
           }
 
-          // [6] Ctrl + \ : 一键恢复 1.0x 原速
           if (e.key === '\\' || e.code === 'Backslash') {
             e.preventDefault();
             if (!video.src) return;
@@ -1989,15 +2217,14 @@
           }
         }
 
-        // Esc 键退出
         if (e.key === 'Escape') {
           closeAddNoteBox();
           closeShortcutsModal();
+          closeMediaInfoModal();
           stopLoop();
           return;
         }
 
-        // 单键/方向键监听 (非文字输入状态下生效)
         if (!isTyping) {
           if (e.key === '?' || (e.shiftKey && e.key === '/')) {
             e.preventDefault();
@@ -2015,7 +2242,6 @@
             return;
           }
 
-          // 快退 (←) : 支持 5s / 15s (Ctrl) / 30s (Shift)
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
             e.stopPropagation();
@@ -2030,7 +2256,6 @@
             return;
           }
 
-          // 快进 (→) : 支持 5s / 15s (Ctrl) / 30s (Shift)
           if (e.key === 'ArrowRight') {
             e.preventDefault();
             e.stopPropagation();
@@ -2045,7 +2270,6 @@
             return;
           }
 
-          // 音量调节 (↑ / ↓)
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             e.stopPropagation();
@@ -2380,7 +2604,6 @@
         e.target.value = '';
       }
 
-      // ==================== 智能分流与解析 .md 文件 ====================
       function smartRouteMarkdownFile(file) {
         const reader = new FileReader();
         reader.onload = function (evt) {
@@ -2462,7 +2685,6 @@
         }
       }
 
-      // ==================== AI 讲义导入与导出备份 ====================
       function importAINotesFromFile(e) {
         const file = e.target.files[0];
         if (file) smartRouteMarkdownFile(file);
@@ -2494,7 +2716,6 @@
         a.click();
       }
 
-      // ==================== 智能双模 AI 提示词生成引擎 ====================
       function copyAIPrompt() {
         if (subtitleData.length > 0) {
           let condensedText = "";
