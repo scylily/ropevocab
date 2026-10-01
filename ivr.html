@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>视频手记-智能字幕讲义阅读器</title>
     <style>
+      /* ================= 全局基础重置 ================= */
       * {
         box-sizing: border-box;
         margin: 0;
@@ -22,24 +23,25 @@
         overflow: hidden;
       }
 
+      /* ================= 顶栏 Header 布局 ================= */
       header {
         background: #fff;
         border-bottom: 1px solid #e2e8f0;
         padding: 10px 16px;
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* 改为起点对齐 */
-        gap: 10px;                   /* 统一各模块间距 */
+        gap: 10px;
         font-size: 13px;
         color: #64748b;
         flex-shrink: 0;
         z-index: 30;
-        box-sizing: border-box;
       }
 
-      /* 状态胶囊自动推到屏幕最右侧 */
-      .status-tags {
-        margin-left: auto;
+      .header-top-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
       }
 
       .app-brand {
@@ -48,28 +50,8 @@
         gap: 8px;
         user-select: none;
         flex-shrink: 0;
-      }
-
-/* 方案一核心：让标题与按钮单行水平并排 */
-      .header-top-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-shrink: 0;
-      }
-
-      /* 标题右侧加上一道微光细分割线，拉开呼吸感 */
-      .app-brand {
         border-right: 1px solid #e2e8f0;
         padding-right: 10px;
-      }
-
-      /* 按钮组水平排列 */
-      .header-file-btns {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
       }
 
       .brand-title {
@@ -77,7 +59,6 @@
         font-weight: 800;
         color: #0f172a;
         letter-spacing: -0.3px;
-        line-height: 1;
         white-space: nowrap;
       }
 
@@ -89,32 +70,135 @@
         font-size: 11px;
         color: #94a3b8;
         font-weight: 500;
-        line-height: 1;
         white-space: nowrap;
       }
 
-      .brand-divider {
-        width: 1px;
-        height: 16px;
-        background: #e2e8f0;
-        margin: 0 4px;
+      .header-file-btns {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         flex-shrink: 0;
       }
 
-      .header-left {
+      /* 选集播放条 */
+      .playlist-bar {
         display: flex;
         align-items: center;
-        gap: 10px;
-        flex: 1;
+        gap: 4px;
+        background: #f1f5f9;
+        padding: 3px 6px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        flex-shrink: 1;
         min-width: 0;
-        margin-right: 12px;
+        position: relative;
       }
 
-      .header-left::-webkit-scrollbar {
+      .playlist-select {
+        padding: 3px 6px;
+        font-size: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #fff;
+        color: #1e293b;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        flex-shrink: 0;
+        max-width: 220px;
+        min-width: 60px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .btn-ep {
+        padding: 3px 7px;
+        font-size: 11px;
+        background: #fff;
+        line-height: 1.2;
+      }
+
+      .btn-ep:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      /* 悬浮排序下拉菜单组件 */
+      .sort-dropdown-wrapper {
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .sort-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+        padding: 5px;
+        min-width: 196px;
+        z-index: 100;
         display: none;
+        flex-direction: column;
+        gap: 2px;
+        animation: sortMenuFadeIn 0.15s ease-out;
       }
 
+      @keyframes sortMenuFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-4px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .sort-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #334155;
+        border-radius: 5px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.15s ease, color 0.15s ease;
+        white-space: nowrap;
+      }
+
+      .sort-menu-item:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+
+      .sort-menu-item.active {
+        background: #eff6ff;
+        color: #2563eb;
+        font-weight: 600;
+      }
+
+      .sort-check-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #2563eb;
+        margin-right: 6px;
+        flex-shrink: 0;
+      }
+
+      /* 右侧状态胶囊标签 */
       .status-tags {
+        margin-left: auto;
         display: flex;
         gap: 6px;
         align-items: center;
@@ -157,100 +241,7 @@
         border-color: #86efac;
       }
 
-      .playlist-bar {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background: #f1f5f9;
-        padding: 3px 6px;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        flex-shrink: 1;
-        min-width: 0;
-      }
-
-      .playlist-select,
-      .sort-select {
-        padding: 3px 6px;
-        font-size: 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 4px;
-        background: #fff;
-        color: #1e293b;
-        font-weight: 600;
-        outline: none;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-
-      .playlist-select {
-        max-width: 220px;
-        min-width: 60px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .btn-ep {
-        padding: 3px 7px;
-        font-size: 11px;
-        background: #fff;
-        line-height: 1.2;
-      }
-
-      .btn-ep:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
-
-      #mynotesTab,
-      #transcriptTab {
-        padding-top: 0;
-      }
-
-      .mynotes-sticky-header,
-      .transcript-sticky-header {
-        position: sticky;
-        top: 0;
-        background: #fff;
-        z-index: 10;
-        margin: 0 -18px 10px -18px;
-        padding: 12px 18px;
-        border-bottom: 1px solid #e2e8f0;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-      }
-
-      .transcript-sticky-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .lang-switcher {
-        display: flex;
-        background: #e2e8f0;
-        padding: 2px;
-        border-radius: 6px;
-      }
-
-      .lang-btn {
-        border: none;
-        background: transparent;
-        padding: 3px 7px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 4px;
-        color: #475569;
-        transition: all 0.2s;
-      }
-
-      .lang-btn.active {
-        background: #fff;
-        color: #2563eb;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      }
-
+      /* ================= 主布局容器 ================= */
       .container {
         flex: 1;
         display: flex;
@@ -260,6 +251,7 @@
         height: 100%;
       }
 
+      /* ================= 左侧：视频播放区域 ================= */
       .left-panel {
         width: 50%;
         min-width: 280px;
@@ -377,6 +369,84 @@
         background: rgba(124, 58, 237, 1);
       }
 
+      .video-sub-overlay {
+        position: absolute;
+        bottom: 40px;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: max-content;
+        max-width: 96%;
+        text-align: center;
+        color: #fff;
+        background: none;
+        padding: 4px 8px;
+        pointer-events: none;
+        z-index: 15;
+        display: none;
+      }
+
+      .video-sub-overlay .v-cn {
+        font-size: clamp(15px, 2.5cqw, 30px);
+        font-weight: 700;
+        line-height: 1.35;
+        color: #ffffff;
+        text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 2px 4px rgba(0, 0, 0, 0.8);
+      }
+
+      .video-sub-overlay .v-foreign {
+        font-size: clamp(11.5px, 1.8cqw, 22px);
+        color: #cbd5e1;
+        margin-top: 2px;
+        line-height: 1.3;
+        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 3px rgba(0, 0, 0, 0.8);
+      }
+
+      .empty-tip {
+        position: absolute;
+        color: #f8fafc;
+        font-size: 14px;
+        text-align: center;
+        line-height: 1.8;
+        z-index: 2;
+        padding: 0 16px;
+      }
+
+      .empty-tip strong {
+        color: #ffffff;
+        font-size: 15px;
+      }
+
+      .empty-tip-sub {
+        font-size: 12px;
+        color: inherit;
+        opacity: 0.75;
+        margin-top: 2px;
+      }
+
+      .drop-overlay {
+        position: absolute;
+        inset: 10px;
+        border: 2px dashed #3b82f6;
+        background: rgba(59, 130, 246, 0.15);
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #2563eb;
+        font-weight: bold;
+        font-size: 18px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 10;
+      }
+
+      .drag-over .drop-overlay {
+        opacity: 1;
+      }
+
+      /* ================= 分界线拖拽条 ================= */
       .resizer {
         width: 7px;
         background: #e2e8f0;
@@ -419,101 +489,17 @@
         background: #fff;
       }
 
-      .video-sub-overlay {
-        position: absolute;
-        bottom: 40px;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        width: max-content;
-        max-width: 96%;
-        text-align: center;
-        color: #fff;
-        background: none;
-        padding: 4px 8px;
-        pointer-events: none;
-        z-index: 15;
-        display: none;
-      }
-
-      .video-sub-overlay .v-cn {
-        font-size: clamp(15px, 2.5cqw, 30px);
-        font-weight: 700;
-        line-height: 1.35;
-        color: #ffffff;
-        text-shadow:
-          -1.5px -1.5px 0 #000,
-          1.5px -1.5px 0 #000,
-          -1.5px 1.5px 0 #000,
-          1.5px 1.5px 0 #000,
-          0 2px 4px rgba(0, 0, 0, 0.8);
-      }
-
-      .video-sub-overlay .v-foreign {
-        font-size: clamp(11.5px, 1.8cqw, 22px);
-        color: #cbd5e1;
-        margin-top: 2px;
-        line-height: 1.3;
-        text-shadow:
-          -1px -1px 0 #000,
-          1px -1px 0 #000,
-          -1px 1px 0 #000,
-          1px 1px 0 #000,
-          0 2px 3px rgba(0, 0, 0, 0.8);
-      }
-
-      .drop-overlay {
-        position: absolute;
-        inset: 10px;
-        border: 2px dashed #3b82f6;
-        background: rgba(59, 130, 246, 0.15);
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #2563eb;
-        font-weight: bold;
-        font-size: 18px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s;
-        z-index: 10;
-      }
-
-      .drag-over .drop-overlay {
-        opacity: 1;
-      }
-
-      .empty-tip {
-        position: absolute;
-        color: #f8fafc;
-        font-size: 14px;
-        text-align: center;
-        line-height: 1.8;
-        z-index: 2;
-        padding: 0 16px;
-      }
-
-      .empty-tip strong {
-        color: #ffffff;
-        font-size: 15px;
-      }
-
-      .empty-tip-sub {
-        font-size: 12px;
-        color: inherit;
-        opacity: 0.75;
-        margin-top: 2px;
-      }
-
+      /* ================= 右侧：交互内容面板与容器查询 ================= */
       .right-panel {
         flex: 1;
-        min-width: 320px;
+        min-width: 260px;
         display: flex;
         flex-direction: column;
         background: #fff;
         position: relative;
         overflow: hidden;
+        container-type: inline-size;
+        container-name: notesPanel;
       }
 
       .tabs {
@@ -548,6 +534,7 @@
         -webkit-overflow-scrolling: touch;
       }
 
+      /* ================= 通用按键与控制单元 ================= */
       .btn {
         background: #2563eb;
         color: #fff;
@@ -559,10 +546,12 @@
         font-weight: 500;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 4px;
         user-select: none;
         white-space: nowrap !important;
         flex-shrink: 0;
+        transition: background 0.15s ease, border-color 0.15s ease, padding 0.15s ease;
       }
 
       .btn:hover {
@@ -596,16 +585,43 @@
         background: #7c3aed;
       }
 
+      /* 手记单行顶栏防重叠智能布局 */
+      .mynotes-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 5px;
+        flex-wrap: nowrap;
+      }
+
+      .mynotes-tool-left {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .mynotes-tool-right {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
       .time-jump-box {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
         background: #f8fafc;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
-        padding: 2px 7px;
+        padding: 3px 6px;
         transition: border-color 0.2s;
-        flex-shrink: 0;
+        flex-shrink: 1;
+        min-width: 50px;
+        height: 28px;
       }
 
       .time-jump-box:focus-within {
@@ -614,13 +630,72 @@
       }
 
       .time-jump-box input {
-        width: 70px;
+        width: 56px;
         border: none;
         background: transparent;
         outline: none;
         font-size: 11px;
         font-family: monospace;
         color: #1e293b;
+      }
+
+      /* ================= 容器查询自适应规则 (按手记栏自身宽度动态演进) ================= */
+      .btn-lbl,
+      .btn-sub-lbl {
+        display: inline;
+      }
+
+      /* 状态 1：面板宽度 <= 480px，隐藏快捷键提示等次要文字 */
+      @container notesPanel (max-width: 480px) {
+        .btn-sub-lbl {
+          display: none !important;
+        }
+
+        .time-jump-box input {
+          width: 48px;
+        }
+      }
+
+      /* 状态 2：面板宽度 <= 380px (横屏拉大极限挤压态)，按钮全员平滑收敛为纯图标胶囊，杜绝重叠与掉行 */
+      @container notesPanel (max-width: 380px) {
+        .btn-lbl {
+          display: none !important;
+        }
+
+        .btn-stamp {
+          padding: 6px 8px;
+        }
+
+        .mynotes-tool-right .btn {
+          padding: 6px 8px;
+        }
+
+        .time-jump-box {
+          padding: 3px 4px;
+        }
+
+        .time-jump-box input {
+          width: 38px;
+        }
+      }
+
+      /* 状态 3：面板宽度 <= 300px 极度狭窄 */
+      @container notesPanel (max-width: 300px) {
+        .mynotes-tool-left {
+          gap: 3px;
+        }
+
+        .mynotes-tool-right {
+          gap: 2px;
+        }
+
+        .mynotes-tool-right .btn {
+          padding: 6px 6px;
+        }
+
+        .time-jump-box input {
+          width: 32px;
+        }
       }
 
       .time-tag {
@@ -686,6 +761,7 @@
         }
       }
 
+      /* ================= 手记与字幕列表 ================= */
       .transcript-item {
         margin-bottom: 6px;
         padding: 4px 8px;
@@ -866,6 +942,7 @@
         text-align: center;
       }
 
+      /* ================= 模态弹窗与抽屉 ================= */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -1017,7 +1094,6 @@
         word-break: break-all;
       }
 
-      /* 方案二专属：移动端手记更多管理抽屉 */
       .mobile-notes-drawer-overlay {
         position: fixed;
         inset: 0;
@@ -1050,12 +1126,11 @@
         }
       }
 
-      /* 桌面端隐藏抽屉按钮 */
       .mobile-only-btn {
         display: none !important;
       }
 
-      /* ==================== 方案 C：移动端极简纯操作流 (iPhone & 竖屏) ==================== */
+      /* ================= 移动端屏幕适配 (<= 768px) ================= */
       @media (max-width: 768px) {
         header {
           padding: 6px 12px;
@@ -1064,9 +1139,7 @@
           gap: 5px;
         }
 
-        /* 隐藏手机端无用的快捷键按键、副标与孤立分割线 */
         .brand-subtitle,
-        .brand-divider,
         #btnShortcutsDesktop {
           display: none !important;
         }
@@ -1076,7 +1149,6 @@
           padding-right: 0 !important;
         }
 
-        /* 方案 C 核心 1：第 1 行紧凑单行操作 (高度仅 36px) */
         .header-top-row {
           display: flex;
           justify-content: space-between;
@@ -1097,12 +1169,10 @@
           height: 24px;
         }
 
-        /* 方案 C 核心 2：彻底去除重复冗余的状态标签行！单视频时顶栏总高仅 38px */
         .status-tags {
           display: none !important;
         }
 
-        /* 选集控制器：有多集时才自然展开为第 2 行，文字锁死不撑破 */
         .playlist-bar {
           width: 100%;
           display: flex;
@@ -1122,9 +1192,9 @@
           white-space: nowrap;
         }
 
-        .sort-select {
-          max-width: 100px;
-          flex-shrink: 0;
+        .sort-dropdown-menu {
+          right: 0;
+          left: auto;
         }
 
         .container {
@@ -1167,17 +1237,13 @@
           padding: 8px 12px;
         }
 
-        .notes-action-subtext {
-          display: none;
-        }
-
         .notes-desktop-actions {
           display: none !important;
         }
 
         .mobile-only-btn {
           display: inline-flex !important;
-          height: 26px;
+          height: 28px;
           padding: 3px 8px;
           font-size: 11px;
         }
@@ -1187,11 +1253,12 @@
 
   <body>
 
+    <!-- 隐藏式文件选择输入域 -->
     <input type="file" id="localFileInput" multiple accept="video/*,.ass,.ssa,.srt,.vtt,.md,.txt" style="display: none;" onchange="handleFileSelect(event)">
     <input type="file" id="localFolderInput" webkitdirectory directory style="display: none;" onchange="handleFolderSelect(event)">
 
+    <!-- 顶部导航与状态条 -->
     <header>
-      <!-- 移动端第 1 行：品牌标题 + 紧凑打开按钮 -->
       <div class="header-top-row">
         <div class="app-brand">
           <span class="brand-title">iVideo <span>Reader</span></span>
@@ -1204,22 +1271,39 @@
         </div>
       </div>
 
-      <!-- 选集控制器：独占行，长文件名自动以...截断，⏭ 按钮绝对不会被挤出屏幕 -->
       <div id="playlistControls" class="playlist-bar" style="display: none;">
         <button class="btn btn-outline btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="上一集">⏮</button>
         <select id="playlistSelect" class="playlist-select" onchange="switchPlaylistItem(parseInt(this.value))" title="切换集数"></select>
         <button class="btn btn-outline btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="下一集">⏭</button>
 
-        <select id="sortSelect" class="sort-select" onchange="handleSortChange(this.value)" title="选择排序规则">
-          <option value="name-asc" selected>🔤 01→10 (名称升序)</option>
-          <option value="name-desc">🔤 10→01 (名称降序)</option>
-          <option value="date-desc">🕒 最近修改 (新→旧)</option>
-          <option value="date-asc">🕒 最早修改 (旧→新)</option>
-          <option value="original">📥 拖入原始顺序</option>
-        </select>
+        <!-- 紧凑悬浮排序胶囊按钮与浮层菜单 -->
+        <div class="sort-dropdown-wrapper">
+          <button id="sortMenuBtn" class="btn btn-outline btn-ep" onclick="toggleSortMenu(event)" title="选择列表排序方式">⇅ 排序</button>
+          <div id="sortDropdownMenu" class="sort-dropdown-menu">
+            <div class="sort-menu-item active" onclick="selectSortMode('original')" data-sort="original">
+              <span class="sort-check-icon">✓</span>
+              <span>📥 拖入原始顺序</span>
+            </div>
+            <div class="sort-menu-item" onclick="selectSortMode('name-asc')" data-sort="name-asc">
+              <span class="sort-check-icon"></span>
+              <span>🔤 01→10 (名称升序)</span>
+            </div>
+            <div class="sort-menu-item" onclick="selectSortMode('name-desc')" data-sort="name-desc">
+              <span class="sort-check-icon"></span>
+              <span>🔤 10→01 (名称降序)</span>
+            </div>
+            <div class="sort-menu-item" onclick="selectSortMode('date-desc')" data-sort="date-desc">
+              <span class="sort-check-icon"></span>
+              <span>🕒 最近修改 (新→旧)</span>
+            </div>
+            <div class="sort-menu-item" onclick="selectSortMode('date-asc')" data-sort="date-asc">
+              <span class="sort-check-icon"></span>
+              <span>🕒 最早修改 (旧→新)</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- 状态徽章条 -->
       <div class="status-tags">
         <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" title="点击查看媒体详情">📺 1/1 集</span>
         <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看详细信息">📹 视频未加载</span>
@@ -1228,7 +1312,9 @@
       </div>
     </header>
 
+    <!-- 主工作区 -->
     <div class="container" id="mainContainer">
+      <!-- 左栏：播放与字幕渲染层 -->
       <div class="left-panel" id="videoZone">
         <div class="drop-overlay">📁 释放鼠标：自动装配视频与字幕</div>
 
@@ -1251,8 +1337,7 @@
 
           <div id="videoOSD" class="video-osd"></div>
 
-          <video id="videoPlayer" controls tabindex="-1" playsinline webkit-playsinline x5-playsinline style="display: none;">
-          </video>
+          <video id="videoPlayer" controls tabindex="-1" playsinline webkit-playsinline x5-playsinline style="display: none;"></video>
 
           <div id="videoSubOverlay" class="video-sub-overlay">
             <div id="videoSubCn" class="v-cn"></div>
@@ -1261,8 +1346,10 @@
         </div>
       </div>
 
+      <!-- 拖拽尺寸调节条 -->
       <div class="resizer" id="resizer" title="拖动调整大小 / 双击贴合画面消除黑边"></div>
 
+      <!-- 右栏：多 Tab 手记与讲义区 -->
       <div class="right-panel" id="notesZone">
         <div class="drop-overlay">📁 释放鼠标加载文件</div>
 
@@ -1272,48 +1359,46 @@
           <button id="tabBtnNotes" class="tab-btn" onclick="switchTab('notes')">📚 智能讲义</button>
         </div>
 
+        <!-- Tab 1: 我的手记 -->
         <div id="mynotesTab" class="tab-content">
           <div class="mynotes-sticky-header">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; flex-wrap: wrap; gap: 8px;">
-              <div style="display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0;">
-                <button class="btn btn-stamp" onclick="openAddNoteBox()">
-                  📍 标记时间<span class="notes-action-subtext">点 (Ctrl+M)</span>
+            <!-- 智能抗压单行顶栏：超宽展示全名，极窄优雅收敛为纯图标胶囊，绝不重叠 -->
+            <div class="mynotes-toolbar">
+              <div class="mynotes-tool-left">
+                <button class="btn btn-stamp" onclick="openAddNoteBox()" title="标记当前时间点 (Ctrl+M)">
+                  <span>📍</span><span class="btn-lbl">标记<span class="btn-sub-lbl">时间点</span></span>
                 </button>
 
-                <div class="time-jump-box" title="输入时间点回车直接跳转（支持 5.30、1.5.15 或 90s）">
+                <div class="time-jump-box" title="输入时码直接回车跳转 (支持 5.30、1.5.15 或 90s)">
                   <span style="font-size: 11px; color: #64748b;">⏱️</span>
-                  <input type="text" id="quickTimeJumpInput" placeholder="时码跳转" onkeydown="handleQuickTimeJump(event)">
+                  <input type="text" id="quickTimeJumpInput" placeholder="跳转" onkeydown="handleQuickTimeJump(event)">
                 </div>
               </div>
 
-              <!-- 桌面端常规操作栏：在大屏幕上正常展开 -->
-              <div class="notes-desktop-actions" style="display: flex; gap: 6px;">
-                <button class="btn btn-outline" onclick="exportNotesToMarkdown()">💾 导出</button>
-                <label class="btn btn-outline" style="cursor: pointer; margin: 0;">
-                  📂 导入
+              <!-- 桌面端操作按钮组 -->
+              <div class="notes-desktop-actions mynotes-tool-right">
+                <button class="btn btn-outline" onclick="exportNotesToMarkdown()" title="导出手记为 Markdown (.md)">
+                  <span>💾</span><span class="btn-lbl">导出</span>
+                </button>
+                <label class="btn btn-outline" style="cursor: pointer; margin: 0;" title="从本地文件导入手记">
+                  <span>📂</span><span class="btn-lbl">导入</span>
                   <input type="file" id="importNotesInput" accept=".md,.txt" style="display: none;" onchange="importNotesFromFile(event)">
                 </label>
-                <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()">🗑️ 清空</button>
+                <button class="btn btn-outline" style="color: #ef4444;" onclick="clearAllNotes()" title="清空当前视频所有手记">
+                  <span>🗑️</span><span class="btn-lbl">清空</span>
+                </button>
               </div>
 
-              <!-- 方案二移动端专属：··· 更多操作按键，彻底防止宽度冒出截断 -->
-              <button class="btn btn-outline mobile-only-btn" onclick="toggleMobileNotesDrawer(true)">
-                ··· 更多
-              </button>
+              <!-- 移动端管理抽屉按钮 -->
+              <button class="btn btn-outline mobile-only-btn" onclick="toggleMobileNotesDrawer(true)">··· 更多</button>
             </div>
 
             <div id="addNoteBox" class="note-input-modal" style="display: none; margin-top: 10px; margin-bottom: 0;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div class="mode-radio-group" style="margin-bottom: 0;">
                   <span>标记类型：</span>
-                  <label>
-                    <input type="radio" id="radioPoint" name="noteType" value="point" checked onchange="toggleNoteTypeUI()">
-                    📍 单点打卡
-                  </label>
-                  <label>
-                    <input type="radio" id="radioInterval" name="noteType" value="interval" onchange="toggleNoteTypeUI()">
-                    🔁 片段无限循环
-                  </label>
+                  <label><input type="radio" id="radioPoint" name="noteType" value="point" checked onchange="toggleNoteTypeUI()"> 📍 单点打卡</label>
+                  <label><input type="radio" id="radioInterval" name="noteType" value="interval" onchange="toggleNoteTypeUI()"> 🔁 片段无限循环</label>
                 </div>
                 <span id="noteModalTitle" style="font-size: 11px; color: #64748b; font-weight: bold;"></span>
               </div>
@@ -1347,6 +1432,7 @@
           </div>
         </div>
 
+        <!-- Tab 2: 字幕逐句对照 -->
         <div id="transcriptTab" class="tab-content" style="display: none;">
           <div class="transcript-sticky-header">
             <span style="font-size: 12px; font-weight: 600; color: #475569;">字幕语言过滤：</span>
@@ -1362,6 +1448,7 @@
           </div>
         </div>
 
+        <!-- Tab 3: 智能讲义 -->
         <div id="notesTab" class="tab-content" style="display: none;">
           <div id="inputBoxContainer">
             <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 6px; margin-bottom: 8px;">
@@ -1403,7 +1490,7 @@
       </div>
     </div>
 
-    <!-- 方案二移动端专属：手记更多管理抽屉 Modal -->
+    <!-- 移动端管理抽屉 Modal -->
     <div id="mobileNotesDrawer" class="mobile-notes-drawer-overlay" onclick="toggleMobileNotesDrawer(false)">
       <div class="mobile-notes-drawer-content" onclick="event.stopPropagation()">
         <div style="font-size: 13px; font-weight: 700; color: #0f172a; text-align: center; padding-bottom: 6px; border-bottom: 1px solid #f1f5f9;">
@@ -1562,7 +1649,9 @@
       </div>
     </div>
 
+    <!-- ================= 核心交互逻辑脚本 ================= -->
     <script>
+      // DOM 句柄缓存
       const video = document.getElementById('videoPlayer');
       const videoTip = document.getElementById('videoTip');
       const videoZone = document.getElementById('videoZone');
@@ -1577,6 +1666,8 @@
       const playlistStatus = document.getElementById('playlistStatus');
       const prevEpisodeBtn = document.getElementById('prevEpisodeBtn');
       const nextEpisodeBtn = document.getElementById('nextEpisodeBtn');
+      const sortDropdownMenu = document.getElementById('sortDropdownMenu');
+      const sortMenuBtn = document.getElementById('sortMenuBtn');
 
       const tabBtnTranscript = document.getElementById('tabBtnTranscript');
       const copyAIPromptBtn = document.getElementById('copyAIPromptBtn');
@@ -1593,9 +1684,10 @@
       const shortcutsModal = document.getElementById('shortcutsModal');
       const mediaInfoModal = document.getElementById('mediaInfoModal');
 
+      // 应用全局状态（默认激活“拖入原始顺序”）
       let playlist = [];
       let currentPlaylistIndex = 0;
-      let currentSortMode = 'name-asc';
+      let currentSortMode = 'original';
       let currentTab = 'mynotes';
 
       let editingNoteId = null;
@@ -1603,15 +1695,24 @@
       let currentSubFileName = "";
       let touchFitTimer = null;
 
-      // 强制剥夺原生视频控件键盘焦点
-      ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(eventName => {
-        video.addEventListener(eventName, () => {
+      // 排序模式名称映射
+      const sortLabels = {
+        'original': '📥 拖入原始顺序',
+        'name-asc': '🔤 01→10 (名称升序)',
+        'name-desc': '🔤 10→01 (名称降序)',
+        'date-desc': '🕒 最近修改 (新→旧)',
+        'date-asc': '🕒 最早修改 (旧→新)'
+      };
+
+      // 剥夺原生视频控件焦点，避免按空格键时触发两次暂停冲突
+      ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(name => {
+        video.addEventListener(name, () => {
           if (document.activeElement === video) video.blur();
         });
       });
 
-      ['keydown', 'keyup'].forEach(eventName => {
-        video.addEventListener(eventName, (e) => {
+      ['keydown', 'keyup'].forEach(name => {
+        video.addEventListener(name, (e) => {
           if (['Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.code) ||
             ['Space', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
             e.preventDefault();
@@ -1619,15 +1720,12 @@
         });
       });
 
-      // 方案二移动端抽屉控制函数
       function toggleMobileNotesDrawer(show) {
         const drawer = document.getElementById('mobileNotesDrawer');
-        if (drawer) {
-          drawer.style.display = show ? 'flex' : 'none';
-        }
+        if (drawer) drawer.style.display = show ? 'flex' : 'none';
       }
 
-      // 贴合按钮与原生控制条严格同步显隐逻辑（1.5s闲置同步 + 离开画面即隐）
+      // 贴合按键与播放状态同步
       function showTouchFitBtn() {
         if (!video.src) return;
         touchFitBtn.style.display = 'inline-flex';
@@ -1653,45 +1751,40 @@
       });
 
       videoWrapper.addEventListener('mouseleave', () => hideTouchFitBtnInstantly());
-
       video.addEventListener('play', () => showTouchFitBtn());
       video.addEventListener('pause', () => {
         touchFitBtn.classList.add('visible');
         clearTimeout(touchFitTimer);
       });
 
-      // 触控与鼠标兼备的分界线拖拽系统
+      // ================= 触控与鼠标分界线拖拽系统 =================
       const resizer = document.getElementById('resizer');
       const leftPanel = document.getElementById('videoZone');
       const mainContainer = document.getElementById('mainContainer');
       let isResizing = false;
 
       function startResize() {
-          isResizing = true;
-          resizer.classList.add('dragging');
-          leftPanel.classList.remove('panel-smooth-transition'); // <-- 补上这一行：开始拖拽时立即剥离过渡动画，鼠标指哪到哪
-          document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
-          document.body.style.userSelect = 'none';
-        }
+        isResizing = true;
+        resizer.classList.add('dragging');
+        leftPanel.classList.remove('panel-smooth-transition');
+        document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
+        document.body.style.userSelect = 'none';
+      }
 
       function handleResizeMove(clientX, clientY) {
         if (!isResizing) return;
-        const containerRect = mainContainer.getBoundingClientRect();
+        const rect = mainContainer.getBoundingClientRect();
 
         if (window.innerWidth <= 768) {
-          let newHeight = clientY - containerRect.top;
-          const minH = 180;
-          const maxH = containerRect.height - 180;
-          if (newHeight < minH) newHeight = minH;
-          if (newHeight > maxH) newHeight = maxH;
-          leftPanel.style.height = newHeight + 'px';
+          let h = clientY - rect.top;
+          if (h < 180) h = 180;
+          if (h > rect.height - 180) h = rect.height - 180;
+          leftPanel.style.height = h + 'px';
         } else {
-          let newLeftWidth = clientX - containerRect.left;
-          const minLeft = 280;
-          const maxLeft = containerRect.width - 320;
-          if (newLeftWidth < minLeft) newLeftWidth = minLeft;
-          if (newLeftWidth > maxLeft) newLeftWidth = maxLeft;
-          leftPanel.style.width = newLeftWidth + 'px';
+          let w = clientX - rect.left;
+          if (w < 260) w = 260;
+          if (w > rect.width - 260) w = rect.width - 260;
+          leftPanel.style.width = w + 'px';
         }
       }
 
@@ -1720,51 +1813,41 @@
 
       document.addEventListener('touchend', stopResize);
       document.addEventListener('touchcancel', stopResize);
-
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // 跨端几何比例算法：横竖屏智能识别，彻底消除黑边与底部留白
+      // ================= 跨端几何比例贴合算法（消除黑边） =================
       function fitVideoRatio() {
         if (!video.src || !video.videoWidth || !video.videoHeight) {
           showOSD('⚠️ 暂无视频或未就绪');
           return;
         }
 
-        const isMobileVertical = window.innerWidth <= 768;
+        const isMobile = window.innerWidth <= 768;
         const ratio = video.videoWidth / video.videoHeight;
 
-        if (isMobileVertical) {
+        if (isMobile) {
           leftPanel.style.width = '';
           const currentWidth = leftPanel.clientWidth;
           let targetHeight = Math.round(currentWidth / ratio);
-
-          const maxAllowedHeight = ratio < 1.0 ? Math.round(window.innerHeight * 0.62) : Math.round(window.innerHeight * 0.45);
-          const minAllowedHeight = 180;
-
-          if (targetHeight > maxAllowedHeight) targetHeight = maxAllowedHeight;
-          if (targetHeight < minAllowedHeight) targetHeight = minAllowedHeight;
+          const maxHeight = ratio < 1.0 ? Math.round(window.innerHeight * 0.62) : Math.round(window.innerHeight * 0.45);
+          if (targetHeight > maxHeight) targetHeight = maxHeight;
+          if (targetHeight < 180) targetHeight = 180;
 
           leftPanel.classList.add('panel-smooth-transition');
           leftPanel.style.height = targetHeight + 'px';
           setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-
           showOSD('📐 已贴合画面 (' + video.videoWidth + '×' + video.videoHeight + ')');
         } else {
           leftPanel.style.height = '';
           const containerHeight = mainContainer.clientHeight;
           let targetWidth = Math.round(containerHeight * ratio);
-
-          const containerTotalWidth = mainContainer.clientWidth;
-          const minLeft = 280;
-          const maxLeft = containerTotalWidth - 320;
-
-          if (targetWidth < minLeft) targetWidth = minLeft;
-          if (targetWidth > maxLeft) targetWidth = maxLeft;
+          const maxAllowed = mainContainer.clientWidth - 260;
+          if (targetWidth < 280) targetWidth = 280;
+          if (targetWidth > maxAllowed) targetWidth = maxAllowed;
 
           leftPanel.classList.add('panel-smooth-transition');
           leftPanel.style.width = targetWidth + 'px';
           setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-
           showOSD('📐 已贴合画面 (' + video.videoWidth + '×' + video.videoHeight + ')');
         }
       }
@@ -1774,15 +1857,13 @@
         const curIsMobile = window.innerWidth <= 768;
         if (curIsMobile !== prevIsMobileLayout) {
           prevIsMobileLayout = curIsMobile;
-          if (curIsMobile) {
-            leftPanel.style.width = '';
-          } else {
-            leftPanel.style.height = '';
-          }
+          if (curIsMobile) leftPanel.style.width = '';
+          else leftPanel.style.height = '';
           if (video.src) fitVideoRatio();
         }
       });
 
+      // 字幕与手记核心数据
       let subtitleData = [];
       let currentLang = 'cn';
       let currentActiveId = -1;
@@ -1870,9 +1951,7 @@
 
       video.addEventListener('loadedmetadata', () => {
         updateMediaInfoModalData();
-        if (window.innerWidth <= 768) {
-          fitVideoRatio();
-        }
+        if (window.innerWidth <= 768) fitVideoRatio();
       });
 
       function copyInfoText(elementId, btnElement) {
@@ -1882,14 +1961,65 @@
           return;
         }
         navigator.clipboard.writeText(text).then(() => {
-          const oldText = btnElement.textContent;
+          const old = btnElement.textContent;
           btnElement.textContent = '✅ 已复制';
-          setTimeout(() => btnElement.textContent = oldText, 1200);
+          setTimeout(() => btnElement.textContent = old, 1200);
           showOSD('📋 文件名已成功复制至剪贴板');
         }).catch(() => {
           showOSD('⚠️ 复制失败');
         });
       }
+
+      // ================= 选集、排序与分流系统 =================
+      function toggleSortMenu(e) {
+        if (e) e.stopPropagation();
+        if (!sortDropdownMenu) return;
+        const isShown = sortDropdownMenu.style.display === 'flex';
+        sortDropdownMenu.style.display = isShown ? 'none' : 'flex';
+      }
+
+      function closeSortMenu() {
+        if (sortDropdownMenu) sortDropdownMenu.style.display = 'none';
+      }
+
+      function updateSortMenuUI() {
+        document.querySelectorAll('.sort-menu-item').forEach(item => {
+          const mode = item.getAttribute('data-sort');
+          const isSelected = (mode === currentSortMode);
+          item.classList.toggle('active', isSelected);
+          const iconSpan = item.querySelector('.sort-check-icon');
+          if (iconSpan) {
+            iconSpan.textContent = isSelected ? '✓' : '';
+          }
+        });
+      }
+
+      function selectSortMode(mode) {
+        currentSortMode = mode;
+        updateSortMenuUI();
+        closeSortMenu();
+
+        if (playlist.length === 0) return;
+
+        const currentItem = playlist[currentPlaylistIndex];
+        applySortOrder();
+
+        if (currentItem) {
+          currentPlaylistIndex = playlist.findIndex(p => p.id === currentItem.id);
+          if (currentPlaylistIndex === -1) currentPlaylistIndex = 0;
+        }
+
+        renderPlaylistUI();
+        showOSD('已按“' + (sortLabels[mode] || mode) + '”排序');
+      }
+
+      // 全局点击监听：点击外部关闭排序菜单
+      document.addEventListener('click', (e) => {
+        const wrapper = document.querySelector('.sort-dropdown-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+          closeSortMenu();
+        }
+      });
 
       function handleFileSelect(e) {
         if (!e.target.files || e.target.files.length === 0) return;
@@ -1936,8 +2066,8 @@
 
         if (hasDirectory) {
           for (let entry of entries) {
-            const subFiles = await scanFilesFromEntry(entry);
-            files.push(...subFiles);
+            const sub = await scanFilesFromEntry(entry);
+            files.push(...sub);
           }
         } else if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
           files = Array.from(e.dataTransfer.files);
@@ -1947,19 +2077,19 @@
       }
 
       async function scanFilesFromEntry(entry) {
-        let fileList = [];
+        let result = [];
         if (entry.isFile) {
           const file = await new Promise(resolve => entry.file(resolve));
-          fileList.push(file);
+          result.push(file);
         } else if (entry.isDirectory) {
           const reader = entry.createReader();
-          const entries = await new Promise(resolve => reader.readEntries(resolve));
-          for (let subEntry of entries) {
-            const subFiles = await scanFilesFromEntry(subEntry);
-            fileList.push(...subFiles);
+          const items = await new Promise(resolve => reader.readEntries(resolve));
+          for (let sub of items) {
+            const files = await scanFilesFromEntry(sub);
+            result.push(...files);
           }
         }
-        return fileList;
+        return result;
       }
 
       function autoMatchAndLoad(files) {
@@ -1979,14 +2109,13 @@
         }
 
         playlist = videos.map((vFile, idx) => {
-          const vBaseName = vFile.name.substring(0, vFile.name.lastIndexOf('.'));
-
+          const vBase = vFile.name.substring(0, vFile.name.lastIndexOf('.'));
           let matchedSub = subs.find(s => {
             const sBase = s.name.substring(0, s.name.lastIndexOf('.'));
-            return sBase === vBaseName || s.name.startsWith(vBaseName) || vBaseName.startsWith(sBase);
+            return sBase === vBase || s.name.startsWith(vBase) || vBase.startsWith(sBase);
           }) || null;
 
-          let matchedNote = mdFiles.find(n => n.name.startsWith(vBaseName)) || null;
+          let matchedNote = mdFiles.find(n => n.name.startsWith(vBase)) || null;
 
           return {
             id: idx,
@@ -2000,25 +2129,10 @@
           };
         });
 
+        updateSortMenuUI();
         applySortOrder();
         currentPlaylistIndex = 0;
         loadPlaylistItem(0);
-      }
-
-      function handleSortChange(sortMode) {
-        currentSortMode = sortMode;
-        if (playlist.length === 0) return;
-
-        const currentItem = playlist[currentPlaylistIndex];
-        applySortOrder();
-
-        if (currentItem) {
-          currentPlaylistIndex = playlist.findIndex(p => p.id === currentItem.id);
-          if (currentPlaylistIndex === -1) currentPlaylistIndex = 0;
-        }
-
-        renderPlaylistUI();
-        showOSD('已按规则重新排序');
       }
 
       function applySortOrder() {
@@ -2050,8 +2164,8 @@
         playlist.forEach((item, idx) => {
           const opt = document.createElement('option');
           opt.value = idx;
-          const subFlag = item.subFile ? ' [📝字幕]' : '';
-          opt.textContent = (idx + 1) + '. ' + item.name + subFlag;
+          const flag = item.subFile ? ' [📝字幕]' : '';
+          opt.textContent = (idx + 1) + '. ' + item.name + flag;
           playlistSelect.appendChild(opt);
         });
 
@@ -2084,9 +2198,7 @@
         videoSubCn.textContent = '';
         videoSubForeign.textContent = '';
         const container = document.getElementById('transcriptList');
-        if (container) {
-          container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">当前视频暂无字幕...</p>';
-        }
+        if (container) container.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">当前视频暂无字幕...</p>';
         updateSubtitleUIVisibility();
       }
 
@@ -2095,9 +2207,7 @@
           tabBtnTranscript.style.display = 'block';
         } else {
           tabBtnTranscript.style.display = 'none';
-          if (currentTab === 'transcript') {
-            switchTab('mynotes');
-          }
+          if (currentTab === 'transcript') switchTab('mynotes');
         }
         updateAIPromptButtonLabel();
       }
@@ -2118,17 +2228,10 @@
         if (!item) return;
 
         loadVideoFile(item.videoFile);
+        if (item.subFile) loadSubtitleFile(item.subFile);
+        else clearSubtitles();
 
-        if (item.subFile) {
-          loadSubtitleFile(item.subFile);
-        } else {
-          clearSubtitles();
-        }
-
-        if (item.noteFile) {
-          smartRouteMarkdownFile(item.noteFile);
-        }
-
+        if (item.noteFile) smartRouteMarkdownFile(item.noteFile);
         renderPlaylistUI();
       }
 
@@ -2188,6 +2291,7 @@
         }
       }
 
+      // ================= 字幕解析与双语分流 =================
       function loadSubtitleFile(file) {
         currentSubFileName = file.name;
         const reader = new FileReader();
@@ -2195,21 +2299,21 @@
           let content = evt.target.result;
           if (!content.includes('Dialogue:') && !content.includes('[Script Info]') && !content.includes('-->')) {
             const gbkReader = new FileReader();
-            gbkReader.onload = function (e2) { parseSubtitleUniversal(e2.target.result, file.name); };
+            gbkReader.onload = function (e2) { decodeSubtitleStream(e2.target.result, file.name); };
             gbkReader.readAsText(file, 'gb18030');
             return;
           }
-          parseSubtitleUniversal(content, file.name);
+          decodeSubtitleStream(content, file.name);
         };
         reader.readAsText(file, 'utf-8');
       }
 
-      function parseSubtitleUniversal(text, filename) {
+      function decodeSubtitleStream(text, filename) {
         subtitleData = [];
-        if (text.includes('-->')) {
-          subtitleData = parseSRT(text);
+        if (text.indexOf('-->') !== -1) {
+          subtitleData = parseTimecodeBlocks(text);
         } else {
-          subtitleData = parseASS(text);
+          subtitleData = parseDialogueScript(text);
         }
 
         if (subtitleData.length > 0) {
@@ -2223,111 +2327,109 @@
         }
       }
 
-      function parseSRT(text) {
-        const blocks = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n\s*\n/);
-        let cues = [];
-        let idCounter = 0;
+      function parseTimecodeBlocks(rawStr) {
+        const sections = rawStr.replace(/\r\n|\r/g, '\n').split(/\n\s*\n/);
+        const list = [];
+        let uid = 0;
 
-        for (let block of blocks) {
-          block = block.trim();
-          if (!block) continue;
-          const lines = block.split('\n');
+        for (let sec of sections) {
+          const rows = sec.trim().split('\n');
+          if (!rows.length) continue;
+          let arrowLineIdx = -1;
+          for (let i = 0; i < rows.length; i++) {
+            if (rows[i].indexOf('-->') !== -1) {
+              arrowLineIdx = i;
+              break;
+            }
+          }
+          if (arrowLineIdx === -1) continue;
 
-          let timeIndex = lines.findIndex(l => l.includes('-->'));
-          if (timeIndex === -1) continue;
+          const timeParts = rows[arrowLineIdx].split('-->');
+          if (timeParts.length < 2) continue;
 
-          const match = lines[timeIndex].match(/(\d{1,2}:\d{2}:\d{2}[,\.]\d{1,3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,\.]\d{1,3})/);
-          if (!match) continue;
+          const tStart = timeToSeconds(timeParts[0]);
+          const tEnd = timeToSeconds(timeParts[1]);
 
-          const start = timeToSeconds(match[1]);
-          const end = timeToSeconds(match[2]);
+          const pureTexts = [];
+          for (let j = arrowLineIdx + 1; j < rows.length; j++) {
+            const sanitized = rows[j].replace(/<[^>]+>/g, '').trim();
+            if (sanitized) pureTexts.push(sanitized);
+          }
+          if (!pureTexts.length) continue;
 
-          const contentLines = lines.slice(timeIndex + 1).map(l => l.replace(/<[^>]+>/g, '').trim()).filter(Boolean);
-          if (contentLines.length === 0) continue;
+          const combo = pureTexts.join('\\N');
+          const dual = extractBilingualText(combo);
 
-          const rawText = contentLines.join('\\N');
-          const { cn, foreign } = splitLanguagesUniversal(rawText);
-
-          cues.push({
-            id: idCounter++,
-            start: start,
-            end: end,
-            timeStr: formatSeconds(start),
-            cn: cn,
-            foreign: foreign,
-            raw: contentLines.join(' ')
+          list.push({
+            id: uid++,
+            start: tStart,
+            end: tEnd,
+            timeStr: formatSeconds(tStart),
+            cn: dual.primary,
+            foreign: dual.secondary,
+            raw: pureTexts.join(' ')
           });
         }
-        return cues;
+        return list;
       }
 
-      function parseASS(text) {
-        let cues = [];
-        const lines = text.split('\n');
-        let idCounter = 0;
+      function parseDialogueScript(scriptStr) {
+        const list = [];
+        const lines = scriptStr.split('\n');
+        let uid = 0;
 
-        lines.forEach(line => {
-          line = line.trim();
-          if (line.startsWith('Dialogue:')) {
-            const parts = line.split(',');
-            if (parts.length >= 10) {
-              const startRaw = parts[1].trim();
-              const endRaw = parts[2].trim();
-              const rawContent = parts.slice(9).join(',');
-              const cleanRaw = rawContent.replace(/\{.*?\}/g, '').trim();
+        for (let row of lines) {
+          const trimmed = row.trim();
+          if (trimmed.startsWith('Dialogue:')) {
+            const fields = trimmed.substring(9).split(',');
+            if (fields.length >= 9) {
+              const startVal = timeToSeconds(fields[1]);
+              const endVal = timeToSeconds(fields[2]);
+              const textRaw = fields.slice(9).join(',').replace(/\{[^\}]*\}/g, '').trim();
 
-              if (cleanRaw) {
-                const start = timeToSeconds(startRaw);
-                const end = timeToSeconds(endRaw);
-                const { cn, foreign } = splitLanguagesUniversal(cleanRaw);
-
-                cues.push({
-                  id: idCounter++,
-                  start: start,
-                  end: end,
-                  timeStr: formatSeconds(start),
-                  cn: cn,
-                  foreign: foreign,
-                  raw: cleanRaw.replace(/\\N/g, ' ')
+              if (textRaw) {
+                const dual = extractBilingualText(textRaw);
+                list.push({
+                  id: uid++,
+                  start: startVal,
+                  end: endVal,
+                  timeStr: formatSeconds(startVal),
+                  cn: dual.primary,
+                  foreign: dual.secondary,
+                  raw: textRaw.replace(/\\N/g, ' ')
                 });
               }
             }
           }
-        });
-        return cues;
+        }
+        return list;
       }
 
-      function splitLanguagesUniversal(rawText) {
-        const parts = rawText.split(/\\N|\n/i).map(p => p.trim()).filter(Boolean);
+      function extractBilingualText(str) {
+        const chunks = str.split(/\\N|\n/i).map(s => s.trim()).filter(Boolean);
+        const hasHan = (s) => /[\u4e00-\u9fa5]/.test(s) && !/[\u3040-\u30ff]/.test(s);
 
-        const isJapanese = (t) => /[\u3040-\u309F\u30A0-\u30FF]/.test(t);
-        const isKorean = (t) => /[\uAC00-\uD7AF]/.test(t);
-        const isWestern = (t) => /[a-zA-Z\u00C0-\u024F\u0400-\u04FF]/.test(t);
-        const isChinese = (t) => /[\u4E00-\u9FA5]/.test(t) && !isJapanese(t);
-
-        if (parts.length >= 2) {
-          let cnParts = [];
-          let foreignParts = [];
-
-          parts.forEach(p => {
-            if (isChinese(p)) cnParts.push(p);
-            else foreignParts.push(p);
+        if (chunks.length >= 2) {
+          const zh = [];
+          const other = [];
+          chunks.forEach(item => {
+            if (hasHan(item)) zh.push(item);
+            else other.push(item);
           });
-
-          if (cnParts.length === 0 && foreignParts.length > 0) cnParts = [foreignParts[0]];
-          if (foreignParts.length === 0 && cnParts.length > 0) foreignParts = [cnParts[0]];
+          if (zh.length === 0 && other.length > 0) zh.push(other[0]);
+          if (other.length === 0 && zh.length > 0) other.push(zh[0]);
 
           return {
-            cn: cnParts.join(' ') || rawText.replace(/\\N/g, ' '),
-            foreign: foreignParts.join(' ') || ''
+            primary: zh.join(' ') || str.replace(/\\N/g, ' '),
+            secondary: other.join(' ') || ''
           };
         } else {
-          const text = parts[0] || rawText;
-          if (isChinese(text)) return { cn: text, foreign: '' };
-          else return { cn: text, foreign: text };
+          const single = chunks[0] || str;
+          return hasHan(single) ? { primary: single, secondary: '' } : { primary: single, secondary: single };
         }
       }
 
+      // ================= 播放与循环控制器 =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
@@ -2383,6 +2485,7 @@
         }
       });
 
+      // 宽松时码转换（支持 01:20、5.30、90s）
       function timeToSeconds(timeStr) {
         if (typeof timeStr === 'number') return timeStr;
         if (!timeStr) return 0;
@@ -2521,6 +2624,7 @@
         renderMyNotesList();
       }
 
+      // ================= 键盘快捷键监听系统 =================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
@@ -2606,6 +2710,7 @@
           closeAddNoteBox();
           closeShortcutsModal();
           closeMediaInfoModal();
+          closeSortMenu();
           toggleMobileNotesDrawer(false);
           stopLoop();
           return;
@@ -2656,7 +2761,6 @@
             return;
           }
 
-          // 音量调节 (↑ / ↓) 语法错误彻底修复
           if (e.key === 'ArrowUp') {
             e.preventDefault();
             e.stopPropagation();
@@ -2681,6 +2785,7 @@
         }
       });
 
+      // ================= 手记 CRUD 与存储 =================
       function openAddNoteBox() {
         if (!video.src) { alert('请先载入视频！'); return; }
         switchTab('mynotes');
@@ -2846,7 +2951,6 @@
         }
 
         myNotes.sort((a, b) => a.start - b.start);
-
         tempInPointSec = null;
         saveNotesToLocalStorage();
         renderMyNotesList();
@@ -3089,10 +3193,8 @@
         a.click();
       }
 
+      // ================= AI 提示词与讲义解析渲染 =================
       function copyAIPrompt() {
-        const tick = String.fromCharCode(96);
-        const fence = tick + tick + tick;
-
         if (subtitleData.length > 0) {
           let condensedText = "";
           subtitleData.forEach((item, idx) => {
@@ -3105,18 +3207,21 @@
             condensedText += textPart + " ";
           });
 
-          let prompt = "你是一个教学内容整理专家。请将以下带有时间戳的视频字幕文本，整理成一份清晰、紧凑高效的“结构化学习讲义”。\n\n";
-          prompt += "当前课程文件：" + currentVideoFileName + "\n\n";
-          prompt += "要求：\n";
-          prompt += "1. 【大纲框架】：提炼核心逻辑，使用多级标题（#、##、###）和精炼的项目符号列表（-）梳理知识大纲。排版尽量紧凑，不要空过多无意义的空行。\n";
-          prompt += "2. 【保留细节】：合并口语碎句为通顺的书面表达，完整保留专业术语、具体操作步骤、案例与讲师的核心论证，切勿过度简写。重点术语使用 **加粗**。\n";
-          prompt += "3. 【保留关键时间戳】：在每个章节标题、核心概念或关键操作步骤后面，务必保留对应的原时间戳标签（例如 [03:25]），以便我跳转回原视频。\n";
-          prompt += "4. 【输出格式要求（非常重要）】：\n";
-          prompt += "   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 " + fence + "markdown 开头，以 " + fence + " 结尾）。\n";
-          prompt += "   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。\n\n";
-          prompt += "以下是字幕文本内容：\n" + condensedText;
+          const pLines = [
+            "请将以下带有时间戳的视频字幕文本，整理成一份清晰紧凑的结构化学习讲义。",
+            "课程文件：" + currentVideoFileName,
+            "",
+            "整理规则：",
+            "1. 大纲框架：梳理核心逻辑，使用多级标题（#、##、###）与精炼列表（-），排版紧凑不冗余。",
+            "2. 保留细节：口语转为书面规范，完整保留专业术语、具体操作步骤、案例与论证，重点术语加粗。",
+            "3. 保留时间戳：在章节标题、核心概念或关键操作步骤后，保留原时间戳标签（如 [03:25]）。",
+            "4. 输出规格：直接将整理后的内容置于单一 Markdown 格式代码块内输出，代码块外部无需任何前后缀解释或问候。",
+            "",
+            "字幕数据：",
+            condensedText
+          ];
 
-          navigator.clipboard.writeText(prompt).then(() => {
+          navigator.clipboard.writeText(pLines.join("\n")).then(() => {
             alert("已成功复制【基于原声字幕】的讲义提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。");
           }).catch(() => {
             alert("复制失败，请手动选择复制。");
@@ -3138,19 +3243,21 @@
             notesText += "批注思考：" + note.text + "\n";
           });
 
-          let prompt = "你是一个资深教学教案整理专家与学习导师。以下是我在观看教学视频时亲手记录的【带时间戳的重点手记与实操批注】。\n\n";
-          prompt += "当前课程文件：" + currentVideoFileName + "\n\n";
-          prompt += "请帮我将这些碎片化的思考、步骤记录与避坑点，整理、润色并扩充成一份逻辑清晰、条理严谨、专业度高的“结构化学习讲义”。\n\n";
-          prompt += "要求：\n";
-          prompt += "1. 【脉络与章节】：根据时间戳顺序梳理出系统化的知识大纲与知识点章节（使用 #、##、###）。\n";
-          prompt += "2. 【润色与升华】：保留我记录的所有关键观点与操作结论，将口语或零散思考改写为书面规范表述，若有操作流程请整理为有序步骤（1、2、3...）。关键术语和避坑提示 **加粗** 显示。\n";
-          prompt += "3. 【保留所有时间戳】：务必保留每一条手记对应的原时间戳标签（例如 [03:25] 或 [01:20 ~ 01:45]），以便我后续回跳视频核对。\n";
-          prompt += "4. 【输出格式要求（非常重要）】：\n";
-          prompt += "   请务必将整理后的全部内容直接包裹在单一的 Markdown 代码块中输出（即以 " + fence + "markdown 开头，以 " + fence + " 结尾）。\n";
-          prompt += "   在代码块之外【不要输出任何开场白、问候语或解释文字】，以便我直接一键点击代码块右上角的“Copy / 复制”按钮。\n\n";
-          prompt += "以下是我记录的时间戳手记内容：\n" + notesText;
+          const pLines = [
+            "以下为视频观看时记录的带时间戳重点手记与实操批注，请整理润色为严谨的结构化学习讲义。",
+            "课程文件：" + currentVideoFileName,
+            "",
+            "整理规则：",
+            "1. 脉络与章节：按时间戳顺序梳理知识大纲与知识点章节（使用 #、##、###）。",
+            "2. 润色与升华：保留所有关键观点与结论，零散思考转为规范表达，流程步骤整理为有序列表，关键术语与避坑点加粗。",
+            "3. 保留时间戳：保留手记对应的原时间戳标签（如 [03:25] 或 [01:20 ~ 01:45]）。",
+            "4. 输出规格：直接将整理后的内容置于单一 Markdown 格式代码块内输出，代码块外部无需任何前后缀解释或问候。",
+            "",
+            "手记数据：",
+            notesText
+          ];
 
-          navigator.clipboard.writeText(prompt).then(() => {
+          navigator.clipboard.writeText(pLines.join("\n")).then(() => {
             alert("已成功复制【基于你的 " + myNotes.length + " 条打点手记】的讲义重构提示词！AI 生成后复制 Markdown 代码块粘贴至下方即可。");
           }).catch(() => {
             alert("复制失败，请手动选择复制。");
@@ -3169,8 +3276,7 @@
           localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
         }
 
-        const tick = String.fromCharCode(96);
-        const fencePattern = new RegExp('^' + tick + '{3}(?:markdown)?\\s*\\n?|\\n?' + tick + '{3}$', 'gi');
+        const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
         raw = raw.trim().replace(fencePattern, '');
 
         const lines = raw.split('\n');
@@ -3225,9 +3331,9 @@
       }
 
       function formatInline(str) {
-        const tick = String.fromCharCode(96);
-        const codePattern = new RegExp(tick + '([^' + tick + ']+)' + tick, 'g');
-        return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(codePattern, '<code>$1</code>');
+        return str
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>');
       }
 
       function toggleInputBox() {
