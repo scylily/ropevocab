@@ -417,11 +417,15 @@
         touch-action: pan-y;
       }
 
+      /* 🚀 方案 1：强制注入独立硬件层隔离，彻底阻断 4K 显存与页面 DOM 的重排混合 */
       video {
         width: 100%;
         height: 100%;
         object-fit: contain;
         outline: none;
+        transform: translateZ(0);
+        will-change: transform;
+        backface-visibility: hidden;
       }
 
       .touch-fit-btn {
@@ -431,7 +435,6 @@
         background: rgba(15, 23, 42, 0.7);
         color: #f8fafc;
         border: 1px solid rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(6px);
         padding: 5px 11px;
         border-radius: 20px;
         font-size: 11px;
@@ -458,13 +461,13 @@
         transform: scale(0.96);
       }
 
-      /* 顶部全景智能微胶囊 OSD */
+      /* 🚀 方案 2：拔除毛玻璃滤镜算力刺客，改用高反差纯色半透黑底，在 4K 画面上零额外开销 */
       .video-osd {
         position: absolute;
         top: 14px;
         left: 50%;
         transform: translate(-50%, -4px);
-        background: rgba(15, 23, 42, 0.88);
+        background: rgba(15, 23, 42, 0.94);
         color: #f8fafc;
         padding: 4px 14px;
         border-radius: 20px;
@@ -474,13 +477,12 @@
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
         z-index: 25;
         text-align: center;
         white-space: nowrap;
-        max-width: 90%;
+        max-width: 92%;
         overflow: hidden;
         text-overflow: ellipsis;
         display: inline-flex;
@@ -2057,7 +2059,7 @@
           </div>
           <div class="shortcut-card-row">
             <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">↑</span></div>
-            <span class="shortcut-desc">点按+0.25x / 长按3.0x</span>
+            <span class="shortcut-desc">点按+0.25x / 长按冲刺</span>
           </div>
           <div class="shortcut-card-row">
             <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">\</span></div>
@@ -2069,7 +2071,7 @@
           </div>
 
           <div class="shortcut-card-row" style="grid-column: span 2; background: #eff6ff; border-color: #dbeafe;">
-            <span style="color: #2563eb; font-weight: 600;">📱 移动端福利：触屏长按视频画面即可直接触发 3.0x 极速冲刺</span>
+            <span style="color: #2563eb; font-weight: 600;">📱 移动端福利：触屏长按视频画面即可直接触发智能极速冲刺</span>
             <span class="key-pill" style="color: #2563eb; border-color: #bfdbfe;">松开即恢复</span>
           </div>
         </div>
@@ -2123,6 +2125,7 @@
 
       let editingNoteId = null;
       let currentVideoFile = null;
+      let currentVideoFileName = "";
       let currentSubFileName = "";
       let touchFitTimer = null;
 
@@ -2130,6 +2133,9 @@
       let speedLongPressTimer = null;
       let isSpeedLongPressing = false;
       let activeSpeedKey = null;
+
+      // 🚀 方案 3：冲刺时音量暂存变量（防爆音柔化，绝不静音）
+      let savedOriginalVolume = 1.0;
 
       // 🚀 性能护航变量：O(1) 精准字幕节点指针与局部匹配
       let lastScrollTimestamp = 0;
@@ -2312,7 +2318,6 @@
       let subtitleData = [];
       let currentLang = 'cn';
       let currentActiveId = -1;
-      let currentVideoFileName = "";
 
       let activeLoop = null;
       let tempInPointSec = null;
@@ -2713,7 +2718,7 @@
         nextEpisodeBtn.disabled = (currentPlaylistIndex === playlist.length - 1);
       }
 
-      // ⭐ 核心实现：全景智能聚合微胶囊汇报函数
+      // ⭐ 聚合智能汇报：▶ 图标 + 资产完整聚合
       function notifyEpisodeLoaded(index) {
         const item = playlist[index];
         if (!item) return;
@@ -2737,7 +2742,7 @@
         showOSD(`${prefix}${assetStr}`, 2000);
       }
 
-      // ⭐ 核心实现：基于 Promise 管道链的异步切集调度器（彻底消灭时间差抢跑覆盖）
+      // ⭐ Promise 异步装配链条（彻底杜绝时间差抢跑）
       async function switchPlaylistItem(index) {
         if (index < 0 || index >= playlist.length) return;
         currentPlaylistIndex = index;
@@ -2747,7 +2752,6 @@
         await loadPlaylistItemAsync(index);
         isBatchSwitching = false;
 
-        // 仅当此任务依然为最新请求时，统一发射最终完备的智能聚合胶囊
         if (thisSwitchToken === switchTokenCounter) {
           notifyEpisodeLoaded(index);
         }
@@ -2887,7 +2891,7 @@
         }
       }
 
-      // ================= 字幕解析（封装 Promise 支持管道等待） =================
+      // ================= 字幕解析（Promise 管道支持） =================
       function loadSubtitleFile(file) {
         currentSubFileName = file.name;
         cachedSubIndex = 0;
@@ -3052,7 +3056,7 @@
           return;
         }
 
-        // 🚀 局部双向快速检索：O(1) 毫秒级锁定目标字幕
+        // 局部双向快速检索：O(1) 毫秒级锁定目标字幕
         let currentCue = null;
         if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
           const c = subtitleData[cachedSubIndex];
@@ -3073,7 +3077,6 @@
         }
 
         if (currentCue) {
-          // 悬浮字幕常驻丝滑更新
           videoSubOverlay.style.display = 'block';
           if (currentLang === 'cn') {
             videoSubCn.textContent = currentCue.cn;
@@ -3090,14 +3093,14 @@
             videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
           }
 
-          // 🚀 核心优化：高倍速冲刺状态下，右侧对照列表深度休眠，彻底阻断任何 DOM 计算
+          // 冲刺状态下，右侧对照列表深度休眠，彻底阻断 DOM 渲染
           const isHighSpeed = video.playbackRate > 1.2 || isSpeedLongPressing;
           if (isHighSpeed) return;
 
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
 
-            // 🚀 指针级 O(1) 更新高亮，彻底废除全表扫描
+            // 指针级 O(1) 更新高亮，彻底废除全表扫描
             if (currentActiveElement) {
               currentActiveElement.classList.remove('active');
             }
@@ -3265,6 +3268,14 @@
         renderMyNotesList();
       }
 
+      // 🚀 方案 4：分辨率智能感知计算黄金甜点倍速（针对 GTX 680：3K/4K 自适应 2.25x，1080P 自适应 3.0x）
+      function getSprintSpeed() {
+        if (video.videoWidth && video.videoWidth >= 2560) {
+          return 2.25;
+        }
+        return 3.0;
+      }
+
       // ================= 键盘快捷键监听系统（点按调速与 3.0x 解耦冲刺） =================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
@@ -3333,10 +3344,15 @@
             speedLongPressTimer = setTimeout(() => {
               isSpeedLongPressing = true;
               if (activeSpeedKey === 'ArrowUp') {
-                // 🚀 核心优化：3倍速冲刺时暂时解除变调开销，彻底杜绝声卡驱动拖垮视频
+                const targetSprintRate = getSprintSpeed();
+
+                // 🚀 方案 3：保留原声发声（不静音），音量平滑柔化至 50% 保护声卡缓冲
+                savedOriginalVolume = video.volume;
+                video.volume = Math.max(0.1, savedOriginalVolume * 0.5);
                 video.preservesPitch = false;
-                video.playbackRate = 3.0;
-                showOSD('⚡ 极速冲刺: 3.00x (松开恢复)');
+                video.playbackRate = targetSprintRate;
+
+                showOSD('⚡ 极速冲刺: ' + targetSprintRate.toFixed(2) + 'x (松开恢复)');
               } else if (activeSpeedKey === 'ArrowDown') {
                 video.playbackRate = 0.25;
                 showOSD('🐌 极慢巡检: 0.25x (松开恢复)');
@@ -3449,14 +3465,15 @@
         }
       });
 
-      // 抬起按键处理：点按步进调速，长按释放恢复原速并立刻唤醒对齐列表
+      // 抬起按键处理：点按步进调速，长按释放恢复原速、原音量并唤醒对齐列表
       document.addEventListener('keyup', (e) => {
         if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
           clearTimeout(speedLongPressTimer);
 
           if (isSpeedLongPressing) {
             if (video.src) {
-              // 🚀 恢复原速与正常音质
+              // 🚀 瞬间拉满原音量与恢复正常音调
+              video.volume = savedOriginalVolume;
               video.preservesPitch = true;
               video.playbackRate = 1.0;
               showOSD('⚡ 恢复原速: 1.00x');
@@ -3499,6 +3516,7 @@
         if (isSpeedLongPressing) {
           clearTimeout(speedLongPressTimer);
           if (video.src) {
+            video.volume = savedOriginalVolume;
             video.preservesPitch = true;
             video.playbackRate = 1.0;
           }
@@ -3507,7 +3525,7 @@
         }
       });
 
-      // 移动端长按屏幕触发 3 倍速极速冲刺交互
+      // 移动端长按屏幕触发极速冲刺交互（支持自适应速度与音量柔化）
       let touchPressTimer = null;
       let isTouchSpeedUp = false;
       let touchStartX = 0;
@@ -3523,9 +3541,14 @@
 
           touchPressTimer = setTimeout(() => {
             isTouchSpeedUp = true;
+            const targetSprintRate = getSprintSpeed();
+
+            savedOriginalVolume = video.volume;
+            video.volume = Math.max(0.1, savedOriginalVolume * 0.5);
             video.preservesPitch = false;
-            video.playbackRate = 3.0;
-            showOSD('⚡ 3.0X 极速冲刺中 (松开恢复)');
+            video.playbackRate = targetSprintRate;
+
+            showOSD('⚡ 极速冲刺: ' + targetSprintRate.toFixed(2) + 'x (松开恢复)');
           }, 200);
         }
       }, { passive: true });
@@ -3545,6 +3568,7 @@
         if (isTouchSpeedUp) {
           isTouchSpeedUp = false;
           if (video.src) {
+            video.volume = savedOriginalVolume;
             video.preservesPitch = true;
             video.playbackRate = 1.0;
             showOSD('⚡ 恢复原速: 1.00x');
@@ -3869,7 +3893,7 @@
         e.target.value = '';
       }
 
-      // ⭐ 核心实现：封装 Promise 管道，支持切集等待解析
+      // ⭐ Promise 封装：支持切集静默通道与等待
       function smartRouteMarkdownFile(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
