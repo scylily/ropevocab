@@ -80,7 +80,6 @@
         flex-shrink: 0;
       }
 
-
       /* 选集播放条 */
       .playlist-bar {
         display: flex;
@@ -90,7 +89,7 @@
         padding: 3px 6px;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
-        flex: 1;                 /* 👈 改动点：PC 端吃满左右两边剩余空间 */
+        flex: 1;
         min-width: 0;
         position: relative;
       }
@@ -110,16 +109,16 @@
       /* 现代定制集数下拉组件 */
       .custom-ep-wrapper {
         position: relative;
-        flex: 1;                 /* 👈 改动点 1：外壳占满选集条内部可用空间 */
+        flex: 1;
         min-width: 0;
-        display: flex;           /* 👈 改动点 2：弹性布局让内部按钮能撑满 */
+        display: flex;
       }
 
       .custom-ep-btn {
         height: 24px;
-        width: 100%;             /* 👈 改动点 3：宽度 100% 自适应 */
+        width: 100%;
         min-width: 0;
-        max-width: none;         /* 👈 改动点 4：解除原有的 240px 宽度限制 */
+        max-width: none;
         background: #fff;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
@@ -163,7 +162,7 @@
         transform: rotate(180deg);
       }
 
-      /* PC 端自适应内容宽度的悬浮面板：全显长文件名 + 充裕右边距 */
+      /* PC 端自适应内容宽度的悬浮面板 */
       .custom-ep-popover {
         position: absolute;
         top: calc(100% + 6px);
@@ -203,7 +202,6 @@
         align-items: center;
         justify-content: space-between;
         padding: 8px 18px;
-        /* 关键：锁定 18px 优雅呼吸留白，绝不死板顶边 */
         border-radius: 5px;
         font-size: 12.5px;
         color: #334155;
@@ -672,7 +670,6 @@
         -webkit-overflow-scrolling: touch;
       }
 
-      /* ================= 顶栏吸顶保持与无缝贴边核心样式 (Fluid Sticky) ================= */
       .mynotes-sticky-header,
       .transcript-sticky-header,
       #collapsedToolbar {
@@ -686,7 +683,6 @@
         border-bottom: 1px solid #e2e8f0;
       }
 
-      /* ================= 通用按键与控制单元（极简科技风统一规范） ================= */
       .btn {
         background: #2563eb;
         color: #fff;
@@ -849,7 +845,6 @@
         box-shadow: inset 0 0 0 1px #bfdbfe;
       }
 
-      /* ================= 容器查询自适应规则 ================= */
       .btn-lbl,
       .btn-sub-lbl,
       .desc-full {
@@ -1371,7 +1366,6 @@
         }
       }
 
-      /* 移动端专属选集底部抽屉样式 */
       .mobile-ep-drawer-overlay {
         position: fixed;
         inset: 0;
@@ -1488,7 +1482,6 @@
         display: none !important;
       }
 
-      /* ================= 移动端屏幕适配 (<= 768px) ================= */
       @media (max-width: 768px) {
         header {
           padding: 6px 12px;
@@ -1631,20 +1624,16 @@
       <div id="playlistControls" class="playlist-bar" style="display: none;">
         <button class="btn btn-outline btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="上一集">⏮</button>
 
-        <!-- 现代化定制集数下拉组件 -->
         <div class="custom-ep-wrapper">
           <div id="customEpBtn" class="custom-ep-btn" onclick="toggleEpMenu(event)" title="点击切换集数">
             <span id="currentEpTitle" class="custom-ep-title">正在加载集数...</span>
             <span class="custom-ep-arrow">▼</span>
           </div>
-
-          <!-- PC 端自适应内容宽度的悬浮面板 (宽度随内容自然舒展，绝不截断) -->
           <div id="customEpPopover" class="custom-ep-popover"></div>
         </div>
 
         <button class="btn btn-outline btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="下一集">⏭</button>
 
-        <!-- 紧凑悬浮排序胶囊按钮与浮层菜单 -->
         <div class="sort-dropdown-wrapper">
           <button id="sortMenuBtn" class="btn btn-outline btn-ep" onclick="toggleSortMenu(event)" title="选择列表排序方式">⇅ 排序</button>
           <div id="sortDropdownMenu" class="sort-dropdown-menu">
@@ -1682,7 +1671,6 @@
 
     <!-- 主工作区 -->
     <div class="container" id="mainContainer">
-      <!-- 左栏：播放与字幕渲染层 -->
       <div class="left-panel" id="videoZone">
         <div class="drop-overlay">📁 释放鼠标：自动装配视频与字幕</div>
 
@@ -1714,10 +1702,8 @@
         </div>
       </div>
 
-      <!-- 拖拽尺寸调节条 -->
       <div class="resizer" id="resizer" title="拖动调整大小 / 双击贴合画面消除黑边"></div>
 
-      <!-- 右栏：多 Tab 手记与讲义区 -->
       <div class="right-panel" id="notesZone">
         <div class="drop-overlay">📁 释放鼠标加载文件</div>
 
@@ -1730,7 +1716,6 @@
         <!-- Tab 1: 我的手记 -->
         <div id="mynotesTab" class="tab-content">
           <div class="mynotes-sticky-header">
-            <!-- 智能抗压单行顶栏：流式弹性两端贴合，绝不重叠 -->
             <div class="mynotes-toolbar">
               <div class="mynotes-tool-left">
                 <button class="btn btn-stamp" onclick="openAddNoteBox()" title="标记当前时间点 (Ctrl+M)">
@@ -1743,7 +1728,6 @@
                 </div>
               </div>
 
-              <!-- 桌面端操作按钮组：全员极简科技独立风 -->
               <div class="notes-desktop-actions mynotes-tool-right">
                 <button class="btn btn-outline" onclick="exportNotesToMarkdown()" title="导出手记为 Markdown (.md)">
                   <span>💾</span><span class="btn-lbl">导出</span>
@@ -1757,7 +1741,6 @@
                 </button>
               </div>
 
-              <!-- 移动端管理抽屉按钮 -->
               <button class="btn btn-outline mobile-only-btn" onclick="toggleMobileNotesDrawer(true)">··· 更多</button>
             </div>
 
@@ -1800,7 +1783,7 @@
           </div>
         </div>
 
-        <!-- Tab 2: 字幕逐句对照（流式无缝贴边，单行绝对不掉行） -->
+        <!-- Tab 2: 字幕逐句对照 -->
         <div id="transcriptTab" class="tab-content" style="display: none;">
           <div class="transcript-sticky-header">
             <span style="font-size: 12px; font-weight: 600; color: #475569; white-space: nowrap;">
@@ -1845,7 +1828,6 @@
             <button class="btn" onclick="renderNotes()">渲染生成交互讲义</button>
           </div>
 
-          <!-- 折叠吸顶工具栏：流式无缝贴边，永不溢出右边界 -->
           <div id="collapsedToolbar" style="display: none; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 6px;">
             <span style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <span>📖</span>
@@ -2027,11 +2009,11 @@
               </tr>
               <tr>
                 <td><span class="shortcut-key">Ctrl + ↑</span></td>
-                <td>加速 (+0.25x，最高 3.0x)</td>
+                <td>点按加速(+0.25x)；<strong>长按>150ms 冲刺 3.0x</strong>(松开恢复1.0x)</td>
               </tr>
               <tr>
                 <td><span class="shortcut-key">Ctrl + ↓</span></td>
-                <td>减速 (-0.25x，最低 0.25x)</td>
+                <td>点按减速(-0.25x)；<strong>长按>150ms 慢速 0.25x</strong>(松开恢复1.0x)</td>
               </tr>
               <tr>
                 <td><span class="shortcut-key">Ctrl + \</span></td>
@@ -2050,7 +2032,6 @@
 
     <!-- ================= 核心交互逻辑脚本 ================= -->
     <script>
-      // DOM 句柄缓存
       const video = document.getElementById('videoPlayer');
       const videoTip = document.getElementById('videoTip');
       const videoZone = document.getElementById('videoZone');
@@ -2089,7 +2070,6 @@
       const shortcutsModal = document.getElementById('shortcutsModal');
       const mediaInfoModal = document.getElementById('mediaInfoModal');
 
-      // 应用全局状态（默认激活“拖入原始顺序”）
       let playlist = [];
       let currentPlaylistIndex = 0;
       let currentSortMode = 'original';
@@ -2100,7 +2080,15 @@
       let currentSubFileName = "";
       let touchFitTimer = null;
 
-      // 排序模式名称映射
+      // 智能长按/点按调速状态变量
+      let speedLongPressTimer = null;
+      let isSpeedLongPressing = false;
+      let activeSpeedKey = null;
+
+      // 🚀 性能护航变量：避免 3 倍速下 DOM 平滑滚动死锁
+      let lastScrollTimestamp = 0;
+      let cachedSubIndex = 0;
+
       const sortLabels = {
         'original': '📥 拖入原始顺序',
         'name-asc': '🔤 01→10 (名称升序)',
@@ -2109,7 +2097,6 @@
         'date-asc': '🕒 最早修改 (旧→新)'
       };
 
-      // 剥夺原生视频控件焦点
       ['focus', 'click', 'mouseup', 'pointerup', 'mouseenter'].forEach(name => {
         video.addEventListener(name, () => {
           if (document.activeElement === video) video.blur();
@@ -2134,7 +2121,6 @@
         if (mobileEpDrawer) mobileEpDrawer.style.display = show ? 'flex' : 'none';
       }
 
-      // 贴合按键与播放状态同步
       function showTouchFitBtn() {
         if (!video.src) return;
         touchFitBtn.style.display = 'inline-flex';
@@ -2166,7 +2152,7 @@
         clearTimeout(touchFitTimer);
       });
 
-      // ================= 触控与鼠标分界线拖拽系统 =================
+      // 触控与鼠标分界线拖拽系统
       const resizer = document.getElementById('resizer');
       const leftPanel = document.getElementById('videoZone');
       const mainContainer = document.getElementById('mainContainer');
@@ -2224,7 +2210,7 @@
       document.addEventListener('touchcancel', stopResize);
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // ================= 跨端几何比例贴合算法（消除黑边） =================
+      // 跨端几何比例贴合算法
       function fitVideoRatio() {
         if (!video.src || !video.videoWidth || !video.videoHeight) {
           showOSD('⚠️ 暂无视频或未就绪');
@@ -2272,7 +2258,6 @@
         }
       });
 
-      // 字幕与手记核心数据
       let subtitleData = [];
       let currentLang = 'cn';
       let currentActiveId = -1;
@@ -2379,7 +2364,6 @@
         });
       }
 
-      // ================= 选集、排序与双端自适应菜单系统 =================
       function toggleSortMenu(e) {
         if (e) e.stopPropagation();
         closeEpMenu();
@@ -2396,13 +2380,11 @@
         if (e) e.stopPropagation();
         closeSortMenu();
 
-        // 手机移动端判断（≤ 768px）：呼出原生底部选集抽屉
         if (window.innerWidth <= 768) {
           toggleMobileEpDrawer(true);
           return;
         }
 
-        // PC 桌面端：呼出横向自然舒展的悬浮面板
         if (!customEpPopover) return;
         const isShown = customEpPopover.style.display === 'flex';
         customEpPopover.style.display = isShown ? 'none' : 'flex';
@@ -2446,7 +2428,6 @@
         showOSD('已按“' + (sortLabels[mode] || mode) + '”排序');
       }
 
-      // 全局点击监听：点击外部关闭菜单
       document.addEventListener('click', (e) => {
         const sortWrapper = document.querySelector('.sort-dropdown-wrapper');
         if (sortWrapper && !sortWrapper.contains(e.target)) {
@@ -2586,11 +2567,9 @@
         }
       }
 
-      // 获取特定视频的学习资产徽标：严格按照 [ ✍️手记  📝字幕  📚讲义 ] 统一心智顺序排布
       function getVideoAssetBadges(item) {
         const badges = [];
 
-        // 1. 手记检测 (优先对齐 Tab 1: 手记 顺序)
         const noteStorageKey = 'reader_notes_' + item.name;
         const savedNotes = localStorage.getItem(noteStorageKey);
         let hasNotes = false;
@@ -2605,12 +2584,10 @@
           badges.push('✍️');
         }
 
-        // 2. 字幕检测 (对齐 Tab 2: 字幕 顺序)
         if (item.subFile) {
           badges.push('📝');
         }
 
-        // 3. 讲义检测 (对齐 Tab 3: 讲义 顺序)
         const aiStorageKey = 'reader_ai_notes_' + item.name;
         const savedAiNotes = localStorage.getItem(aiStorageKey);
         if (savedAiNotes && savedAiNotes.trim().length > 0) {
@@ -2631,13 +2608,11 @@
         playlistStatus.style.display = 'inline-block';
         playlistStatus.textContent = '📺 ' + (currentPlaylistIndex + 1) + '/' + playlist.length + ' 集';
 
-        // 渲染顶部触发胶囊当前名称
         const currentItem = playlist[currentPlaylistIndex];
         if (currentItem) {
           currentEpTitle.textContent = (currentPlaylistIndex + 1) + '. ' + currentItem.name;
         }
 
-        // 1. 渲染 PC 端悬浮弹层（width: max-content 内容自然舒展，绝不截断）
         customEpPopover.innerHTML = '';
         playlist.forEach((item, idx) => {
           const isCurrent = (idx === currentPlaylistIndex);
@@ -2660,7 +2635,6 @@
           customEpPopover.appendChild(itemEl);
         });
 
-        // 2. 渲染 移动端专属底部抽屉列表（支持多行自适应折行完整阅读）
         mobileDrawerTitle.textContent = '📺 切换视频选集 (共 ' + playlist.length + ' 集)';
         mobileDrawerList.innerHTML = '';
         playlist.forEach((item, idx) => {
@@ -2705,6 +2679,7 @@
       function clearSubtitles() {
         subtitleData = [];
         currentSubFileName = "";
+        cachedSubIndex = 0;
         assStatus.textContent = '📝 无字幕';
         assStatus.title = '点击查看详细信息（当前无字幕）';
         assStatus.classList.remove('loaded');
@@ -2752,6 +2727,7 @@
       function loadVideoFile(file) {
         currentVideoFile = file;
         currentVideoFileName = file.name;
+        cachedSubIndex = 0;
         video.src = URL.createObjectURL(file);
         video.style.display = 'block';
         videoTip.style.display = 'none';
@@ -2809,6 +2785,7 @@
       // ================= 字幕解析与双语分流 =================
       function loadSubtitleFile(file) {
         currentSubFileName = file.name;
+        cachedSubIndex = 0;
         const reader = new FileReader();
         reader.onload = function (evt) {
           let content = evt.target.result;
@@ -2825,6 +2802,7 @@
 
       function decodeSubtitleStream(text, filename) {
         subtitleData = [];
+        cachedSubIndex = 0;
         if (text.indexOf('-->') !== -1) {
           subtitleData = parseTimecodeBlocks(text);
         } else {
@@ -2944,7 +2922,7 @@
         }
       }
 
-      // ================= 播放与循环控制器 =================
+      // ================= 播放与循环控制器（极速防卡顿优化） =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
@@ -2960,7 +2938,25 @@
           return;
         }
 
-        const currentCue = subtitleData.find(item => curTime >= item.start && curTime <= item.end);
+        // 🚀 优化 1：局部双向快速匹配算法，复杂度由 O(N) 直降为 O(1)
+        let currentCue = null;
+        if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
+          const c = subtitleData[cachedSubIndex];
+          if (curTime >= c.start && curTime <= c.end) {
+            currentCue = c;
+          } else if (cachedSubIndex + 1 < subtitleData.length && curTime >= subtitleData[cachedSubIndex + 1].start && curTime <= subtitleData[cachedSubIndex + 1].end) {
+            cachedSubIndex++;
+            currentCue = subtitleData[cachedSubIndex];
+          }
+        }
+
+        if (!currentCue) {
+          const idx = subtitleData.findIndex(item => curTime >= item.start && curTime <= item.end);
+          if (idx !== -1) {
+            cachedSubIndex = idx;
+            currentCue = subtitleData[idx];
+          }
+        }
 
         if (currentCue) {
           videoSubOverlay.style.display = 'block';
@@ -2981,11 +2977,22 @@
 
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
-            document.querySelectorAll('.transcript-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.transcript-item.active').forEach(el => el.classList.remove('active'));
             const activeEl = document.getElementById('sub-' + currentCue.id);
             if (activeEl) {
               activeEl.classList.add('active');
-              activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+              // 🚀 优化 2：彻底阻断 3 倍速下的平滑滚动死锁
+              // 当倍速 > 1.2 时（包含长按 3 倍速冲刺），完全不执行 scrollIntoView，0 动画开销！
+              // 当正常倍速时，限制每 350ms 至多滚动一次，杜绝并发动画堆叠
+              const now = performance.now();
+              const isHighSpeed = video.playbackRate > 1.2 || isSpeedLongPressing;
+
+              if (!isHighSpeed && (now - lastScrollTimestamp > 350)) {
+                lastScrollTimestamp = now;
+                const scrollMode = video.playbackRate === 1.0 ? 'smooth' : 'auto';
+                activeEl.scrollIntoView({ behavior: scrollMode, block: 'center' });
+              }
             }
           }
         } else {
@@ -3000,7 +3007,6 @@
         }
       });
 
-      // 宽松时码转换
       function timeToSeconds(timeStr) {
         if (typeof timeStr === 'number') return timeStr;
         if (!timeStr) return 0;
@@ -3139,7 +3145,7 @@
         renderMyNotesList();
       }
 
-      // ================= 键盘快捷键监听系统 =================
+      // ================= 键盘快捷键监听系统（点按调速与长按极速冲刺） =================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
@@ -3194,21 +3200,26 @@
             return;
           }
 
-          if (e.key === 'ArrowUp') {
+          // 拦截 Ctrl + ↑ / ↓ 的长按（>150ms 冲刺）与点按判别
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
             if (!video.src) return;
-            let newRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
-            video.playbackRate = newRate;
-            showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
-            return;
-          }
+            if (e.repeat) return;
 
-          if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (!video.src) return;
-            let newRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
-            video.playbackRate = newRate;
-            showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
+            activeSpeedKey = e.key;
+            isSpeedLongPressing = false;
+            clearTimeout(speedLongPressTimer);
+
+            speedLongPressTimer = setTimeout(() => {
+              isSpeedLongPressing = true;
+              if (activeSpeedKey === 'ArrowUp') {
+                video.playbackRate = 3.0;
+                showOSD('⚡ 极速冲刺: 3.00x (松开恢复)');
+              } else if (activeSpeedKey === 'ArrowDown') {
+                video.playbackRate = 0.25;
+                showOSD('🐌 极慢巡检: 0.25x (松开恢复)');
+              }
+            }, 150);
             return;
           }
 
@@ -3298,6 +3309,52 @@
             }
             return;
           }
+        }
+      });
+
+      // 抬起按键处理：点按改倍速，长按释放恢复原速并平滑归位
+      document.addEventListener('keyup', (e) => {
+        if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
+          clearTimeout(speedLongPressTimer);
+
+          if (isSpeedLongPressing) {
+            if (video.src) {
+              video.playbackRate = 1.0;
+              showOSD('⚡ 恢复原速: 1.00x');
+
+              // 🚀 优化 3：长按冲刺结束后，一次性平滑对齐当前字幕视野
+              setTimeout(() => {
+                const activeEl = document.querySelector('.transcript-item.active');
+                if (activeEl) {
+                  activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 50);
+            }
+          } else {
+            if (video.src) {
+              if (activeSpeedKey === 'ArrowUp') {
+                let newRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
+                video.playbackRate = newRate;
+                showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
+              } else if (activeSpeedKey === 'ArrowDown') {
+                let newRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
+                video.playbackRate = newRate;
+                showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
+              }
+            }
+          }
+
+          activeSpeedKey = null;
+          isSpeedLongPressing = false;
+        }
+      });
+
+      window.addEventListener('blur', () => {
+        if (isSpeedLongPressing) {
+          clearTimeout(speedLongPressTimer);
+          if (video.src) video.playbackRate = 1.0;
+          isSpeedLongPressing = false;
+          activeSpeedKey = null;
         }
       });
 
