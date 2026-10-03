@@ -101,6 +101,12 @@
               <span>👤</span>
               <span id="nav-role-text">游客</span>
             </button>
+
+            <!-- 🟢 新增：教务管理中台专属入口 -->
+            <button id="btn-admin-panel" onclick="openAdminModal()" class="hidden items-center gap-1.5 px-3 py-1.5 bg-purple-900/40 hover:bg-purple-800 text-purple-200 border border-purple-500/50 rounded-xl text-xs sm:text-sm font-bold shadow-sm transition-all">
+              <span>📊</span>
+              <span>教务管理</span>
+            </button>
           </div>
         </div>
 
@@ -421,9 +427,59 @@
       }
 
       async function initApp() {
+        setupKeyboardShortcuts(); // 👈 在这里加这一行即可！
         await checkCurrentSession();
         await fetchCurriculumFromSupabase();
         await fetchSafetyAgreementFromSupabase();
+      }
+
+      // ====================================================================
+      // 🟢 全局回车键（Enter）快捷登录与提交绑定
+      // ====================================================================
+      function setupKeyboardShortcuts() {
+        // 1. 管理员通道：输入口令按回车直接登录
+        const teacherInput = document.getElementById('input-teacher-passcode');
+        if (teacherInput) {
+          teacherInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              loginAsTeacherByPasscode();
+            }
+          });
+        }
+
+        // 2. 账号密码框：输入完密码按回车直接登录/注册
+        const authPass = document.getElementById('auth-password');
+        if (authPass) {
+          authPass.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAuthSubmit();
+            }
+          });
+        }
+
+        // 3. 邀请码注册框：输入完邀请码按回车直接提交注册
+        const authCode = document.getElementById('auth-invite-code');
+        if (authCode) {
+          authCode.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAuthSubmit();
+            }
+          });
+        }
+
+        // 4. 自助升级弹窗：输入升级邀请码按回车确认升级
+        const upgradeCode = document.getElementById('upgrade-invite-code');
+        if (upgradeCode) {
+          upgradeCode.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleUpgradeSubmit();
+            }
+          });
+        }
       }
 
       async function checkCurrentSession() {
@@ -439,7 +495,8 @@
 
         updateUIByRole();
 
-        if (currentUser) {
+        // 🟢 修改 checkCurrentSession 尾部判断：
+        if (currentUser && userLevel !== 'master') {
           const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
           if (!hasSignedThisSession) {
             setTimeout(() => { openSafetyModal(); }, 500);
@@ -492,7 +549,7 @@
       function getTotalAccessibleLessons(level) {
         if (level === 'base') return 8;
         if (level === 'adv') return 16;
-        if (level === 'exp' || level === 'master') return 26;
+        if (level === 'exp' || level === 'teacher' || level === 'master') return 26;
         return 26;
       }
 
@@ -708,12 +765,23 @@
         const upgradeBtn = document.getElementById('drawer-btn-upgrade');
         const teacherBox = document.getElementById('drawer-teacher-box');
         const homeLoginBtn = document.getElementById('home-login-btn');
+        // 🟢 在 updateUIByRole() 中追加控制：
+        const adminPanelBtn = document.getElementById('btn-admin-panel');
+        if (adminPanelBtn) {
+          if (userLevel === 'master' || userLevel === 'teacher') {
+            adminPanelBtn.classList.remove('hidden');
+            adminPanelBtn.classList.add('flex');
+          } else {
+            adminPanelBtn.classList.add('hidden');
+            adminPanelBtn.classList.remove('flex');
+          }
+        }
 
         const isLoggedIn = !!currentUser;
 
         if (isLoggedIn) {
           if (userLevel === 'master' || (currentUser.email && currentUser.email.includes('master_teacher'))) {
-            drawerEmail.textContent = '👑 教师/管理员';
+            drawerEmail.textContent = '👑 管理员';
           } else {
             drawerEmail.textContent = currentUser.email;
           }
@@ -746,16 +814,24 @@
         if (userLevel === 'base') roleName = '🟢 初级学员';
         if (userLevel === 'adv') roleName = '🟡 提高学员';
         if (userLevel === 'exp') roleName = '🔴 熟练学员';
-        if (userLevel === 'master') roleName = '👑 教师/管理员';
+        if (userLevel === 'teacher') roleName = '🧑‍🏫 教师'; // 👈 新增这一行
+        if (userLevel === 'master') roleName = '👑 管理员';
 
         if (badge) badge.textContent = roleName;
         if (navRole) navRole.textContent = roleName;
 
         document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
-        document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-        document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+        document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+        document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
 
-        updateProgressUI();
+        // 如果是 master 或 teacher，抽屉里隐藏升级按钮（已经是教师级别）
+        if (upgradeBtn) {
+          if (userLevel !== 'master' && userLevel !== 'teacher' && userLevel !== 'exp') {
+            upgradeBtn.classList.remove('hidden');
+          } else {
+            upgradeBtn.classList.add('hidden');
+          }
+        }
       }
 
       async function loginAsTeacherByPasscode() {
@@ -790,7 +866,7 @@
 
           await fetchUserProgress(currentUser.id);
           await fetchCurriculumFromSupabase();
-          openSafetyModal();
+          // openSafetyModal();
 
           alert('👑 欢迎导师！口令验证成功，已为您开启全盘最高权限。');
 
@@ -819,16 +895,27 @@
         closeSafetyModal();
       }
 
+      // 🟢 修改 openSafetyModal，确保每次打开弹窗都立刻刷新正文：
       function openSafetyModal() {
         const modal = document.getElementById('modal-safety-pledge');
         const check = document.getElementById('check-safety-pledge');
         if (check) check.checked = false;
+
+        // 👈 加上这句：如果条款数据已经拿到，立即绘制出来，绝不等占位符
+        if (safetyAgreementData) {
+          renderSafetyModal();
+        } else {
+          fetchSafetyAgreementFromSupabase(); // 兜底拉取一次
+        }
+
         if (modal) modal.classList.remove('hidden');
       }
 
+      // 🟢 允许 master 身份随时关闭协议弹窗：
       function closeSafetyModal() {
         const hasSignedThisSession = sessionStorage.getItem('shibari_signed_pledge_session') === 'true';
-        if (currentUser && !hasSignedThisSession) {
+        // 如果是普通学员/普通教师，且未签署，则强制拦截；master 直接放行
+        if (currentUser && userLevel !== 'master' && !hasSignedThisSession) {
           alert('🛡️ 安全第一！必须勾选并确认签署安全承诺书，方可开启学习。');
           return;
         }
@@ -918,12 +1005,22 @@
               return;
             }
 
+            // 🛡️ 核心铁律：先调用验码探针，码不对直接就地拦截！绝对不碰 auth.signUp
+            const { data: verifyRes, error: verifyErr } = await supabaseClient.rpc('verify_invite_code', { target_code: inviteCode });
+            if (verifyErr || !verifyRes.valid) {
+              errDiv.textContent = '❌ ' + (verifyRes ? verifyRes.message : '邀请码验证失败');
+              errDiv.classList.remove('hidden');
+              return; // 👈 码不对，在此彻底刹车退出！绝不产生任何幽灵账号！
+            }
+
+            // 🛡️ 只有邀请码 100% 确认合法可用，才允许创建账号
             const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
             if (authErr) throw authErr;
             if (!authData || !authData.user) throw new Error("注册失败，未获取到用户");
 
             currentUser = authData.user;
 
+            // 🛡️ 核销该邀请码，直接赋予对应的正式身份（学员或教师）
             const { data: rpcRes, error: rpcErr } = await supabaseClient.rpc('claim_invite_code', { target_code: inviteCode });
             if (rpcErr || !rpcRes.success) {
               const rawMsg = rpcRes ? rpcRes.message : (rpcErr ? rpcErr.message : '邀请码激活失败');
@@ -1065,7 +1162,311 @@
           `;
         }
       }
+
+      // ====================================================================
+      // 🟢 教务管理中台业务逻辑控制器
+      // ====================================================================
+      let currentRosterData = [];
+      let availableTeachers = [];
+
+      // 1. 打开中台弹窗
+      async function openAdminModal() {
+        if (userLevel !== 'master' && userLevel !== 'teacher') {
+          alert('权限受限：仅管理员或教师可访问教务系统');
+          return;
+        }
+        const modal = document.getElementById('modal-admin-roster');
+        const title = document.getElementById('admin-modal-title');
+        if (title) {
+          title.textContent = userLevel === 'master' ? '👑 管理员中台 - 全站教务与师徒分配' : '🧑‍🏫 教师中心 - 我的管辖学员进度';
+        }
+        if (modal) modal.classList.remove('hidden');
+        await fetchAdminRoster();
+      }
+
+      function closeAdminModal() {
+        const modal = document.getElementById('modal-admin-roster');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      // 2. 从后端拉取教务花名册
+      async function fetchAdminRoster() {
+        const loading = document.getElementById('admin-roster-loading');
+        const container = document.getElementById('admin-roster-list');
+        if (loading) loading.classList.remove('hidden');
+        if (container) container.innerHTML = '';
+
+        try {
+          const { data: rpcRes, error } = await supabaseClient.rpc('admin_get_roster');
+          if (error || !rpcRes.success) throw new Error(rpcRes ? rpcRes.message : error.message);
+
+          currentRosterData = rpcRes.roster || [];
+          // 筛选所有教师，供 Master 下拉指派
+          availableTeachers = currentRosterData.filter(u => u.role === 'teacher');
+
+          // 更新统计栏
+          const statStudents = document.getElementById('stat-students-count');
+          const statTeachers = document.getElementById('stat-teachers-count');
+          if (statStudents) statStudents.textContent = currentRosterData.filter(u => ['base', 'adv', 'exp'].includes(u.role)).length;
+          if (statTeachers) statTeachers.textContent = availableTeachers.length;
+
+          renderAdminRosterList();
+        } catch (err) {
+          console.error('拉取教务名单失败:', err);
+          if (container) container.innerHTML = `<div class="text-center text-red-500 py-6">❌ 拉取失败: ${translateError(err)}</div>`;
+        } finally {
+          if (loading) loading.classList.add('hidden');
+        }
+      }
+
+      // ====================================================================
+      // 🟢 极简阶梯分块版（含展开控制器与强类型兼容）
+      // ====================================================================
+      function renderAdminRosterList() {
+        const container = document.getElementById('admin-roster-list');
+        if (!container) return;
+
+        if (!currentRosterData || currentRosterData.length === 0) {
+          container.innerHTML = '<div class="text-center text-stone-400 py-8">暂无管辖学员数据</div>';
+          return;
+        }
+
+        const isMaster = (userLevel === 'master');
+
+        const cardsHtml = currentRosterData.map(item => {
+          const isStudent = ['base', 'adv', 'exp', 'visitor'].includes(item.role);
+
+          // 1. 角色勋章格式化
+          let roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-stone-700 text-stone-300">游客</span>';
+          if (item.role === 'base') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">🟢 初级学员</span>';
+          if (item.role === 'adv') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">🟡 提高学员</span>';
+          if (item.role === 'exp') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">🔴 熟练学员</span>';
+          if (item.role === 'teacher') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30">🧑‍🏫 教师</span>';
+          if (item.role === 'master') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">👑 管理员</span>';
+
+          // 2. 根据身份决定总考核课时与允许展示的阶段
+          let totalAccessible = 26;
+          let allowedStages = [0, 1, 2];
+          if (item.role === 'base') {
+            totalAccessible = 8;
+            allowedStages = [0];
+          } else if (item.role === 'adv') {
+            totalAccessible = 16;
+            allowedStages = [0, 1];
+          }
+
+          const completed = item.completed_count || 0;
+          const pct = Math.min(100, Math.round((completed / totalAccessible) * 100));
+          const completedSet = new Set(item.completed_lesson_ids || []);
+
+          // 3. 责任教师下拉框
+          let teacherSelectHtml = '';
+          if (isMaster && isStudent) {
+            let optionsHtml = '';
+            if (Array.isArray(availableTeachers)) {
+              optionsHtml = availableTeachers.map(t => {
+                const isSelected = (item.teacher_id === t.id) ? 'selected' : '';
+                return '<option value="' + t.id + '" ' + isSelected + '>' + t.email + '</option>';
+              }).join('');
+            }
+
+            teacherSelectHtml = '<div class="flex items-center gap-1.5">' +
+              '<span class="text-stone-400 text-[10px] whitespace-nowrap">责任教师:</span>' +
+              '<select onchange="handleAssignTeacher(\'' + item.id + '\', this.value)" class="bg-stone-50 dark:bg-zinc-800 border border-shibariBorder-light dark:border-shibariBorder-dark rounded px-2 py-0.5 text-[11px] focus:outline-none">' +
+              '<option value="">未指派教师</option>' +
+              optionsHtml +
+              '</select>' +
+              '</div>';
+          }
+
+          // 4. 删除按钮
+          let deleteBtnHtml = '';
+          if (isMaster && item.role !== 'master') {
+            const boundCodeSafe = item.bound_code || '';
+            deleteBtnHtml = '<button onclick="handleDeleteUser(\'' + item.id + '\', \'' + (item.email || '') + '\', \'' + boundCodeSafe + '\')" class="px-2 py-1 bg-red-500/10 hover:bg-red-600 hover:text-white text-red-600 dark:text-red-400 border border-red-500/20 rounded font-bold transition-all text-[11px] whitespace-nowrap flex items-center gap-1">' +
+              '<span>🗑️</span><span>删除并释放码</span>' +
+              '</button>';
+          }
+
+          // 5. 按阶段生成分块明细（加入 Number() 强转防空）
+          const stageTitles = {
+            0: { name: '🟢 阶段一：地面控制与感知基础', total: 8 },
+            1: { name: '🟡 阶段二：躯干限制与半吊过渡', total: 8 },
+            2: { name: '🔴 阶段三：完全悬吊与高空控制', total: 10 }
+          };
+
+          let stageBlocksHtml = '';
+          allowedStages.forEach(sIdx => {
+            // 容错过滤：兼容 string 与 number
+            const stageLessons = (curriculumData || []).filter(c => Number(c.stage) === Number(sIdx));
+            const stageDoneCount = stageLessons.filter(c => completedSet.has(c.id)).length;
+
+            const gridHtml = stageLessons.map(c => {
+              const isDone = completedSet.has(c.id);
+              const cardClass = isDone
+                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40 font-bold'
+                : 'bg-stone-100/70 dark:bg-zinc-900/60 text-stone-400 border-stone-200 dark:border-stone-800';
+              // 🟢 转换为人类自然顺序：阶段号 (1/2/3) + 原标题中的 L1~L10
+              const stageNumber = Number(sIdx) + 1; // 0->1, 1->2, 2->3
+              // 原标题形如 "L1. 认识绳索..."，拼上阶段前缀即变成 "1L1. 认识绳索..."
+              const naturalDisplayTitle = stageNumber + (c.title || '');
+              const checkIcon = isDone ? '✅' : '⚪';
+
+              return '<div class="px-2 py-1.5 rounded text-[10px] border flex items-center justify-between gap-1 ' + cardClass + '">' +
+                '<span class="truncate font-medium">' + (c.title || '') + '</span>' +
+                '<span class="flex-shrink-0 text-xs">' + checkIcon + '</span>' +
+                '</div>';
+            }).join('');
+
+            stageBlocksHtml += '<div class="space-y-1.5 p-2.5 bg-stone-50/80 dark:bg-zinc-950/60 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">' +
+              '<div class="flex items-center justify-between text-[11px] pb-1 border-b border-stone-200/60 dark:border-zinc-800">' +
+              '<span class="font-bold text-stone-800 dark:text-stone-200">' + stageTitles[sIdx].name + '</span>' +
+              '<span class="text-[10px] text-stone-500">已掌握：<strong class="text-emerald-600 dark:text-emerald-400 text-xs">' + stageDoneCount + '</strong> / ' + stageTitles[sIdx].total + '</span>' +
+              '</div>' +
+              '<div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">' +
+              gridHtml +
+              '</div>' +
+              '</div>';
+          });
+
+          const boundCodeTag = item.bound_code
+            ? '<span class="text-[10px] text-stone-400">激活码: <strong class="font-mono text-amber-600">' + item.bound_code + '</strong></span>'
+            : '';
+
+          // 重点：detail-${item.id} 面板容器
+          const detailPanelHtml = isStudent
+            ? '<div id="detail-' + item.id + '" class="hidden pt-3 border-t border-dashed border-shibariBorder-light dark:border-shibariBorder-dark space-y-2.5">' + stageBlocksHtml + '</div>'
+            : '';
+
+          // 重点：onclick="toggleStudentDetail" 按钮
+          const toggleDetailBtn = isStudent
+            ? '<button type="button" onclick="toggleStudentDetail(\'' + item.id + '\')" class="cursor-pointer text-jute-750 dark:text-amber-400 font-bold hover:underline flex items-center gap-0.5 ml-2 py-0.5 px-1 rounded hover:bg-stone-200/50">' +
+            '<span>📋</span><span>打卡明细</span><span id="arrow-' + item.id + '" class="text-[10px]">▼</span>' +
+            '</button>'
+            : '';
+
+          return '<div class="p-3.5 bg-stone-100/70 dark:bg-zinc-900/60 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2.5 shadow-sm">' +
+            '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
+            '<div class="space-y-1.5 min-w-0">' +
+            '<div class="flex items-center gap-2 flex-wrap">' +
+            '<span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm truncate">' + (item.email || '未命名') + '</span>' +
+            roleBadge +
+            boundCodeTag +
+            '</div>' +
+            '<div class="flex items-center gap-2 text-[11px] text-stone-500 flex-wrap">' +
+            '<div class="w-28 sm:w-36 bg-stone-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">' +
+            '<div class="bg-jute-750 h-1.5 rounded-full" style="width: ' + pct + '%"></div>' +
+            '</div>' +
+            '<span>已学 <strong>' + completed + '</strong> / ' + totalAccessible + ' 课 (<strong class="text-stone-800 dark:text-stone-200">' + pct + '%</strong>)</span>' +
+            toggleDetailBtn +
+            '</div>' +
+            '</div>' +
+            '<div class="flex items-center gap-2 flex-wrap justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-shibariBorder-light dark:border-shibariBorder-dark">' +
+            teacherSelectHtml +
+            deleteBtnHtml +
+            '</div>' +
+            '</div>' +
+            detailPanelHtml +
+            '</div>';
+        }).join('');
+
+        container.innerHTML = cardsHtml;
+      }
+
+      // ====================================================================
+      // 🟢 展开/收起点击处理器（带安全判定）
+      // ====================================================================
+      function toggleStudentDetail(studentId) {
+        const panel = document.getElementById('detail-' + studentId);
+        const arrow = document.getElementById('arrow-' + studentId);
+        if (!panel) {
+          console.error('未找到学员详情容器: detail-' + studentId);
+          return;
+        }
+        const isCurrentlyHidden = panel.classList.contains('hidden');
+        if (isCurrentlyHidden) {
+          panel.classList.remove('hidden');
+          if (arrow) arrow.textContent = '▲';
+        } else {
+          panel.classList.add('hidden');
+          if (arrow) arrow.textContent = '▼';
+        }
+      }
+
+      // 4. 管理员指派学员责任教师
+      async function handleAssignTeacher(studentId, teacherId) {
+        try {
+          const { data: res, error } = await supabaseClient.rpc('admin_assign_student', {
+            student_id: studentId,
+            assign_teacher_id: teacherId || null
+          });
+          if (error || !res.success) throw new Error(res ? res.message : error.message);
+          alert('✅ 责任教师指派已更新生效！');
+        } catch (err) {
+          alert('❌ 指派失败: ' + translateError(err));
+        }
+      }
+
+      // 5. 管理员注销学员并原子级释放邀请码
+      async function handleDeleteUser(userId, email, boundCode) {
+        let tip = `⚠️ 确定彻底注销学员【${email}】的账号？\n\n该操作将清除其所有学习进度！`;
+        if (boundCode) {
+          tip += `\n\n🌟 核心机制提醒：该学员消耗的邀请码【${boundCode}】将自动释放恢复，可重新发给新学员使用！`;
+        }
+
+        if (!confirm(tip)) return;
+
+        try {
+          const { data: res, error } = await supabaseClient.rpc('admin_delete_user_and_release_code', {
+            target_user_id: userId
+          });
+          if (error || !res.success) throw new Error(res ? res.message : error.message);
+
+          alert(`🎉 账号注销成功！\n邀请码状态：${res.released_code} 已顺利回退释放至可用码池！`);
+          await fetchAdminRoster(); // 刷新花名册
+        } catch (err) {
+          alert('❌ 注销失败: ' + translateError(err));
+        }
+      }
+
     </script>
+
+    <!-- ==================================================================== -->
+    <!-- 🟢 教务管理中台弹窗组件（支持全屏响应式与暗黑主题） -->
+    <!-- ==================================================================== -->
+    <div id="modal-admin-roster" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden">
+      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+
+        <!-- 头部 -->
+        <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
+          <div class="flex items-center gap-2">
+            <span class="text-base sm:text-lg">📊</span>
+            <h3 id="admin-modal-title" class="font-black text-stone-900 dark:text-stone-100 text-sm sm:text-base">教务管理中台</h3>
+          </div>
+          <button onclick="closeAdminModal()" class="text-stone-400 hover:text-stone-600 text-base font-bold p-1">✕</button>
+        </div>
+
+        <!-- 概览指标栏（仅 Master 可见） -->
+        <div id="admin-stats-bar" class="p-3 bg-purple-500/5 border-b border-purple-500/20 grid grid-cols-3 gap-2 text-center text-xs">
+          <div><span class="text-stone-500">学员总数：</span><strong id="stat-students-count" class="text-purple-600 dark:text-purple-400">0</strong></div>
+          <div><span class="text-stone-500">教师总数：</span><strong id="stat-teachers-count" class="text-blue-600 dark:text-blue-400">0</strong></div>
+          <div><span class="text-stone-500">邀请码释放机制：</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">已就绪 ✅</span></div>
+        </div>
+
+        <!-- 花名册列表容器 -->
+        <div class="p-3 sm:p-4 flex-1 overflow-y-auto space-y-2 text-xs">
+          <div id="admin-roster-loading" class="text-center py-8 text-stone-400">正在同步教务网络名单...</div>
+          <div id="admin-roster-list" class="space-y-2"></div>
+        </div>
+
+        <!-- 底部状态栏 -->
+        <div class="p-3 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex justify-between items-center text-[11px] text-stone-500">
+          <span>💡 提示：删除学员账号将瞬间解绑并自动释放其注册邀请码。</span>
+          <button onclick="fetchAdminRoster()" class="px-3 py-1 bg-stone-200 dark:bg-zinc-800 hover:bg-stone-300 rounded font-bold">🔄 刷新列表</button>
+        </div>
+      </div>
+    </div>
+
   </body>
 
 </html>
