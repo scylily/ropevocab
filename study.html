@@ -1273,10 +1273,7 @@
       }
 
       // ====================================================================
-      // 🟢 极简阶梯分块版（含展开控制器与强类型兼容）
-      // ====================================================================
-      // ====================================================================
-      // 🟢 移动端深度优化版：教务卡片流式微排版
+      // 🟢 极简高保真版：教务花名册 + 二级【账号管理】下拉菜单
       // ====================================================================
       function renderAdminRosterList() {
         const container = document.getElementById('admin-roster-list');
@@ -1326,22 +1323,30 @@
               }).join('');
             }
 
-            teacherSelectHtml = '<div class="flex items-center gap-1.5 flex-1 min-w-[130px]">' +
+            teacherSelectHtml = '<div class="flex items-center gap-1.5 w-full sm:w-auto">' +
               '<span class="text-stone-400 text-[10px] whitespace-nowrap">导师:</span>' +
-              '<select onchange="handleAssignTeacher(\'' + item.id + '\', this.value)" class="w-full bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-lg px-2 py-1 text-[11px] focus:outline-none">' +
+              '<select onchange="handleAssignTeacher(\'' + item.id + '\', this.value)" class="w-full sm:w-auto bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-lg px-2 py-1 text-[11px] focus:outline-none">' +
               '<option value="">未指派教师</option>' +
               optionsHtml +
               '</select>' +
               '</div>';
           }
 
-          // 4. 删除按钮
-          let deleteBtnHtml = '';
+          // 4. 🟢 核心升级：收进第一行名字旁的【账号管理】二级菜单
+          let accountManageMenuHtml = '';
           if (isMaster && item.role !== 'master') {
             const boundCodeSafe = item.bound_code || '';
-            deleteBtnHtml = '<button onclick="handleDeleteUser(\'' + item.id + '\', \'' + (item.email || '') + '\', \'' + boundCodeSafe + '\')" class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white dark:text-red-400 rounded-lg font-bold transition-colors text-[11px] whitespace-nowrap flex items-center gap-1 flex-shrink-0">' +
-              '<span>🗑️</span><span>注销</span>' +
-              '</button>';
+            accountManageMenuHtml = '<details class="account-manage-menu relative inline-block text-left">' +
+              '<summary class="cursor-pointer px-2 py-0.5 rounded-lg border border-stone-200 dark:border-zinc-700 bg-stone-50 dark:bg-zinc-800 hover:bg-stone-100 text-stone-600 dark:text-stone-300 text-[10px] font-bold list-none flex items-center gap-1 transition-all select-none">' +
+              '<span>⚙️ 账号管理</span>' +
+              '<span class="text-[8px] opacity-70">▾</span>' +
+              '</summary>' +
+              '<div class="absolute left-0 sm:left-auto sm:right-0 mt-1 w-32 bg-white dark:bg-zinc-800 rounded-xl shadow-xl border border-stone-200 dark:border-zinc-700 py-1 z-30 animate-in fade-in zoom-in-95 duration-100">' +
+              '<button onclick="handleDeleteUser(\'' + item.id + '\', \'' + (item.email || '') + '\', \'' + boundCodeSafe + '\')" class="w-full text-left px-3 py-1.5 text-[11px] text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 font-bold flex items-center gap-1.5 transition-colors cursor-pointer">' +
+              '<span>🗑️</span><span>彻底注销账号</span>' +
+              '</button>' +
+              '</div>' +
+              '</details>';
           }
 
           // 5. 按阶段生成分块明细
@@ -1381,7 +1386,7 @@
           });
 
           const boundCodeTag = item.bound_code
-            ? '<span class="text-[10px] text-stone-400 flex items-center gap-1 font-mono">码: <strong class="text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">' + item.bound_code + '</strong></span>'
+            ? '<span class="text-[10px] text-stone-400 flex items-center gap-1 font-mono flex-shrink-0">码: <strong class="text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">' + item.bound_code + '</strong></span>'
             : '';
 
           const detailPanelHtml = isStudent
@@ -1394,14 +1399,14 @@
             '</button>'
             : '';
 
-          // 独立卡片结构（上中下层次分明）
           return '<div class="p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-stone-200/80 dark:border-zinc-800 shadow-sm space-y-2.5">' +
 
-            // 第一行：邮箱与身份
-            '<div class="flex items-center justify-between gap-2">' +
-            '<div class="flex items-center gap-1.5 min-w-0">' +
+            // 第一行：账户名 + 角色勋章 + 【⚙️ 账号管理 ▾】二级菜单 + 右侧激活码
+            '<div class="flex items-center justify-between gap-2 flex-wrap">' +
+            '<div class="flex items-center gap-1.5 min-w-0 flex-wrap">' +
             '<span class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-sm truncate">' + (item.email || '未命名') + '</span>' +
             roleBadge +
+            accountManageMenuHtml + // 👈 优雅内嵌在身份标签旁边
             '</div>' +
             boundCodeTag +
             '</div>' +
@@ -1417,11 +1422,10 @@
             toggleDetailBtn +
             '</div>' +
 
-            // 第三行：操作区（手机端自适应左右对齐）
-            ((teacherSelectHtml || deleteBtnHtml) ?
-              '<div class="flex items-center justify-between gap-2 pt-2 border-t border-stone-100 dark:border-zinc-800/80">' +
+            // 第三行：导师指派区（仅学员有，且极为干净）
+            (teacherSelectHtml ?
+              '<div class="pt-2 border-t border-stone-100 dark:border-zinc-800/80">' +
               teacherSelectHtml +
-              deleteBtnHtml +
               '</div>'
               : '') +
 
@@ -1587,9 +1591,18 @@
         }
       }
 
-      // 顺便在 handleGenerateCode 成功后，自动调用刷新
-      // 🟢 找到之前写过的 handleGenerateCode 尾部，在 alert 之前加上这行：
-      // await fetchAdminRoster();
+      // ====================================================================
+      // 🟢 点击页面空白/外部区域，自动收起所有已打开的【账号管理】二级菜单
+      // ====================================================================
+      document.addEventListener('click', (e) => {
+        document.querySelectorAll('details.account-manage-menu[open]').forEach(menu => {
+          // 如果点击的目标不在当前这个菜单里面，就自动移除 open 属性（关闭菜单）
+          if (!menu.contains(e.target)) {
+            menu.removeAttribute('open');
+          }
+        });
+      });
+
     </script>
 
     <!-- ==================================================================== -->
@@ -1628,7 +1641,6 @@
           </div>
         </div>
 
-        <!-- 🟢 管理员专属：邀请码即时生成工坊（仅 Master 可见） -->
         <!-- 🟢 管理员专属：发码中心 + 待激活有效邀请码池 -->
         <div id="admin-code-generator-box" class="p-3 bg-purple-500/5 dark:bg-purple-950/20 border-b border-purple-500/20 space-y-2.5">
           <div class="flex items-center justify-between">
