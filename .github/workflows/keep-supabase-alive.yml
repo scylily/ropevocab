@@ -13,6 +13,9 @@ jobs:
       contents: write
 
     steps:
+      # -----------------------------------------------------------
+      # Project 1 保活
+      # -----------------------------------------------------------
       - name: Ping Project 1
         run: |
           URL="${{ secrets.SUPABASE_URL_1 }}"
@@ -41,6 +44,9 @@ jobs:
             exit 1
           fi
 
+      # -----------------------------------------------------------
+      # Project 2 保活
+      # -----------------------------------------------------------
       - name: Ping Project 2
         run: |
           URL="${{ secrets.SUPABASE_URL_2 }}"
@@ -70,21 +76,50 @@ jobs:
           fi
 
       # -----------------------------------------------------------
-      # 原生无感防休眠（零第三方插件，永不失效）
+      # 🟢 Project 3 保活（对应你全新的 Study 教学数据库）
+      # -----------------------------------------------------------
+      - name: Ping Project 3
+        run: |
+          URL="${{ secrets.SUPABASE_URL_3 }}"
+          KEY="${{ secrets.SUPABASE_ANON_KEY_3 }}"
+          URL="${URL%/}"
+          
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "❌ 错误：SUPABASE_URL_3 或 SUPABASE_ANON_KEY_3 未配置！"
+            exit 1
+          fi
+          
+          echo "🚀 正在向 Project 3 发起保活查询..."
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY")
+          
+          echo "Project 3 响应状态码: $HTTP_STATUS"
+          cat response.json
+          echo ""
+
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Project 3 (Study新库) 数据库保活成功！"
+          else
+            echo "❌ Project 3 保活失败，请核对 URL 或 Key 是否准确！"
+            exit 1
+          fi
+
+      # -----------------------------------------------------------
+      # 原生无感防休眠（重置 GitHub 60 天定时任务倒计时）
       # -----------------------------------------------------------
       - name: 检出仓库代码
         uses: actions/checkout@v4
 
       - name: 检查并自动续期 60 天倒计时
         run: |
-          # 获取上次代码提交时间与当前时间的间隔天数
           LAST_COMMIT_DATE=$(git log -1 --format=%ct)
           CURRENT_DATE=$(date +%s)
           DAYS_DIFF=$(( (CURRENT_DATE - LAST_COMMIT_DATE) / 86400 ))
 
           echo "距上次提交已过去: $DAYS_DIFF 天"
 
-          # 超过 40 天未提交时，才自动发起一次空提交重置 GitHub 的 60 天倒计时
           if [ $DAYS_DIFF -gt 40 ]; then
             echo "⚠️ 超过 40 天无活动，正在自动续期 GitHub 活跃状态..."
             git config --global user.name "github-actions[bot]"
