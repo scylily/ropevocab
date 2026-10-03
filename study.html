@@ -73,6 +73,12 @@
 
           <div class="flex items-center gap-1 sm:hidden">
             <button onclick="toggleTheme()" class="p-1 text-stone-400 hover:text-white text-xs">🌓</button>
+
+            <!-- 🟢 在这里插入手机端专属的教务管理小按钮 -->
+            <button id="btn-admin-mobile" onclick="openAdminModal()" class="hidden items-center gap-1 px-2 py-0.5 bg-purple-900/60 text-purple-200 rounded-full text-[11px] font-bold border border-purple-500/60 shadow-sm">
+              <span>📊</span><span>教务</span>
+            </button>
+
             <button onclick="openProfileDrawer()" class="flex items-center gap-1 px-2 py-0.5 bg-stone-800 text-amber-400 rounded-full text-[11px] font-bold border border-stone-700">
               <span>👤</span>
             </button>
@@ -304,6 +310,12 @@
         <div class="space-y-2 pt-2 border-t border-shibariBorder-light dark:border-shibariBorder-dark">
           <button id="drawer-btn-auth" onclick="openAuthModal('login'); closeProfileDrawer();" class="w-full py-2 bg-jute-750 text-white rounded font-bold shadow">🔑 登录 / 注册账号</button>
           <button id="drawer-btn-upgrade" onclick="openUpgradeModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-amber-600 text-white rounded font-bold">🎓 输入新邀请码升级权限</button>
+
+          <!-- 🟢 在这里插入抽屉内的专属教务大按钮 -->
+          <button id="drawer-btn-admin" onclick="openAdminModal(); closeProfileDrawer();" class="hidden w-full py-2 bg-purple-800 hover:bg-purple-700 text-white rounded font-bold shadow flex items-center justify-center gap-1.5 text-xs">
+            <span>📊</span><span>进入教务管理中台</span>
+          </button>
+
           <button onclick="openSafetyModal(); closeProfileDrawer();" class="w-full py-2 bg-stone-200 dark:bg-zinc-800 text-stone-700 dark:text-stone-300 rounded font-bold">📜 查看绳缚安全共识书</button>
           <button id="drawer-btn-logout" onclick="logout(); closeProfileDrawer();" class="hidden w-full py-2 bg-red-800 text-white rounded font-bold">🚪 退出当前登录</button>
         </div>
@@ -353,7 +365,7 @@
           <h3 class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm">🎓 自助升级权限级别</h3>
           <button onclick="closeUpgradeModal()" class="text-stone-400">✕</button>
         </div>
-        <p class="text-[11px] sm:text-xs text-stone-500 leading-relaxed">请输入导师发给您的高阶升级邀请码：</p>
+        <p class="text-[11px] sm:text-xs text-stone-500 leading-relaxed">请输入管理员发给您的高阶升级邀请码：</p>
         <input type="text" id="upgrade-invite-code" placeholder="输入高阶邀请码..." class="w-full px-2.5 py-1.5 border rounded border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 text-xs font-mono uppercase focus:outline-none focus:ring-2 focus:ring-jute-500">
         <div id="upgrade-error" class="text-[11px] font-bold text-red-500 hidden"></div>
         <div class="flex justify-end gap-2 pt-1">
@@ -529,7 +541,7 @@
 
       async function toggleCheckIn(lessonId) {
         if (!currentUser) {
-          alert('请先登录学员或导师账号再进行打卡！');
+          alert('请先登录学员或教师账号再进行打卡！');
           openAuthModal('login');
           return;
         }
@@ -757,87 +769,104 @@
       }
 
       function updateUIByRole() {
-        const badge = document.getElementById('drawer-role-badge');
-        const navRole = document.getElementById('nav-role-text');
-        const drawerEmail = document.getElementById('drawer-user-email');
-        const authBtn = document.getElementById('drawer-btn-auth');
-        const logoutBtn = document.getElementById('drawer-btn-logout');
-        const upgradeBtn = document.getElementById('drawer-btn-upgrade');
-        const teacherBox = document.getElementById('drawer-teacher-box');
-        const homeLoginBtn = document.getElementById('home-login-btn');
-        // 🟢 在 updateUIByRole() 中追加控制：
-        const adminPanelBtn = document.getElementById('btn-admin-panel');
-        if (adminPanelBtn) {
-          if (userLevel === 'master' || userLevel === 'teacher') {
-            adminPanelBtn.classList.remove('hidden');
-            adminPanelBtn.classList.add('flex');
-          } else {
-            adminPanelBtn.classList.add('hidden');
-            adminPanelBtn.classList.remove('flex');
-          }
-        }
+          const badge = document.getElementById('drawer-role-badge');
+          const navRole = document.getElementById('nav-role-text');
+          const drawerEmail = document.getElementById('drawer-user-email');
+          const authBtn = document.getElementById('drawer-btn-auth');
+          const logoutBtn = document.getElementById('drawer-btn-logout');
+          const upgradeBtn = document.getElementById('drawer-btn-upgrade');
+          const teacherBox = document.getElementById('drawer-teacher-box');
+          const homeLoginBtn = document.getElementById('home-login-btn');
 
-        const isLoggedIn = !!currentUser;
+          // 🟢 补齐：安全获取三个教务管理入口元素
+          const adminPanelBtn = document.getElementById('btn-admin-panel');
+          const adminMobileBtn = document.getElementById('btn-admin-mobile');
+          const drawerAdminBtn = document.getElementById('drawer-btn-admin');
 
-        if (isLoggedIn) {
-          if (userLevel === 'master' || (currentUser.email && currentUser.email.includes('master_teacher'))) {
-            drawerEmail.textContent = '👑 管理员';
-          } else {
-            drawerEmail.textContent = currentUser.email;
-          }
-          if (homeLoginBtn) homeLoginBtn.classList.add('hidden');
-        } else {
-          drawerEmail.textContent = '未登录 (游客预览模式)';
-          if (homeLoginBtn) homeLoginBtn.classList.remove('hidden');
-        }
+          const isLoggedIn = !!currentUser;
+          const isTeacherOrMaster = (userLevel === 'master' || userLevel === 'teacher');
 
-        if (isLoggedIn) {
-          if (authBtn) authBtn.classList.add('hidden');
-          if (teacherBox) teacherBox.classList.add('hidden');
-          if (logoutBtn) logoutBtn.classList.remove('hidden');
-
-          if (upgradeBtn) {
-            if (userLevel !== 'master' && userLevel !== 'exp') {
-              upgradeBtn.classList.remove('hidden');
+          // 1. 账号信息展示
+          if (isLoggedIn) {
+            if (userLevel === 'master' || (currentUser.email && currentUser.email.includes('master_teacher'))) {
+              drawerEmail.textContent = '👑 管理员';
             } else {
-              upgradeBtn.classList.add('hidden');
+              drawerEmail.textContent = currentUser.email;
+            }
+            if (homeLoginBtn) homeLoginBtn.classList.add('hidden');
+          } else {
+            drawerEmail.textContent = '未登录 (游客预览模式)';
+            if (homeLoginBtn) homeLoginBtn.classList.remove('hidden');
+          }
+
+          // 2. 抽屉内基础按钮显隐
+          if (isLoggedIn) {
+            if (authBtn) authBtn.classList.add('hidden');
+            if (teacherBox) teacherBox.classList.add('hidden');
+            if (logoutBtn) logoutBtn.classList.remove('hidden');
+
+            if (upgradeBtn) {
+              if (userLevel !== 'master' && userLevel !== 'teacher' && userLevel !== 'exp') {
+                upgradeBtn.classList.remove('hidden');
+              } else {
+                upgradeBtn.classList.add('hidden');
+              }
+            }
+          } else {
+            if (authBtn) authBtn.classList.remove('hidden');
+            if (teacherBox) teacherBox.classList.remove('hidden');
+            if (logoutBtn) logoutBtn.classList.add('hidden');
+            if (upgradeBtn) upgradeBtn.classList.add('hidden');
+          }
+
+          // 3. 角色名称
+          let roleName = '👁️ 游客';
+          if (userLevel === 'base') roleName = '🟢 初级学员';
+          if (userLevel === 'adv') roleName = '🟡 提高学员';
+          if (userLevel === 'exp') roleName = '🔴 熟练学员';
+          if (userLevel === 'teacher') roleName = '🧑‍🏫 教师';
+          if (userLevel === 'master') roleName = '👑 管理员';
+
+          if (badge) badge.textContent = roleName;
+          if (navRole) navRole.textContent = roleName;
+
+          // 4. 阶段解锁徽章
+          const b0 = document.getElementById('badge-stage-0-status');
+          const b1 = document.getElementById('badge-stage-1-status');
+          const b2 = document.getElementById('badge-stage-2-status');
+
+          if (b0) b0.textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
+          if (b1) b1.textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+          if (b2) b2.textContent = (userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
+
+          // 5. 桌面与手机端教务入口显隐控制（安全遍历）
+          [adminPanelBtn, adminMobileBtn].forEach(btn => {
+            if (btn) {
+              if (isTeacherOrMaster) {
+                btn.classList.remove('hidden');
+                btn.classList.add('flex');
+              } else {
+                btn.classList.add('hidden');
+                btn.classList.remove('flex');
+              }
+            }
+          });
+
+          if (drawerAdminBtn) {
+            if (isTeacherOrMaster) {
+              drawerAdminBtn.classList.remove('hidden');
+            } else {
+              drawerAdminBtn.classList.add('hidden');
             }
           }
-        } else {
-          if (authBtn) authBtn.classList.remove('hidden');
-          if (teacherBox) teacherBox.classList.remove('hidden');
-          if (logoutBtn) logoutBtn.classList.add('hidden');
-          if (upgradeBtn) upgradeBtn.classList.add('hidden');
+
+          updateProgressUI();
         }
-
-        let roleName = '👁️ 游客';
-        if (userLevel === 'base') roleName = '🟢 初级学员';
-        if (userLevel === 'adv') roleName = '🟡 提高学员';
-        if (userLevel === 'exp') roleName = '🔴 熟练学员';
-        if (userLevel === 'teacher') roleName = '🧑‍🏫 教师'; // 👈 新增这一行
-        if (userLevel === 'master') roleName = '👑 管理员';
-
-        if (badge) badge.textContent = roleName;
-        if (navRole) navRole.textContent = roleName;
-
-        document.getElementById('badge-stage-0-status').textContent = (userLevel !== 'visitor') ? '✅ 已解锁' : '🔒 需解锁';
-        document.getElementById('badge-stage-1-status').textContent = (userLevel === 'adv' || userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-        document.getElementById('badge-stage-2-status').textContent = (userLevel === 'exp' || userLevel === 'teacher' || userLevel === 'master') ? '✅ 已解锁' : '🔒 需解锁';
-
-        // 如果是 master 或 teacher，抽屉里隐藏升级按钮（已经是教师级别）
-        if (upgradeBtn) {
-          if (userLevel !== 'master' && userLevel !== 'teacher' && userLevel !== 'exp') {
-            upgradeBtn.classList.remove('hidden');
-          } else {
-            upgradeBtn.classList.add('hidden');
-          }
-        }
-      }
 
       async function loginAsTeacherByPasscode() {
         const code = document.getElementById('input-teacher-passcode').value.trim();
         if (!code) {
-          alert('请输入导师口令！');
+          alert('请输入管理员口令！');
           return;
         }
 
@@ -868,10 +897,10 @@
           await fetchCurriculumFromSupabase();
           // openSafetyModal();
 
-          alert('👑 欢迎导师！口令验证成功，已为您开启全盘最高权限。');
+          alert('👑 欢迎管理员！口令验证成功，已为您开启全盘最高权限。');
 
         } catch (err) {
-          console.error('导师极简登录报错:', err);
+          console.error('管理员极简登录报错:', err);
           alert('❌ 登录失败: ' + translateError(err));
         }
       }
@@ -1222,156 +1251,163 @@
       // ====================================================================
       // 🟢 极简阶梯分块版（含展开控制器与强类型兼容）
       // ====================================================================
-      function renderAdminRosterList() {
-        const container = document.getElementById('admin-roster-list');
-        if (!container) return;
+      // ====================================================================
+        // 🟢 移动端深度优化版：教务卡片流式微排版
+        // ====================================================================
+        function renderAdminRosterList() {
+          const container = document.getElementById('admin-roster-list');
+          if (!container) return;
 
-        if (!currentRosterData || currentRosterData.length === 0) {
-          container.innerHTML = '<div class="text-center text-stone-400 py-8">暂无管辖学员数据</div>';
-          return;
-        }
-
-        const isMaster = (userLevel === 'master');
-
-        const cardsHtml = currentRosterData.map(item => {
-          const isStudent = ['base', 'adv', 'exp', 'visitor'].includes(item.role);
-
-          // 1. 角色勋章格式化
-          let roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-stone-700 text-stone-300">游客</span>';
-          if (item.role === 'base') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">🟢 初级学员</span>';
-          if (item.role === 'adv') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30">🟡 提高学员</span>';
-          if (item.role === 'exp') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30">🔴 熟练学员</span>';
-          if (item.role === 'teacher') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30">🧑‍🏫 教师</span>';
-          if (item.role === 'master') roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30">👑 管理员</span>';
-
-          // 2. 根据身份决定总考核课时与允许展示的阶段
-          let totalAccessible = 26;
-          let allowedStages = [0, 1, 2];
-          if (item.role === 'base') {
-            totalAccessible = 8;
-            allowedStages = [0];
-          } else if (item.role === 'adv') {
-            totalAccessible = 16;
-            allowedStages = [0, 1];
+          if (!currentRosterData || currentRosterData.length === 0) {
+            container.innerHTML = '<div class="text-center text-stone-400 py-12">暂无管辖学员数据</div>';
+            return;
           }
 
-          const completed = item.completed_count || 0;
-          const pct = Math.min(100, Math.round((completed / totalAccessible) * 100));
-          const completedSet = new Set(item.completed_lesson_ids || []);
+          const isMaster = (userLevel === 'master');
 
-          // 3. 责任教师下拉框
-          let teacherSelectHtml = '';
-          if (isMaster && isStudent) {
-            let optionsHtml = '';
-            if (Array.isArray(availableTeachers)) {
-              optionsHtml = availableTeachers.map(t => {
-                const isSelected = (item.teacher_id === t.id) ? 'selected' : '';
-                return '<option value="' + t.id + '" ' + isSelected + '>' + t.email + '</option>';
-              }).join('');
+          const cardsHtml = currentRosterData.map(item => {
+            const isStudent = ['base', 'adv', 'exp', 'visitor'].includes(item.role);
+
+            // 1. 角色勋章格式化
+            let roleBadge = '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-stone-700 text-stone-300">游客</span>';
+            if (item.role === 'base') roleBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">🟢 初级</span>';
+            if (item.role === 'adv') roleBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">🟡 提高</span>';
+            if (item.role === 'exp') roleBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">🔴 熟练</span>';
+            if (item.role === 'teacher') roleBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">🧑‍🏫 教师</span>';
+            if (item.role === 'master') roleBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">👑 管理员</span>';
+
+            // 2. 考核总数
+            let totalAccessible = 26;
+            let allowedStages = [0, 1, 2];
+            if (item.role === 'base') {
+              totalAccessible = 8;
+              allowedStages = [0];
+            } else if (item.role === 'adv') {
+              totalAccessible = 16;
+              allowedStages = [0, 1];
             }
 
-            teacherSelectHtml = '<div class="flex items-center gap-1.5">' +
-              '<span class="text-stone-400 text-[10px] whitespace-nowrap">责任教师:</span>' +
-              '<select onchange="handleAssignTeacher(\'' + item.id + '\', this.value)" class="bg-stone-50 dark:bg-zinc-800 border border-shibariBorder-light dark:border-shibariBorder-dark rounded px-2 py-0.5 text-[11px] focus:outline-none">' +
-              '<option value="">未指派教师</option>' +
-              optionsHtml +
-              '</select>' +
-              '</div>';
-          }
+            const completed = item.completed_count || 0;
+            const pct = Math.min(100, Math.round((completed / totalAccessible) * 100));
+            const completedSet = new Set(item.completed_lesson_ids || []);
 
-          // 4. 删除按钮
-          let deleteBtnHtml = '';
-          if (isMaster && item.role !== 'master') {
-            const boundCodeSafe = item.bound_code || '';
-            deleteBtnHtml = '<button onclick="handleDeleteUser(\'' + item.id + '\', \'' + (item.email || '') + '\', \'' + boundCodeSafe + '\')" class="px-2 py-1 bg-red-500/10 hover:bg-red-600 hover:text-white text-red-600 dark:text-red-400 border border-red-500/20 rounded font-bold transition-all text-[11px] whitespace-nowrap flex items-center gap-1">' +
-              '<span>🗑️</span><span>删除并释放码</span>' +
-              '</button>';
-          }
+            // 3. 责任教师下拉框
+            let teacherSelectHtml = '';
+            if (isMaster && isStudent) {
+              let optionsHtml = '';
+              if (Array.isArray(availableTeachers)) {
+                optionsHtml = availableTeachers.map(t => {
+                  const isSelected = (item.teacher_id === t.id) ? 'selected' : '';
+                  return '<option value="' + t.id + '" ' + isSelected + '>' + t.email + '</option>';
+                }).join('');
+              }
 
-          // 5. 按阶段生成分块明细（加入 Number() 强转防空）
-          const stageTitles = {
-            0: { name: '🟢 阶段一：地面控制与感知基础', total: 8 },
-            1: { name: '🟡 阶段二：躯干限制与半吊过渡', total: 8 },
-            2: { name: '🔴 阶段三：完全悬吊与高空控制', total: 10 }
-          };
-
-          let stageBlocksHtml = '';
-          allowedStages.forEach(sIdx => {
-            // 容错过滤：兼容 string 与 number
-            const stageLessons = (curriculumData || []).filter(c => Number(c.stage) === Number(sIdx));
-            const stageDoneCount = stageLessons.filter(c => completedSet.has(c.id)).length;
-
-            const gridHtml = stageLessons.map(c => {
-              const isDone = completedSet.has(c.id);
-              const cardClass = isDone
-                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40 font-bold'
-                : 'bg-stone-100/70 dark:bg-zinc-900/60 text-stone-400 border-stone-200 dark:border-stone-800';
-              // 🟢 转换为人类自然顺序：阶段号 (1/2/3) + 原标题中的 L1~L10
-              const stageNumber = Number(sIdx) + 1; // 0->1, 1->2, 2->3
-              // 原标题形如 "L1. 认识绳索..."，拼上阶段前缀即变成 "1L1. 认识绳索..."
-              const naturalDisplayTitle = stageNumber + (c.title || '');
-              const checkIcon = isDone ? '✅' : '⚪';
-
-              return '<div class="px-2 py-1.5 rounded text-[10px] border flex items-center justify-between gap-1 ' + cardClass + '">' +
-                '<span class="truncate font-medium">' + (c.title || '') + '</span>' +
-                '<span class="flex-shrink-0 text-xs">' + checkIcon + '</span>' +
+              teacherSelectHtml = '<div class="flex items-center gap-1.5 flex-1 min-w-[130px]">' +
+                '<span class="text-stone-400 text-[10px] whitespace-nowrap">导师:</span>' +
+                '<select onchange="handleAssignTeacher(\'' + item.id + '\', this.value)" class="w-full bg-stone-100 dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-lg px-2 py-1 text-[11px] focus:outline-none">' +
+                '<option value="">未指派教师</option>' +
+                optionsHtml +
+                '</select>' +
                 '</div>';
-            }).join('');
+            }
 
-            stageBlocksHtml += '<div class="space-y-1.5 p-2.5 bg-stone-50/80 dark:bg-zinc-950/60 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark">' +
-              '<div class="flex items-center justify-between text-[11px] pb-1 border-b border-stone-200/60 dark:border-zinc-800">' +
-              '<span class="font-bold text-stone-800 dark:text-stone-200">' + stageTitles[sIdx].name + '</span>' +
-              '<span class="text-[10px] text-stone-500">已掌握：<strong class="text-emerald-600 dark:text-emerald-400 text-xs">' + stageDoneCount + '</strong> / ' + stageTitles[sIdx].total + '</span>' +
+            // 4. 删除按钮
+            let deleteBtnHtml = '';
+            if (isMaster && item.role !== 'master') {
+              const boundCodeSafe = item.bound_code || '';
+              deleteBtnHtml = '<button onclick="handleDeleteUser(\'' + item.id + '\', \'' + (item.email || '') + '\', \'' + boundCodeSafe + '\')" class="px-2.5 py-1 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white dark:text-red-400 rounded-lg font-bold transition-colors text-[11px] whitespace-nowrap flex items-center gap-1 flex-shrink-0">' +
+                '<span>🗑️</span><span>注销</span>' +
+                '</button>';
+            }
+
+            // 5. 按阶段生成分块明细
+            const stageTitles = {
+              0: { name: '🟢 阶段一：地面控制基础', total: 8 },
+              1: { name: '🟡 阶段二：躯干限制与半吊', total: 8 },
+              2: { name: '🔴 阶段三：完全悬吊高空', total: 10 }
+            };
+
+            let stageBlocksHtml = '';
+            allowedStages.forEach(sIdx => {
+              const stageLessons = (curriculumData || []).filter(c => Number(c.stage) === Number(sIdx));
+              const stageDoneCount = stageLessons.filter(c => completedSet.has(c.id)).length;
+
+              const gridHtml = stageLessons.map(c => {
+                const isDone = completedSet.has(c.id);
+                const cardClass = isDone
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-bold'
+                  : 'bg-white dark:bg-zinc-900/60 text-stone-400 border-stone-200/60 dark:border-zinc-800';
+                const checkIcon = isDone ? '✅' : '⚪';
+
+                return '<div class="px-2 py-1.5 rounded-lg text-[10px] border flex items-center justify-between gap-1 shadow-2xs ' + cardClass + '">' +
+                  '<span class="truncate font-medium">' + (c.title || '') + '</span>' +
+                  '<span class="flex-shrink-0 text-xs">' + checkIcon + '</span>' +
+                  '</div>';
+              }).join('');
+
+              stageBlocksHtml += '<div class="p-2.5 bg-stone-100/70 dark:bg-zinc-950/60 rounded-xl border border-stone-200/70 dark:border-zinc-800/80 space-y-1.5">' +
+                '<div class="flex items-center justify-between text-[11px] pb-1 border-b border-stone-200/50 dark:border-zinc-800">' +
+                '<span class="font-bold text-stone-800 dark:text-stone-200">' + stageTitles[sIdx].name + '</span>' +
+                '<span class="text-[10px] text-stone-500 font-medium">已学：<strong class="text-emerald-600 dark:text-emerald-400">' + stageDoneCount + '</strong> / ' + stageTitles[sIdx].total + '</span>' +
+                '</div>' +
+                '<div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">' +
+                gridHtml +
+                '</div>' +
+                '</div>';
+            });
+
+            const boundCodeTag = item.bound_code
+              ? '<span class="text-[10px] text-stone-400 flex items-center gap-1 font-mono">码: <strong class="text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">' + item.bound_code + '</strong></span>'
+              : '';
+
+            const detailPanelHtml = isStudent
+              ? '<div id="detail-' + item.id + '" class="hidden pt-2.5 border-t border-dashed border-stone-200 dark:border-zinc-800 space-y-2">' + stageBlocksHtml + '</div>'
+              : '';
+
+            const toggleDetailBtn = isStudent
+              ? '<button type="button" onclick="toggleStudentDetail(\'' + item.id + '\')" class="text-jute-750 dark:text-amber-400 font-bold hover:underline flex items-center gap-0.5 text-[11px] ml-auto py-0.5 px-2 rounded-lg bg-jute-500/10 hover:bg-jute-500/20">' +
+              '<span>📋</span><span>明细</span><span id="arrow-' + item.id + '" class="text-[9px]">▼</span>' +
+              '</button>'
+              : '';
+
+            // 独立卡片结构（上中下层次分明）
+            return '<div class="p-3 bg-white dark:bg-zinc-900 rounded-2xl border border-stone-200/80 dark:border-zinc-800 shadow-sm space-y-2.5">' +
+
+              // 第一行：邮箱与身份
+              '<div class="flex items-center justify-between gap-2">' +
+              '<div class="flex items-center gap-1.5 min-w-0">' +
+              '<span class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-sm truncate">' + (item.email || '未命名') + '</span>' +
+              roleBadge +
               '</div>' +
-              '<div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">' +
-              gridHtml +
+              boundCodeTag +
               '</div>' +
+
+              // 第二行：进度条与明细按钮
+              '<div class="flex items-center justify-between gap-2 pt-0.5">' +
+              '<div class="flex items-center gap-2 flex-1 min-w-0">' +
+              '<div class="w-24 sm:w-32 bg-stone-100 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden flex-shrink-0">' +
+              '<div class="bg-jute-750 dark:bg-amber-500 h-1.5 rounded-full" style="width: ' + pct + '%"></div>' +
+              '</div>' +
+              '<span class="text-[10px] sm:text-[11px] text-stone-500 whitespace-nowrap">' + completed + '/' + totalAccessible + ' 课 (' + pct + '%)</span>' +
+              '</div>' +
+              toggleDetailBtn +
+              '</div>' +
+
+              // 第三行：操作区（手机端自适应左右对齐）
+              ((teacherSelectHtml || deleteBtnHtml) ?
+                '<div class="flex items-center justify-between gap-2 pt-2 border-t border-stone-100 dark:border-zinc-800/80">' +
+                teacherSelectHtml +
+                deleteBtnHtml +
+                '</div>'
+                : '') +
+
+              // 展开的打卡详细格子面板
+              detailPanelHtml +
               '</div>';
-          });
+          }).join('');
 
-          const boundCodeTag = item.bound_code
-            ? '<span class="text-[10px] text-stone-400">激活码: <strong class="font-mono text-amber-600">' + item.bound_code + '</strong></span>'
-            : '';
-
-          // 重点：detail-${item.id} 面板容器
-          const detailPanelHtml = isStudent
-            ? '<div id="detail-' + item.id + '" class="hidden pt-3 border-t border-dashed border-shibariBorder-light dark:border-shibariBorder-dark space-y-2.5">' + stageBlocksHtml + '</div>'
-            : '';
-
-          // 重点：onclick="toggleStudentDetail" 按钮
-          const toggleDetailBtn = isStudent
-            ? '<button type="button" onclick="toggleStudentDetail(\'' + item.id + '\')" class="cursor-pointer text-jute-750 dark:text-amber-400 font-bold hover:underline flex items-center gap-0.5 ml-2 py-0.5 px-1 rounded hover:bg-stone-200/50">' +
-            '<span>📋</span><span>打卡明细</span><span id="arrow-' + item.id + '" class="text-[10px]">▼</span>' +
-            '</button>'
-            : '';
-
-          return '<div class="p-3.5 bg-stone-100/70 dark:bg-zinc-900/60 rounded-xl border border-shibariBorder-light dark:border-shibariBorder-dark space-y-2.5 shadow-sm">' +
-            '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">' +
-            '<div class="space-y-1.5 min-w-0">' +
-            '<div class="flex items-center gap-2 flex-wrap">' +
-            '<span class="font-bold text-stone-900 dark:text-stone-100 text-xs sm:text-sm truncate">' + (item.email || '未命名') + '</span>' +
-            roleBadge +
-            boundCodeTag +
-            '</div>' +
-            '<div class="flex items-center gap-2 text-[11px] text-stone-500 flex-wrap">' +
-            '<div class="w-28 sm:w-36 bg-stone-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">' +
-            '<div class="bg-jute-750 h-1.5 rounded-full" style="width: ' + pct + '%"></div>' +
-            '</div>' +
-            '<span>已学 <strong>' + completed + '</strong> / ' + totalAccessible + ' 课 (<strong class="text-stone-800 dark:text-stone-200">' + pct + '%</strong>)</span>' +
-            toggleDetailBtn +
-            '</div>' +
-            '</div>' +
-            '<div class="flex items-center gap-2 flex-wrap justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-shibariBorder-light dark:border-shibariBorder-dark">' +
-            teacherSelectHtml +
-            deleteBtnHtml +
-            '</div>' +
-            '</div>' +
-            detailPanelHtml +
-            '</div>';
-        }).join('');
-
-        container.innerHTML = cardsHtml;
-      }
+          container.innerHTML = cardsHtml;
+        }
 
       // ====================================================================
       // 🟢 展开/收起点击处理器（带安全判定）
@@ -1432,37 +1468,56 @@
     </script>
 
     <!-- ==================================================================== -->
-    <!-- 🟢 教务管理中台弹窗组件（支持全屏响应式与暗黑主题） -->
+    <!-- 🟢 现代化原生质感：教务管理中台面板 -->
     <!-- ==================================================================== -->
-    <div id="modal-admin-roster" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 hidden">
-      <div class="bg-shibariCard-light dark:bg-shibariCard-dark border border-shibariBorder-light dark:border-shibariBorder-dark rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+    <div id="modal-admin-roster" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 hidden transition-all duration-300">
+      <div class="bg-stone-50 dark:bg-zinc-900 border border-stone-200 dark:border-zinc-800 rounded-t-3xl sm:rounded-2xl max-w-3xl w-full h-[92vh] sm:h-auto sm:max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-200">
 
-        <!-- 头部 -->
-        <div class="p-3.5 sm:p-4 border-b border-shibariBorder-light dark:border-shibariBorder-dark flex justify-between items-center bg-stone-100 dark:bg-zinc-900">
+        <!-- 头部拖拽条与标题 -->
+        <div class="px-4 py-3 sm:py-3.5 border-b border-stone-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900/80 sticky top-0 z-10">
           <div class="flex items-center gap-2">
-            <span class="text-base sm:text-lg">📊</span>
-            <h3 id="admin-modal-title" class="font-black text-stone-900 dark:text-stone-100 text-sm sm:text-base">教务管理中台</h3>
+            <div class="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm">📊</div>
+            <div>
+              <h3 id="admin-modal-title" class="font-black text-stone-900 dark:text-stone-100 text-xs sm:text-sm">教务管理中台</h3>
+              <p class="text-[10px] text-stone-400">实时学员督学与管辖中枢</p>
+            </div>
           </div>
-          <button onclick="closeAdminModal()" class="text-stone-400 hover:text-stone-600 text-base font-bold p-1">✕</button>
+          <button onclick="closeAdminModal()" class="w-7 h-7 rounded-full bg-stone-100 dark:bg-zinc-800 text-stone-400 hover:text-stone-600 flex items-center justify-center text-xs font-bold transition-colors">✕</button>
         </div>
 
-        <!-- 概览指标栏（仅 Master 可见） -->
-        <div id="admin-stats-bar" class="p-3 bg-purple-500/5 border-b border-purple-500/20 grid grid-cols-3 gap-2 text-center text-xs">
-          <div><span class="text-stone-500">学员总数：</span><strong id="stat-students-count" class="text-purple-600 dark:text-purple-400">0</strong></div>
-          <div><span class="text-stone-500">教师总数：</span><strong id="stat-teachers-count" class="text-blue-600 dark:text-blue-400">0</strong></div>
-          <div><span class="text-stone-500">邀请码释放机制：</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">已就绪 ✅</span></div>
+        <!-- 重新设计的 3 联精致指标卡（手机端整齐平铺） -->
+        <div id="admin-stats-bar" class="p-3 bg-stone-100/50 dark:bg-zinc-950/40 border-b border-stone-200/80 dark:border-zinc-800/80 grid grid-cols-3 gap-2">
+          <div class="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-stone-200/60 dark:border-zinc-800 flex flex-col items-center justify-center shadow-xs">
+            <span class="text-[10px] text-stone-400">学员总数</span>
+            <span id="stat-students-count" class="text-sm sm:text-base font-black text-purple-600 dark:text-purple-400 mt-0.5">0</span>
+          </div>
+          <div class="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-stone-200/60 dark:border-zinc-800 flex flex-col items-center justify-center shadow-xs">
+            <span class="text-[10px] text-stone-400">教师总数</span>
+            <span id="stat-teachers-count" class="text-sm sm:text-base font-black text-blue-600 dark:text-blue-400 mt-0.5">0</span>
+          </div>
+          <div class="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-stone-200/60 dark:border-zinc-800 flex flex-col items-center justify-center shadow-xs">
+            <span class="text-[10px] text-stone-400">邀请码释放</span>
+            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-0.5">
+              <span>✅</span><span>自动回退</span>
+            </span>
+          </div>
         </div>
 
-        <!-- 花名册列表容器 -->
-        <div class="p-3 sm:p-4 flex-1 overflow-y-auto space-y-2 text-xs">
-          <div id="admin-roster-loading" class="text-center py-8 text-stone-400">正在同步教务网络名单...</div>
-          <div id="admin-roster-list" class="space-y-2"></div>
+        <!-- 花名册列表容器（手机端平滑滚动） -->
+        <div class="p-3 sm:p-4 flex-1 overflow-y-auto space-y-2.5 text-xs no-scrollbar">
+          <div id="admin-roster-loading" class="text-center py-12 text-stone-400 text-xs flex flex-col items-center justify-center gap-2">
+            <span class="animate-spin text-lg">⏳</span>
+            <span>正在同步教务名单...</span>
+          </div>
+          <div id="admin-roster-list" class="space-y-2.5"></div>
         </div>
 
-        <!-- 底部状态栏 -->
-        <div class="p-3 border-t border-shibariBorder-light dark:border-shibariBorder-dark bg-stone-50 dark:bg-zinc-900 flex justify-between items-center text-[11px] text-stone-500">
-          <span>💡 提示：删除学员账号将瞬间解绑并自动释放其注册邀请码。</span>
-          <button onclick="fetchAdminRoster()" class="px-3 py-1 bg-stone-200 dark:bg-zinc-800 hover:bg-stone-300 rounded font-bold">🔄 刷新列表</button>
+        <!-- 底部操作与提示 -->
+        <div class="p-2.5 sm:p-3 border-t border-stone-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center text-[10px] sm:text-[11px] text-stone-400">
+          <span class="truncate pr-2">💡 删号自动回退邀请码至可用池</span>
+          <button onclick="fetchAdminRoster()" class="px-2.5 py-1 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 dark:hover:bg-zinc-700 text-stone-700 dark:text-stone-300 rounded-lg font-bold flex items-center gap-1 transition-all flex-shrink-0">
+            <span>🔄</span><span>刷新列表</span>
+          </button>
         </div>
       </div>
     </div>
