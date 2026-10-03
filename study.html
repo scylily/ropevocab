@@ -1200,18 +1200,41 @@
 
       // 1. 打开中台弹窗
       async function openAdminModal() {
-        if (userLevel !== 'master' && userLevel !== 'teacher') {
-          alert('权限受限：仅管理员或教师可访问教务系统');
-          return;
+          if (userLevel !== 'master' && userLevel !== 'teacher') {
+            alert('权限受限：仅管理员或教师可访问教务系统');
+            return;
+          }
+
+          const modal = document.getElementById('modal-admin-roster');
+          const title = document.getElementById('admin-modal-title');
+          const genBox = document.getElementById('admin-code-generator-box');
+          const latestCodeBox = document.getElementById('box-latest-code');
+
+          const isMaster = (userLevel === 'master');
+
+          // 1. 动态设置标题
+          if (title) {
+            title.textContent = isMaster ? '👑 管理员中台 - 全站教务与师徒分配' : '🧑‍🏫 教师中心 - 我的管辖学员进度';
+          }
+
+          // 2. 🟢 严格权限门禁：仅管理员可见发码中心，普通教师彻底隐藏
+          if (genBox) {
+            if (isMaster) {
+              genBox.classList.remove('hidden');
+            } else {
+              genBox.classList.add('hidden');
+            }
+          }
+
+          // 3. 每次打开弹窗时，默认收起上次生成的临时邀请码卡片
+          if (latestCodeBox) {
+            latestCodeBox.classList.add('hidden');
+          }
+
+          // 4. 显示弹窗并拉取花名册
+          if (modal) modal.classList.remove('hidden');
+          await fetchAdminRoster();
         }
-        const modal = document.getElementById('modal-admin-roster');
-        const title = document.getElementById('admin-modal-title');
-        if (title) {
-          title.textContent = userLevel === 'master' ? '👑 管理员中台 - 全站教务与师徒分配' : '🧑‍🏫 教师中心 - 我的管辖学员进度';
-        }
-        if (modal) modal.classList.remove('hidden');
-        await fetchAdminRoster();
-      }
 
       function closeAdminModal() {
         const modal = document.getElementById('modal-admin-roster');
@@ -1465,6 +1488,46 @@
         }
       }
 
+      // ====================================================================
+        // 🟢 管理员按需随机生成邀请码
+        // ====================================================================
+        async function handleGenerateCode() {
+          if (userLevel !== 'master') return;
+          const roleSelect = document.getElementById('select-gen-role');
+          const targetRole = roleSelect ? roleSelect.value : 'base';
+
+          try {
+            const { data: res, error } = await supabaseClient.rpc('admin_generate_invite_code', {
+              target_role: targetRole
+            });
+
+            if (error || !res.success) throw new Error(res ? res.message : error.message);
+
+            // 回显最新生成的邀请码
+            const codeBox = document.getElementById('box-latest-code');
+            const codeText = document.getElementById('text-latest-code');
+            if (codeBox && codeText) {
+              codeText.textContent = res.code;
+              codeBox.classList.remove('hidden');
+            }
+
+            alert(`🎉 邀请码生成并入库成功！\n\n身份：${targetRole}\n激活码：${res.code}\n\n可以直接发给用户注册使用！`);
+          } catch (err) {
+            alert('❌ 生成邀请码失败: ' + translateError(err));
+          }
+        }
+
+        // 一键复制最新生成的邀请码
+        function copyGeneratedCode() {
+          const codeText = document.getElementById('text-latest-code');
+          if (codeText && codeText.textContent) {
+            navigator.clipboard.writeText(codeText.textContent).then(() => {
+              alert('📋 邀请码已成功复制到剪贴板：' + codeText.textContent);
+            }).catch(() => {
+              prompt('请手动长按复制邀请码：', codeText.textContent);
+            });
+          }
+        }
     </script>
 
     <!-- ==================================================================== -->
@@ -1500,6 +1563,40 @@
             <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center gap-0.5">
               <span>✅</span><span>自动回退</span>
             </span>
+          </div>
+        </div>
+
+        <!-- 🟢 管理员专属：邀请码即时生成工坊（仅 Master 可见） -->
+        <div id="admin-code-generator-box" class="p-3 bg-purple-500/5 dark:bg-purple-950/20 border-b border-purple-500/20 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-[11px] text-purple-700 dark:text-purple-400 flex items-center gap-1">
+              <span>🎟️</span><span>发码中心（随建随用）</span>
+            </span>
+            <span class="text-[10px] text-stone-400">选择身份即时生成专属激活码</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <select id="select-gen-role" class="flex-1 bg-white dark:bg-zinc-800 border border-stone-200 dark:border-zinc-700 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none">
+              <option value="base">🟢 初级学员 (BASE-)</option>
+              <option value="adv">🟡 提高学员 (ADV-)</option>
+              <option value="exp">🔴 熟练学员 (EXP-)</option>
+              <option value="teacher">🧑‍🏫 教师 (TEA-)</option>
+            </select>
+
+            <button onclick="handleGenerateCode()" class="px-3.5 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1 flex-shrink-0">
+              <span>🎲</span><span>生成并入库</span>
+            </button>
+          </div>
+
+          <!-- 最新生成的邀请码展示卡（默认隐藏） -->
+          <div id="box-latest-code" class="hidden p-2 bg-white dark:bg-zinc-900 border border-purple-500/30 rounded-xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-stone-400">已入库新码:</span>
+              <span id="text-latest-code" class="font-mono font-black text-amber-600 dark:text-amber-400 text-xs sm:text-sm tracking-wider"></span>
+            </div>
+            <button onclick="copyGeneratedCode()" class="px-2 py-0.5 bg-stone-100 dark:bg-zinc-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300 rounded text-[11px] font-bold">
+              📋 复制
+            </button>
           </div>
         </div>
 
