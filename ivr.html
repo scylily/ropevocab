@@ -106,7 +106,6 @@
         cursor: not-allowed;
       }
 
-      /* 现代定制集数下拉组件 */
       .custom-ep-wrapper {
         position: relative;
         flex: 1;
@@ -162,7 +161,6 @@
         transform: rotate(180deg);
       }
 
-      /* PC 端自适应内容宽度的悬浮面板 */
       .custom-ep-popover {
         position: absolute;
         top: calc(100% + 6px);
@@ -260,7 +258,6 @@
         border-radius: 4px;
       }
 
-      /* 悬浮排序下拉菜单组件 */
       .sort-dropdown-wrapper {
         position: relative;
         flex-shrink: 0;
@@ -332,7 +329,6 @@
         flex-shrink: 0;
       }
 
-      /* 右侧状态胶囊标签 */
       .status-tags {
         margin-left: auto;
         display: flex;
@@ -417,7 +413,6 @@
         touch-action: pan-y;
       }
 
-      /* 🚀 方案 1：强制注入独立硬件层隔离，彻底阻断 4K 显存与页面 DOM 的重排混合 */
       video {
         width: 100%;
         height: 100%;
@@ -461,7 +456,6 @@
         transform: scale(0.96);
       }
 
-      /* 🚀 方案 2：拔除毛玻璃滤镜算力刺客，改用高反差纯色半透黑底，在 4K 画面上零额外开销 */
       .video-osd {
         position: absolute;
         top: 14px;
@@ -540,7 +534,9 @@
         font-weight: 700;
         line-height: 1.35;
         color: #ffffff;
-        text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000, 0 2px 4px rgba(0, 0, 0, 0.8);
+        paint-order: stroke fill;
+        -webkit-text-stroke: 3.5px #000000;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.6);
       }
 
       .video-sub-overlay .v-foreign {
@@ -548,7 +544,8 @@
         color: #cbd5e1;
         margin-top: 2px;
         line-height: 1.3;
-        text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 3px rgba(0, 0, 0, 0.8);
+        paint-order: stroke fill;
+        -webkit-text-stroke: 2.5px #000000;
       }
 
       .empty-tip {
@@ -700,6 +697,7 @@
         background: #2563eb;
         color: #fff;
         border: none;
+        outline: none; /* 👈 1. 彻底移除原生黑边框 */
         padding: 0 10px;
         height: 28px;
         border-radius: 6px;
@@ -714,6 +712,15 @@
         white-space: nowrap !important;
         flex-shrink: 0;
         transition: all 0.15s ease;
+      }
+
+      /* 👈 2. 禁止任何点击后的黑框残留，同时保持点击后的按压反馈 */
+      .btn:focus,
+      .btn:focus-visible,
+      .custom-ep-btn:focus,
+      .custom-ep-btn:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
       }
 
       .btn:hover {
@@ -1216,29 +1223,6 @@
         overflow: hidden;
       }
 
-      .shortcuts-modal-box {
-        background: #ffffff;
-        color: #1e293b;
-        width: 630px;
-        max-width: 95vw;
-        border-radius: 10px;
-        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.28);
-        overflow: hidden;
-        animation: modalFadeIn 0.18s ease-out;
-      }
-
-      @keyframes modalFadeIn {
-        from {
-          opacity: 0;
-          transform: scale(0.97);
-        }
-
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-
       .modal-header {
         padding: 10px 16px;
         border-bottom: 1px solid #e2e8f0;
@@ -1258,14 +1242,28 @@
       .modal-close-btn {
         border: none;
         background: transparent;
-        font-size: 19px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
         line-height: 1;
-        color: #94a3b8;
+        color: #64748b;
         cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
       }
 
       .modal-close-btn:hover {
+        background: #f1f5f9;
         color: #0f172a;
+      }
+
+      .modal-close-btn:active {
+        background: #e2e8f0;
+        transform: scale(0.92);
       }
 
       .modal-body {
@@ -1276,28 +1274,61 @@
         overflow-y: auto;
       }
 
-      .modal-shortcuts-grid {
-        padding: 12px 16px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        column-gap: 14px;
-        row-gap: 6px;
+      /* ================= 快捷键现代分组卡片网格 ================= */
+      .shortcuts-modal-box {
+        background: #ffffff;
+        color: #1e293b;
+        width: 660px;
+        max-width: 95vw;
+        border-radius: 12px;
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.28);
         overflow: hidden;
+        animation: modalFadeIn 0.18s ease-out;
       }
 
-      .shortcut-card-row {
+      .modal-shortcuts-grouped {
+        padding: 12px 16px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        max-height: 75vh;
+        overflow-y: auto;
+      }
+
+      /* 分组功能卡片岛 */
+      .shortcut-group-card {
+        border-radius: 8px;
+        padding: 8px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        border: 1px solid transparent;
+      }
+
+      .shortcut-group-title {
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* 组内单行快捷键：纵向纯净排布 */
+      .shortcut-item-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 5px 8px;
+        padding: 3px 6px;
         border-radius: 4px;
-        background: #f8fafc;
-        border: 1px solid #f1f5f9;
         font-size: 11.5px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(2px);
       }
 
       .shortcut-keys {
         display: inline-flex;
+        align-items: center;
         gap: 3px;
         flex-shrink: 0;
       }
@@ -1311,16 +1342,131 @@
         font-size: 10.5px;
         font-weight: 700;
         color: #334155;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
       }
 
       .shortcut-desc {
-        color: #64748b;
+        color: #475569;
         font-weight: 500;
         margin-left: 6px;
         text-align: right;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      /* 🎨 5 大主题色分组背景与强调边框 */
+      .grp-blue {
+        background: #eff6ff;
+        border-color: #dbeafe;
+      }
+
+      .grp-blue .shortcut-group-title {
+        color: #1d4ed8;
+      }
+
+      .grp-emerald {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+      }
+
+      .grp-emerald .shortcut-group-title {
+        color: #047857;
+      }
+
+      .grp-purple {
+        background: #faf5ff;
+        border-color: #e9d5ff;
+      }
+
+      .grp-purple .shortcut-group-title {
+        color: #6b21a8;
+      }
+
+      .grp-amber {
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
+
+      .grp-amber .shortcut-group-title {
+        color: #b45309;
+      }
+
+      .grp-indigo {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+      }
+
+      .grp-indigo .shortcut-group-title {
+        color: #15803d;
+      }
+
+      /* 快捷键弹窗底部工具链与性能指引面板样式 */
+      .modal-shortcuts-footer {
+        padding: 8px 16px 12px 16px;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11.5px;
+      }
+
+      .perf-guide-link {
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: color 0.15s ease;
+      }
+
+      .perf-guide-link:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+      }
+
+      .perf-guide-box {
+        padding: 14px 18px;
+        background: #ffffff;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        animation: modalFadeIn 0.18s ease-out;
+      }
+
+      .perf-step-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 8px 12px;
+      }
+
+      .perf-step-head {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+
+      .perf-step-code {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-family: monospace;
+        font-size: 11px;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        word-break: break-all;
       }
 
       .media-info-section {
@@ -1743,7 +1889,7 @@
             <span style="background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 10px; font-size: 11px;">点击停止</span>
           </div>
 
-          <!-- 顶部全景智能微胶囊 OSD -->
+          <!-- 顶部全景微胶囊 OSD -->
           <div id="videoOSD" class="video-osd"></div>
 
           <video id="videoPlayer" controls tabindex="-1" playsinline webkit-playsinline x5-playsinline style="display: none;"></video>
@@ -1961,8 +2107,12 @@
                 <button class="btn btn-outline" style="padding: 0 8px; height: 24px; font-size: 11px; flex-shrink: 0;" onclick="copyInfoText('infoVideoName', this)" title="复制完整文件名">📋 复制</button>
               </div>
               <div class="media-info-grid" style="margin-top: 8px;">
-                <span class="media-info-label">画面分辨率:</span>
+                <span class="media-info-label">画面规格:</span>
                 <span id="infoVideoRes" class="media-info-val">-</span>
+                <span class="media-info-label">码率估算:</span>
+                <span id="infoVideoBitrate" class="media-info-val">-</span>
+                <span class="media-info-label">匹配倍速:</span>
+                <span id="infoVideoSweetSpot" class="media-info-val" style="color: #2563eb;">-</span>
                 <span class="media-info-label">总时长:</span>
                 <span id="infoVideoDuration" class="media-info-val">-</span>
                 <span class="media-info-label">文件体积:</span>
@@ -2004,77 +2154,157 @@
       </div>
     </div>
 
-    <!-- 双列免滚动快捷键指南 Modal（一屏全览） -->
+    <!-- 双列快捷键指南 Modal（含 Alt+123 与内嵌浏览器性能设置） -->
     <div id="shortcutsModal" class="modal-overlay" style="display: none;" onclick="closeShortcutsModal(event)">
       <div class="shortcuts-modal-box" onclick="event.stopPropagation()">
         <div class="modal-header">
-          <h3>⌨️ 快捷键指南</h3>
+          <h3 id="shortcutsModalTitle">⌨️ 快捷键指南</h3>
           <button class="modal-close-btn" onclick="closeShortcutsModal()">&times;</button>
         </div>
-        <div class="modal-shortcuts-grid">
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Space</span></div>
-            <span class="shortcut-desc">播放 / 暂停</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">PageUp</span></div>
-            <span class="shortcut-desc">切换上一集视频</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">←</span> / <span class="key-pill">→</span></div>
-            <span class="shortcut-desc">步进快退 / 快进 5s</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">PageDown</span></div>
-            <span class="shortcut-desc">切换下一集视频</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">←/→</span></div>
-            <span class="shortcut-desc">中步长跳转 15 秒</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">B</span></div>
-            <span class="shortcut-desc">消除黑边 / 贴合画面</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Shift</span>+<span class="key-pill">←/→</span></div>
-            <span class="shortcut-desc">大跨度快进 30 秒</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">G</span></div>
-            <span class="shortcut-desc">聚焦时码跳转框</span>
+
+        <!-- 视图 1：按功能成组着色、同类项竖排显示的现代卡片岛 -->
+        <div id="shortcutsViewMain">
+          <div class="modal-shortcuts-grouped">
+
+            <!-- 模块 1：基础播控与画面 (清爽蓝) -->
+            <div class="shortcut-group-card grp-blue">
+              <div class="shortcut-group-title">🎬 基础播控与画面</div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Space</span></div>
+                <span class="shortcut-desc">播放 / 暂停</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">PageUp</span> / <span class="key-pill">PageDown</span></div>
+                <span class="shortcut-desc">上一集 / 下一集</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">B</span></div>
+                <span class="shortcut-desc">贴合画面 / 消除黑边</span>
+              </div>
+            </div>
+
+            <!-- 模块 2：时间步进梯度 (舒适绿 - 竖排逐级递进) -->
+            <div class="shortcut-group-card grp-emerald">
+              <div class="shortcut-group-title">⏱️ 精准快退 / 快进步长</div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">←</span> / <span class="key-pill">→</span></div>
+                <span class="shortcut-desc">微调快退 / 快进 5 秒</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">←/→</span></div>
+                <span class="shortcut-desc">中步长快退 / 快进 15 秒</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Shift</span>+<span class="key-pill">←/→</span></div>
+                <span class="shortcut-desc">大跨度快退 / 快进 30 秒</span>
+              </div>
+            </div>
+
+            <!-- 模块 3：调速与声音控制 (质感紫 - 竖排闭环) -->
+            <div class="shortcut-group-card grp-purple">
+              <div class="shortcut-group-title">⚡ 调速与音量系统</div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">↑</span> / <span class="key-pill">↓</span></div>
+                <span class="shortcut-desc">音量精细调节 ±5%</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">↑</span></div>
+                <span class="shortcut-desc">点按+0.25x / 长按自适应快进</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">↓</span></div>
+                <span class="shortcut-desc">点按-0.25x / 长按慢放 0.25x</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">\</span></div>
+                <span class="shortcut-desc">一键恢复 1.0x 原速</span>
+              </div>
+            </div>
+
+            <!-- 模块 4：学习打点与 AB 循环 (活力琥珀 - 包含 Ctrl+G) -->
+            <div class="shortcut-group-card grp-amber">
+              <div class="shortcut-group-title">✍️ 手记标记与循环</div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">M</span></div>
+                <span class="shortcut-desc">快速标记单点手记</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">G</span></div>
+                <span class="shortcut-desc">聚焦时码跳转框 (输入时码)</span>
+              </div>
+              <div class="shortcut-item-row">
+                <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">[</span> / <span class="key-pill">]</span></div>
+                <span class="shortcut-desc">定入点A / 定出点B (区间循环)</span>
+              </div>
+            </div>
+
+            <!-- 模块 5：核心视图直达与字幕模式 (纯单列垂直直排 1 -> 2 -> 3) -->
+            <div class="shortcut-group-card grp-indigo" style="grid-column: span 2;">
+              <div class="shortcut-group-title">🖥️ 核心视图直达与字幕模式 (支持主键盘及小键盘)</div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="shortcut-item-row">
+                  <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">Alt</span>+<span class="key-pill">1</span></div>
+                  <span class="shortcut-desc">直达【我的手记】</span>
+                </div>
+                <div class="shortcut-item-row" style="background: rgba(37, 99, 235, 0.08); border: 1px solid #bfdbfe;">
+                  <div class="shortcut-keys">
+                    <span class="key-pill" style="color: #2563eb; font-weight: 800;">Ctrl</span>+<span class="key-pill" style="color: #2563eb; font-weight: 800;">Alt</span>+<span class="key-pill" style="color: #2563eb; font-weight: 800;">2</span>
+                  </div>
+                  <span class="shortcut-desc" style="color: #1d4ed8; font-weight: 700;">直达字幕页 · 连续按键循环切换：仅中文 ➔ 双语对照 ➔ 仅外语</span>
+                </div>
+                <div class="shortcut-item-row">
+                  <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">Alt</span>+<span class="key-pill">3</span></div>
+                  <span class="shortcut-desc">直达【智能讲义】</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">M</span></div>
-            <span class="shortcut-desc">快速标记单点手记</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">↑</span> / <span class="key-pill">↓</span></div>
-            <span class="shortcut-desc">音量调节 ±5%</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">[</span> / <span class="key-pill">]</span></div>
-            <span class="shortcut-desc">设定入点A / 出点B</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">↑</span></div>
-            <span class="shortcut-desc">点按+0.25x / 长按快放3.0x速</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">\</span></div>
-            <span class="shortcut-desc">一键恢复 1.0x 原速</span>
-          </div>
-          <div class="shortcut-card-row">
-            <div class="shortcut-keys"><span class="key-pill">Ctrl</span>+<span class="key-pill">↓</span></div>
-            <span class="shortcut-desc">点按-0.25x / 长按慢放0.25x速度</span>
-          </div>
-
-          <div class="shortcut-card-row" style="grid-column: span 2; background: #eff6ff; border-color: #dbeafe;">
-            <span style="color: #2563eb; font-weight: 600;">📱 移动端福利：触屏长按视频画面即可直接触发智能极速冲刺</span>
-            <span class="key-pill" style="color: #2563eb; border-color: #bfdbfe;">松开即恢复</span>
+          <!-- 底部工具栏保持不变 -->
+          <div class="modal-shortcuts-footer">
+            <span style="color: #64748b;">💡 快进时保持原声（不变调）</span>
+            <span class="perf-guide-link" onclick="togglePerfGuideView(true)">🛠️ 播放4K视频卡顿？浏览器硬件加速设置 »</span>
           </div>
         </div>
+
+        <!-- 视图 2：浏览器性能设置提示子面板 -->
+        <div id="shortcutsViewPerf" class="perf-guide-box">
+          <div style="font-size: 12px; color: #475569; line-height: 1.5;">
+            基于 Chromium（Chrome / Edge 等）内核在播放高码率 4K 本地视频时，建议开启以下实验性硬解开关以解除显存封锁：
+          </div>
+
+          <div class="perf-step-item">
+            <div class="perf-step-head">
+              <span>步骤 1：开启 GPU 栅格化 (提升超高分辨率渲染吞吐)</span>
+              <span style="color: #2563eb; font-size: 11px;">设置: Enabled</span>
+            </div>
+            <div class="perf-step-code">
+              <span>chrome://flags/#enable-gpu-rasterization</span>
+              <button class="btn btn-outline" style="height: 22px; padding: 0 6px; font-size: 10.5px;" onclick="copyFlagUrl('chrome://flags/#enable-gpu-rasterization', this)">📋 复制路径</button>
+            </div>
+          </div>
+
+          <div class="perf-step-item">
+            <div class="perf-step-head">
+              <span>步骤 2：忽略 GPU 软解黑名单 (强制所有显卡启用硬件解码)</span>
+              <span style="color: #2563eb; font-size: 11px;">设置: Enabled</span>
+            </div>
+            <div class="perf-step-code">
+              <span>chrome://flags/#ignore-gpu-blocklist</span>
+              <button class="btn btn-outline" style="height: 22px; padding: 0 6px; font-size: 10.5px;" onclick="copyFlagUrl('chrome://flags/#ignore-gpu-blocklist', this)">📋 复制路径</button>
+            </div>
+          </div>
+
+          <div style="font-size: 11.5px; color: #64748b; background: #f1f5f9; padding: 6px 10px; border-radius: 4px;">
+            ⚠️ <strong>使用说明：</strong>由于浏览器安全策略限制，无法网页直跳。请点击上方复制路径，手动粘贴至浏览器地址栏回车，将对应选项切换为 <strong>Enabled</strong> 并重启浏览器即可。
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+            <button class="btn" style="height: 26px; font-size: 11.5px;" onclick="togglePerfGuideView(false)">« 返回快捷键指南</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -2118,6 +2348,11 @@
       const shortcutsModal = document.getElementById('shortcutsModal');
       const mediaInfoModal = document.getElementById('mediaInfoModal');
 
+      // 快捷键指南视图 DOM
+      const shortcutsModalTitle = document.getElementById('shortcutsModalTitle');
+      const shortcutsViewMain = document.getElementById('shortcutsViewMain');
+      const shortcutsViewPerf = document.getElementById('shortcutsViewPerf');
+
       let playlist = [];
       let currentPlaylistIndex = 0;
       let currentSortMode = 'original';
@@ -2126,23 +2361,23 @@
       let editingNoteId = null;
       let currentVideoFile = null;
       let currentVideoFileName = "";
+      let currentVideoObjectUrl = null;
       let currentSubFileName = "";
       let touchFitTimer = null;
 
-      // 智能长按/点按调速状态变量
+      // 智能长按调速状态变量
       let speedLongPressTimer = null;
       let isSpeedLongPressing = false;
       let activeSpeedKey = null;
-
-      // 🚀 方案 3：冲刺时音量暂存变量（防爆音柔化，绝不静音）
       let savedOriginalVolume = 1.0;
 
-      // 🚀 性能护航变量：O(1) 精准字幕节点指针与局部匹配
+      // 性能与渲染状态
       let lastScrollTimestamp = 0;
       let cachedSubIndex = 0;
       let currentActiveElement = null;
+      let lastRenderedCueId = -2;
 
-      // ⭐ 切集静默通道标志与防乱按防抖请求令牌
+      // 切集与调度控制
       let isBatchSwitching = false;
       let switchTokenCounter = 0;
 
@@ -2267,7 +2502,6 @@
       document.addEventListener('touchcancel', stopResize);
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // 跨端几何比例贴合算法
       function fitVideoRatio() {
         if (!video.src || !video.videoWidth || !video.videoHeight) {
           showOSD('⚠️ 暂无视频或未就绪');
@@ -2331,8 +2565,37 @@
         osdTimeout = setTimeout(() => videoOSD.classList.remove('show'), duration);
       }
 
-      function openShortcutsModal() { shortcutsModal.style.display = 'flex'; }
-      function closeShortcutsModal() { shortcutsModal.style.display = 'none'; }
+      function openShortcutsModal() {
+        togglePerfGuideView(false);
+        shortcutsModal.style.display = 'flex';
+      }
+
+      function closeShortcutsModal() {
+        shortcutsModal.style.display = 'none';
+      }
+
+      function togglePerfGuideView(showPerf) {
+        if (showPerf) {
+          shortcutsViewMain.style.display = 'none';
+          shortcutsViewPerf.style.display = 'flex';
+          shortcutsModalTitle.textContent = '🛠️ 浏览器硬件加速设置指引';
+        } else {
+          shortcutsViewMain.style.display = 'block';
+          shortcutsViewPerf.style.display = 'none';
+          shortcutsModalTitle.textContent = '⌨️ 快捷键指南';
+        }
+      }
+
+      function copyFlagUrl(url, btn) {
+        navigator.clipboard.writeText(url).then(() => {
+          const old = btn.textContent;
+          btn.textContent = '✅ 已复制';
+          setTimeout(() => btn.textContent = old, 1200);
+          showOSD('📋 路径已复制，请在地址栏粘贴并回车');
+        }).catch(() => {
+          showOSD('⚠️ 复制失败，请手动选择');
+        });
+      }
 
       function openMediaInfoModal() {
         updateMediaInfoModalData();
@@ -2354,6 +2617,8 @@
       function updateMediaInfoModalData() {
         const infoVideoName = document.getElementById('infoVideoName');
         const infoVideoRes = document.getElementById('infoVideoRes');
+        const infoVideoBitrate = document.getElementById('infoVideoBitrate');
+        const infoVideoSweetSpot = document.getElementById('infoVideoSweetSpot');
         const infoVideoDuration = document.getElementById('infoVideoDuration');
         const infoVideoSize = document.getElementById('infoVideoSize');
         const infoVideoEp = document.getElementById('infoVideoEp');
@@ -2363,6 +2628,12 @@
           infoVideoRes.textContent = (video.videoWidth && video.videoHeight)
             ? (video.videoWidth + ' × ' + video.videoHeight + ' 像素')
             : '正在解析规格...';
+
+          const bitrate = getVideoBitrateMbps();
+          infoVideoBitrate.textContent = bitrate ? (bitrate.toFixed(1) + ' Mbps') : '计算中...';
+          const sweetRate = getSprintSpeed();
+          infoVideoSweetSpot.textContent = sweetRate.toFixed(2) + 'x 匹配倍速';
+
           infoVideoDuration.textContent = video.duration ? (formatSeconds(video.duration) + ' (' + Math.round(video.duration) + ' 秒)') : '计算中...';
           infoVideoSize.textContent = currentVideoFile ? formatFileSize(currentVideoFile.size) : '本地流资源';
           infoVideoEp.textContent = playlist.length > 1
@@ -2371,6 +2642,8 @@
         } else {
           infoVideoName.textContent = '暂无加载视频';
           infoVideoRes.textContent = '-';
+          infoVideoBitrate.textContent = '-';
+          infoVideoSweetSpot.textContent = '-';
           infoVideoDuration.textContent = '-';
           infoVideoSize.textContent = '-';
           infoVideoEp.textContent = '-';
@@ -2718,7 +2991,6 @@
         nextEpisodeBtn.disabled = (currentPlaylistIndex === playlist.length - 1);
       }
 
-      // ⭐ 聚合智能汇报：▶ 图标 + 资产完整聚合
       function notifyEpisodeLoaded(index) {
         const item = playlist[index];
         if (!item) return;
@@ -2742,7 +3014,6 @@
         showOSD(`${prefix}${assetStr}`, 2000);
       }
 
-      // ⭐ Promise 异步装配链条（彻底杜绝时间差抢跑）
       async function switchPlaylistItem(index) {
         if (index < 0 || index >= playlist.length) return;
         currentPlaylistIndex = index;
@@ -2799,6 +3070,7 @@
         currentSubFileName = "";
         cachedSubIndex = 0;
         currentActiveElement = null;
+        lastRenderedCueId = -2;
         assStatus.textContent = '📝 无字幕';
         assStatus.title = '点击查看详细信息（当前无字幕）';
         assStatus.classList.remove('loaded');
@@ -2832,11 +3104,19 @@
       }
 
       function loadVideoFile(file) {
+        if (currentVideoObjectUrl) {
+          URL.revokeObjectURL(currentVideoObjectUrl);
+          currentVideoObjectUrl = null;
+        }
+
         currentVideoFile = file;
         currentVideoFileName = file.name;
         cachedSubIndex = 0;
         currentActiveElement = null;
-        video.src = URL.createObjectURL(file);
+        lastRenderedCueId = -2;
+
+        currentVideoObjectUrl = URL.createObjectURL(file);
+        video.src = currentVideoObjectUrl;
         video.style.display = 'block';
         videoTip.style.display = 'none';
         showTouchFitBtn();
@@ -2891,11 +3171,11 @@
         }
       }
 
-      // ================= 字幕解析（Promise 管道支持） =================
       function loadSubtitleFile(file) {
         currentSubFileName = file.name;
         cachedSubIndex = 0;
         currentActiveElement = null;
+        lastRenderedCueId = -2;
 
         return new Promise((resolve) => {
           const reader = new FileReader();
@@ -2921,6 +3201,8 @@
         subtitleData = [];
         cachedSubIndex = 0;
         currentActiveElement = null;
+        lastRenderedCueId = -2;
+
         if (text.indexOf('-->') !== -1) {
           subtitleData = parseTimecodeBlocks(text);
         } else {
@@ -3040,7 +3322,7 @@
         }
       }
 
-      // ================= 播放与循环控制器（3倍速极致顺滑引擎） =================
+      // ================= 播放与渲染引擎 =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
@@ -3052,11 +3334,13 @@
         }
 
         if (subtitleData.length === 0) {
-          videoSubOverlay.style.display = 'none';
+          if (lastRenderedCueId !== -1) {
+            videoSubOverlay.style.display = 'none';
+            lastRenderedCueId = -1;
+          }
           return;
         }
 
-        // 局部双向快速检索：O(1) 毫秒级锁定目标字幕
         let currentCue = null;
         if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
           const c = subtitleData[cachedSubIndex];
@@ -3077,30 +3361,32 @@
         }
 
         if (currentCue) {
-          videoSubOverlay.style.display = 'block';
-          if (currentLang === 'cn') {
-            videoSubCn.textContent = currentCue.cn;
-            videoSubCn.style.display = 'block';
-            videoSubForeign.style.display = 'none';
-          } else if (currentLang === 'foreign') {
-            videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
-            videoSubForeign.style.display = 'block';
-            videoSubCn.style.display = 'none';
-          } else {
-            videoSubCn.textContent = currentCue.cn;
-            videoSubForeign.textContent = currentCue.foreign;
-            videoSubCn.style.display = 'block';
-            videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+          if (lastRenderedCueId !== currentCue.id) {
+            lastRenderedCueId = currentCue.id;
+            videoSubOverlay.style.display = 'block';
+
+            if (currentLang === 'cn') {
+              videoSubCn.textContent = currentCue.cn;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = 'none';
+            } else if (currentLang === 'foreign') {
+              videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
+              videoSubForeign.style.display = 'block';
+              videoSubCn.style.display = 'none';
+            } else {
+              videoSubCn.textContent = currentCue.cn;
+              videoSubForeign.textContent = currentCue.foreign;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+            }
           }
 
-          // 冲刺状态下，右侧对照列表深度休眠，彻底阻断 DOM 渲染
           const isHighSpeed = video.playbackRate > 1.2 || isSpeedLongPressing;
           if (isHighSpeed) return;
 
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
 
-            // 指针级 O(1) 更新高亮，彻底废除全表扫描
             if (currentActiveElement) {
               currentActiveElement.classList.remove('active');
             }
@@ -3118,7 +3404,10 @@
             }
           }
         } else {
-          videoSubOverlay.style.display = 'none';
+          if (lastRenderedCueId !== -1) {
+            videoSubOverlay.style.display = 'none';
+            lastRenderedCueId = -1;
+          }
         }
       });
 
@@ -3126,6 +3415,15 @@
         if (playlist.length > 1 && currentPlaylistIndex < playlist.length - 1) {
           showOSD('⏭ 自动播放下一集');
           setTimeout(() => playNextEpisode(), 1000);
+        }
+      });
+
+      // 缓冲区告急自动平滑降档稳速（彻底防断音与 1.6 秒卡死）
+      video.addEventListener('waiting', () => {
+        if (isSpeedLongPressing && video.playbackRate > 1.25) {
+          const safeRate = Math.max(1.25, video.playbackRate - 0.25);
+          video.playbackRate = safeRate;
+          showOSD(`⚡ ${safeRate.toFixed(2)}x (缓冲稳速)`);
         }
       });
 
@@ -3212,6 +3510,62 @@
         renderTranscriptList();
       }
 
+      // ⭐ 智能记忆版：不在字幕页时仅切回原状态；已经在字幕页再次按下才轮转！
+        function handleSubtitleShortcutCycle() {
+          if (subtitleData.length === 0) {
+            showOSD('📝 当前视频无字幕');
+            return;
+          }
+
+          // 1. 🚀 如果当前不是字幕页，单纯切回来，保持离开前的语言状态不变！
+          if (currentTab !== 'transcript') {
+            switchTab('transcript');
+            const langLabels = {
+              'cn': '🇨🇳 仅中文',
+              'bi': '👪 双语对照',
+              'foreign': '🌍 仅外语'
+            };
+            showOSD(`📝 切换至字幕 (${langLabels[currentLang] || ''})`);
+            return; // 👈 关键拦截：直接返回，绝不擅自改变语言模式！
+          }
+
+          // 2. 只有当前已经身处字幕页时，再次按下才进行顺次循环：cn -> bi -> foreign -> cn
+          const cycleOrder = ['cn', 'bi', 'foreign'];
+          const currentIdx = cycleOrder.indexOf(currentLang);
+          const nextLang = cycleOrder[(currentIdx + 1) % cycleOrder.length];
+
+          setLanguage(nextLang);
+
+          // 强制重置字幕锁，画面立刻响应切换
+          lastRenderedCueId = -2;
+          const curTime = video.currentTime;
+          const currentCue = subtitleData.find(item => curTime >= item.start && curTime <= item.end);
+          if (currentCue) {
+            videoSubOverlay.style.display = 'block';
+            if (nextLang === 'cn') {
+              videoSubCn.textContent = currentCue.cn;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = 'none';
+            } else if (nextLang === 'foreign') {
+              videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
+              videoSubForeign.style.display = 'block';
+              videoSubCn.style.display = 'none';
+            } else {
+              videoSubCn.textContent = currentCue.cn;
+              videoSubForeign.textContent = currentCue.foreign;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+            }
+          }
+
+          const langLabels = {
+            'cn': '🇨🇳 仅中文',
+            'bi': '👪 双语对照',
+            'foreign': '🌍 仅外语'
+          };
+          showOSD(`📝 字幕模式: ${langLabels[nextLang]}`);
+        }
+
       function renderTranscriptList() {
         const container = document.getElementById('transcriptList');
         container.innerHTML = '';
@@ -3268,15 +3622,39 @@
         renderMyNotesList();
       }
 
-      // 🚀 方案 4：分辨率智能感知计算黄金甜点倍速（针对 GTX 680：3K/4K 自适应 2.25x，1080P 自适应 3.0x）
-      function getSprintSpeed() {
-        if (video.videoWidth && video.videoWidth >= 2560) {
-          return 2.25;
+      function getVideoBitrateMbps() {
+        if (!currentVideoFile || !currentVideoFile.size || !video.duration || video.duration <= 0) {
+          return null;
         }
-        return 3.0;
+        return (currentVideoFile.size * 8) / (video.duration * 1000000);
       }
 
-      // ================= 键盘快捷键监听系统（点按调速与 3.0x 解耦冲刺） =================
+      // 适配真实硬件极限的平滑倍速算力矩阵
+      function getSprintSpeed() {
+        const w = video.videoWidth || 1920;
+        const h = video.videoHeight || 1080;
+        const totalPixels = w * h;
+        const bitrate = getVideoBitrateMbps();
+
+        // 4K 及以上：稳妥匹配 1.50x（低码率最高 1.75x）
+        if (totalPixels >= 5500000) {
+          if (bitrate && bitrate <= 8) return 1.75;
+          return 1.50;
+        }
+        // 2K 级别：匹配 1.75x ~ 2.0x
+        if (totalPixels >= 3000000) {
+          if (bitrate && bitrate > 15) return 1.75;
+          return 2.00;
+        }
+        // 1080P：畅快拉满 2.5x ~ 3.0x
+        if (totalPixels >= 1000000) {
+          if (bitrate && bitrate > 12) return 2.50;
+          return 3.00;
+        }
+        return 3.00;
+      }
+
+      // ================= 键盘快捷键监听系统 =================
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
 
@@ -3285,6 +3663,36 @@
           if (addNoteBox && addNoteBox.style.display !== 'none') {
             e.preventDefault();
             saveNewNote();
+            return;
+          }
+        }
+
+        // ⭐ 改为 Ctrl + Alt + 1/2/3（彻底避开系统菜单延迟，按下的瞬间毫秒级触发）
+        if (e.ctrlKey && e.altKey && !e.metaKey) {
+          const isKey1 = (e.key === '1' || e.code === 'Digit1' || e.code === 'Numpad1');
+          const isKey2 = (e.key === '2' || e.code === 'Digit2' || e.code === 'Numpad2');
+          const isKey3 = (e.key === '3' || e.code === 'Digit3' || e.code === 'Numpad3');
+
+          if (isKey1) {
+            e.preventDefault();
+            e.stopPropagation();
+            switchTab('mynotes');
+            showOSD('✍️ 我的手记');
+            return;
+          }
+
+          if (isKey2) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleSubtitleShortcutCycle();
+            return;
+          }
+
+          if (isKey3) {
+            e.preventDefault();
+            e.stopPropagation();
+            switchTab('notes');
+            showOSD('📚 智能讲义');
             return;
           }
         }
@@ -3331,11 +3739,9 @@
             return;
           }
 
-          // 拦截 Ctrl + ↑ / ↓ 的长按（>150ms 冲刺）与点按判别
           if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
-            if (!video.src) return;
-            if (e.repeat) return;
+            if (!video.src || e.repeat) return;
 
             activeSpeedKey = e.key;
             isSpeedLongPressing = false;
@@ -3346,16 +3752,16 @@
               if (activeSpeedKey === 'ArrowUp') {
                 const targetSprintRate = getSprintSpeed();
 
-                // 🚀 方案 3：保留原声发声（不静音），音量平滑柔化至 50% 保护声卡缓冲
                 savedOriginalVolume = video.volume;
-                video.volume = Math.max(0.1, savedOriginalVolume * 0.5);
-                video.preservesPitch = false;
+                video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+                // 彻底保留变调保护，快进声音保持正常人声声调
+                video.preservesPitch = true;
                 video.playbackRate = targetSprintRate;
 
-                showOSD('⚡ 极速冲刺: ' + targetSprintRate.toFixed(2) + 'x (松开恢复)');
+                showOSD(`⚡ ${targetSprintRate.toFixed(2)}x`);
               } else if (activeSpeedKey === 'ArrowDown') {
                 video.playbackRate = 0.25;
-                showOSD('🐌 极慢巡检: 0.25x (松开恢复)');
+                showOSD('🐌 0.25x');
               }
             }, 150);
             return;
@@ -3366,7 +3772,7 @@
             if (!video.src) return;
             video.preservesPitch = true;
             video.playbackRate = 1.0;
-            showOSD('⚡ 恢复原速: 1.00x');
+            showOSD('⚡ 1.00x');
             return;
           }
         }
@@ -3465,20 +3871,17 @@
         }
       });
 
-      // 抬起按键处理：点按步进调速，长按释放恢复原速、原音量并唤醒对齐列表
       document.addEventListener('keyup', (e) => {
         if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
           clearTimeout(speedLongPressTimer);
 
           if (isSpeedLongPressing) {
             if (video.src) {
-              // 🚀 瞬间拉满原音量与恢复正常音调
               video.volume = savedOriginalVolume;
               video.preservesPitch = true;
               video.playbackRate = 1.0;
-              showOSD('⚡ 恢复原速: 1.00x');
+              showOSD('⚡ 1.00x');
 
-              // 唤醒休眠的字幕列表，一瞬间点亮当前行并平滑居中
               setTimeout(() => {
                 const cur = video.currentTime;
                 const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
@@ -3498,11 +3901,11 @@
               if (activeSpeedKey === 'ArrowUp') {
                 let newRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
                 video.playbackRate = newRate;
-                showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
+                showOSD('⚡ ' + newRate.toFixed(2) + 'x');
               } else if (activeSpeedKey === 'ArrowDown') {
                 let newRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
                 video.playbackRate = newRate;
-                showOSD('⚡ 倍速: ' + newRate.toFixed(2) + 'x');
+                showOSD('⚡ ' + newRate.toFixed(2) + 'x');
               }
             }
           }
@@ -3525,7 +3928,7 @@
         }
       });
 
-      // 移动端长按屏幕触发极速冲刺交互（支持自适应速度与音量柔化）
+      // 移动端长按平滑加速
       let touchPressTimer = null;
       let isTouchSpeedUp = false;
       let touchStartX = 0;
@@ -3544,11 +3947,11 @@
             const targetSprintRate = getSprintSpeed();
 
             savedOriginalVolume = video.volume;
-            video.volume = Math.max(0.1, savedOriginalVolume * 0.5);
-            video.preservesPitch = false;
+            video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+            video.preservesPitch = true;
             video.playbackRate = targetSprintRate;
 
-            showOSD('⚡ 极速冲刺: ' + targetSprintRate.toFixed(2) + 'x (松开恢复)');
+            showOSD(`⚡ ${targetSprintRate.toFixed(2)}x`);
           }, 200);
         }
       }, { passive: true });
@@ -3571,7 +3974,7 @@
             video.volume = savedOriginalVolume;
             video.preservesPitch = true;
             video.playbackRate = 1.0;
-            showOSD('⚡ 恢复原速: 1.00x');
+            showOSD('⚡ 1.00x');
 
             setTimeout(() => {
               const cur = video.currentTime;
@@ -3893,7 +4296,6 @@
         e.target.value = '';
       }
 
-      // ⭐ Promise 封装：支持切集静默通道与等待
       function smartRouteMarkdownFile(file) {
         return new Promise((resolve) => {
           const reader = new FileReader();
