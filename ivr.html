@@ -2824,48 +2824,100 @@
         return result;
       }
 
-      function autoMatchAndLoad(files) {
-        if (!files || files.length === 0) return;
+      async function autoMatchAndLoad(files) {
+          if (!files || files.length === 0) return;
 
-        const videoExts = ['mp4', 'mkv', 'webm', 'mov', 'avi', 'flv', 'ts'];
-        const subExts = ['ass', 'ssa', 'srt', 'vtt'];
+          const videoExts = ['mp4', 'mkv', 'webm', 'mov', 'avi', 'flv', 'ts'];
+          const subExts = ['ass', 'ssa', 'srt', 'vtt'];
 
-        const videos = files.filter(f => videoExts.includes(f.name.split('.').pop().toLowerCase()) || f.type.startsWith('video/'));
-        const subs = files.filter(f => subExts.includes(f.name.split('.').pop().toLowerCase()));
-        const mdFiles = files.filter(f => f.name.endsWith('.md') || f.name.endsWith('.txt'));
+          const videos = files.filter(f => videoExts.includes(f.name.split('.').pop().toLowerCase()) || f.type.startsWith('video/'));
+          const subs = files.filter(f => subExts.includes(f.name.split('.').pop().toLowerCase()));
+          const mdFiles = files.filter(f => f.name.endsWith('.md') || f.name.endsWith('.txt'));
 
-        if (videos.length === 0) {
-          if (subs.length > 0) loadSubtitleFile(subs[0]);
-          if (mdFiles.length > 0) smartRouteMarkdownFile(mdFiles[0]);
-          return;
+          if (videos.length === 0) {
+            if (subs.length > 0) loadSubtitleFile(subs[0]);
+            if (mdFiles.length > 0) smartRouteMarkdownFile(mdFiles[0]);
+            return;
+          }
+
+          // 🌟 1. 快速嗅探所有 Markdown 文件到底是讲义还是手记
+          const mdMetaMap = new Map();
+          await Promise.all(mdFiles.map(async (file) => {
+            let isAi = false;
+            let isUser = false;
+            const lowerName = file.name.toLowerCase();
+
+            if (lowerName.includes('讲义') || lowerName.includes('ai') || lowerName.includes('lecture')) {
+              isAi = true;
+            } else if (lowerName.includes('手记') || lowerName.includes('笔记') || lowerName.includes('note')) {
+              isUser = true;
+            } else {
+              // 如果文件名看不出，读取前 300 字符快速判定
+              try {
+                const slice = file.slice(0, 500);
+                const text = await slice.text();
+                if (text.includes('type: ai_notes')) isAi = true;
+                else if (text.includes('type: user_notes') || text.includes('重点批注') || text.includes('片段循环') || text.includes('### [')) isUser = true;
+                else isAi = true; // 默认常规长文归为讲义
+              } catch (e) {
+                isAi = true;
+              }
+            }
+            mdMetaMap.set(file, { isAi, isUser });
+          }));
+
+          // 🌟 2. 精准装配每个视频的字幕、讲义与手记
+          playlist = videos.map((vFile, idx) => {
+            const vBase = vFile.name.substring(0, vFile.name.lastIndexOf('.'));
+            let matchedSub = subs.find(s => {
+              const sBase = s.name.substring(0, s.name.lastIndexOf('.'));
+              return sBase === vBase || s.name.startsWith(vBase) || vBase.startsWith(sBase);
+            }) || null;
+
+            const relatedMds = mdFiles.filter(n => n.name.startsWith(vBase) || vBase.startsWith(n.name.substring(0, n.name.lastIndexOf('.'))));
+
+            let matchedNote = null;
+            let matchedAiNote = null;
+
+            for (const md of relatedMds) {
+              const meta = mdMetaMap.get(md);
+              if (meta?.isUser && !matchedNote) {
+                matchedNote = md;
+              } else if (meta?.isAi && !matchedAiNote) {
+                matchedAiNote = md;
+              }
+            }
+
+            // 若未精确命中，做保底分配
+            if (!matchedNote && !matchedAiNote && relatedMds.length > 0) {
+              const firstMeta = mdMetaMap.get(relatedMds[0]);
+              if (firstMeta?.isUser) matchedNote = relatedMds[0];
+              else matchedAiNote = relatedMds[0];
+            }
+
+            return {
+              id: idx,
+              videoFile: vFile,
+              subFile: matchedSub,
+              noteFile: matchedNote,
+              aiNoteFile: matchedAiNote,
+              name: vFile.name,
+              size: vFile.size,
+              lastModified: vFile.lastModified || 0,
+              originalIndex: idx
+            };
+          });
+
+          updateSortMenuUI();
+          applySortOrder();
+          currentPlaylistIndex = 0;
+
+          // 渲染列表（此时已拥有全部图标）
+          renderPlaylistUI();
+
+          // 载入第一集
+          switchPlaylistItem(0);
         }
-
-        playlist = videos.map((vFile, idx) => {
-          const vBase = vFile.name.substring(0, vFile.name.lastIndexOf('.'));
-          let matchedSub = subs.find(s => {
-            const sBase = s.name.substring(0, s.name.lastIndexOf('.'));
-            return sBase === vBase || s.name.startsWith(vBase) || vBase.startsWith(sBase);
-          }) || null;
-
-          let matchedNote = mdFiles.find(n => n.name.startsWith(vBase)) || null;
-
-          return {
-            id: idx,
-            videoFile: vFile,
-            subFile: matchedSub,
-            noteFile: matchedNote,
-            name: vFile.name,
-            size: vFile.size,
-            lastModified: vFile.lastModified || 0,
-            originalIndex: idx
-          };
-        });
-
-        updateSortMenuUI();
-        applySortOrder();
-        currentPlaylistIndex = 0;
-        switchPlaylistItem(0);
-      }
 
       function applySortOrder() {
         if (currentSortMode === 'name-asc') {
@@ -2882,34 +2934,45 @@
       }
 
       function getVideoAssetBadges(item) {
-        const badges = [];
+          const badges = [];
 
-        const noteStorageKey = 'reader_notes_' + item.name;
-        const savedNotes = localStorage.getItem(noteStorageKey);
-        let hasNotes = false;
-        if (savedNotes) {
-          try {
-            const arr = JSON.parse(savedNotes);
-            if (Array.isArray(arr) && arr.length > 0) hasNotes = true;
-          } catch (e) { }
-        }
-        if (!hasNotes && item.noteFile) hasNotes = true;
-        if (hasNotes) {
-          badges.push('✍️');
-        }
+          // 1. 手记图标 (✍️)
+          const noteStorageKey = 'reader_notes_' + item.name;
+          const savedNotes = localStorage.getItem(noteStorageKey);
+          let hasNotes = false;
+          if (savedNotes) {
+            try {
+              const arr = JSON.parse(savedNotes);
+              if (Array.isArray(arr) && arr.length > 0) hasNotes = true;
+            } catch (e) { }
+          }
+          // 如果 localStorage 没有，但本集随盘携带了手记文件，直接亮标
+          if (!hasNotes && item.noteFile) {
+            hasNotes = true;
+          }
+          if (hasNotes) {
+            badges.push('✍️');
+          }
 
-        if (item.subFile) {
-          badges.push('📝');
-        }
+          // 2. 字幕图标 (📝)
+          if (item.subFile) {
+            badges.push('📝');
+          }
 
-        const aiStorageKey = 'reader_ai_notes_' + item.name;
-        const savedAiNotes = localStorage.getItem(aiStorageKey);
-        if (savedAiNotes && savedAiNotes.trim().length > 0) {
-          badges.push('📚');
-        }
+          // 3. 讲义图标 (📚)
+          const aiStorageKey = 'reader_ai_notes_' + item.name;
+          const savedAiNotes = localStorage.getItem(aiStorageKey);
+          let hasAiNotes = (savedAiNotes && savedAiNotes.trim().length > 0);
+          // 🌟 核心修复：即使没播放过该视频，只要携带了讲义文件，讲义图标直接亮标！
+          if (!hasAiNotes && item.aiNoteFile) {
+            hasAiNotes = true;
+          }
+          if (hasAiNotes) {
+            badges.push('📚');
+          }
 
-        return badges.length > 0 ? ('[ ' + badges.join(' ') + ' ]') : '';
-      }
+          return badges.length > 0 ? ('[ ' + badges.join(' ') + ' ]') : '';
+        }
 
       function renderPlaylistUI() {
         if (playlist.length <= 1) {
@@ -3014,17 +3077,18 @@
       }
 
       async function loadPlaylistItemAsync(index) {
-        const item = playlist[index];
-        if (!item) return;
+          const item = playlist[index];
+          if (!item) return;
 
-        loadVideoFile(item.videoFile);
+          loadVideoFile(item.videoFile);
 
-        const subPromise = item.subFile ? loadSubtitleFile(item.subFile) : Promise.resolve(clearSubtitles());
-        const notePromise = item.noteFile ? smartRouteMarkdownFile(item.noteFile) : Promise.resolve();
+          const subPromise = item.subFile ? loadSubtitleFile(item.subFile) : Promise.resolve(clearSubtitles());
+          const notePromise = item.noteFile ? smartRouteMarkdownFile(item.noteFile) : Promise.resolve();
+          const aiPromise = item.aiNoteFile ? smartRouteMarkdownFile(item.aiNoteFile) : Promise.resolve();
 
-        await Promise.all([subPromise, notePromise]);
-        renderPlaylistUI();
-      }
+          await Promise.all([subPromise, notePromise, aiPromise]);
+          renderPlaylistUI();
+        }
 
       function playPrevEpisode() {
         if (playlist.length <= 1) {
