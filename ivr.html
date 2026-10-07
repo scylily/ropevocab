@@ -697,7 +697,7 @@
         background: #2563eb;
         color: #fff;
         border: none;
-        outline: none; /* 👈 1. 彻底移除原生黑边框 */
+        outline: none;
         padding: 0 10px;
         height: 28px;
         border-radius: 6px;
@@ -714,7 +714,6 @@
         transition: all 0.15s ease;
       }
 
-      /* 👈 2. 禁止任何点击后的黑框残留，同时保持点击后的按压反馈 */
       .btn:focus,
       .btn:focus-visible,
       .custom-ep-btn:focus,
@@ -1202,7 +1201,7 @@
         text-align: center;
       }
 
-      /* ================= 模态弹窗与双列速查面板 ================= */
+      /* ================= 模态弹窗与速查面板 ================= */
       .modal-overlay {
         position: fixed;
         inset: 0;
@@ -1274,7 +1273,7 @@
         overflow-y: auto;
       }
 
-      /* ================= 快捷键现代分组卡片网格 ================= */
+      /* 快捷键现代分组卡片网格 */
       .shortcuts-modal-box {
         background: #ffffff;
         color: #1e293b;
@@ -1295,7 +1294,6 @@
         overflow-y: auto;
       }
 
-      /* 分组功能卡片岛 */
       .shortcut-group-card {
         border-radius: 8px;
         padding: 8px 10px;
@@ -1314,7 +1312,6 @@
         gap: 5px;
       }
 
-      /* 组内单行快捷键：纵向纯净排布 */
       .shortcut-item-row {
         display: flex;
         align-items: center;
@@ -1355,7 +1352,6 @@
         text-overflow: ellipsis;
       }
 
-      /* 🎨 5 大主题色分组背景与强调边框 */
       .grp-blue {
         background: #eff6ff;
         border-color: #dbeafe;
@@ -1401,7 +1397,6 @@
         color: #15803d;
       }
 
-      /* 快捷键弹窗底部工具链与性能指引面板样式 */
       .modal-shortcuts-footer {
         padding: 8px 16px 12px 16px;
         background: #f8fafc;
@@ -1889,7 +1884,6 @@
             <span style="background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 10px; font-size: 11px;">点击停止</span>
           </div>
 
-          <!-- 顶部全景微胶囊 OSD -->
           <div id="videoOSD" class="video-osd"></div>
 
           <video id="videoPlayer" controls tabindex="-1" playsinline webkit-playsinline x5-playsinline style="display: none;"></video>
@@ -2014,7 +2008,12 @@
                 <strong>工作流：</strong>点击复制智能提示词发给 AI。AI 输出 Markdown 代码块后贴至下方渲染。
               </p>
               <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                <button id="copyAIPromptBtn" class="btn btn-copy" onclick="copyAIPrompt()">📋 复制提示词 (待添加字幕或手记)</button>
+                <!-- 模块 A：学习讲义按钮 -->
+                <button id="copyAIPromptBtn" class="btn btn-copy" onclick="copyAIPrompt()" title="生成清晰紧凑、清单化的实操学习讲义提示词">📋 复制提示词以生成“学习讲义”</button>
+
+                <!-- 模块 B：知识库长文教材按钮 (纯原意·零发挥·书面化重构) -->
+                <button id="copyArchivePromptBtn" class="btn btn-stamp" onclick="copyArchivePrompt()" title="生成系统严谨、深度自洽的知识库教材长文提示词">📚 复制提示词以生成“专题档案”</button>
+
                 <label class="btn btn-outline" style="cursor: pointer; margin: 0;">
                   📂 导入讲义 (.md)
                   <input type="file" id="importAINotesInput" accept=".md,.txt" style="display: none;" onchange="importAINotesFromFile(event)">
@@ -2154,7 +2153,7 @@
       </div>
     </div>
 
-    <!-- 双列快捷键指南 Modal（含 Alt+123 与内嵌浏览器性能设置） -->
+    <!-- 快捷键指南 Modal -->
     <div id="shortcutsModal" class="modal-overlay" style="display: none;" onclick="closeShortcutsModal(event)">
       <div class="shortcuts-modal-box" onclick="event.stopPropagation()">
         <div class="modal-header">
@@ -2162,11 +2161,8 @@
           <button class="modal-close-btn" onclick="closeShortcutsModal()">&times;</button>
         </div>
 
-        <!-- 视图 1：按功能成组着色、同类项竖排显示的现代卡片岛 -->
         <div id="shortcutsViewMain">
           <div class="modal-shortcuts-grouped">
-
-            <!-- 模块 1：基础播控与画面 (清爽蓝) -->
             <div class="shortcut-group-card grp-blue">
               <div class="shortcut-group-title">🎬 基础播控与画面</div>
               <div class="shortcut-item-row">
@@ -2183,7 +2179,6 @@
               </div>
             </div>
 
-            <!-- 模块 2：时间步进梯度 (舒适绿 - 竖排逐级递进) -->
             <div class="shortcut-group-card grp-emerald">
               <div class="shortcut-group-title">⏱️ 精准快退 / 快进步长</div>
               <div class="shortcut-item-row">
@@ -2200,7 +2195,6 @@
               </div>
             </div>
 
-            <!-- 模块 3：调速与声音控制 (质感紫 - 竖排闭环) -->
             <div class="shortcut-group-card grp-purple">
               <div class="shortcut-group-title">⚡ 调速与音量系统</div>
               <div class="shortcut-item-row">
@@ -2221,7 +2215,6 @@
               </div>
             </div>
 
-            <!-- 模块 4：学习打点与 AB 循环 (活力琥珀 - 包含 Ctrl+G) -->
             <div class="shortcut-group-card grp-amber">
               <div class="shortcut-group-title">✍️ 手记标记与循环</div>
               <div class="shortcut-item-row">
@@ -2238,7 +2231,6 @@
               </div>
             </div>
 
-            <!-- 模块 5：核心视图直达与字幕模式 (纯单列垂直直排 1 -> 2 -> 3) -->
             <div class="shortcut-group-card grp-indigo" style="grid-column: span 2;">
               <div class="shortcut-group-title">🖥️ 核心视图直达与字幕模式 (支持主键盘及小键盘)</div>
               <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -2258,20 +2250,17 @@
                 </div>
               </div>
             </div>
-
           </div>
 
-          <!-- 底部工具栏保持不变 -->
           <div class="modal-shortcuts-footer">
             <span style="color: #64748b;">💡 快进时保持原声（不变调）</span>
             <span class="perf-guide-link" onclick="togglePerfGuideView(true)">🛠️ 播放4K视频卡顿？浏览器硬件加速设置 »</span>
           </div>
         </div>
 
-        <!-- 视图 2：浏览器性能设置提示子面板 -->
         <div id="shortcutsViewPerf" class="perf-guide-box">
           <div style="font-size: 12px; color: #475569; line-height: 1.5;">
-            基于 Chromium（Chrome / Edge 等）内核在播放高码率 4K 本地视频时，建议开启以下实验性硬解开关以解除显存封锁：
+            基于 Chromium 内核在播放高码率 4K 本地视频时，建议开启以下实验性硬解开关以解除显存封锁：
           </div>
 
           <div class="perf-step-item">
@@ -2297,7 +2286,7 @@
           </div>
 
           <div style="font-size: 11.5px; color: #64748b; background: #f1f5f9; padding: 6px 10px; border-radius: 4px;">
-            ⚠️ <strong>使用说明：</strong>由于浏览器安全策略限制，无法网页直跳。请点击上方复制路径，手动粘贴至浏览器地址栏回车，将对应选项切换为 <strong>Enabled</strong> 并重启浏览器即可。
+            ⚠️ <strong>使用说明：</strong>请点击上方复制路径，手动粘贴至浏览器地址栏回车，将对应选项切换为 <strong>Enabled</strong> 并重启浏览器即可。
           </div>
 
           <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
@@ -2335,6 +2324,7 @@
 
       const tabBtnTranscript = document.getElementById('tabBtnTranscript');
       const copyAIPromptBtn = document.getElementById('copyAIPromptBtn');
+      const copyArchivePromptBtn = document.getElementById('copyArchivePromptBtn');
       const quickTimeJumpInput = document.getElementById('quickTimeJumpInput');
       const touchFitBtn = document.getElementById('touchFitBtn');
       const videoWrapper = document.getElementById('videoWrapper');
@@ -2348,7 +2338,6 @@
       const shortcutsModal = document.getElementById('shortcutsModal');
       const mediaInfoModal = document.getElementById('mediaInfoModal');
 
-      // 快捷键指南视图 DOM
       const shortcutsModalTitle = document.getElementById('shortcutsModalTitle');
       const shortcutsViewMain = document.getElementById('shortcutsViewMain');
       const shortcutsViewPerf = document.getElementById('shortcutsViewPerf');
@@ -2365,19 +2354,16 @@
       let currentSubFileName = "";
       let touchFitTimer = null;
 
-      // 智能长按调速状态变量
       let speedLongPressTimer = null;
       let isSpeedLongPressing = false;
       let activeSpeedKey = null;
       let savedOriginalVolume = 1.0;
 
-      // 性能与渲染状态
       let lastScrollTimestamp = 0;
       let cachedSubIndex = 0;
       let currentActiveElement = null;
       let lastRenderedCueId = -2;
 
-      // 切集与调度控制
       let isBatchSwitching = false;
       let switchTokenCounter = 0;
 
@@ -2444,7 +2430,6 @@
         clearTimeout(touchFitTimer);
       });
 
-      // 触控与鼠标分界线拖拽系统
       const resizer = document.getElementById('resizer');
       const leftPanel = document.getElementById('videoZone');
       const mainContainer = document.getElementById('mainContainer');
@@ -3093,15 +3078,30 @@
       }
 
       function updateAIPromptButtonLabel() {
-        if (!copyAIPromptBtn) return;
-        if (subtitleData && subtitleData.length > 0) {
-          copyAIPromptBtn.innerHTML = '📋 复制“基于字幕全篇讲义”提示词';
-        } else if (myNotes && myNotes.length > 0) {
-          copyAIPromptBtn.innerHTML = '📋 复制“基于我的手记整理讲义”提示词 (共 ' + myNotes.length + ' 条)';
-        } else {
-          copyAIPromptBtn.innerHTML = '📋 复制提示词 (待添加字幕或手记)';
+          if (!copyAIPromptBtn) return;
+          const copyArchiveBtn = document.getElementById('copyArchivePromptBtn');
+
+          if (subtitleData && subtitleData.length > 0) {
+            copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
+            if (copyArchiveBtn) {
+              copyArchiveBtn.style.display = 'inline-flex';
+              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
+            }
+          } else if (myNotes && myNotes.length > 0) {
+            copyAIPromptBtn.innerHTML = '📋 复制“手记整理讲义”提示词 (' + myNotes.length + '条)';
+            if (copyArchiveBtn) {
+              copyArchiveBtn.style.display = 'inline-flex';
+              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
+            }
+          } else {
+            // 🌟 初始未加载状态：两个按钮同样常驻并排显示，排版完全对称
+            copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
+            if (copyArchiveBtn) {
+              copyArchiveBtn.style.display = 'inline-flex';
+              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
+            }
+          }
         }
-      }
 
       function loadVideoFile(file) {
         if (currentVideoObjectUrl) {
@@ -3418,7 +3418,6 @@
         }
       });
 
-      // 缓冲区告急自动平滑降档稳速（彻底防断音与 1.6 秒卡死）
       video.addEventListener('waiting', () => {
         if (isSpeedLongPressing && video.playbackRate > 1.25) {
           const safeRate = Math.max(1.25, video.playbackRate - 0.25);
@@ -3510,61 +3509,57 @@
         renderTranscriptList();
       }
 
-      // ⭐ 智能记忆版：不在字幕页时仅切回原状态；已经在字幕页再次按下才轮转！
-        function handleSubtitleShortcutCycle() {
-          if (subtitleData.length === 0) {
-            showOSD('📝 当前视频无字幕');
-            return;
-          }
+      function handleSubtitleShortcutCycle() {
+        if (subtitleData.length === 0) {
+          showOSD('📝 当前视频无字幕');
+          return;
+        }
 
-          // 1. 🚀 如果当前不是字幕页，单纯切回来，保持离开前的语言状态不变！
-          if (currentTab !== 'transcript') {
-            switchTab('transcript');
-            const langLabels = {
-              'cn': '🇨🇳 仅中文',
-              'bi': '👪 双语对照',
-              'foreign': '🌍 仅外语'
-            };
-            showOSD(`📝 切换至字幕 (${langLabels[currentLang] || ''})`);
-            return; // 👈 关键拦截：直接返回，绝不擅自改变语言模式！
-          }
-
-          // 2. 只有当前已经身处字幕页时，再次按下才进行顺次循环：cn -> bi -> foreign -> cn
-          const cycleOrder = ['cn', 'bi', 'foreign'];
-          const currentIdx = cycleOrder.indexOf(currentLang);
-          const nextLang = cycleOrder[(currentIdx + 1) % cycleOrder.length];
-
-          setLanguage(nextLang);
-
-          // 强制重置字幕锁，画面立刻响应切换
-          lastRenderedCueId = -2;
-          const curTime = video.currentTime;
-          const currentCue = subtitleData.find(item => curTime >= item.start && curTime <= item.end);
-          if (currentCue) {
-            videoSubOverlay.style.display = 'block';
-            if (nextLang === 'cn') {
-              videoSubCn.textContent = currentCue.cn;
-              videoSubCn.style.display = 'block';
-              videoSubForeign.style.display = 'none';
-            } else if (nextLang === 'foreign') {
-              videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
-              videoSubForeign.style.display = 'block';
-              videoSubCn.style.display = 'none';
-            } else {
-              videoSubCn.textContent = currentCue.cn;
-              videoSubForeign.textContent = currentCue.foreign;
-              videoSubCn.style.display = 'block';
-              videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
-            }
-          }
-
+        if (currentTab !== 'transcript') {
+          switchTab('transcript');
           const langLabels = {
             'cn': '🇨🇳 仅中文',
             'bi': '👪 双语对照',
             'foreign': '🌍 仅外语'
           };
-          showOSD(`📝 字幕模式: ${langLabels[nextLang]}`);
+          showOSD(`📝 切换至字幕 (${langLabels[currentLang] || ''})`);
+          return;
         }
+
+        const cycleOrder = ['cn', 'bi', 'foreign'];
+        const currentIdx = cycleOrder.indexOf(currentLang);
+        const nextLang = cycleOrder[(currentIdx + 1) % cycleOrder.length];
+
+        setLanguage(nextLang);
+
+        lastRenderedCueId = -2;
+        const curTime = video.currentTime;
+        const currentCue = subtitleData.find(item => curTime >= item.start && curTime <= item.end);
+        if (currentCue) {
+          videoSubOverlay.style.display = 'block';
+          if (nextLang === 'cn') {
+            videoSubCn.textContent = currentCue.cn;
+            videoSubCn.style.display = 'block';
+            videoSubForeign.style.display = 'none';
+          } else if (nextLang === 'foreign') {
+            videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
+            videoSubForeign.style.display = 'block';
+            videoSubCn.style.display = 'none';
+          } else {
+            videoSubCn.textContent = currentCue.cn;
+            videoSubForeign.textContent = currentCue.foreign;
+            videoSubCn.style.display = 'block';
+            videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+          }
+        }
+
+        const langLabels = {
+          'cn': '🇨🇳 仅中文',
+          'bi': '👪 双语对照',
+          'foreign': '🌍 仅外语'
+        };
+        showOSD(`📝 字幕模式: ${langLabels[nextLang]}`);
+      }
 
       function renderTranscriptList() {
         const container = document.getElementById('transcriptList');
@@ -3629,24 +3624,20 @@
         return (currentVideoFile.size * 8) / (video.duration * 1000000);
       }
 
-      // 适配真实硬件极限的平滑倍速算力矩阵
       function getSprintSpeed() {
         const w = video.videoWidth || 1920;
         const h = video.videoHeight || 1080;
         const totalPixels = w * h;
         const bitrate = getVideoBitrateMbps();
 
-        // 4K 及以上：稳妥匹配 1.50x（低码率最高 1.75x）
         if (totalPixels >= 5500000) {
           if (bitrate && bitrate <= 8) return 1.75;
           return 1.50;
         }
-        // 2K 级别：匹配 1.75x ~ 2.0x
         if (totalPixels >= 3000000) {
           if (bitrate && bitrate > 15) return 1.75;
           return 2.00;
         }
-        // 1080P：畅快拉满 2.5x ~ 3.0x
         if (totalPixels >= 1000000) {
           if (bitrate && bitrate > 12) return 2.50;
           return 3.00;
@@ -3667,7 +3658,6 @@
           }
         }
 
-        // ⭐ 改为 Ctrl + Alt + 1/2/3（彻底避开系统菜单延迟，按下的瞬间毫秒级触发）
         if (e.ctrlKey && e.altKey && !e.metaKey) {
           const isKey1 = (e.key === '1' || e.code === 'Digit1' || e.code === 'Numpad1');
           const isKey2 = (e.key === '2' || e.code === 'Digit2' || e.code === 'Numpad2');
@@ -3754,7 +3744,6 @@
 
                 savedOriginalVolume = video.volume;
                 video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
-                // 彻底保留变调保护，快进声音保持正常人声声调
                 video.preservesPitch = true;
                 video.playbackRate = targetSprintRate;
 
@@ -4422,38 +4411,63 @@
         showOSD('💾 讲义导出成功');
       }
 
-      // ================= AI 提示词与讲义解析渲染 =================
+      // ================= 辅助：组装双语原声字幕数据 =================
+      function getCondensedBilingualSubtitles() {
+        if (!subtitleData || subtitleData.length === 0) return "";
+        let condensedText = "";
+        subtitleData.forEach((item, idx) => {
+          let textPart = item.cn;
+          if (item.foreign) {
+            textPart += ` (${item.foreign})`;
+          } else if (item.raw && item.raw !== item.cn) {
+            textPart += ` (${item.raw})`;
+          }
+
+          if (idx % 3 === 0) condensedText += "\n[" + item.timeStr + "] ";
+          condensedText += textPart + " ";
+        });
+        return condensedText.trim();
+      }
+
+      // ================= 模块 A：实操学习讲义提示词 (零主观发挥) =================
       function copyAIPrompt() {
         if (subtitleData.length > 0) {
-          let condensedText = "";
-          subtitleData.forEach((item, idx) => {
-            let textPart = "";
-            if (currentLang === 'cn') textPart = item.cn;
-            else if (currentLang === 'foreign') textPart = item.foreign || item.raw;
-            else textPart = item.cn + (item.foreign ? (" (" + item.foreign + ")") : "");
-
-            if (idx % 3 === 0) condensedText += "\n[" + item.timeStr + "] ";
-            condensedText += textPart + " ";
-          });
+          const condensedText = getCondensedBilingualSubtitles();
 
           const pLines = [
-            "请将以下带有时间戳的视频字幕文本，整理成一份清晰紧凑的结构化学习讲义。",
-            "课程文件：" + currentVideoFileName,
+            "请将以下带有时间戳的双语视频字幕文本，整理成一份清晰紧凑的“实操学习讲义”。",
+            "课程文件：" + (currentVideoFileName || "视频实操教学"),
             "",
             "整理规则：",
-            "1. 大纲框架：梳理核心逻辑，使用多级标题（#、##、###）与精炼列表（-），排版紧凑不冗余。",
-            "2. 保留细节：口语转为书面规范，完整保留专业术语、具体操作步骤、案例与论证，重点术语加粗。",
-            "3. 保留时间戳：在章节标题、核心概念或关键操作步骤后，保留原时间戳标签（如 [03:25]）。",
-            "4. 输出规格：直接将整理后的内容置于单一 Markdown 格式代码块内输出，代码块外部无需任何前后缀解释或问候。",
+            "1. 绝对忠实原意（零主观发挥）：",
+            "   - 严禁添加原讲师未提及的任何背景知识、推论、操作建议或安全警示。",
+            "   - 严格基于原声内容进行信息提炼，剔除口头碎语与重复废话，保持原汁原味的客观事实。",
+            "",
+            "2. 双语事实校验与术语规范：",
+            "   - 数据源包含【中文字幕】与【外语原声】。请以外语原声为第一事实依据。",
+            "   - 仅利用原声纠正中文字幕中的机械机翻、错译或术语偏差，精准还原讲师所表达的技术名词，不得借机扩写。",
+            "",
+            "3. 清单化结构排版：",
+            "   - 使用多级标题（#、##、###）搭建讲解脉络。",
+            "   - 正文一律采用紧凑的无序列表（-）陈述原视频内容，完整保留讲师提到的具体动作、位置要求、参数与受力机制。",
+            "   - 关键技术名词适度加粗，便于实操中快速扫读。",
+            "",
+            "4. 时间戳工程化对齐：",
+            "   - 在各级标题末尾及每一个具体操作/核心论述条目后，附带对应的原视频时间戳。",
+            "   - 时间戳格式必须严格保持单一的 [mm:ss] 形式（如 [03:25]），确保与网页播放器跳转解析完全兼容。",
+            "",
+            "5. 输出规格：",
+            "   - 直接将整理后的内容置于单一 Markdown 格式代码块内输出。",
+            "   - 代码块外部无需任何前后缀解释或问候。",
             "",
             "字幕数据：",
             condensedText
           ];
 
           navigator.clipboard.writeText(pLines.join("\n")).then(() => {
-            showOSD('📋 已复制【基于字幕全篇】提示词');
+            showOSD('📋 已复制【实操学习讲义】提示词');
           }).catch(() => {
-            showOSD('⚠️ 复制失败，请手动选择');
+            showOSD('⚠️ 复制失败，请手动重试');
           });
           return;
         }
@@ -4474,12 +4488,12 @@
 
           const pLines = [
             "以下为视频观看时记录的带时间戳重点手记与实操批注，请整理润色为严谨的结构化学习讲义。",
-            "课程文件：" + currentVideoFileName,
+            "课程文件：" + (currentVideoFileName || "视频学习笔记"),
             "",
             "整理规则：",
             "1. 脉络与章节：按时间戳顺序梳理知识大纲与知识点章节（使用 #、##、###）。",
-            "2. 润色与升华：保留所有关键观点与结论，零散思考转为规范表达，流程步骤整理为有序列表，关键术语与避坑点加粗。",
-            "3. 保留时间戳：保留手记对应的原时间戳标签（如 [03:25] 或 [01:20 ~ 01:45]）。",
+            "2. 润色与整理：严格基于手记事实进行规范表达，流程步骤整理为有序列表，关键术语加粗，严禁脑补臆测。",
+            "3. 保留时间戳：保留手记对应的原时间戳标签（如 [03:25]）。",
             "4. 输出规格：直接将整理后的内容置于单一 Markdown 格式代码块内输出，代码块外部无需任何前后缀解释或问候。",
             "",
             "手记数据：",
@@ -4487,119 +4501,167 @@
           ];
 
           navigator.clipboard.writeText(pLines.join("\n")).then(() => {
-            showOSD('📋 已复制【基于你的 ' + myNotes.length + ' 条手记】提示词');
+            showOSD('📋 已复制【基于手记整理】提示词');
           }).catch(() => {
-            showOSD('⚠️ 复制失败，请手动选择');
+            showOSD('⚠️ 复制失败，请手动重试');
           });
           return;
         }
 
-        showOSD('⚠️ 暂无字幕或手记，请先标记打点');
+        showOSD('⚠️ 暂无字幕或手记，请先载入文件');
       }
 
-      function renderNotes(shouldSave = true) {
-        let raw = document.getElementById('notesInput').value;
-        if (!raw.trim()) return;
-
-        if (shouldSave && currentVideoFileName) {
-          localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
-          renderPlaylistUI();
-        }
-
-        const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
-        raw = raw.trim().replace(fencePattern, '');
-
-        const lines = raw.split('\n');
-        let html = '';
-        let inList = false;
-
-        lines.forEach(line => {
-          let trimmed = line.trim();
-          if (!trimmed) return;
-
-          const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('* ');
-          const isNumList = /^\d+\.\s+/.test(trimmed);
-
-          if (isBullet || isNumList) {
-            if (!inList) {
-              html += '<ul>';
-              inList = true;
-            }
-            let text = isBullet ? trimmed.substring(2) : trimmed.replace(/^\d+\.\s+/, '');
-            html += '<li>' + formatInline(text) + '</li>';
+      // ================= 模块 B：知识库归档长文提示词 (极简章节时码·纯净版) =================
+        function copyArchivePrompt() {
+          if (!subtitleData || subtitleData.length === 0) {
+            showOSD('⚠️ 暂无字幕数据，知识库长文需要基于字幕生成');
             return;
-          } else {
-            if (inList) {
-              html += '</ul>';
-              inList = false;
+          }
+
+          const condensedText = getCondensedBilingualSubtitles();
+
+          const pLines = [
+            "请将以下带有时间戳的双语视频字幕文本，整理重构成一篇系统、严谨的“专业技术参考长文/专题档案教材”。",
+            "课程文件：" + (currentVideoFileName || "视频技术解析"),
+            "",
+            "整理规则：",
+            "1. 绝对忠实原意（严禁主观外延）：",
+            "   - 严禁脑补、杜撰原作者未说明的内容，严禁添加外部资料或主观评价。",
+            "   - 核心任务是将讲师碎片化的口语表达，完整、客观地转译为行文流畅、用词规范的书面教材语言。",
+            "   - 完整保留讲师在原声中给出的所有因果论证、解剖/物理机理解释与逻辑推导，不遗漏细节，也不增加戏码。",
+            "",
+            "2. 双语事实核验与纠偏：",
+            "   - 数据源包含【中文字幕】与【外语原声】。以【外语原声】作为真实语义基准进行校验。",
+            "   - 若中文字幕存在直译生硬、概念颠倒或错译，必须依据原声原意予以校正，确保归档知识库的严谨度。",
+            "",
+            "3. 教材长文体例（沉浸阅读）：",
+            "   - 采用“系统段落叙述为主 + 必要逻辑小节”的专业教材风格，避免碎片的断句与过度列表化。",
+            "   - 重点技术名词适度加粗。",
+            "",
+            "4. 时间戳极简克制规则（严禁视觉污染·核心禁令）：",
+            "   - 正文段落中【严禁逐句插入时间戳】！严禁在短距离内连续出现多个时间戳！",
+            "   - 时间戳仅作为“章节溯源锚点”，【一律只允许标注在各级标题（#、##、###）的末尾】，如：### 2. 绳路走向与初始张力要求 [02:55]。",
+            "   - 正文段落内部必须完全保持纯净的文字叙述，不含任何时间戳标签，确保长文出版物级的清爽阅读质感。",
+            "   - 格式严格保持单一 [mm:ss] 形式。",
+            "",
+            "5. 输出规格：",
+            "   - 整理内容必须以 Markdown 格式直接置于单一代码框内输出。",
+            "   - 代码块外部无需任何多余的开场白、寒暄或总结后缀。",
+            "",
+            "字幕数据：",
+            condensedText
+          ];
+
+          navigator.clipboard.writeText(pLines.join("\n")).then(() => {
+            showOSD('📚 已复制【纯净版专题档案】提示词');
+          }).catch(() => {
+            showOSD('⚠️ 复制失败，请手动重试');
+          });
+        }
+
+        function renderNotes(shouldSave = true) {
+          let raw = document.getElementById('notesInput').value;
+          if (!raw.trim()) return;
+
+          if (shouldSave && currentVideoFileName) {
+            localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
+            renderPlaylistUI();
+          }
+
+          const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
+          raw = raw.trim().replace(fencePattern, '');
+
+          const lines = raw.split('\n');
+          let html = '';
+          let inList = false;
+
+          lines.forEach(line => {
+            let trimmed = line.trim();
+            if (!trimmed) return;
+
+            const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('* ');
+            const isNumList = /^\d+\.\s+/.test(trimmed);
+
+            if (isBullet || isNumList) {
+              if (!inList) {
+                html += '<ul>';
+                inList = true;
+              }
+              let text = isBullet ? trimmed.substring(2) : trimmed.replace(/^\d+\.\s+/, '');
+              html += '<li>' + formatInline(text) + '</li>';
+              return;
+            } else {
+              if (inList) {
+                html += '</ul>';
+                inList = false;
+              }
             }
-          }
 
-          if (trimmed.startsWith('### ')) {
-            html += '<h3>' + formatInline(trimmed.substring(4)) + '</h3>';
-          } else if (trimmed.startsWith('## ')) {
-            html += '<h2>' + formatInline(trimmed.substring(3)) + '</h2>';
-          } else if (trimmed.startsWith('# ')) {
-            html += '<h1>' + formatInline(trimmed.substring(2)) + '</h1>';
-          } else if (trimmed === '---' || trimmed === '***') {
-            html += '<hr>';
+            if (trimmed.startsWith('### ')) {
+              html += '<h3>' + formatInline(trimmed.substring(4)) + '</h3>';
+            } else if (trimmed.startsWith('## ')) {
+              html += '<h2>' + formatInline(trimmed.substring(3)) + '</h2>';
+            } else if (trimmed.startsWith('# ')) {
+              html += '<h1>' + formatInline(trimmed.substring(2)) + '</h1>';
+            } else if (trimmed === '---' || trimmed === '***') {
+              html += '<hr>';
+            } else {
+              html += '<p>' + formatInline(trimmed) + '</p>';
+            }
+          });
+
+          if (inList) html += '</ul>';
+
+          html = html.replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, function (match, timeStr) {
+            const sec = timeToSeconds(timeStr);
+            return '<span class="time-tag" onclick="jumpToPoint(' + sec + ')">' + timeStr + '</span>';
+          });
+
+          document.getElementById('notesRendered').innerHTML = html;
+          document.getElementById('inputBoxContainer').style.display = 'none';
+          document.getElementById('collapsedToolbar').style.display = 'flex';
+        }
+
+        function formatInline(str) {
+          return str
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+        }
+
+        function toggleInputBox() {
+          const box = document.getElementById('inputBoxContainer');
+          const toolbar = document.getElementById('collapsedToolbar');
+          if (box.style.display === 'none') {
+            box.style.display = 'block';
+            toolbar.style.display = 'none';
           } else {
-            html += '<p>' + formatInline(trimmed) + '</p>';
+            box.style.display = 'none';
+            toolbar.style.display = 'flex';
           }
-        });
-
-        if (inList) html += '</ul>';
-
-        html = html.replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, function (match, timeStr) {
-          const sec = timeToSeconds(timeStr);
-          return '<span class="time-tag" onclick="jumpToPoint(' + sec + ')">' + timeStr + '</span>';
-        });
-
-        document.getElementById('notesRendered').innerHTML = html;
-        document.getElementById('inputBoxContainer').style.display = 'none';
-        document.getElementById('collapsedToolbar').style.display = 'flex';
-      }
-
-      function formatInline(str) {
-        return str
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/`([^`]+)`/g, '<code>$1</code>');
-      }
-
-      function toggleInputBox() {
-        const box = document.getElementById('inputBoxContainer');
-        const toolbar = document.getElementById('collapsedToolbar');
-        if (box.style.display === 'none') {
-          box.style.display = 'block';
-          toolbar.style.display = 'none';
-        } else {
-          box.style.display = 'none';
-          toolbar.style.display = 'flex';
         }
-      }
 
-      function switchTab(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        function switchTab(tab) {
+          currentTab = tab;
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
 
-        if (tab === 'mynotes') {
-          document.getElementById('tabBtnMynotes').classList.add('active');
-          document.getElementById('mynotesTab').style.display = 'block';
-        } else if (tab === 'transcript') {
-          document.getElementById('tabBtnTranscript').classList.add('active');
-          document.getElementById('transcriptTab').style.display = 'block';
+          if (tab === 'mynotes') {
+            document.getElementById('tabBtnMynotes').classList.add('active');
+            document.getElementById('mynotesTab').style.display = 'block';
+          } else if (tab === 'transcript') {
+            document.getElementById('tabBtnTranscript').classList.add('active');
+            document.getElementById('transcriptTab').style.display = 'block';
 
-          const activeEl = document.querySelector('.transcript-item.active');
-          if (activeEl) {
-            setTimeout(() => activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            const activeEl = document.querySelector('.transcript-item.active');
+            if (activeEl) {
+              setTimeout(() => activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            }
+          } else if (tab === 'notes') {
+            document.getElementById('tabBtnNotes').classList.add('active');
+            document.getElementById('notesTab').style.display = 'block';
           }
-        } else if (tab === 'notes') {
-          document.getElementById('tabBtnNotes').classList.add('active');
-          document.getElementById('notesTab').style.display = 'block';
         }
-      }
-    </script>
-  </body>
+      </script>
+    </body>
 
-</html>
+    </html>
