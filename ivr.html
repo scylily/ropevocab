@@ -3078,30 +3078,30 @@
       }
 
       function updateAIPromptButtonLabel() {
-          if (!copyAIPromptBtn) return;
-          const copyArchiveBtn = document.getElementById('copyArchivePromptBtn');
+        if (!copyAIPromptBtn) return;
+        const copyArchiveBtn = document.getElementById('copyArchivePromptBtn');
 
-          if (subtitleData && subtitleData.length > 0) {
-            copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
-            if (copyArchiveBtn) {
-              copyArchiveBtn.style.display = 'inline-flex';
-              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
-            }
-          } else if (myNotes && myNotes.length > 0) {
-            copyAIPromptBtn.innerHTML = '📋 复制“手记整理讲义”提示词 (' + myNotes.length + '条)';
-            if (copyArchiveBtn) {
-              copyArchiveBtn.style.display = 'inline-flex';
-              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
-            }
-          } else {
-            // 🌟 初始未加载状态：两个按钮同样常驻并排显示，排版完全对称
-            copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
-            if (copyArchiveBtn) {
-              copyArchiveBtn.style.display = 'inline-flex';
-              copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
-            }
+        if (subtitleData && subtitleData.length > 0) {
+          copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
+          if (copyArchiveBtn) {
+            copyArchiveBtn.style.display = 'inline-flex';
+            copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
+          }
+        } else if (myNotes && myNotes.length > 0) {
+          copyAIPromptBtn.innerHTML = '📋 复制“手记整理讲义”提示词 (' + myNotes.length + '条)';
+          if (copyArchiveBtn) {
+            copyArchiveBtn.style.display = 'inline-flex';
+            copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
+          }
+        } else {
+          // 🌟 初始未加载状态：两个按钮同样常驻并排显示，排版完全对称
+          copyAIPromptBtn.innerHTML = '📋 复制提示词以生成“学习讲义”';
+          if (copyArchiveBtn) {
+            copyArchiveBtn.style.display = 'inline-flex';
+            copyArchiveBtn.innerHTML = '📚 复制提示词以生成“专题档案”';
           }
         }
+      }
 
       function loadVideoFile(file) {
         if (currentVideoObjectUrl) {
@@ -4435,30 +4435,35 @@
           const condensedText = getCondensedBilingualSubtitles();
 
           const pLines = [
-            "请将以下带有时间戳的双语视频字幕文本，整理成一份清晰紧凑的“实操学习讲义”。",
+            "请将以下带有时间戳的双语视频字幕文本，整理成一份专业、清晰且便于实操查阅的“标准化实操学习讲义”。",
             "课程文件：" + (currentVideoFileName || "视频实操教学"),
             "",
             "整理规则：",
-            "1. 绝对忠实原意（零主观发挥）：",
-            "   - 严禁添加原讲师未提及的任何背景知识、推论、操作建议或安全警示。",
-            "   - 严格基于原声内容进行信息提炼，剔除口头碎语与重复废话，保持原汁原味的客观事实。",
+            "1. 忠实客观记录（零主观发挥与说教）：",
+            "   - 严禁脑补、杜撰或添加原讲师未提及的任何背景知识、主观推论或外部警示。",
+            "   - 讲师怎么教就怎么客观记录，完整保留原声中的动作指令、解剖依据与受力因果机理，剔除口头碎语与废话。",
+            "   - 语调客观中立、克制专业：严禁使用“铁律”、“铁则”、“禁令”等死板教条词汇，也无需添加“讲师规范/流派要求”等说教标签；侧重“客观动作”与“力学/工序因果”等中立表述。",
             "",
             "2. 双语事实校验与术语规范：",
             "   - 数据源包含【中文字幕】与【外语原声】。请以外语原声为第一事实依据。",
-            "   - 仅利用原声纠正中文字幕中的机械机翻、错译或术语偏差，精准还原讲师所表达的技术名词，不得借机扩写。",
+            "   - 仅利用原声纠正中文字幕中的机械机翻、错译或术语偏差，精准还原专业技术名词，严禁借机扩写。",
+            "   - 一些常用的中文词汇参考，如下，SSC原则：安全、理智、知情同意；RACK原则：风险认知下的知情同意；绳艺、紧缚、责绳、两难、地面缚、吊缚、半吊、捕绳术、柱缚、一绳、起绳、走绳、收绳、绳路；麻绳、绳头、绳尾、绳圈、张力、闩、扣、结、半扣、十字扣、穆特结、八字扣、半月扣、单结、本结、萨默维尔称人结、雀头结、接绳结、双套结、丁香结、捕绳扣、快拆结、雪村结、奈加结、上胸圈、下胸圈、2TK、3TK；单柱缚、双柱缚、胸绳、腰胯缚、菱形缚、龟甲缚、折腿缚、高手小手缚、后手直臂缚、后手首枕缚、M字开脚缚、海老缚、逆海老缚、驷马缚、并腿缚、美人鱼缚、单腿吊缚、天狗缚、铁炮缚、苏秦背剑、胡坐缚、正坐缚、跪坐缚、后手观音缚、十字缚；手腕、手肘、上臂、脚踝、膝盖、大腿、胸部、腰部、背部、椅子、床铺、桌子、悬吊架、竹竿、吊环、横梁、柱子、门框、窗框、栏杆、树木、竹子、岩石；缚手、受缚者、被缚者、绳师、双属性者、自缚者、观众、安全员、摄影师、绳缚搭档、绳缚导师、绳缚学徒、对话、事后关怀、绳缚关怀、绳缚工作坊、工作坊、绳缚表演、绳缚聚会、交流会。",
             "",
-            "3. 清单化结构排版：",
-            "   - 使用多级标题（#、##、###）搭建讲解脉络。",
-            "   - 正文一律采用紧凑的无序列表（-）陈述原视频内容，完整保留讲师提到的具体动作、位置要求、参数与受力机制。",
-            "   - 关键技术名词适度加粗，便于实操中快速扫读。",
+            "3. “前置认知抓手”与扁平清单排版（核心体例）：",
+            "   - 使用多级标题（#、##、###）搭建讲解脉络，章节编号严密，严禁重复或逻辑错乱。",
+            "   - 正文一律采用纯扁平的单层无序列表（-），严禁出现多层嵌套子缩进，保持垂直阅读视线连贯。",
+            "   - 【前置认知抓手】：每个清单条目开头，必须提炼一个客观动作/技术抓手，格式严格为：",
+            "     `- **客观动作/技术抓手**：动作指令叙述、原理解析与指导规范 [mm:ss]`",
+            "   - 句子内部的重点技术名词适度加粗，便于实操中快速定位。",
             "",
-            "4. 时间戳工程化对齐：",
-            "   - 在各级标题末尾及每一个具体操作/核心论述条目后，附带对应的原视频时间戳。",
-            "   - 时间戳格式必须严格保持单一的 [mm:ss] 形式（如 [03:25]），确保与网页播放器跳转解析完全兼容。",
+            "4. 时间戳工程化对齐（行尾单一锚点）：",
+            "   - 各级标题（#、##、###）末尾必须附带单一章节时间戳（如 `### 1. 手臂初始姿势与腕部缠绕 [00:01]`）。",
+            "   - 正文每个条目内部（包括加粗标签后、句中）严禁插入时间戳！时间戳必须且仅能附带在【整句的最末尾】作为落幅。",
+            "   - 时间戳格式必须严格保持单一的 [mm:ss] 形式，确保与网页播放器跳转解析完全兼容。",
             "",
             "5. 输出规格：",
             "   - 直接将整理后的内容置于单一 Markdown 格式代码块内输出。",
-            "   - 代码块外部无需任何前后缀解释或问候。",
+            "   - 代码块外部无需任何前后缀解释、寒暄或总结后缀。",
             "",
             "字幕数据：",
             condensedText
@@ -4512,156 +4517,157 @@
       }
 
       // ================= 模块 B：知识库归档长文提示词 (极简章节时码·纯净版) =================
-        function copyArchivePrompt() {
-          if (!subtitleData || subtitleData.length === 0) {
-            showOSD('⚠️ 暂无字幕数据，知识库长文需要基于字幕生成');
+      function copyArchivePrompt() {
+        if (!subtitleData || subtitleData.length === 0) {
+          showOSD('⚠️ 暂无字幕数据，知识库长文需要基于字幕生成');
+          return;
+        }
+
+        const condensedText = getCondensedBilingualSubtitles();
+
+        const pLines = [
+          "请将以下带有时间戳的双语视频字幕文本，整理重构成一篇系统、严谨的“专业技术参考长文/专题档案教材”。",
+          "课程文件：" + (currentVideoFileName || "视频技术解析"),
+          "",
+          "整理规则：",
+          "1. 绝对忠实原意（严禁主观外延）：",
+          "   - 严禁脑补、杜撰原作者未说明的内容，严禁添加外部资料或主观评价。",
+          "   - 核心任务是将讲师碎片化的口语表达，完整、客观地转译为行文流畅、用词规范的书面教材语言。",
+          "   - 完整保留讲师在原声中给出的所有因果论证、解剖/物理机理解释与逻辑推导，不遗漏细节，也不增加戏码。",
+          "",
+          "2. 双语事实核验与纠偏：",
+          "   - 数据源包含【中文字幕】与【外语原声】。以【外语原声】作为真实语义基准进行校验。",
+          "   - 若中文字幕存在直译生硬、概念颠倒或错译，必须依据原声原意予以校正，确保归档知识库的严谨度。",
+          "   - 一些常用的中文词汇参考，如下，SSC原则：安全、理智、知情同意；RACK原则：风险认知下的知情同意；绳艺、紧缚、责绳、两难、地面缚、吊缚、半吊、捕绳术、柱缚、一绳、起绳、走绳、收绳、绳路；麻绳、绳头、绳尾、绳圈、张力、闩、扣、结、半扣、十字扣、穆特结、八字扣、半月扣、单结、本结、萨默维尔称人结、雀头结、接绳结、双套结、丁香结、捕绳扣、快拆结、雪村结、奈加结、上胸圈、下胸圈、2TK、3TK；单柱缚、双柱缚、胸绳、腰胯缚、菱形缚、龟甲缚、折腿缚、高手小手缚、后手直臂缚、后手首枕缚、M字开脚缚、海老缚、逆海老缚、驷马缚、并腿缚、美人鱼缚、单腿吊缚、天狗缚、铁炮缚、苏秦背剑、胡坐缚、正坐缚、跪坐缚、后手观音缚、十字缚；手腕、手肘、上臂、脚踝、膝盖、大腿、胸部、腰部、背部、椅子、床铺、桌子、悬吊架、竹竿、吊环、横梁、柱子、门框、窗框、栏杆、树木、竹子、岩石；缚手、受缚者、被缚者、绳师、双属性者、自缚者、观众、安全员、摄影师、绳缚搭档、绳缚导师、绳缚学徒、对话、事后关怀、绳缚关怀、绳缚工作坊、工作坊、绳缚表演、绳缚聚会、交流会。",
+          "",
+          "3. 教材长文体例（沉浸阅读）：",
+          "   - 采用“系统段落叙述为主 + 必要逻辑小节”的专业教材风格，避免碎片的断句与过度列表化。",
+          "   - 重点技术名词适度加粗。",
+          "",
+          "4. 时间戳极简克制规则（严禁视觉污染·核心禁令）：",
+          "   - 正文段落中【严禁逐句插入时间戳】！严禁在短距离内连续出现多个时间戳！",
+          "   - 时间戳仅作为“章节溯源锚点”，【一律只允许标注在各级标题（#、##、###）的末尾】，如：### 2. 绳路走向与初始张力要求 [02:55]。",
+          "   - 正文段落内部必须完全保持纯净的文字叙述，不含任何时间戳标签，确保长文出版物级的清爽阅读质感。",
+          "   - 格式严格保持单一 [mm:ss] 形式。",
+          "",
+          "5. 输出规格：",
+          "   - 整理内容必须以 Markdown 格式直接置于单一代码框内输出。",
+          "   - 代码块外部无需任何多余的开场白、寒暄或总结后缀。",
+          "",
+          "字幕数据：",
+          condensedText
+        ];
+
+        navigator.clipboard.writeText(pLines.join("\n")).then(() => {
+          showOSD('📚 已复制【纯净版专题档案】提示词');
+        }).catch(() => {
+          showOSD('⚠️ 复制失败，请手动重试');
+        });
+      }
+
+      function renderNotes(shouldSave = true) {
+        let raw = document.getElementById('notesInput').value;
+        if (!raw.trim()) return;
+
+        if (shouldSave && currentVideoFileName) {
+          localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
+          renderPlaylistUI();
+        }
+
+        const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
+        raw = raw.trim().replace(fencePattern, '');
+
+        const lines = raw.split('\n');
+        let html = '';
+        let inList = false;
+
+        lines.forEach(line => {
+          let trimmed = line.trim();
+          if (!trimmed) return;
+
+          const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('* ');
+          const isNumList = /^\d+\.\s+/.test(trimmed);
+
+          if (isBullet || isNumList) {
+            if (!inList) {
+              html += '<ul>';
+              inList = true;
+            }
+            let text = isBullet ? trimmed.substring(2) : trimmed.replace(/^\d+\.\s+/, '');
+            html += '<li>' + formatInline(text) + '</li>';
             return;
-          }
-
-          const condensedText = getCondensedBilingualSubtitles();
-
-          const pLines = [
-            "请将以下带有时间戳的双语视频字幕文本，整理重构成一篇系统、严谨的“专业技术参考长文/专题档案教材”。",
-            "课程文件：" + (currentVideoFileName || "视频技术解析"),
-            "",
-            "整理规则：",
-            "1. 绝对忠实原意（严禁主观外延）：",
-            "   - 严禁脑补、杜撰原作者未说明的内容，严禁添加外部资料或主观评价。",
-            "   - 核心任务是将讲师碎片化的口语表达，完整、客观地转译为行文流畅、用词规范的书面教材语言。",
-            "   - 完整保留讲师在原声中给出的所有因果论证、解剖/物理机理解释与逻辑推导，不遗漏细节，也不增加戏码。",
-            "",
-            "2. 双语事实核验与纠偏：",
-            "   - 数据源包含【中文字幕】与【外语原声】。以【外语原声】作为真实语义基准进行校验。",
-            "   - 若中文字幕存在直译生硬、概念颠倒或错译，必须依据原声原意予以校正，确保归档知识库的严谨度。",
-            "",
-            "3. 教材长文体例（沉浸阅读）：",
-            "   - 采用“系统段落叙述为主 + 必要逻辑小节”的专业教材风格，避免碎片的断句与过度列表化。",
-            "   - 重点技术名词适度加粗。",
-            "",
-            "4. 时间戳极简克制规则（严禁视觉污染·核心禁令）：",
-            "   - 正文段落中【严禁逐句插入时间戳】！严禁在短距离内连续出现多个时间戳！",
-            "   - 时间戳仅作为“章节溯源锚点”，【一律只允许标注在各级标题（#、##、###）的末尾】，如：### 2. 绳路走向与初始张力要求 [02:55]。",
-            "   - 正文段落内部必须完全保持纯净的文字叙述，不含任何时间戳标签，确保长文出版物级的清爽阅读质感。",
-            "   - 格式严格保持单一 [mm:ss] 形式。",
-            "",
-            "5. 输出规格：",
-            "   - 整理内容必须以 Markdown 格式直接置于单一代码框内输出。",
-            "   - 代码块外部无需任何多余的开场白、寒暄或总结后缀。",
-            "",
-            "字幕数据：",
-            condensedText
-          ];
-
-          navigator.clipboard.writeText(pLines.join("\n")).then(() => {
-            showOSD('📚 已复制【纯净版专题档案】提示词');
-          }).catch(() => {
-            showOSD('⚠️ 复制失败，请手动重试');
-          });
-        }
-
-        function renderNotes(shouldSave = true) {
-          let raw = document.getElementById('notesInput').value;
-          if (!raw.trim()) return;
-
-          if (shouldSave && currentVideoFileName) {
-            localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
-            renderPlaylistUI();
-          }
-
-          const fencePattern = /^[`\x60]{3}(?:markdown)?\s*\n?|\n?[`\x60]{3}$/gi;
-          raw = raw.trim().replace(fencePattern, '');
-
-          const lines = raw.split('\n');
-          let html = '';
-          let inList = false;
-
-          lines.forEach(line => {
-            let trimmed = line.trim();
-            if (!trimmed) return;
-
-            const isBullet = trimmed.startsWith('- ') || trimmed.startsWith('* ');
-            const isNumList = /^\d+\.\s+/.test(trimmed);
-
-            if (isBullet || isNumList) {
-              if (!inList) {
-                html += '<ul>';
-                inList = true;
-              }
-              let text = isBullet ? trimmed.substring(2) : trimmed.replace(/^\d+\.\s+/, '');
-              html += '<li>' + formatInline(text) + '</li>';
-              return;
-            } else {
-              if (inList) {
-                html += '</ul>';
-                inList = false;
-              }
-            }
-
-            if (trimmed.startsWith('### ')) {
-              html += '<h3>' + formatInline(trimmed.substring(4)) + '</h3>';
-            } else if (trimmed.startsWith('## ')) {
-              html += '<h2>' + formatInline(trimmed.substring(3)) + '</h2>';
-            } else if (trimmed.startsWith('# ')) {
-              html += '<h1>' + formatInline(trimmed.substring(2)) + '</h1>';
-            } else if (trimmed === '---' || trimmed === '***') {
-              html += '<hr>';
-            } else {
-              html += '<p>' + formatInline(trimmed) + '</p>';
-            }
-          });
-
-          if (inList) html += '</ul>';
-
-          html = html.replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, function (match, timeStr) {
-            const sec = timeToSeconds(timeStr);
-            return '<span class="time-tag" onclick="jumpToPoint(' + sec + ')">' + timeStr + '</span>';
-          });
-
-          document.getElementById('notesRendered').innerHTML = html;
-          document.getElementById('inputBoxContainer').style.display = 'none';
-          document.getElementById('collapsedToolbar').style.display = 'flex';
-        }
-
-        function formatInline(str) {
-          return str
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>');
-        }
-
-        function toggleInputBox() {
-          const box = document.getElementById('inputBoxContainer');
-          const toolbar = document.getElementById('collapsedToolbar');
-          if (box.style.display === 'none') {
-            box.style.display = 'block';
-            toolbar.style.display = 'none';
           } else {
-            box.style.display = 'none';
-            toolbar.style.display = 'flex';
-          }
-        }
-
-        function switchTab(tab) {
-          currentTab = tab;
-          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-
-          if (tab === 'mynotes') {
-            document.getElementById('tabBtnMynotes').classList.add('active');
-            document.getElementById('mynotesTab').style.display = 'block';
-          } else if (tab === 'transcript') {
-            document.getElementById('tabBtnTranscript').classList.add('active');
-            document.getElementById('transcriptTab').style.display = 'block';
-
-            const activeEl = document.querySelector('.transcript-item.active');
-            if (activeEl) {
-              setTimeout(() => activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+            if (inList) {
+              html += '</ul>';
+              inList = false;
             }
-          } else if (tab === 'notes') {
-            document.getElementById('tabBtnNotes').classList.add('active');
-            document.getElementById('notesTab').style.display = 'block';
           }
-        }
-      </script>
-    </body>
 
-    </html>
+          if (trimmed.startsWith('### ')) {
+            html += '<h3>' + formatInline(trimmed.substring(4)) + '</h3>';
+          } else if (trimmed.startsWith('## ')) {
+            html += '<h2>' + formatInline(trimmed.substring(3)) + '</h2>';
+          } else if (trimmed.startsWith('# ')) {
+            html += '<h1>' + formatInline(trimmed.substring(2)) + '</h1>';
+          } else if (trimmed === '---' || trimmed === '***') {
+            html += '<hr>';
+          } else {
+            html += '<p>' + formatInline(trimmed) + '</p>';
+          }
+        });
+
+        if (inList) html += '</ul>';
+
+        html = html.replace(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g, function (match, timeStr) {
+          const sec = timeToSeconds(timeStr);
+          return '<span class="time-tag" onclick="jumpToPoint(' + sec + ')">' + timeStr + '</span>';
+        });
+
+        document.getElementById('notesRendered').innerHTML = html;
+        document.getElementById('inputBoxContainer').style.display = 'none';
+        document.getElementById('collapsedToolbar').style.display = 'flex';
+      }
+
+      function formatInline(str) {
+        return str
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>');
+      }
+
+      function toggleInputBox() {
+        const box = document.getElementById('inputBoxContainer');
+        const toolbar = document.getElementById('collapsedToolbar');
+        if (box.style.display === 'none') {
+          box.style.display = 'block';
+          toolbar.style.display = 'none';
+        } else {
+          box.style.display = 'none';
+          toolbar.style.display = 'flex';
+        }
+      }
+
+      function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+        if (tab === 'mynotes') {
+          document.getElementById('tabBtnMynotes').classList.add('active');
+          document.getElementById('mynotesTab').style.display = 'block';
+        } else if (tab === 'transcript') {
+          document.getElementById('tabBtnTranscript').classList.add('active');
+          document.getElementById('transcriptTab').style.display = 'block';
+
+          const activeEl = document.querySelector('.transcript-item.active');
+          if (activeEl) {
+            setTimeout(() => activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+          }
+        } else if (tab === 'notes') {
+          document.getElementById('tabBtnNotes').classList.add('active');
+          document.getElementById('notesTab').style.display = 'block';
+        }
+      }
+    </script>
+  </body>
+
+</html>
