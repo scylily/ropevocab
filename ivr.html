@@ -4301,7 +4301,7 @@
             : formatSeconds(note.start);
 
           if (isLoop) {
-            badgeHtml = '<span class="time-tag-loop ' + (isCurrentlyLooping ? 'active-loop' : '') + '" onclick="startIntervalLoop(' + note.start + ', ' + note.end + ', ' + note.id + ')">🔁 ' + standardTimeStr + (isCurrentlyLooping ? ' (循环中...点击重头)' : ' ') + '</span>';
+            badgeHtml = '<span class="time-tag-loop ' + (isCurrentlyLooping ? 'active-loop' : '') + '" onclick="startIntervalLoop(' + note.start + ', ' + note.end + ', ' + note.id + ')">🔁 ' + standardTimeStr + (isCurrentlyLooping ? '' : '') + '</span>';
           } else {
             badgeHtml = '<span class="time-tag" onclick="jumpToPoint(' + note.start + ')">▶ ' + standardTimeStr + '</span>';
           }
