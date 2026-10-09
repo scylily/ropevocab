@@ -14,7 +14,13 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        /* 1. 优先使用 Windows 上最好看的 Microsoft YaHei UI (带抗锯齿优化版微软雅黑) */
+        font-family: "Microsoft YaHei UI", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        /* 2. 关键：开启字体平滑抗锯齿（让字看起来不再发虚、边缘更圆润饱满） */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+
         height: 100vh;
         display: flex;
         flex-direction: column;
@@ -35,6 +41,11 @@
         color: #64748b;
         flex-shrink: 0;
         z-index: 30;
+        /* 👇 加上这两行核心魔法 👇 */
+        flex-wrap: wrap;
+        /* 空间不够时，多出来的状态标签自动温柔地沉到下一行，绝不重叠挤压 */
+        gap: 8px;
+        /* 元素之间保持 8 像素的安全呼吸间距 */
       }
 
       .header-top-row {
@@ -92,6 +103,8 @@
         flex: 1;
         min-width: 0;
         position: relative;
+        flex-shrink: 0;
+        /* 👈 加上这行：禁止被旁边的按钮挤压变窄 */
       }
 
       .btn-ep {
@@ -334,7 +347,15 @@
         display: flex;
         gap: 6px;
         align-items: center;
-        flex-shrink: 0;
+        flex-shrink: 1;
+      }
+
+      @media (max-width: 1050px) {
+
+        #videoStatus,
+        #assStatus {
+          display: none !important;
+        }
       }
 
       .status-badge {
@@ -811,7 +832,7 @@
         background: transparent;
         outline: none;
         font-size: 11.5px;
-        font-family: monospace;
+        font-family: inherit;
         color: #1e293b;
         text-align: center;
       }
@@ -966,7 +987,7 @@
         padding: 0 4px;
         border-radius: 3px;
         font-size: 11px;
-        font-family: monospace;
+        font-family: inherit;
         font-weight: 600;
         cursor: pointer;
         margin-right: 4px;
@@ -981,19 +1002,27 @@
       }
 
       .time-tag-loop {
-        display: inline-block;
+        /* 1. 核心：使用 inline-flex，让标签像橡皮筋一样，刚好包裹住文字内容 */
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        /* 👈 关键：宽度完全自适应文字本身 */
+        white-space: nowrap;
+        /* 👈 关键：绝对不许换行！字有多长，它就顺畅延展多长 */
+
+        /* 2. 精致内边距：上下 2px，左右 6px，让文字四周留出舒服的呼吸圈 */
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.2;
+
+        /* 3. 颜色与边框 */
         background: #f3e8ff;
         color: #7e22ce;
         border: 1px solid #e9d5ff;
-        padding: 1px 6px;
-        border-radius: 3px;
-        font-size: 11px;
-        font-family: monospace;
-        font-weight: 600;
         cursor: pointer;
-        margin-right: 4px;
         user-select: none;
-        line-height: 1.4;
       }
 
       .time-tag-loop:hover {
@@ -1196,7 +1225,7 @@
         padding: 2px 6px;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
-        font-family: monospace;
+        font-family: inherit;
         font-size: 12px;
         text-align: center;
       }
@@ -1335,7 +1364,7 @@
         border: 1px solid #cbd5e1;
         padding: 1px 5px;
         border-radius: 3px;
-        font-family: monospace;
+        font-family: inherit;
         font-size: 10.5px;
         font-weight: 700;
         color: #334155;
@@ -1454,7 +1483,7 @@
         border: 1px solid #cbd5e1;
         border-radius: 4px;
         padding: 4px 8px;
-        font-family: monospace;
+        font-family: inherit;
         font-size: 11px;
         color: #334155;
         display: flex;
@@ -2536,9 +2565,9 @@
       });
 
       // ✅ 默认双语 ('bi')
-        let subtitleData = [];
-        let currentLang = 'bi';
-        let currentActiveId = -1;
+      let subtitleData = [];
+      let currentLang = 'bi';
+      let currentActiveId = -1;
 
       let activeLoop = null;
       let tempInPointSec = null;
@@ -4272,7 +4301,7 @@
             : formatSeconds(note.start);
 
           if (isLoop) {
-            badgeHtml = '<span class="time-tag-loop ' + (isCurrentlyLooping ? 'active-loop' : '') + '" onclick="startIntervalLoop(' + note.start + ', ' + note.end + ', ' + note.id + ')">🔁 ' + standardTimeStr + (isCurrentlyLooping ? ' (循环中...点击重头)' : ' (循环播放)') + '</span>';
+            badgeHtml = '<span class="time-tag-loop ' + (isCurrentlyLooping ? 'active-loop' : '') + '" onclick="startIntervalLoop(' + note.start + ', ' + note.end + ', ' + note.id + ')">🔁 ' + standardTimeStr + (isCurrentlyLooping ? ' (循环中...点击重头)' : ' ') + '</span>';
           } else {
             badgeHtml = '<span class="time-tag" onclick="jumpToPoint(' + note.start + ')">▶ ' + standardTimeStr + '</span>';
           }
