@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>iVideo Reader · 视频手记与智能讲义工作站</title>
     <style>
-      /* ================= 1. Aura Studio (灵光工坊) Tokens ================= */
+      /* ================= 1. Aura Studio (灵光工坊) Tokens 基础规范 ================= */
       :root {
         --primary: #4f46e5;
         --primary-hover: #4338ca;
@@ -56,17 +56,18 @@
         overflow: hidden;
       }
 
-      /* ================= 2. 顶部系统工具栏 (Header) ================= */
+      /* ================= 2. 顶部系统工具栏 (无级流体 Header) ================= */
       header {
         height: 48px;
         background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border-light);
-        padding: 0 14px;
+        /* 👈 核心无级流体：内边距和间距随窗口宽度每 1 像素平滑连续收缩，杜绝硬断点跳变 */
+        padding: 0 clamp(8px, 1.2vw, 14px);
+        gap: clamp(4px, 0.8vw, 12px);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
         flex-shrink: 0;
         z-index: 40;
       }
@@ -74,7 +75,7 @@
       .header-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: clamp(4px, 0.6vw, 8px);
         flex-shrink: 0;
       }
 
@@ -98,6 +99,7 @@
         color: #fff;
         font-weight: 800;
         font-size: 10px;
+        flex-shrink: 0;
       }
 
       .brand-name {
@@ -108,10 +110,16 @@
         white-space: nowrap;
       }
 
-      /* 灵光通用按钮系统 */
+      .header-action-cluster {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* 通用按钮规范 */
       .btn {
         height: 28px;
-        padding: 0 10px;
+        padding: 0 clamp(6px, 0.7vw, 10px);
         border-radius: var(--radius-sm);
         border: none;
         outline: none;
@@ -161,13 +169,17 @@
         color: var(--text-primary);
       }
 
-      /* A-4: 选集播放条 (修复点 1：自适应占满中间空白区域) */
+      .btn-text-short {
+        display: none;
+      }
+
+      /* A-4: 选集播放条 (自适应撑满中间) */
       .header-center {
         display: flex;
         align-items: center;
         justify-content: center;
-        flex: 1;
-        min-width: 0;
+        flex: 1 1 180px;
+        min-width: 120px;
         margin: 0 4px;
       }
 
@@ -180,7 +192,7 @@
         border-radius: 6px;
         border: 1px solid var(--border-light);
         width: 100%;
-        min-width: 140px;
+        min-width: 120px;
         position: relative;
       }
 
@@ -197,6 +209,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
       }
 
       .btn-ep:disabled {
@@ -245,14 +258,14 @@
         white-space: nowrap;
       }
 
-      /* A-4.2: 修复点 2：悬浮选集下拉抽屉相对于胶囊条水平居中 */
+      /* A-4.2: 选集下拉浮层水平居中 */
       .custom-ep-popover {
         position: absolute;
         top: calc(100% + 6px);
         left: 50%;
         transform: translateX(-50%);
         width: max-content;
-        min-width: 340px;
+        min-width: 320px;
         max-width: 85vw;
         background: #ffffff;
         border: 1px solid var(--border-light);
@@ -271,12 +284,12 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 7px 14px;
+        padding: 7px 12px;
         border-radius: 5px;
         font-size: 12px;
         color: var(--text-secondary);
         cursor: pointer;
-        gap: 16px;
+        gap: 12px;
         white-space: nowrap;
         transition: var(--transition);
       }
@@ -296,7 +309,9 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        flex-shrink: 0;
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
       }
 
       .ep-check-icon {
@@ -305,6 +320,7 @@
         font-weight: 700;
         color: var(--primary);
         text-align: center;
+        flex-shrink: 0;
       }
 
       .ep-item-badges {
@@ -365,21 +381,23 @@
         color: var(--primary);
         margin-right: 4px;
         text-align: center;
+        flex-shrink: 0;
       }
 
-      /* A-6: 状态呼吸徽章组 */
+      /* A-6: 状态呼吸徽章组 (流体自适应弹性收缩) */
       .status-tags {
         display: flex;
         align-items: center;
-        gap: 6px;
-        flex-shrink: 0;
+        gap: clamp(2px, 0.4vw, 6px);
+        flex-shrink: 1;
+        min-width: 0;
       }
 
       .status-badge {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 3px 8px;
+        gap: 4px;
+        padding: 3px clamp(4px, 0.6vw, 8px);
         border-radius: var(--radius-full);
         font-size: 11px;
         font-weight: 600;
@@ -387,6 +405,7 @@
         color: var(--text-muted);
         cursor: pointer;
         user-select: none;
+        white-space: nowrap;
         transition: var(--transition);
       }
 
@@ -405,6 +424,7 @@
         height: 6px;
         border-radius: 50%;
         background: #94a3b8;
+        flex-shrink: 0;
       }
 
       .status-badge.loaded .status-dot {
@@ -423,7 +443,9 @@
 
       .video-stage {
         width: 52%;
-        min-width: 280px;
+        min-width: 240px;
+        /* 👈 核心无级防挤死锁铁律：左侧绝不能把右侧挤出屏幕！保证右侧至少保留 280px */
+        max-width: calc(100% - 280px);
         height: 100%;
         background: var(--surface-stage);
         position: relative;
@@ -449,11 +471,28 @@
         touch-action: pan-y;
       }
 
+      /* 视频画面主体 (封杀一切焦点白框) */
       video {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        outline: none;
+        outline: none !important;
+        border: none !important;
+      }
+
+      video:focus,
+      video:focus-visible,
+      video:active,
+      video::-webkit-media-controls,
+      video::-webkit-media-controls-panel,
+      video::-webkit-media-controls-enclosure,
+      video::-webkit-media-controls-timeline,
+      video::-webkit-media-controls-timeline:focus,
+      video::-webkit-media-controls-timeline-container {
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        -webkit-tap-highlight-color: transparent !important;
       }
 
       .stage-empty-state {
@@ -499,7 +538,7 @@
         opacity: 1;
       }
 
-      /* B-4: 贴合画面胶囊 (带智能平滑渐隐) */
+      /* B-4: 贴合画面胶囊 */
       .stage-fit-btn {
         position: absolute;
         top: 14px;
@@ -517,8 +556,6 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-
-        /* 👈 核心消失机制：默认完全透明且不可穿透点击，只有带 visible 类才显现 */
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease, background 0.15s ease, transform 0.15s ease;
@@ -535,29 +572,25 @@
         transform: scale(1.02);
       }
 
-      /* B-5: 灵光黑曜石 OSD 胶囊 (固定高度 + 物理级锁定垂直中轴) */
+      /* B-5: 灵光黑曜石 OSD 胶囊 */
       .stage-osd {
         position: absolute;
-        top: 16px;
+        top: 14px;
         left: 50%;
         transform: translate(-50%, -6px);
         background: rgba(15, 23, 42, 0.92);
         color: #fff;
-
-        /* 👇 核心改造：固定 28px 高度，取消被动 padding 挤压，从物理上杜绝偏心 👇 */
         height: 28px;
-        padding: 0 14px;
+        padding: 0 12px;
         border-radius: var(--radius-full);
         font-size: 11.5px;
         font-weight: 600;
-        white-space: nowrap;
-
+        white-space: nowrap !important;
+        box-sizing: border-box;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         line-height: 1;
-        box-sizing: border-box;
-
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.15s ease, transform 0.15s ease;
@@ -591,9 +624,10 @@
         z-index: 30;
       }
 
+      /* 视频浮层字幕 (cqw 百分比流体自适应) */
       .stage-sub-overlay {
         position: absolute;
-        bottom: 36px;
+        bottom: 24px;
         left: 0;
         right: 0;
         margin: 0 auto;
@@ -606,22 +640,23 @@
       }
 
       .stage-sub-overlay .v-cn {
-        font-size: clamp(16px, 2.7cqw, 28px);
-        font-weight: 800;
+        font-size: clamp(13px, 2.5cqw, 28px);
+        font-weight: 700;
         line-height: 1.35;
         color: #ffffff;
         paint-order: stroke fill;
-        -webkit-text-stroke: 3.5px #000000;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        -webkit-text-stroke: clamp(1.8px, 0.3cqw, 3.5px) #000000;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
       }
 
       .stage-sub-overlay .v-foreign {
-        font-size: clamp(12px, 1.8cqw, 20px);
+        font-size: clamp(10px, 1.8cqw, 20px);
         color: #cbd5e1;
         margin-top: 2px;
         font-weight: 600;
+        line-height: 1.3;
         paint-order: stroke fill;
-        -webkit-text-stroke: 2.5px #000000;
+        -webkit-text-stroke: clamp(1.2px, 0.2cqw, 2.5px) #000000;
       }
 
       /* ================= 4. 中轴物理弹性分割条 ================= */
@@ -658,17 +693,14 @@
         background: var(--primary);
       }
 
-      /* ================= 5. 右侧多维交互工作台 (修复点 6：彻底锁死横向滚动条) ================= */
+      /* ================= 5. 右侧多维交互工作台 (无级流体面板) ================= */
       .notes-panel {
-        flex: 1;
-        min-width: 320px;
+        flex: 1 1 auto;
+        min-width: 260px;
         display: flex;
         flex-direction: column;
         background: var(--surface-card);
-        overflow-x: hidden !important;
-        /* 👈 核心：物理级杜绝横向滚动条 */
-        overflow-y: hidden;
-        /* 👇 关键：开启专属容器监听，让它能感知自己被压窄了 👇 */
+        overflow: hidden;
         container-type: inline-size;
         container-name: notesPanel;
       }
@@ -720,12 +752,11 @@
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden !important;
-        /* 👈 核心：内容容器绝不产生横向滚动 */
         padding: 12px 14px;
         scroll-behavior: smooth;
       }
 
-      /* 粘性操作条：严禁内容溢出边界 */
+      /* 粘性操作条 (严禁横向溢出，受保护不出界) */
       .action-subbar {
         position: sticky;
         top: -12px;
@@ -741,14 +772,15 @@
         z-index: 10;
         box-sizing: border-box;
         overflow: hidden;
-        /* 👈 锁死溢出 */
       }
 
-      /* 👈 核心自适应：当右侧面板被压窄到小于 380px 时，自动收拢文字只留图标！ */
-      @container notesPanel (max-width: 380px) {
+      .action-subbar>div:last-child {
+        flex-shrink: 0 !important;
+      }
+
+      @container notesPanel (max-width: 360px) {
         .action-subbar .btn-secondary span {
           display: none !important;
-          /* 隐藏“导出”、“导入”四个汉字，腾出 60px 巨大空间！ */
         }
 
         .action-subbar .btn-secondary {
@@ -757,13 +789,7 @@
 
         .jump-input-capsule input {
           width: 32px !important;
-          /* 时码框自适应微调 */
         }
-      }
-
-      /* 👈 终极保底：右侧导出/导入/垃圾桶按钮组，绝对不准缩水，绝对不准出界！ */
-      .action-subbar>div:last-child {
-        flex-shrink: 0 !important;
       }
 
       .jump-input-capsule {
@@ -795,7 +821,6 @@
         color: var(--text-primary);
       }
 
-      /* D-2.1: 修复点 4：三态语言切换器高亮样式 */
       .lang-pill-btn {
         height: 26px;
         padding: 0 9px;
@@ -821,7 +846,6 @@
         box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
       }
 
-      /* D-1.7: 灵光批注输入卡 */
       .composer-card {
         background: #fff;
         border: 1px solid var(--border-medium);
@@ -905,7 +929,7 @@
         box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
       }
 
-      /* D-1.8: 手记卡片流 (修复点 5：统一现代极简 SVG 图标) */
+      /* 手记卡片流 (完全防折行) */
       .note-card {
         background: #ffffff;
         border: 1px solid var(--border-light);
@@ -1001,7 +1025,6 @@
         }
       }
 
-      /* FX-1: 幽灵操作栏 */
       .ghost-action-bar {
         display: flex;
         align-items: center;
@@ -1059,14 +1082,12 @@
         padding: 6px 10px;
         border-radius: 6px;
         margin-bottom: 6px;
-        /* 👈 每句字幕之间留出充足距离 */
         line-height: 1.55;
         font-size: 12px;
         border-left: 3px solid transparent;
         transition: var(--transition);
       }
 
-      /* 👈 核心修复：专门让时码胶囊与下方文案拉开 4px 舒适呼吸间距！ */
       .transcript-row .pill-tag {
         margin-bottom: 4px;
       }
@@ -1086,7 +1107,6 @@
         color: var(--text-muted);
         font-size: 11.5px;
         margin-top: 2px;
-        /* 👈 中文与外语之间也留出细腻微间距 */
       }
 
       .notes-rendered {
@@ -1137,7 +1157,6 @@
         z-index: 100;
       }
 
-      /* E-1: 全局快捷键指南面板 */
       .shortcuts-modal-box {
         background: #ffffff;
         color: #1e293b;
@@ -1242,7 +1261,6 @@
         color: #15803d;
       }
 
-      /* E-3: 修复点 3：媒体详情三段式卡片分隔 */
       .modal-box {
         background: #fff;
         width: 520px;
@@ -1315,7 +1333,6 @@
         word-break: break-all;
       }
 
-      /* 移动端抽屉 (Drawer) */
       .drawer-overlay {
         position: fixed;
         inset: 0;
@@ -1334,6 +1351,10 @@
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
         max-height: 75vh;
         overflow-y: auto;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
       }
 
       .drawer-handle {
@@ -1344,24 +1365,64 @@
         margin: 0 auto 10px;
       }
 
-      /* ================= 7. 灵光工坊 · 移动端与小屏幕专属架构 (≤ 768px) ================= */
-      @media (max-width: 768px) {
+      /* ================= 7. 中等屏 (768px~1150px) 优雅退让 + 手机端专属架构 ================= */
 
-        /* 1. 顶栏升级为呼吸感双层结构 */
+      /* 中等分屏时：状态标签平滑隐去次要项，选集条保持舒展 */
+      @media (max-width: 1150px) and (min-width: 769px) {
+
+        #videoStatus,
+        #assStatus {
+          display: none !important;
+        }
+
+        .header-btn-file span.btn-text-full,
+        .header-btn-folder span.btn-text-full {
+          display: none !important;
+        }
+
+        .header-btn-file span.btn-text-short,
+        .header-btn-folder span.btn-text-short {
+          display: inline !important;
+        }
+      }
+
+      @media (max-width: 950px) and (min-width: 769px) {
+        #playlistStatus {
+          display: none !important;
+        }
+
+        #btnShortcutsDesktop {
+          padding: 0 6px !important;
+        }
+      }
+
+      /* 移动手机端专属架构 (≤ 768px) */
+      @media (max-width: 768px) {
         header {
           height: auto !important;
-          /* 解除 48px 锁死，自适应双层高度 */
-          padding: 8px 12px !important;
+          /* 👈 核心相对比例：上下占手机高度的 1%，左右占手机宽度的 3%！ */
+          padding: 1vh 3vw !important;
           flex-direction: column !important;
-          /* 切换为上下两层 */
           align-items: stretch !important;
-          gap: 8px !important;
+          /* 👈 核心相对比例：第一行和第二行之间，严格占手机高度的 0.8%！ */
+          gap: 0.8vh !important;
         }
 
         .header-left {
-          width: 100%;
-          justify-content: space-between;
-          /* 第 1 层：两端对齐 */
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
+          /* 高度不再写死 px，由文字和图标自然贴合撑开 */
+          height: auto !important;
+        }
+
+        .btn-text-full {
+          display: none !important;
+        }
+
+        .btn-text-short {
+          display: inline !important;
         }
 
         .brand {
@@ -1369,25 +1430,27 @@
           padding-right: 0 !important;
         }
 
-        /* 手机端隐藏次要元素，腾出极致空间 */
         #btnShortcutsDesktop,
-        /* 👈 精确隐藏触屏不需要的快捷键按钮，文件夹和打开文件完美保留！ */
         .status-tags {
           display: none !important;
         }
 
-        /* 2. 选集条独立占满第 2 层，彻底告别挤压破损！ */
         .header-center {
           width: 100% !important;
           max-width: 100% !important;
           margin: 0 !important;
+          flex: none !important;
+          height: auto !important;
         }
 
         .playlist-bar {
           width: 100% !important;
+          margin: 0 !important;
+          /* 内边距也设为相对比例，高度随文字自适应 */
+          height: auto !important;
+          padding: 0.4vh 1vw !important;
         }
 
-        /* 3. 主工作区分栏切换为上下垂直排列 */
         .main-workspace {
           flex-direction: column !important;
         }
@@ -1395,11 +1458,11 @@
         .video-stage {
           width: 100% !important;
           min-width: 100% !important;
+          max-width: 100% !important;
           height: auto;
           min-height: 200px;
         }
 
-        /* 4. 中轴手柄升级为横向触控条 (带扩大触摸热区) */
         .panel-resizer {
           width: 100% !important;
           height: 12px !important;
@@ -1417,7 +1480,6 @@
           border-radius: 2px !important;
         }
 
-        /* 扩大手指触摸感应区，防止手指粗按不到 */
         .panel-resizer::before {
           content: "";
           position: absolute;
@@ -1428,24 +1490,63 @@
           z-index: 20;
         }
 
-        /* 5. 下半部工作区充满剩余高度 */
         .notes-panel {
           min-width: 100% !important;
           flex: 1 !important;
         }
 
-        /* 6. 移动端操作栏防挤压紧凑化 */
         .action-subbar {
           padding: 8px 10px !important;
         }
 
         .action-subbar .btn-secondary span {
           display: none !important;
-          /* 隐藏“导出”、“导入”文字，保留纯图标 */
         }
 
         .action-subbar .btn-secondary {
           padding: 0 6px !important;
+        }
+
+        /* 按钮也采用相对字号比例 (em)，字体多大，按钮就按比例自适应多大 */
+        .header-btn-file,
+        .header-btn-folder {
+          height: auto !important;
+          padding: 0.3em 0.8em !important;
+          font-size: 0.85rem !important;
+          border-radius: var(--radius-full) !important;
+        }
+
+        /* 抽屉内课时列表：长名字自然折行，100% 完整可见不破屏 */
+        #mobileDrawerList .ep-item {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          display: flex !important;
+          align-items: flex-start !important;
+          justify-content: space-between !important;
+          padding: 10px 12px !important;
+          gap: 8px !important;
+        }
+
+        #mobileDrawerList .ep-item-left {
+          min-width: 0 !important;
+          flex: 1 !important;
+          display: flex !important;
+          align-items: flex-start !important;
+          gap: 6px !important;
+        }
+
+        #mobileDrawerList .ep-item-left span:last-child {
+          white-space: normal !important;
+          word-break: break-all !important;
+          line-height: 1.45 !important;
+          font-size: 12.5px !important;
+          color: var(--text-primary) !important;
+        }
+
+        #mobileDrawerList .ep-item-badges {
+          flex-shrink: 0 !important;
+          margin-top: 2px !important;
         }
       }
     </style>
@@ -1465,20 +1566,24 @@
           <span class="brand-name">iVideo <span style="color: var(--primary);">Reader</span></span>
         </div>
 
-        <button class="btn btn-secondary" onclick="document.getElementById('localFileInput').click()" title="打开视频、字幕或笔记">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
-          </svg>
-          <span>打开文件</span>
-        </button>
-        <!-- 文件夹按钮保留并赋予标准样式 -->
-        <button class="btn btn-secondary" onclick="document.getElementById('localFolderInput').click()" title="载入完整课程目录">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-          </svg>
-          <span>打开文件夹</span>
-        </button>
-        <!-- 👈 加上 id，精准只在手机端隐藏它！ -->
+        <!-- 👈 核心改进：把文件和目录包裹在一起，靠右紧贴 -->
+        <div class="header-action-cluster">
+          <button class="btn btn-secondary header-btn-file" onclick="document.getElementById('localFileInput').click()" title="打开视频、字幕或笔记">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
+            </svg>
+            <span class="btn-text-full">打开文件</span>
+            <span class="btn-text-short">文件</span>
+          </button>
+          <button class="btn btn-secondary header-btn-folder" onclick="document.getElementById('localFolderInput').click()" title="载入完整课程目录">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+            </svg>
+            <span class="btn-text-full">文件夹</span>
+            <span class="btn-text-short">目录</span>
+          </button>
+        </div>
+
         <button id="btnShortcutsDesktop" class="btn btn-ghost" onclick="openShortcutsModal()" title="快捷键速查">快捷键</button>
       </div>
 
@@ -1995,7 +2100,18 @@
     <div id="mobileEpDrawer" class="drawer-overlay" onclick="toggleMobileEpDrawer(false)">
       <div class="drawer-sheet" onclick="event.stopPropagation()">
         <div class="drawer-handle"></div>
-        <div id="mobileDrawerTitle" style="font-size: 13px; font-weight: 700; margin-bottom: 10px;">📺 切换视频选集</div>
+        <div id="mobileDrawerTitle" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <!-- 微矢量播放列表图标，彻底消灭彩色电视 Emoji -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="8" y1="6" x2="21" y2="6" />
+            <line x1="8" y1="12" x2="21" y2="12" />
+            <line x1="8" y1="18" x2="21" y2="18" />
+            <line x1="3" y1="6" x2="3.01" y2="6" />
+            <line x1="3" y1="12" x2="3.01" y2="12" />
+            <line x1="3" y1="18" x2="3.01" y2="18" />
+          </svg>
+          <span>切换视频选集</span>
+        </div>
         <div id="mobileDrawerList" style="display: flex; flex-direction: column; gap: 4px;"></div>
       </div>
     </div>
@@ -2003,6 +2119,16 @@
     <!-- ================= 核心驱动与全量算法引擎 ================= -->
     <script>
       const video = document.getElementById('videoPlayer');
+      // ================= 核心防御：点击/拖动进度条后瞬间释放焦点，白框当场蒸发 =================
+      ['focus', 'click', 'mouseup', 'pointerup', 'touchend'].forEach(evtName => {
+        video.addEventListener(evtName, () => {
+          // 强制剥夺视频及内部所有控件的焦点
+          video.blur();
+          if (document.activeElement && document.activeElement !== document.body) {
+            document.activeElement.blur();
+          }
+        });
+      });
       const videoTip = document.getElementById('videoTip');
       const videoZone = document.getElementById('videoZone');
       const notesZone = document.getElementById('notesZone');
@@ -2506,7 +2632,7 @@
           customEpPopover.appendChild(el);
         });
 
-        mobileDrawerTitle.textContent = `📺 切换视频选集 (共 ${playlist.length} 集)`;
+        mobileDrawerTitle.textContent = `切换视频选集 (共 ${playlist.length} 集)`;
         mobileDrawerList.innerHTML = '';
         playlist.forEach((item, idx) => {
           const isCurrent = (idx === currentPlaylistIndex);
@@ -2528,17 +2654,32 @@
         nextEpisodeBtn.disabled = (currentPlaylistIndex === playlist.length - 1);
       }
 
+      // A-4.3: 切集通知智能算法 (小屏幕极简克制，只报集数进度)
       function notifyEpisodeLoaded(index) {
         const item = playlist[index];
         if (!item) return;
-        const assets = [];
-        if (myNotes.length) assets.push(`${myNotes.length}条手记`);
-        if (subtitleData.length) assets.push('字幕');
-        const savedAi = localStorage.getItem('reader_ai_notes_' + currentVideoFileName);
-        if (savedAi?.trim()) assets.push('讲义');
-        let assetStr = assets.length ? ` | ${assets.join('  ')}` : '';
-        let prefix = playlist.length > 1 ? `▶ ${index + 1}/${playlist.length} · ${item.name}` : `▶ ${item.name}`;
-        showOSD(`${prefix}${assetStr}`, 2000);
+
+        const isMobile = window.innerWidth <= 768;
+
+        // 👈 核心巧思：如果是手机等小屏幕，直接做减法，纯粹展示集数进度！
+        if (isMobile) {
+          if (playlist.length > 1) {
+            showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
+          } else {
+            showOSD(`▶ 视频已就绪`, 1400);
+          }
+          return;
+        }
+
+        // 💻 电脑宽屏下，空间宽敞，附带前10个字简短片名
+        let cleanName = item.name.replace(/\.[^/.]+$/, "");
+        if (cleanName.length > 12) cleanName = cleanName.substring(0, 11) + '…';
+
+        let prefix = playlist.length > 1
+          ? `第 ${index + 1}/${playlist.length} 集 · ${cleanName}`
+          : cleanName;
+
+        showOSD(`▶ ${prefix}`, 1600);
       }
 
       async function switchPlaylistItem(index) {
@@ -3412,9 +3553,19 @@
           if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
           if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
           if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
-          if (e.code === 'Space') {
+          // 严密判定：不仅判断 e.code，还判断 e.key，并彻底阻止页面滚屏
+          if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
-            if (video.src) { video.paused ? video.play() : video.pause(); showOSD(video.paused ? '⏸ 暂停' : '▶ 播放'); }
+            e.stopPropagation();
+            if (video.src) {
+              if (video.paused) {
+                video.play();
+                showOSD('▶ 播放');
+              } else {
+                video.pause();
+                showOSD('⏸ 暂停');
+              }
+            }
             return;
           }
           if (e.key === 'ArrowLeft') {
@@ -3474,74 +3625,74 @@
       });
 
       // ================= 触屏专属：单指长按视频画面冲刺加速 =================
-        let touchPressTimer = null;
-        let isTouchSpeedUp = false;
-        let touchStartX = 0;
-        let touchStartY = 0;
+      let touchPressTimer = null;
+      let isTouchSpeedUp = false;
+      let touchStartX = 0;
+      let touchStartY = 0;
 
-        videoWrapper.addEventListener('touchstart', (e) => {
-          if (!video.src || video.paused) return;
-          // 仅在单指触摸时触发长按加速
-          if (e.touches.length === 1) {
-            isTouchSpeedUp = false;
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            clearTimeout(touchPressTimer);
-
-            touchPressTimer = setTimeout(() => {
-              isTouchSpeedUp = true;
-              const targetSprintRate = getSprintSpeed(); // 智能匹配 1.5x~2.5x
-              savedOriginalVolume = video.volume;
-              video.volume = Math.max(0.15, savedOriginalVolume * 0.7); // 防爆音
-              video.preservesPitch = true; // 保持原声不变调
-              video.playbackRate = targetSprintRate;
-
-              showOSD(`⚡ ${targetSprintRate.toFixed(2)}x 冲刺`);
-            }, 200); // 长按 200ms 触发
-          }
-        }, { passive: true });
-
-        // 手指滑动超过 10px 视为滚屏或手势，自动取消加速
-        videoWrapper.addEventListener('touchmove', (e) => {
-          if (!isTouchSpeedUp && e.touches.length === 1) {
-            const moveX = Math.abs(e.touches[0].clientX - touchStartX);
-            const moveY = Math.abs(e.touches[0].clientY - touchStartY);
-            if (moveX > 10 || moveY > 10) {
-              clearTimeout(touchPressTimer);
-            }
-          }
-        }, { passive: true });
-
-        function endTouchSpeedUp() {
+      videoWrapper.addEventListener('touchstart', (e) => {
+        if (!video.src || video.paused) return;
+        // 仅在单指触摸时触发长按加速
+        if (e.touches.length === 1) {
+          isTouchSpeedUp = false;
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
           clearTimeout(touchPressTimer);
-          if (isTouchSpeedUp) {
-            isTouchSpeedUp = false;
-            if (video.src) {
-              video.volume = savedOriginalVolume;
-              video.preservesPitch = true;
-              video.playbackRate = 1.0;
-              showOSD('⚡ 1.00x 原速');
 
-              // 松手后自动同步居中字幕行
-              setTimeout(() => {
-                const cur = video.currentTime;
-                const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
-                if (activeCue) {
-                  if (currentActiveElement) currentActiveElement.classList.remove('active');
-                  const el = document.getElementById('sub-' + activeCue.id);
-                  if (el) {
-                    el.classList.add('active');
-                    currentActiveElement = el;
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }
-              }, 40);
-            }
+          touchPressTimer = setTimeout(() => {
+            isTouchSpeedUp = true;
+            const targetSprintRate = getSprintSpeed(); // 智能匹配 1.5x~2.5x
+            savedOriginalVolume = video.volume;
+            video.volume = Math.max(0.15, savedOriginalVolume * 0.7); // 防爆音
+            video.preservesPitch = true; // 保持原声不变调
+            video.playbackRate = targetSprintRate;
+
+            showOSD(`⚡ ${targetSprintRate.toFixed(2)}x 冲刺`);
+          }, 200); // 长按 200ms 触发
+        }
+      }, { passive: true });
+
+      // 手指滑动超过 10px 视为滚屏或手势，自动取消加速
+      videoWrapper.addEventListener('touchmove', (e) => {
+        if (!isTouchSpeedUp && e.touches.length === 1) {
+          const moveX = Math.abs(e.touches[0].clientX - touchStartX);
+          const moveY = Math.abs(e.touches[0].clientY - touchStartY);
+          if (moveX > 10 || moveY > 10) {
+            clearTimeout(touchPressTimer);
           }
         }
+      }, { passive: true });
 
-        videoWrapper.addEventListener('touchend', endTouchSpeedUp);
-        videoWrapper.addEventListener('touchcancel', endTouchSpeedUp);
+      function endTouchSpeedUp() {
+        clearTimeout(touchPressTimer);
+        if (isTouchSpeedUp) {
+          isTouchSpeedUp = false;
+          if (video.src) {
+            video.volume = savedOriginalVolume;
+            video.preservesPitch = true;
+            video.playbackRate = 1.0;
+            showOSD('⚡ 1.00x 原速');
+
+            // 松手后自动同步居中字幕行
+            setTimeout(() => {
+              const cur = video.currentTime;
+              const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
+              if (activeCue) {
+                if (currentActiveElement) currentActiveElement.classList.remove('active');
+                const el = document.getElementById('sub-' + activeCue.id);
+                if (el) {
+                  el.classList.add('active');
+                  currentActiveElement = el;
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }
+            }, 40);
+          }
+        }
+      }
+
+      videoWrapper.addEventListener('touchend', endTouchSpeedUp);
+      videoWrapper.addEventListener('touchcancel', endTouchSpeedUp);
 
     </script>
   </body>
