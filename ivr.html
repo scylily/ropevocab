@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iVideo Reader · 视频手记与智能讲义工作站</title>
+    <title>iVideo Reader · 视频智能讲义工作站</title>
     <style>
       /* ================= 1. Aura Studio (灵光工坊) Tokens 基础规范 ================= */
       :root {
@@ -581,12 +581,17 @@
         background: rgba(15, 23, 42, 0.92);
         color: #fff;
         height: 28px;
-        padding: 0 12px;
+        padding: 0 14px;
         border-radius: var(--radius-full);
         font-size: 11.5px;
         font-weight: 600;
         white-space: nowrap !important;
         box-sizing: border-box;
+
+        /* 👇 核心补齐：宽度由文字自然撑满，最大不超过屏幕的 92% 👇 */
+        width: max-content;
+        max-width: 92%;
+
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2655,32 +2660,46 @@
       }
 
       // A-4.3: 切集通知智能算法 (小屏幕极简克制，只报集数进度)
-      function notifyEpisodeLoaded(index) {
-        const item = playlist[index];
-        if (!item) return;
+      // A-4.3: 切集通知系统 (小屏极简报进度，PC大屏完整展示全名与资产清单)
+        function notifyEpisodeLoaded(index) {
+          const item = playlist[index];
+          if (!item) return;
 
-        const isMobile = window.innerWidth <= 768;
+          const isMobile = window.innerWidth <= 768;
 
-        // 👈 核心巧思：如果是手机等小屏幕，直接做减法，纯粹展示集数进度！
-        if (isMobile) {
-          if (playlist.length > 1) {
-            showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
-          } else {
-            showOSD(`▶ 视频已就绪`, 1400);
+          // 📱 1. 手机/小屏幕设备：严格极简，只报进度，绝不占地
+          if (isMobile) {
+            if (playlist.length > 1) {
+              showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
+            } else {
+              showOSD(`▶ 视频已就绪`, 1400);
+            }
+            return;
           }
-          return;
+
+          // 💻 2. PC / 大分辨率屏幕：100% 完整展示！不切断任何字符！
+          const assets = [];
+          if (myNotes && myNotes.length > 0) {
+            assets.push(`${myNotes.length}条手记`);
+          }
+          if (subtitleData && subtitleData.length > 0) {
+            assets.push('字幕');
+          }
+          const savedAi = localStorage.getItem('reader_ai_notes_' + currentVideoFileName);
+          const aiRaw = document.getElementById('notesInput') ? document.getElementById('notesInput').value.trim() : '';
+          if (savedAi || aiRaw) {
+            assets.push('讲义');
+          }
+
+          let assetStr = assets.length > 0 ? (' | ' + assets.join('  ')) : '';
+
+          // 👈 核心恢复：完整输出完整文件名 item.name，彻底解除 11 个字符的限制！
+          let title = playlist.length > 1
+            ? `第 ${index + 1}/${playlist.length} 集 · ${item.name}`
+            : item.name;
+
+          showOSD(`▶ ${title}${assetStr}`, 2200);
         }
-
-        // 💻 电脑宽屏下，空间宽敞，附带前10个字简短片名
-        let cleanName = item.name.replace(/\.[^/.]+$/, "");
-        if (cleanName.length > 12) cleanName = cleanName.substring(0, 11) + '…';
-
-        let prefix = playlist.length > 1
-          ? `第 ${index + 1}/${playlist.length} 集 · ${cleanName}`
-          : cleanName;
-
-        showOSD(`▶ ${prefix}`, 1600);
-      }
 
       async function switchPlaylistItem(index) {
         if (index < 0 || index >= playlist.length) return;
