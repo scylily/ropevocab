@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>iVideo Reader · 视频智能讲义工作站</title>
+    <title>iVideo Reader · 视频手记与智能讲义工作站</title>
     <style>
       /* ================= 1. Aura Studio (灵光工坊) Tokens 基础规范 ================= */
       :root {
@@ -2966,19 +2966,29 @@
         }
       });
 
-      function timeToSeconds(timeStr) {
-        if (typeof timeStr === 'number') return timeStr;
-        if (!timeStr) return 0;
-        let str = timeStr.toString().trim().replace(',', '.');
-        if (str.includes(':')) {
-          const parts = str.split(':');
-          let h = 0, m = 0, s = 0;
-          if (parts.length === 3) { h = parseFloat(parts[0]) || 0; m = parseFloat(parts[1]) || 0; s = parseFloat(parts[2]) || 0; }
-          else if (parts.length === 2) { h = parseFloat(parts[0]) || 0; s = parseFloat(parts[1]) || 0; }
-          return h * 3600 + m * 60 + s;
+        function timeToSeconds(timeStr) {
+          if (typeof timeStr === 'number') return timeStr;
+          if (!timeStr) return 0;
+          let str = timeStr.toString().trim().replace(',', '.');
+
+          if (str.includes(':')) {
+            const parts = str.split(':');
+            let h = 0, m = 0, s = 0;
+            if (parts.length === 3) {
+              h = parseFloat(parts[0]) || 0;
+              m = parseFloat(parts[1]) || 0;
+              s = parseFloat(parts[2]) || 0;
+              return h * 3600 + m * 60 + s;
+            } else if (parts.length === 2) {
+              // 🌟 核心纠正：两段时码，第一段绝对是分钟(m)，第二段是秒(s)！小时为0！
+              m = parseFloat(parts[0]) || 0;
+              s = parseFloat(parts[1]) || 0;
+              return m * 60 + s;
+            }
+          }
+
+          return parseSmartTimecode(str) || 0;
         }
-        return parseSmartTimecode(str) || 0;
-      }
 
       function parseSmartTimecode(str) {
         if (!str) return null;
@@ -3112,9 +3122,7 @@
         return 2.50;
       }
 
-      // D-1.8: 手记全量卡片渲染 (修复点 5：统一高质感微矢量删除与循环图标)
-      // D-1.8: 手记全量卡片渲染 (带脏数据自动纠偏与自愈)
-      function renderMyNotesList() {
+       function renderMyNotesList() {
         const container = document.getElementById('myNotesList');
         container.innerHTML = '';
         noteStatus.classList.toggle('loaded', myNotes.length > 0);
