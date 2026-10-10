@@ -629,39 +629,42 @@
         z-index: 30;
       }
 
-      /* 视频浮层字幕 (cqw 百分比流体自适应) */
+      /* 浮层字幕容器 (恢复舒适的底部上浮间距，远离进度条) */
       .stage-sub-overlay {
         position: absolute;
-        bottom: 24px;
+        bottom: 34px;
+        /* 👈 从 24px 提高到 34px，对齐图 1 优雅悬浮高度 */
         left: 0;
         right: 0;
         margin: 0 auto;
         width: max-content;
-        max-width: 94%;
+        max-width: 92%;
         text-align: center;
         pointer-events: none;
         z-index: 20;
         display: none;
       }
 
+      /* 🌟 中文主字幕：严格按 2.05% 容器宽自适应 (大屏精确对齐图 1 的 20.5px 黄金字号) */
       .stage-sub-overlay .v-cn {
-        font-size: clamp(13px, 2.5cqw, 28px);
+        font-size: clamp(12.5px, 2.05cqw, 23px);
         font-weight: 700;
         line-height: 1.35;
         color: #ffffff;
         paint-order: stroke fill;
-        -webkit-text-stroke: clamp(1.8px, 0.3cqw, 3.5px) #000000;
+        -webkit-text-stroke: clamp(1.5px, 0.25cqw, 2.8px) #000000;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
       }
 
+      /* 🌟 外语副字幕：严格按 1.45% 容器宽自适应 (大屏精确对齐图 1 的 14.5px 优雅副字号) */
       .stage-sub-overlay .v-foreign {
-        font-size: clamp(10px, 1.8cqw, 20px);
+        font-size: clamp(10px, 1.45cqw, 16px);
         color: #cbd5e1;
-        margin-top: 2px;
+        margin-top: 3px;
         font-weight: 600;
         line-height: 1.3;
         paint-order: stroke fill;
-        -webkit-text-stroke: clamp(1.2px, 0.2cqw, 2.5px) #000000;
+        -webkit-text-stroke: clamp(1.0px, 0.18cqw, 2.0px) #000000;
       }
 
       /* ================= 4. 中轴物理弹性分割条 ================= */
@@ -1083,24 +1086,44 @@
         white-space: pre-wrap;
       }
 
+      /* 默认普通字幕行 */
       .transcript-row {
-        padding: 6px 10px;
-        border-radius: 6px;
+        padding: 8px 12px;
+        border-radius: var(--radius-sm);
         margin-bottom: 6px;
         line-height: 1.55;
         font-size: 12px;
-        border-left: 3px solid transparent;
-        transition: var(--transition);
+        border-left: 4px solid transparent;
+        /* 👈 预留 4px 边框位 */
+        transition: all 0.15s ease;
       }
 
       .transcript-row .pill-tag {
         margin-bottom: 4px;
       }
 
+      /* 🌟🌟 核心聚光灯高亮：一眼望去绝对不可能看不见！ 🌟🌟 */
       .transcript-row.active {
-        background: var(--primary-subtle);
-        border-left-color: var(--primary);
-        font-weight: 600;
+        background: #eef2ff !important;
+        /* 鲜明的浅靛蓝背景 */
+        border-left-color: #4f46e5 !important;
+        /* 醒目的左侧 4px 品牌电光蓝柱 */
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12) !important;
+        /* 悬浮微投影 */
+      }
+
+      /* 👈 杀手锏：当前台词的时码胶囊，瞬间变成“实心深蓝白字”！形成绝对反差！ */
+      .transcript-row.active .pill-tag {
+        background: #4f46e5 !important;
+        color: #ffffff !important;
+        border-color: #4f46e5 !important;
+        box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3) !important;
+      }
+
+      /* 当前台词中文加粗并变为深蓝品牌色 */
+      .transcript-row.active .transcript-row-cn {
+        color: #3730a3 !important;
+        font-weight: 800 !important;
       }
 
       .transcript-row-cn {
@@ -1584,7 +1607,7 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
             </svg>
-            <span class="btn-text-full">导入文件夹</span>
+            <span class="btn-text-full">打开文件夹</span>
             <span class="btn-text-short">目录</span>
           </button>
         </div>
@@ -2202,6 +2225,7 @@
       let switchTokenCounter = 0;
 
       let subtitleData = [];
+      let currentActiveId = -1;
       let currentLang = 'bi';
       let activeLoop = null;
       let tempInPointSec = null;
@@ -2661,45 +2685,45 @@
 
       // A-4.3: 切集通知智能算法 (小屏幕极简克制，只报集数进度)
       // A-4.3: 切集通知系统 (小屏极简报进度，PC大屏完整展示全名与资产清单)
-        function notifyEpisodeLoaded(index) {
-          const item = playlist[index];
-          if (!item) return;
+      function notifyEpisodeLoaded(index) {
+        const item = playlist[index];
+        if (!item) return;
 
-          const isMobile = window.innerWidth <= 768;
+        const isMobile = window.innerWidth <= 768;
 
-          // 📱 1. 手机/小屏幕设备：严格极简，只报进度，绝不占地
-          if (isMobile) {
-            if (playlist.length > 1) {
-              showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
-            } else {
-              showOSD(`▶ 视频已就绪`, 1400);
-            }
-            return;
+        // 📱 1. 手机/小屏幕设备：严格极简，只报进度，绝不占地
+        if (isMobile) {
+          if (playlist.length > 1) {
+            showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
+          } else {
+            showOSD(`▶ 视频已就绪`, 1400);
           }
-
-          // 💻 2. PC / 大分辨率屏幕：100% 完整展示！不切断任何字符！
-          const assets = [];
-          if (myNotes && myNotes.length > 0) {
-            assets.push(`${myNotes.length}条手记`);
-          }
-          if (subtitleData && subtitleData.length > 0) {
-            assets.push('字幕');
-          }
-          const savedAi = localStorage.getItem('reader_ai_notes_' + currentVideoFileName);
-          const aiRaw = document.getElementById('notesInput') ? document.getElementById('notesInput').value.trim() : '';
-          if (savedAi || aiRaw) {
-            assets.push('讲义');
-          }
-
-          let assetStr = assets.length > 0 ? (' | ' + assets.join('  ')) : '';
-
-          // 👈 核心恢复：完整输出完整文件名 item.name，彻底解除 11 个字符的限制！
-          let title = playlist.length > 1
-            ? `第 ${index + 1}/${playlist.length} 集 · ${item.name}`
-            : item.name;
-
-          showOSD(`▶ ${title}${assetStr}`, 2200);
+          return;
         }
+
+        // 💻 2. PC / 大分辨率屏幕：100% 完整展示！不切断任何字符！
+        const assets = [];
+        if (myNotes && myNotes.length > 0) {
+          assets.push(`${myNotes.length}条手记`);
+        }
+        if (subtitleData && subtitleData.length > 0) {
+          assets.push('字幕');
+        }
+        const savedAi = localStorage.getItem('reader_ai_notes_' + currentVideoFileName);
+        const aiRaw = document.getElementById('notesInput') ? document.getElementById('notesInput').value.trim() : '';
+        if (savedAi || aiRaw) {
+          assets.push('讲义');
+        }
+
+        let assetStr = assets.length > 0 ? (' | ' + assets.join('  ')) : '';
+
+        // 👈 核心恢复：完整输出完整文件名 item.name，彻底解除 11 个字符的限制！
+        let title = playlist.length > 1
+          ? `第 ${index + 1}/${playlist.length} 集 · ${item.name}`
+          : item.name;
+
+        showOSD(`▶ ${title}${assetStr}`, 2200);
+      }
 
       async function switchPlaylistItem(index) {
         if (index < 0 || index >= playlist.length) return;
@@ -2899,18 +2923,26 @@
         return hasHan(single) ? { primary: single, secondary: '' } : { primary: single, secondary: single };
       }
 
+      // ================= 播放监听：画面字幕更新 + 右侧字幕逐句数学级精准居中跟随 =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
+
+        // 1. 片段无限循环越界重绕逻辑
         if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
           video.currentTime = activeLoop.start;
           video.play();
         }
 
+        // 2. 无字幕时退出
         if (!subtitleData.length) {
-          if (lastRenderedCueId !== -1) { videoSubOverlay.style.display = 'none'; lastRenderedCueId = -1; }
+          if (lastRenderedCueId !== -1) {
+            videoSubOverlay.style.display = 'none';
+            lastRenderedCueId = -1;
+          }
           return;
         }
 
+        // 3. 查找当前播放时间轴对应的字幕句 (带索引缓存加速)
         let currentCue = null;
         if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
           const c = subtitleData[cachedSubIndex];
@@ -2922,40 +2954,77 @@
         }
         if (!currentCue) {
           const idx = subtitleData.findIndex(item => curTime >= item.start && curTime <= item.end);
-          if (idx !== -1) { cachedSubIndex = idx; currentCue = subtitleData[idx]; }
+          if (idx !== -1) {
+            cachedSubIndex = idx;
+            currentCue = subtitleData[idx];
+          }
         }
 
+        // 4. 命中当前台词句
         if (currentCue) {
+          // A. 更新视频画面中央的浮层字幕
           if (lastRenderedCueId !== currentCue.id) {
             lastRenderedCueId = currentCue.id;
             videoSubOverlay.style.display = 'block';
             if (currentLang === 'cn') {
-              videoSubCn.textContent = currentCue.cn; videoSubCn.style.display = 'block'; videoSubForeign.style.display = 'none';
+              videoSubCn.textContent = currentCue.cn;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = 'none';
             } else if (currentLang === 'foreign') {
-              videoSubForeign.textContent = currentCue.foreign || currentCue.raw; videoSubForeign.style.display = 'block'; videoSubCn.style.display = 'none';
+              videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
+              videoSubForeign.style.display = 'block';
+              videoSubCn.style.display = 'none';
             } else {
-              videoSubCn.textContent = currentCue.cn; videoSubForeign.textContent = currentCue.foreign;
-              videoSubCn.style.display = 'block'; videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+              videoSubCn.textContent = currentCue.cn;
+              videoSubForeign.textContent = currentCue.foreign;
+              videoSubCn.style.display = 'block';
+              videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
             }
           }
 
-          if (video.playbackRate > 1.25 || isSpeedLongPressing) return;
+          // B. 🌟 右侧列表逐句高亮 + 容器数学级绝对居中平滑滚动 (彻底杜绝失灵！)
+          if (video.playbackRate > 1.25 || isSpeedLongPressing) return; // 极速冲刺时节流防眼花
+
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
-            if (currentActiveElement) currentActiveElement.classList.remove('active');
+
+            // 移除上一个台词高亮
+            document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
+
+            // 点亮当前台词句
             const activeEl = document.getElementById('sub-' + currentCue.id);
-            if (activeEl) {
+            if (activeEl) {// 🌟 核心绝杀：彻底排除上方视频高度干扰，扣除粘性栏遮挡，台词 100% 稳居视口正中心！
               activeEl.classList.add('active');
-              currentActiveElement = activeEl;
-              const now = performance.now();
-              if (now - lastScrollTimestamp > 350) {
-                lastScrollTimestamp = now;
-                activeEl.scrollIntoView({ behavior: video.playbackRate === 1.0 ? 'smooth' : 'auto', block: 'center' });
+              const scrollBox = document.getElementById('transcriptTab');
+              if (scrollBox) {
+                const now = performance.now();
+                if (now - lastScrollTimestamp > 280) {
+                  lastScrollTimestamp = now;
+
+                  const activeRect = activeEl.getBoundingClientRect();
+                  const boxRect = scrollBox.getBoundingClientRect();
+
+                  // 计算真实可见区域中心点 (避开顶部 40px 粘性操作条的遮挡)
+                  // 👈 核心微调：将对焦点向下沉 25px，彻底保证胶囊头、中文、外文 100% 毫无遮挡露在正中央！
+                  const visibleCenterY = boxRect.top + 65 + (boxRect.height - 65) / 2;
+                  const activeCenterY = activeRect.top + (activeRect.height / 2);
+                  const delta = activeCenterY - visibleCenterY;
+
+                  // 平滑绝对修正
+                  scrollBox.scrollTo({
+                    top: scrollBox.scrollTop + delta,
+                    behavior: 'smooth'
+                  });
+                }
               }
             }
           }
         } else {
-          if (lastRenderedCueId !== -1) { videoSubOverlay.style.display = 'none'; lastRenderedCueId = -1; }
+          // 当前时间段没有台词，隐藏视频上的字幕条
+          if (lastRenderedCueId !== -1) {
+            videoSubOverlay.style.display = 'none';
+            lastRenderedCueId = -1;
+          }
         }
       });
 
@@ -2966,29 +3035,29 @@
         }
       });
 
-        function timeToSeconds(timeStr) {
-          if (typeof timeStr === 'number') return timeStr;
-          if (!timeStr) return 0;
-          let str = timeStr.toString().trim().replace(',', '.');
+      function timeToSeconds(timeStr) {
+        if (typeof timeStr === 'number') return timeStr;
+        if (!timeStr) return 0;
+        let str = timeStr.toString().trim().replace(',', '.');
 
-          if (str.includes(':')) {
-            const parts = str.split(':');
-            let h = 0, m = 0, s = 0;
-            if (parts.length === 3) {
-              h = parseFloat(parts[0]) || 0;
-              m = parseFloat(parts[1]) || 0;
-              s = parseFloat(parts[2]) || 0;
-              return h * 3600 + m * 60 + s;
-            } else if (parts.length === 2) {
-              // 🌟 核心纠正：两段时码，第一段绝对是分钟(m)，第二段是秒(s)！小时为0！
-              m = parseFloat(parts[0]) || 0;
-              s = parseFloat(parts[1]) || 0;
-              return m * 60 + s;
-            }
+        if (str.includes(':')) {
+          const parts = str.split(':');
+          let h = 0, m = 0, s = 0;
+          if (parts.length === 3) {
+            h = parseFloat(parts[0]) || 0;
+            m = parseFloat(parts[1]) || 0;
+            s = parseFloat(parts[2]) || 0;
+            return h * 3600 + m * 60 + s;
+          } else if (parts.length === 2) {
+            // 🌟 核心纠正：两段时码，第一段绝对是分钟(m)，第二段是秒(s)！小时为0！
+            m = parseFloat(parts[0]) || 0;
+            s = parseFloat(parts[1]) || 0;
+            return m * 60 + s;
           }
-
-          return parseSmartTimecode(str) || 0;
         }
+
+        return parseSmartTimecode(str) || 0;
+      }
 
       function parseSmartTimecode(str) {
         if (!str) return null;
@@ -3122,7 +3191,7 @@
         return 2.50;
       }
 
-       function renderMyNotesList() {
+      function renderMyNotesList() {
         const container = document.getElementById('myNotesList');
         container.innerHTML = '';
         noteStatus.classList.toggle('loaded', myNotes.length > 0);
@@ -3498,15 +3567,46 @@
         e.target.value = '';
       }
 
+      // ================= 选项卡切换中枢 (带字幕即时精准对焦) =================
       function switchTab(tab) {
         currentTab = tab;
         document.querySelectorAll('.segmented-tab-item').forEach(b => b.classList.remove('active'));
         document.getElementById('mynotesTab').style.display = 'none';
         document.getElementById('transcriptTab').style.display = 'none';
         document.getElementById('notesTab').style.display = 'none';
-        if (tab === 'mynotes') { document.getElementById('tabBtnMynotes').classList.add('active'); document.getElementById('mynotesTab').style.display = 'block'; }
-        else if (tab === 'transcript') { document.getElementById('tabBtnTranscript').classList.add('active'); document.getElementById('transcriptTab').style.display = 'block'; }
-        else if (tab === 'notes') { document.getElementById('tabBtnNotes').classList.add('active'); document.getElementById('notesTab').style.display = 'block'; }
+
+        if (tab === 'mynotes') {
+          document.getElementById('tabBtnMynotes').classList.add('active');
+          document.getElementById('mynotesTab').style.display = 'block';
+        } else if (tab === 'transcript') {
+          document.getElementById('tabBtnTranscript').classList.add('active');
+          document.getElementById('transcriptTab').style.display = 'block';
+
+          // 🌟 核心对焦：切换到字幕选项卡瞬间，激光对焦当前台词到有效视野中心！
+          setTimeout(() => {
+            const curTime = video.currentTime;
+            const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
+            if (currentCue) {
+              currentActiveId = currentCue.id;
+              document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
+              const activeEl = document.getElementById('sub-' + currentCue.id);
+              const scrollBox = document.getElementById('transcriptTab');
+              if (activeEl && scrollBox) {
+                activeEl.classList.add('active');
+
+                const activeRect = activeEl.getBoundingClientRect();
+                const boxRect = scrollBox.getBoundingClientRect();
+                const visibleCenterY = boxRect.top + 40 + (boxRect.height - 40) / 2;
+                const delta = (activeRect.top + activeRect.height / 2) - visibleCenterY;
+
+                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
+              }
+            }
+          }, 60);
+        } else if (tab === 'notes') {
+          document.getElementById('tabBtnNotes').classList.add('active');
+          document.getElementById('notesTab').style.display = 'block';
+        }
       }
 
       // 键盘快捷键中枢
