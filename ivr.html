@@ -959,9 +959,32 @@
         transform: translateY(-1px);
       }
 
+      /* 🌟 循环区间手记：活跃高亮（淡紫背景 + 边框 + 实心紫胶囊） */
       .note-card.loop-active {
-        border-color: var(--purple-border);
-        background: var(--purple-subtle);
+        border-color: var(--purple-border) !important;
+        background: var(--purple-subtle) !important;
+        box-shadow: 0 2px 8px rgba(124, 58, 237, 0.15) !important;
+      }
+
+      .note-card.loop-active .pill-tag-loop {
+        background: var(--purple) !important;
+        color: #ffffff !important;
+        border-color: var(--purple) !important;
+        box-shadow: 0 1px 3px rgba(124, 58, 237, 0.3) !important;
+      }
+
+      /* 🌟 单点标注手记：活跃高亮（淡蓝背景 + 边框 + 实心蓝胶囊） */
+      .note-card.point-active {
+        border-color: var(--primary-border) !important;
+        background: var(--primary-subtle) !important;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15) !important;
+      }
+
+      .note-card.point-active .pill-tag {
+        background: #4f46e5 !important;
+        color: #ffffff !important;
+        border-color: #4f46e5 !important;
+        box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3) !important;
       }
 
       .note-card-header {
@@ -2398,6 +2421,7 @@
 
       let subtitleData = [];
       let currentActiveId = -1;
+      let currentActiveNoteId = -1; // 👈 加上这行，专门用来追踪当前高亮的手记 ID
       let currentLang = 'bi';
       let activeLoop = null;
       let tempInPointSec = null;
@@ -3276,6 +3300,7 @@
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
+        /* 👇👇👇 从这里开始粘贴：智能讲义高亮 👇👇👇 */
         // 🌟 讲义时间节点实时侦测：支持所有相同时间点同时高亮
         const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
         if (aiTags.length > 0) {
@@ -3314,6 +3339,78 @@
             firstActiveTag.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
         }
+        /* 👆👆👆 智能讲义高亮结束 👆👆👆 */
+
+        /* 👇👇👇 我的手记：单点与区间高亮 + 全设备（PC/移动端）数学绝对居中追踪 👇👇👇 */
+        if (myNotes && myNotes.length > 0) {
+          let matchedNote = null;
+          for (let i = 0; i < myNotes.length; i++) {
+            const note = myNotes[i];
+            if (note.type === 'interval') {
+              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) {
+                matchedNote = note;
+                break;
+              }
+            } else {
+              const nextNote = myNotes[i + 1];
+              const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
+              if (curTime >= note.start && curTime < pointEnd) {
+                matchedNote = note;
+                break;
+              }
+            }
+          }
+
+          myNotes.forEach(note => {
+            const cardEl = document.getElementById('note-card-' + note.id);
+            if (!cardEl) return;
+
+            const isMatched = (matchedNote && matchedNote.id === note.id);
+            const isManualLooping = (activeLoop && activeLoop.id === note.id);
+
+            if (isMatched || isManualLooping) {
+              if (note.type === 'interval') {
+                cardEl.classList.add('loop-active');
+              } else {
+                cardEl.classList.add('point-active');
+              }
+            } else {
+              cardEl.classList.remove('point-active');
+              if (!isManualLooping) {
+                cardEl.classList.remove('loop-active');
+              }
+            }
+          });
+
+          const matchedId = matchedNote ? matchedNote.id : -1;
+          if (currentActiveNoteId !== matchedId) {
+            currentActiveNoteId = matchedId;
+
+            if (matchedNote && currentTab === 'mynotes') {
+              const activeCard = document.getElementById('note-card-' + matchedNote.id);
+              const scrollBox = document.getElementById('mynotesTab');
+              if (activeCard && scrollBox) {
+                const cardRect = activeCard.getBoundingClientRect();
+                const boxRect = scrollBox.getBoundingClientRect();
+
+                // 🌟 动态探测上方操作栏高度：PC/手机自适应扣除
+                const topBar = scrollBox.querySelector('.action-subbar');
+                const topBarHeight = topBar ? topBar.offsetHeight : 45;
+
+                // 精准定位：只在下方容器内部计算中心点
+                const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
+                const cardCenterY = cardRect.top + (cardRect.height / 2);
+                const delta = cardCenterY - visibleCenterY;
+
+                scrollBox.scrollTo({
+                  top: scrollBox.scrollTop + delta,
+                  behavior: 'smooth'
+                });
+              }
+            }
+          }
+        }
+        /* 👆👆👆 手记居中追踪高亮结束 👆👆👆 */
 
         // 1. 片段无限循环越界重绕逻辑
         if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
@@ -4080,6 +4177,27 @@
         if (tab === 'mynotes') {
           document.getElementById('tabBtnMynotes').classList.add('active');
           document.getElementById('mynotesTab').style.display = 'block';
+
+          // 🌟 切到手记瞬间，若当前有正在播放的手记，立即激光对焦居中（PC/手机全自适应）
+          if (currentActiveNoteId !== -1) {
+            setTimeout(() => {
+              const activeCard = document.getElementById('note-card-' + currentActiveNoteId);
+              const scrollBox = document.getElementById('mynotesTab');
+              if (activeCard && scrollBox) {
+                const cardRect = activeCard.getBoundingClientRect();
+                const boxRect = scrollBox.getBoundingClientRect();
+
+                // 动态获取操作栏高度（PC端约48px，手机端约42px，精准扣除）
+                const topBar = scrollBox.querySelector('.action-subbar');
+                const topBarHeight = topBar ? topBar.offsetHeight : 45;
+
+                // 严格只在下方手记区域内部计算中心点
+                const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
+                const delta = (cardRect.top + cardRect.height / 2) - visibleCenterY;
+                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
+              }
+            }, 60);
+          }
         } else if (tab === 'transcript') {
           document.getElementById('tabBtnTranscript').classList.add('active');
           document.getElementById('transcriptTab').style.display = 'block';
