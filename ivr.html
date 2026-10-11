@@ -1486,13 +1486,20 @@
         font-size: 11px;
         font-weight: 700;
         cursor: pointer;
-        display: flex;
+        display: none;
+        /* 👈 默认彻底不渲染，绝不在边缘渗透任何痕迹 */
         flex-direction: column;
         align-items: center;
         gap: 6px;
         z-index: 70;
-        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
+        box-shadow: none;
+        /* 👈 彻底移除向左漫射的阴影，画面纯净 */
         transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), right 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s;
+      }
+
+      /* 沉浸时才唤醒渲染 */
+      .main-workspace.immersive .floating-drawer-tab {
+        display: flex;
       }
 
       .floating-drawer-tab:hover {
@@ -1660,6 +1667,11 @@
         #mobileDrawerList .ep-item-badges {
           flex-shrink: 0 !important;
           margin-top: 2px !important;
+        }
+
+        /* 手机端上下排版，严禁出现左右侧滑抽屉把手 */
+        .floating-drawer-tab {
+          display: none !important;
         }
       }
     </style>
@@ -3655,15 +3667,15 @@
       }
 
       function updateQuoteText(time) {
-          const cue = subtitleData.find(item => time >= item.start && time <= item.end);
-          const quoteEl = document.getElementById('noteQuoteText');
-          if (cue) {
-            quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${cue.cn}"</span></span>`;
-            quoteEl.style.display = 'block';
-          } else {
-            quoteEl.style.display = 'none';
-          }
+        const cue = subtitleData.find(item => time >= item.start && time <= item.end);
+        const quoteEl = document.getElementById('noteQuoteText');
+        if (cue) {
+          quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${cue.cn}"</span></span>`;
+          quoteEl.style.display = 'block';
+        } else {
+          quoteEl.style.display = 'none';
         }
+      }
 
       function captureTimeToInput(target) {
         if (!video.src) return;
