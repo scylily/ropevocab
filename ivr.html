@@ -3946,19 +3946,56 @@
         }
       });
 
-      // ================= 全局点击/触摸空白处自动收起沉浸式抽屉 =================
-      document.addEventListener('pointerdown', (e) => {
-        // 仅在沉浸模式且抽屉展开时生效
-        if (!isImmersiveMode || !isDrawerOpen) return;
+      // ================= 全局沉浸模式智能收起交互中枢 =================
 
-        const notesPanel = document.getElementById('notesZone');
-        const drawerTab = document.getElementById('immersiveTab');
+        // 1. 点击屏幕其他位置（包括点击视频区）时，自动收起工作台
+        document.addEventListener('pointerdown', (e) => {
+          // 仅在沉浸模式且抽屉处于展开状态时生效
+          if (!isImmersiveMode || !isDrawerOpen) return;
 
-        // 如果点击的目标不在右侧抽屉面板内，且不在把手按钮内，则自动收起
-        if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
-          toggleFloatingDrawer();
+          const notesPanel = document.getElementById('notesZone');
+          const drawerTab = document.getElementById('immersiveTab');
+
+          // 如果点击的目标不在右侧抽屉面板内，且不在把手按钮内，则自动收起
+          if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
+            toggleFloatingDrawer();
+          }
+        }, true);
+
+
+        // 2. 鼠标离开工作台 3 秒后自动收起，移回则取消收起
+        let autoHideTimer = null;
+        const AUTO_HIDE_DELAY = 3000; // 自动收起的延迟时间（毫秒），3000 即 3 秒，可根据需要微调
+
+        function startAutoHideTimer() {
+          if (!isImmersiveMode || !isDrawerOpen) return;
+          clearTimeout(autoHideTimer);
+          autoHideTimer = setTimeout(() => {
+            if (isImmersiveMode && isDrawerOpen) {
+              toggleFloatingDrawer();
+            }
+          }, AUTO_HIDE_DELAY);
         }
-      }, true);
+
+        function clearAutoHideTimer() {
+          clearTimeout(autoHideTimer);
+        }
+
+        // 监听右侧工作台面板和把手的鼠标移入与移出
+        const notesZoneEl = document.getElementById('notesZone');
+        const immersiveTabEl = document.getElementById('immersiveTab');
+
+        [notesZoneEl, immersiveTabEl].forEach(el => {
+          if (!el) return;
+          // 鼠标移出工作台或把手时开始 3 秒倒计时
+          el.addEventListener('mouseleave', () => {
+            startAutoHideTimer();
+          });
+          // 鼠标重新移入时清空倒计时，保持展开
+          el.addEventListener('mouseenter', () => {
+            clearAutoHideTimer();
+          });
+        });
 
       // ================= 触屏专属：单指长按视频画面冲刺加速 =================
       let touchPressTimer = null;
