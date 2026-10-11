@@ -1807,7 +1807,13 @@
 
         <!-- B-2: 纯净引导板 -->
         <div class="stage-empty-state" id="videoTip">
-          <h3>🎥 拖拽【视频】、【字幕】或【文件夹】至此</h3>
+          <h3 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="23 7 16 12 23 17 23 7" />
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+            </svg>
+            <span>拖拽【视频】、【字幕】或【文件夹】至此</span>
+          </h3>
           <p>支持 ASS/SRT/VTT 字幕自动分流、双语对照、多集管理与结构化讲义生成</p>
         </div>
 
@@ -1820,7 +1826,15 @@
           </button>
 
           <div id="loopBanner" class="stage-loop-badge" onclick="stopLoop()">
-            <span>🔁 片段循环中 <span id="loopRangeText">00:00 - 00:00</span></span>
+            <span style="display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="17 1 21 5 17 9" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <polyline points="7 23 3 19 7 15" />
+                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+              </svg>
+              <span>片段循环中 <span id="loopRangeText">00:00 - 00:00</span></span>
+            </span>
             <span style="background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 10px; font-size: 10px;">停止</span>
           </div>
 
@@ -1866,7 +1880,10 @@
                 <span>标记手记</span>
               </button>
               <div class="jump-input-capsule" title="输入时码直接回车跳转">
-                <span style="font-size: 11px; color: #94a3b8;">⏱</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
                 <input type="text" id="quickTimeJumpInput" placeholder="时码" onkeydown="handleQuickTimeJump(event)">
               </div>
             </div>
@@ -1905,8 +1922,22 @@
           <!-- 灵光批注输入卡 -->
           <div id="addNoteBox" class="composer-card" style="display: none;">
             <div class="composer-segment">
-              <div id="segPoint" class="composer-segment-item active" onclick="setNoteTypeMode('point')">📍 单点打卡</div>
-              <div id="segInterval" class="composer-segment-item" onclick="setNoteTypeMode('interval')">🔁 区间无限循环</div>
+              <div id="segPoint" class="composer-segment-item active" onclick="setNoteTypeMode('point')" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="10" r="3" />
+                  <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                </svg>
+                <span>单点打卡</span>
+              </div>
+              <div id="segInterval" class="composer-segment-item" onclick="setNoteTypeMode('interval')" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <polyline points="17 1 21 5 17 9" />
+                  <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                  <polyline points="7 23 3 19 7 15" />
+                  <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
+                <span>区间无限循环</span>
+              </div>
             </div>
 
             <div class="composer-time-row">
@@ -1997,7 +2028,13 @@
           </div>
 
           <div id="collapsedToolbar" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 12px; color: var(--text-muted);">📖 讲义已生成 </span>
+            <span style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+              <span>讲义已生成</span>
+            </span>
             <div style="display: flex; gap: 4px;">
               <button class="btn btn-secondary" onclick="exportAINotesToMarkdown()">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3591,7 +3628,7 @@
           </button>
         </div>
       </div>
-      ${note.quote ? `<div class="note-card-quote">🗣️ ${note.quote}</div>` : ''}
+      ${note.quote ? `<div class="note-card-quote" style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>${note.quote}</span></div>` : ''}
       <div class="note-card-text">${note.text}</div>
     `;
           container.appendChild(card);
@@ -3618,15 +3655,15 @@
       }
 
       function updateQuoteText(time) {
-        const cue = subtitleData.find(item => time >= item.start && time <= item.end);
-        const quoteEl = document.getElementById('noteQuoteText');
-        if (cue) {
-          quoteEl.textContent = `🗣️ 原台词: "${cue.cn}"`;
-          quoteEl.style.display = 'block';
-        } else {
-          quoteEl.style.display = 'none';
+          const cue = subtitleData.find(item => time >= item.start && time <= item.end);
+          const quoteEl = document.getElementById('noteQuoteText');
+          if (cue) {
+            quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${cue.cn}"</span></span>`;
+            quoteEl.style.display = 'block';
+          } else {
+            quoteEl.style.display = 'none';
+          }
         }
-      }
 
       function captureTimeToInput(target) {
         if (!video.src) return;
@@ -3645,7 +3682,7 @@
         document.getElementById('noteEndTimeInput').value = note.end ? formatSeconds(note.end) : formatSeconds(note.start + 10);
         document.getElementById('noteContentInput').value = note.text;
         const quoteEl = document.getElementById('noteQuoteText');
-        if (note.quote) { quoteEl.textContent = `🗣️ 原台词: "${note.quote}"`; quoteEl.style.display = 'block'; }
+        if (note.quote) { quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${note.quote}"</span></span>`; quoteEl.style.display = 'block'; }
         else quoteEl.style.display = 'none';
         document.getElementById('addNoteBox').style.display = 'block';
         document.getElementById('noteContentInput').focus();
