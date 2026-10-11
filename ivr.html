@@ -2108,7 +2108,7 @@
                 </svg>
                 <span>精准快退 / 快进步长</span>
               </div>
-              <div class="shortcut-item-row"><span class="key-pill">← / →</span><span>微调快退 / 快进 5 秒</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">← / →</span><span>微调快退 / 快进 1 秒</span></div>
               <div class="shortcut-item-row"><span class="key-pill">Ctrl+←/→</span><span>中步长快退 / 快进 15 秒</span></div>
               <div class="shortcut-item-row"><span class="key-pill">Shift+←/→</span><span>大跨度快退 / 快进 30 秒</span></div>
             </div>
@@ -4219,7 +4219,8 @@
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
             if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
+              // 单按 1 秒，Ctrl+按 15 秒，Shift+按 30 秒
+              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
               video.currentTime = Math.max(0, video.currentTime - s);
               showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
             }
@@ -4228,7 +4229,8 @@
           if (e.key === 'ArrowRight') {
             e.preventDefault();
             if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
+              // 单按 1 秒，Ctrl+按 15 秒，Shift+按 30 秒
+              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
               video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
               showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
             }
