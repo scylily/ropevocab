@@ -1694,22 +1694,37 @@
       <!-- A-4: 选集播放条 (自适应撑满中间空白) -->
       <div class="header-center">
         <div id="playlistControls" class="playlist-bar" style="display: none;">
-          <button class="btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="切换上一集 (Page Up)">⏮</button>
+          <button class="btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="切换上一集 (Page Up)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="19 20 9 12 19 4 19 20" />
+              <line x1="5" y1="19" x2="5" y2="5" />
+            </svg></button>
 
           <div class="custom-ep-wrapper">
             <div id="customEpBtn" class="custom-ep-btn" onclick="toggleEpMenu(event)" title="点击切换集数">
               <span id="currentEpTitle" class="custom-ep-title">正在加载集数...</span>
-              <span style="font-size: 8px; color: #94a3b8;">▼</span>
+              <span style="font-size: 8px; color: #94a3b8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="flex-shrink:0;">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg></span>
             </div>
             <!-- A-4.2: 居中下拉抽屉 -->
             <div id="customEpPopover" class="custom-ep-popover"></div>
           </div>
 
-          <button class="btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="切换下一集 (Page Down)">⏭</button>
+          <button class="btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="切换下一集 (Page Down)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="5 4 15 12 5 20 5 4" />
+              <line x1="19" y1="5" x2="19" y2="19" />
+            </svg></button>
 
           <!-- A-5: 排序引擎 -->
           <div class="sort-dropdown-wrapper">
-            <button id="sortMenuBtn" class="btn-ep" onclick="toggleSortMenu(event)" title="选择列表排序方式">⇅ 排序</button>
+            <button id="sortMenuBtn" class="btn-ep" onclick="toggleSortMenu(event)" title="选择列表排序方式" style="padding: 0 6px; gap: 3px; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
+              <!-- 经过光学紧凑校准的 12x12 上下箭头微矢量 -->
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0; transform: translateY(0.5px);">
+                <polyline points="3 4.5 6 1.5 9 4.5" />
+                <polyline points="3 7.5 6 10.5 9 7.5" />
+              </svg>
+              <span style="line-height: 1; display: inline-block;">排序</span>
+            </button>
             <div id="sortDropdownMenu" class="sort-dropdown-menu">
               <div class="sort-menu-item active" onclick="selectSortMode('original')" data-sort="original">
                 <span class="sort-check-icon">✓</span>
@@ -2202,9 +2217,25 @@
       <div class="drawer-sheet" onclick="event.stopPropagation()">
         <div class="drawer-handle"></div>
         <div style="font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 12px;">手记快捷管理</div>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="exportNotesToMarkdown(); toggleMobileNotesDrawer(false);">💾 导出手记 (.md)</button>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);">📂 导入本地手记</button>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);">🗑️ 清空手记</button>
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="exportNotesToMarkdown(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>导出手记 (.md)</span></button>
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <span>导入本地手记</span></button>
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            <line x1="10" y1="11" x2="10" y2="17" />
+            <line x1="14" y1="11" x2="14" y2="17" />
+          </svg>
+          <span>清空手记</span></button>
       </div>
     </div>
 
@@ -2376,6 +2407,24 @@
         } else if (rawText.includes('⚠️')) {
           iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
           cleanText = cleanText.replace(/⚠️\s*/g, '');
+        } else if (rawText.includes('↩️') || rawText.includes('恢复原分屏')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><polyline points="3 3 3 8 8 8"/></svg>`;
+          cleanText = cleanText.replace(/↩️\s*/g, '');
+        } else if (rawText.includes('✍️') || rawText.includes('手记')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`;
+          cleanText = cleanText.replace(/✍️\s*/g, '');
+        } else if (rawText.includes('📚') || rawText.includes('讲义')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+          cleanText = cleanText.replace(/📚\s*/g, '');
+        } else if (rawText.includes('💾')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+          cleanText = cleanText.replace(/💾\s*/g, '');
+        } else if (rawText.includes('⏱️') || rawText.includes('⏱')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+          cleanText = cleanText.replace(/⏱️?\s*/g, '');
+        } else if (rawText.includes('⏭')) {
+          iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>`;
+          cleanText = cleanText.replace(/⏭\s*/g, '');
         }
 
         videoOSD.innerHTML = `
@@ -3693,20 +3742,134 @@
         navigator.clipboard.writeText(p).then(() => showOSD('已复制【纯净版专题档案】提示词'));
       }
 
+      // ================= 智能讲义 Markdown 全功能转译引擎 =================
+      function parseMarkdownToHtml(mdText) {
+        if (!mdText) return '';
+
+        // 1. 剥离外层代码块包裹 (如 ```markdown ... ```)
+        let text = mdText.replace(/^```(?:markdown)?\s*\n?|\n?```$/gi, '').trim();
+
+        // 2. 行内样式转译辅助函数
+        function parseInline(str) {
+          if (!str) return '';
+          // 粗体: **文本** 或 __文本__
+          str = str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          str = str.replace(/__(.+?)__/g, '<strong>$1</strong>');
+          // 行内代码: `code`
+          str = str.replace(/`([^`]+)`/g, '<code>$1</code>');
+          // 斜体: *文本* (避免误伤已解析的 strong)
+          str = str.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
+          // 时码标签转换: [mm:ss] 或 [hh:mm:ss]，支持含首尾空格
+          str = str.replace(/\[\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]/g, (m, ts) => {
+            const sec = timeToSeconds(ts.trim());
+            return `<span class="pill-tag" onclick="jumpToPoint(${sec})">▶ ${ts.trim()}</span>`;
+          });
+          return str;
+        }
+
+        const lines = text.split('\n');
+        const output = [];
+        let inUl = false;
+        let inOl = false;
+        let inQuote = false;
+
+        function closeListsAndQuotes() {
+          if (inUl) { output.push('</ul>'); inUl = false; }
+          if (inOl) { output.push('</ol>'); inOl = false; }
+          if (inQuote) { output.push('</blockquote>'); inQuote = false; }
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+          const rawLine = lines[i];
+          const line = rawLine.trim();
+
+          // 空行：重置当前包裹块
+          if (!line) {
+            closeListsAndQuotes();
+            continue;
+          }
+
+          // 分割线 (--- 或 ***)
+          if (/^(?:---|\*\*\*|___)$/.test(line)) {
+            closeListsAndQuotes();
+            output.push('<hr style="border:none;border-top:1px solid var(--border-light);margin:12px 0;">');
+            continue;
+          }
+
+          // 各级标题 (# ~ ####)
+          if (line.startsWith('#### ')) {
+            closeListsAndQuotes();
+            output.push(`<h4>${parseInline(line.slice(5))}</h4>`);
+            continue;
+          }
+          if (line.startsWith('### ')) {
+            closeListsAndQuotes();
+            output.push(`<h3>${parseInline(line.slice(4))}</h3>`);
+            continue;
+          }
+          if (line.startsWith('## ')) {
+            closeListsAndQuotes();
+            output.push(`<h2>${parseInline(line.slice(3))}</h2>`);
+            continue;
+          }
+          if (line.startsWith('# ')) {
+            closeListsAndQuotes();
+            output.push(`<h1>${parseInline(line.slice(2))}</h1>`);
+            continue;
+          }
+
+          // 引用块 (> ...)
+          if (line.startsWith('> ')) {
+            if (inUl || inOl) closeListsAndQuotes();
+            if (!inQuote) {
+              output.push('<blockquote style="margin:6px 0;padding:4px 10px;background:#f8fafc;border-left:3px solid var(--primary-border);color:var(--text-muted);border-radius:0 4px 4px 0;">');
+              inQuote = true;
+            }
+            output.push(`<p style="margin:2px 0;">${parseInline(line.slice(2))}</p>`);
+            continue;
+          }
+
+          // 无序列表 (- ... 或 * ...)
+          if (/^[-*•]\s+/.test(line)) {
+            if (inOl) { output.push('</ol>'); inOl = false; }
+            if (inQuote) { output.push('</blockquote>'); inQuote = false; }
+            if (!inUl) {
+              output.push('<ul style="padding-left:18px;margin:4px 0 6px;">');
+              inUl = true;
+            }
+            const itemText = line.replace(/^[-*•]\s+/, '');
+            output.push(`<li style="margin:3px 0;">${parseInline(itemText)}</li>`);
+            continue;
+          }
+
+          // 有序数字列表 (1. ... 2. ...)
+          if (/^\d+\.\s+/.test(line)) {
+            if (inUl) { output.push('</ul>'); inUl = false; }
+            if (inQuote) { output.push('</blockquote>'); inQuote = false; }
+            if (!inOl) {
+              output.push('<ol style="padding-left:18px;margin:4px 0 6px;">');
+              inOl = true;
+            }
+            const itemText = line.replace(/^\d+\.\s+/, '');
+            output.push(`<li style="margin:3px 0;">${parseInline(itemText)}</li>`);
+            continue;
+          }
+
+          // 常规段落文本
+          closeListsAndQuotes();
+          output.push(`<p style="margin:4px 0;line-height:1.6;">${parseInline(line)}</p>`);
+        }
+
+        closeListsAndQuotes();
+        return output.join('');
+      }
+
       function renderNotes(shouldSave = true) {
         let raw = document.getElementById('notesInput').value.trim();
         if (!raw) return;
         if (shouldSave && currentVideoFileName) localStorage.setItem('reader_ai_notes_' + currentVideoFileName, raw);
-        raw = raw.replace(/^```(?:markdown)?\s*\n?|\n?```$/gi, '');
-        let html = raw.split('\n').map(l => {
-          let t = l.trim();
-          if (t.startsWith('### ')) return `<h3>${t.slice(4)}</h3>`;
-          if (t.startsWith('## ')) return `<h2>${t.slice(3)}</h2>`;
-          if (t.startsWith('# ')) return `<h1>${t.slice(2)}</h1>`;
-          if (t.startsWith('- ')) return `<li>${t.slice(2)}</li>`;
-          return `<p>${t}</p>`;
-        }).join('');
-        html = html.replace(/\[(\d{1,2}:\d{2})\]/g, (m, ts) => `<span class="pill-tag" onclick="jumpToPoint(${timeToSeconds(ts)})">▶ ${ts}</span>`);
+
+        const html = parseMarkdownToHtml(raw);
         document.getElementById('notesRendered').innerHTML = html;
         document.getElementById('inputBoxContainer').style.display = 'none';
         document.getElementById('collapsedToolbar').style.display = 'flex';
@@ -3948,54 +4111,54 @@
 
       // ================= 全局沉浸模式智能收起交互中枢 =================
 
-        // 1. 点击屏幕其他位置（包括点击视频区）时，自动收起工作台
-        document.addEventListener('pointerdown', (e) => {
-          // 仅在沉浸模式且抽屉处于展开状态时生效
-          if (!isImmersiveMode || !isDrawerOpen) return;
+      // 1. 点击屏幕其他位置（包括点击视频区）时，自动收起工作台
+      document.addEventListener('pointerdown', (e) => {
+        // 仅在沉浸模式且抽屉处于展开状态时生效
+        if (!isImmersiveMode || !isDrawerOpen) return;
 
-          const notesPanel = document.getElementById('notesZone');
-          const drawerTab = document.getElementById('immersiveTab');
+        const notesPanel = document.getElementById('notesZone');
+        const drawerTab = document.getElementById('immersiveTab');
 
-          // 如果点击的目标不在右侧抽屉面板内，且不在把手按钮内，则自动收起
-          if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
+        // 如果点击的目标不在右侧抽屉面板内，且不在把手按钮内，则自动收起
+        if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
+          toggleFloatingDrawer();
+        }
+      }, true);
+
+
+      // 2. 鼠标离开工作台 3 秒后自动收起，移回则取消收起
+      let autoHideTimer = null;
+      const AUTO_HIDE_DELAY = 3000; // 自动收起的延迟时间（毫秒），3000 即 3 秒，可根据需要微调
+
+      function startAutoHideTimer() {
+        if (!isImmersiveMode || !isDrawerOpen) return;
+        clearTimeout(autoHideTimer);
+        autoHideTimer = setTimeout(() => {
+          if (isImmersiveMode && isDrawerOpen) {
             toggleFloatingDrawer();
           }
-        }, true);
+        }, AUTO_HIDE_DELAY);
+      }
 
+      function clearAutoHideTimer() {
+        clearTimeout(autoHideTimer);
+      }
 
-        // 2. 鼠标离开工作台 3 秒后自动收起，移回则取消收起
-        let autoHideTimer = null;
-        const AUTO_HIDE_DELAY = 3000; // 自动收起的延迟时间（毫秒），3000 即 3 秒，可根据需要微调
+      // 监听右侧工作台面板和把手的鼠标移入与移出
+      const notesZoneEl = document.getElementById('notesZone');
+      const immersiveTabEl = document.getElementById('immersiveTab');
 
-        function startAutoHideTimer() {
-          if (!isImmersiveMode || !isDrawerOpen) return;
-          clearTimeout(autoHideTimer);
-          autoHideTimer = setTimeout(() => {
-            if (isImmersiveMode && isDrawerOpen) {
-              toggleFloatingDrawer();
-            }
-          }, AUTO_HIDE_DELAY);
-        }
-
-        function clearAutoHideTimer() {
-          clearTimeout(autoHideTimer);
-        }
-
-        // 监听右侧工作台面板和把手的鼠标移入与移出
-        const notesZoneEl = document.getElementById('notesZone');
-        const immersiveTabEl = document.getElementById('immersiveTab');
-
-        [notesZoneEl, immersiveTabEl].forEach(el => {
-          if (!el) return;
-          // 鼠标移出工作台或把手时开始 3 秒倒计时
-          el.addEventListener('mouseleave', () => {
-            startAutoHideTimer();
-          });
-          // 鼠标重新移入时清空倒计时，保持展开
-          el.addEventListener('mouseenter', () => {
-            clearAutoHideTimer();
-          });
+      [notesZoneEl, immersiveTabEl].forEach(el => {
+        if (!el) return;
+        // 鼠标移出工作台或把手时开始 3 秒倒计时
+        el.addEventListener('mouseleave', () => {
+          startAutoHideTimer();
         });
+        // 鼠标重新移入时清空倒计时，保持展开
+        el.addEventListener('mouseenter', () => {
+          clearAutoHideTimer();
+        });
+      });
 
       // ================= 触屏专属：单指长按视频画面冲刺加速 =================
       let touchPressTimer = null;
