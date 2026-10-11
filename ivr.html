@@ -994,6 +994,15 @@
         color: #fff;
       }
 
+      /* 🌟 讲义时间胶囊：当前播放命中时的高亮状态（与字幕完全对齐） */
+      .pill-tag.active {
+        background: #4f46e5 !important;
+        color: #ffffff !important;
+        border-color: #4f46e5 !important;
+        box-shadow: 0 1px 4px rgba(79, 70, 229, 0.35) !important;
+        transform: scale(1.03);
+      }
+
       .pill-tag-loop {
         display: inline-flex;
         align-items: center;
@@ -1794,7 +1803,7 @@
     <div class="main-workspace" id="mainContainer">
       <!-- 功能区 2: 左侧·影院级视频舞台 -->
       <div class="video-stage" id="videoZone">
-        <div class="drop-overlay">释放鼠标：自动装配视频与字幕</div>
+        <div class="drop-overlay"></div>
 
         <!-- B-2: 纯净引导板 -->
         <div class="stage-empty-state" id="videoTip">
@@ -2729,39 +2738,106 @@
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
       function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => document.body.addEventListener(evt, e => e.preventDefault(), false));
+      // 全局窗口级别拦截：防止手滑拖在边缘时浏览器跳转页面
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+        window.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+
+      // 拖拽计数器（彻底消灭子元素导致的虚线框疯狂闪烁）
+      let dragCounter = 0;
       [videoZone, notesZone].forEach(zone => {
-        zone.addEventListener('dragover', () => zone.classList.add('drag-over'));
-        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('dragenter', (e) => {
+          e.preventDefault();
+          dragCounter++;
+          zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy'; // 明确告诉浏览器显示绿色加号/复制光标
+          zone.classList.add('drag-over');
+        });
+
+        zone.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          dragCounter--;
+          if (dragCounter <= 0) {
+            dragCounter = 0;
+            zone.classList.remove('drag-over');
+          }
+        });
+
         zone.addEventListener('drop', async (e) => {
+          dragCounter = 0;
           zone.classList.remove('drag-over');
           await handleDropEvent(e);
         });
       });
 
+      // 核心拖拽响应中枢：双重降级保障
       async function handleDropEvent(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         let files = [];
-        if (e.dataTransfer.items?.length) {
-          for (let item of e.dataTransfer.items) {
-            const entry = item.webkitGetAsEntry?.();
-            if (entry) files.push(...await scanFilesFromEntry(entry));
+        // 优先使用高级 Entry API 读取（支持文件夹递归）
+        if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+          const entries = [];
+          for (let i = 0; i < e.dataTransfer.items.length; i++) {
+            const item = e.dataTransfer.items[i];
+            if (item.kind === 'file') {
+              const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+              if (entry) entries.push(entry);
+            }
           }
-        } else if (e.dataTransfer.files?.length) {
+          if (entries.length > 0) {
+            for (let entry of entries) {
+              const subFiles = await scanFilesFromEntry(entry);
+              files.push(...subFiles);
+            }
+          }
+        }
+        // 降级兜底：若 Entry API 读取为空（如直接拖单文件），采用标准 files 集合
+        if (files.length === 0 && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
           files = Array.from(e.dataTransfer.files);
         }
-        autoMatchAndLoad(files);
+
+        if (files.length > 0) {
+          autoMatchAndLoad(files);
+        } else {
+          showOSD('⚠️ 未检测到有效文件');
+        }
       }
 
+      // 健壮的文件夹与文件递归扫描器 (带容错降级)
       async function scanFilesFromEntry(entry) {
         let res = [];
-        if (entry.isFile) res.push(await new Promise(r => entry.file(r)));
-        else if (entry.isDirectory) {
-          const reader = entry.createReader();
-          const entries = await new Promise(r => reader.readEntries(r));
-          for (let sub of entries) res.push(...await scanFilesFromEntry(sub));
+        if (!entry) return res;
+        if (entry.isFile) {
+          const file = await new Promise((resolve) => {
+            entry.file(resolve, () => resolve(null));
+          });
+          if (file) res.push(file);
+        } else if (entry.isDirectory) {
+          try {
+            const reader = entry.createReader();
+            const entries = await new Promise((resolve) => {
+              reader.readEntries(resolve, () => resolve([]));
+            });
+            for (let sub of entries) {
+              res.push(...await scanFilesFromEntry(sub));
+            }
+          } catch (e) {
+            console.warn('读取目录失败:', e);
+          }
         }
         return res;
       }
+
+
 
       async function autoMatchAndLoad(files) {
         if (!files?.length) return;
@@ -3150,6 +3226,45 @@
       // ================= 播放监听：画面字幕更新 + 右侧字幕逐句数学级精准居中跟随 =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
+
+        // 🌟 讲义时间节点实时侦测：支持所有相同时间点同时高亮
+        const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
+        if (aiTags.length > 0) {
+          // 1. 提取所有不重复的时间刻度并排序
+          const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
+
+          // 2. 找出当前播放时间所处的有效秒数 targetSec
+          let targetSec = null;
+          for (let i = 0; i < uniqueSecs.length; i++) {
+            const sec = uniqueSecs[i];
+            const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
+            if (curTime >= sec && curTime < nextSec) {
+              targetSec = sec;
+              break;
+            }
+          }
+
+          // 3. 将所有等于 targetSec 的胶囊全部点亮（大标题、小标题、列表项一起亮）
+          let hasNewActive = false;
+          let firstActiveTag = null;
+          aiTags.forEach(tag => {
+            const sec = parseFloat(tag.getAttribute('data-sec'));
+            if (targetSec !== null && sec === targetSec) {
+              if (!tag.classList.contains('active')) {
+                tag.classList.add('active');
+                hasNewActive = true;
+              }
+              if (!firstActiveTag) firstActiveTag = tag;
+            } else {
+              tag.classList.remove('active');
+            }
+          });
+
+          // 4. 当刚切入该时间段且在“智能讲义”界面时，平滑滚动至第一个对应标签
+          if (hasNewActive && firstActiveTag && currentTab === 'notes') {
+            firstActiveTag.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
 
         // 1. 片段无限循环越界重绕逻辑
         if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
@@ -3762,7 +3877,7 @@
           // 时码标签转换: [mm:ss] 或 [hh:mm:ss]，支持含首尾空格
           str = str.replace(/\[\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]/g, (m, ts) => {
             const sec = timeToSeconds(ts.trim());
-            return `<span class="pill-tag" onclick="jumpToPoint(${sec})">▶ ${ts.trim()}</span>`;
+            return `<span class="pill-tag ai-note-tag" data-sec="${sec}" onclick="jumpToPoint(${sec})">▶ ${ts.trim()}</span>`;
           });
           return str;
         }
