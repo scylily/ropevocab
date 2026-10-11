@@ -3386,6 +3386,9 @@
           if (currentActiveNoteId !== matchedId) {
             currentActiveNoteId = matchedId;
 
+            // 🌟 核心防抢占锁：只要正在编辑手记，绝不自动滚屏打扰！
+            if (editingNoteId !== null) return;
+
             if (matchedNote && currentTab === 'mynotes') {
               const activeCard = document.getElementById('note-card-' + matchedNote.id);
               const scrollBox = document.getElementById('mynotesTab');
@@ -3752,13 +3755,24 @@
       function openAddNoteBox() {
         if (!video.src) { showOSD('⚠️ 请先载入视频'); return; }
         switchTab('mynotes');
+
+        // 若之前有正在原地编辑的卡片，先恢复原样
+        const addBox = document.getElementById('addNoteBox');
+        const list = document.getElementById('myNotesList');
+        if (editingNoteId) {
+          const prevCard = document.getElementById('note-card-' + editingNoteId);
+          if (prevCard) prevCard.style.display = '';
+        }
+        // 归位到手记列表的最顶端
+        list.parentNode.insertBefore(addBox, list);
+
         editingNoteId = null;
         setNoteTypeMode('point');
         const cur = video.currentTime;
         document.getElementById('noteStartTimeInput').value = formatSeconds(cur);
         document.getElementById('noteEndTimeInput').value = formatSeconds(cur + 10);
         updateQuoteText(cur);
-        document.getElementById('addNoteBox').style.display = 'block';
+        addBox.style.display = 'block';
         document.getElementById('noteContentInput').value = '';
         document.getElementById('noteContentInput').focus();
       }
@@ -3781,26 +3795,95 @@
         else document.getElementById('noteEndTimeInput').value = timeStr;
       }
 
-      function editNote(id) {
-        const note = myNotes.find(n => n.id === id);
-        if (!note) return;
-        editingNoteId = id;
-        switchTab('mynotes');
-        setNoteTypeMode(note.type);
-        document.getElementById('noteStartTimeInput').value = formatSeconds(note.start);
-        document.getElementById('noteEndTimeInput').value = note.end ? formatSeconds(note.end) : formatSeconds(note.start + 10);
-        document.getElementById('noteContentInput').value = note.text;
-        const quoteEl = document.getElementById('noteQuoteText');
-        if (note.quote) { quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${note.quote}"</span></span>`; quoteEl.style.display = 'block'; }
-        else quoteEl.style.display = 'none';
-        document.getElementById('addNoteBox').style.display = 'block';
-        document.getElementById('noteContentInput').focus();
-      }
+        // 🌟 原地编辑终极版：零多余空白 + 下沿严格贴合手记框底边 + 防切底
+          function editNote(id) {
+            const note = myNotes.find(n => n.id === id);
+            if (!note) return;
 
-      function closeAddNoteBox() {
-        document.getElementById('addNoteBox').style.display = 'none';
-        editingNoteId = null;
-      }
+            const addBox = document.getElementById('addNoteBox');
+            const scrollBox = document.getElementById('mynotesTab');
+            const currentCard = document.getElementById('note-card-' + id);
+
+            // 如果之前有其他卡片在编辑，先恢复原样
+            if (editingNoteId && editingNoteId !== id) {
+              const prevCard = document.getElementById('note-card-' + editingNoteId);
+              if (prevCard) prevCard.style.display = '';
+            }
+
+            editingNoteId = id;
+
+            // 填充当前手记数据
+            setNoteTypeMode(note.type);
+            document.getElementById('noteStartTimeInput').value = formatSeconds(note.start);
+            document.getElementById('noteEndTimeInput').value = note.end ? formatSeconds(note.end) : formatSeconds(note.start + 10);
+            document.getElementById('noteContentInput').value = note.text;
+
+            const quoteEl = document.getElementById('noteQuoteText');
+            if (note.quote) {
+              quoteEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:4px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> <span>原台词: "${note.quote}"</span></span>`;
+              quoteEl.style.display = 'block';
+            } else {
+              quoteEl.style.display = 'none';
+            }
+
+            // 原地展开编辑框，隐藏原卡片（完全不加任何多余 padding，保持 0 留白）
+            if (currentCard) {
+              addBox.style.display = 'block';
+              currentCard.parentNode.insertBefore(addBox, currentCard);
+              currentCard.style.display = 'none';
+            }
+
+            // 🌟 核心对齐计算：让编辑框底边精准贴在框架下沿
+            if (scrollBox && addBox) {
+              setTimeout(() => {
+                const boxRect = addBox.getBoundingClientRect();
+                const containerRect = scrollBox.getBoundingClientRect();
+                const topBar = scrollBox.querySelector('.action-subbar');
+                const topBarHeight = topBar ? topBar.offsetHeight : 45;
+
+                const visibleTop = containerRect.top + topBarHeight;
+                const visibleBottom = containerRect.bottom;
+
+                let targetScrollTop = scrollBox.scrollTop;
+
+                // 情况 1：如果是最后一条，或者编辑框底部超出了框架底部
+                if (boxRect.bottom > visibleBottom) {
+                  // 精确向下滚到位，使得编辑框下沿刚好严丝合缝压在框架下沿
+                  targetScrollTop += (boxRect.bottom - visibleBottom) + 4;
+                }
+                // 情况 2：如果是靠上的卡片，顶部被操作栏遮挡，向上微调
+                else if (boxRect.top < visibleTop) {
+                  targetScrollTop -= (visibleTop - boxRect.top) + 8;
+                }
+
+                scrollBox.scrollTo({
+                  top: Math.max(0, targetScrollTop),
+                  behavior: 'smooth'
+                });
+
+                // 🌟 破案关键：加上 { preventScroll: true }，聚焦输入框时绝对禁止浏览器原生滚屏横插一杠！
+                const textarea = document.getElementById('noteContentInput');
+                if (textarea) {
+                  textarea.focus({ preventScroll: true });
+                  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
+              }, 30);
+            }
+          }
+
+          function closeAddNoteBox() {
+            const addBox = document.getElementById('addNoteBox');
+            const list = document.getElementById('myNotesList');
+
+            if (editingNoteId) {
+              const prevCard = document.getElementById('note-card-' + editingNoteId);
+              if (prevCard) prevCard.style.display = '';
+            }
+
+            addBox.style.display = 'none';
+            list.parentNode.insertBefore(addBox, list);
+            editingNoteId = null; // 解除防抢占锁
+          }
 
       function saveNewNote() {
         const text = document.getElementById('noteContentInput').value.trim();
@@ -3817,6 +3900,7 @@
 
         const cue = subtitleData.find(item => startSec >= item.start && startSec <= item.end);
         const quote = cue ? cue.cn : '';
+        const savedNoteId = editingNoteId || Date.now();
 
         if (editingNoteId) {
           const idx = myNotes.findIndex(n => n.id === editingNoteId);
@@ -3830,7 +3914,7 @@
           }
         } else {
           myNotes.push({
-            id: Date.now(),
+            id: savedNoteId,
             type: currentNoteType,
             start: startSec,
             end: endSec,
@@ -3840,11 +3924,22 @@
             createAt: new Date().toLocaleDateString()
           });
         }
+
         myNotes.sort((a, b) => a.start - b.start);
         saveNotesToLocalStorage();
-        renderMyNotesList();
+
+        // 关键顺序：先关掉编辑框归位，再重新渲染卡片
         closeAddNoteBox();
+        renderMyNotesList();
         renderPlaylistUI();
+
+        // 🌟 原地停靠：保存后将视口稳稳留在刚修改完的卡片上
+        setTimeout(() => {
+          const targetCard = document.getElementById('note-card-' + savedNoteId);
+          if (targetCard) {
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 30);
       }
 
       function deleteNote(id) {
