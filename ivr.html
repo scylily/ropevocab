@@ -786,7 +786,7 @@
         flex-shrink: 0 !important;
       }
 
-      @container notesPanel (max-width: 360px) {
+      @container notesPanel (max-width: 260px) {
         .action-subbar .btn-secondary span {
           display: none !important;
         }
@@ -797,6 +797,10 @@
 
         .jump-input-capsule input {
           width: 32px !important;
+        }
+
+        .action-subbar .btn-primary span {
+          display: none !important;
         }
       }
 
@@ -1424,6 +1428,78 @@
         }
       }
 
+      /* ================= 方案B增强：Ctrl+F 极致沉浸 + 悬浮抽屉 ================= */
+      /* 1. 沉浸状态下：视频绝对满屏，中轴线隐去 */
+      .main-workspace.immersive .video-stage {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .main-workspace.immersive .panel-resizer {
+        display: none !important;
+      }
+
+      /* 2. 沉浸状态下：右侧面板转为“浮层抽屉”，隐藏在屏幕右侧外面 */
+      .main-workspace.immersive .notes-panel {
+        position: absolute !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        height: 100% !important;
+        width: 380px !important;
+        max-width: 85vw !important;
+        z-index: 60 !important;
+        transform: translateX(100%) !important;
+        /* 藏在屏幕右侧外 */
+        box-shadow: none !important;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
+      }
+
+      /* 3. 点击把手展开抽屉：平滑滑入，悬浮在视频上方！不挤压视频！ */
+      .main-workspace.immersive.drawer-open .notes-panel {
+        transform: translateX(0) !important;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.38) !important;
+      }
+
+      /* 4. 浮动把手：沉浸时吸附在最右边缘 */
+      .floating-drawer-tab {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%) translateX(100%);
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-right: none;
+        color: #fff;
+        padding: 12px 6px;
+        border-radius: 8px 0 0 8px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        z-index: 70;
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.25);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), right 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s;
+      }
+
+      .floating-drawer-tab:hover {
+        background: var(--primary);
+      }
+
+      /* 沉浸时露在屏幕最右边缘 */
+      .main-workspace.immersive .floating-drawer-tab {
+        transform: translateY(-50%) translateX(0);
+      }
+
+      /* 抽屉展开时，把手随抽屉滑到左侧，作为收起把手 */
+      .main-workspace.immersive.drawer-open .floating-drawer-tab {
+        right: clamp(260px, 380px, 85vw) !important;
+      }
+
       /* 移动手机端专属架构 (≤ 768px) */
       @media (max-width: 768px) {
         header {
@@ -1712,7 +1788,7 @@
         </div>
 
         <div class="video-canvas-wrapper" id="videoWrapper">
-          <button id="touchFitBtn" class="stage-fit-btn" onclick="fitVideoRatio()" title="消除黑边 / 贴合画面 (Ctrl+B)">
+          <button id="touchFitBtn" class="stage-fit-btn" onclick="fitVideoRatio()" title="消除黑边 / 贴合画面 (F)">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: block; flex-shrink: 0;">
               <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
             </svg>
@@ -1732,6 +1808,12 @@
             <div id="videoSubForeign" class="v-foreign"></div>
           </div>
         </div>
+      </div>
+
+      <!-- 沉浸模式下浮现的抽屉把手 (点击切换悬浮抽屉) -->
+      <div id="immersiveTab" class="floating-drawer-tab" onclick="toggleFloatingDrawer(event)" title="展开/收起悬浮手记">
+        <span id="immersiveTabArrow">◀</span>
+        <span id="immersiveTabText" style="writing-mode: vertical-lr; letter-spacing: 2px;">手记</span>
       </div>
 
       <!-- 功能区 3: 中轴·物理弹性分割条 -->
@@ -1942,7 +2024,8 @@
               </div>
               <div class="shortcut-item-row"><span class="key-pill">Space</span><span>播放 / 暂停</span></div>
               <div class="shortcut-item-row"><span class="key-pill">PageUp / PageDown</span><span>上一集 / 下一集</span></div>
-              <div class="shortcut-item-row"><span class="key-pill">Ctrl+B</span><span>贴合画面 / 消除黑边</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">F</span><span>贴合画面 / 消除黑边</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">Ctrl+F</span><span>充满画面</span></div>
             </div>
 
             <div class="shortcut-group-card grp-emerald">
@@ -2232,6 +2315,12 @@
       let myNotes = [];
       let osdTimeout = null;
 
+      let isImmersiveMode = false;     // 是否处于 Ctrl+F 满屏沉浸
+      let isDrawerOpen = false;        // 沉浸时，浮层抽屉是否滑出
+      let savedNormalStageWidth = null;// 沉浸前记忆的分屏宽度
+      let isFittedToggleState = false; // F 键是否处于贴合状态
+      let preFitStageWidth = null;     // 按 F 贴合前记忆的原始分屏宽度
+
       const sortLabels = {
         'original': '拖入原始顺序',
         'name-asc': '名称升序',
@@ -2479,11 +2568,94 @@
       document.addEventListener('touchend', stopResize);
       resizer.addEventListener('dblclick', fitVideoRatio);
 
+      // 这是你升级后的 fitVideoRatio 函数（两态回弹版）...
       function fitVideoRatio() {
-        if (!video.src || !video.videoWidth || !video.videoHeight) { showOSD('⚠️ 暂无视频就绪'); return; }
+        // ... (保持升级后的 fitVideoRatio 函数内容)
+      }
+
+      // 👇👇👇 【就在这里！直接紧跟在 fitVideoRatio 后面粘贴新增函数】 👇👇👇
+      function toggleImmersiveMode() {
+        if (!video.src) { showOSD('⚠️ 请先载入视频'); return; }
+
+        isImmersiveMode = !isImmersiveMode;
+        const container = document.getElementById('mainContainer');
+
+        if (isImmersiveMode) {
+          savedNormalStageWidth = leftPanel.style.width || (leftPanel.getBoundingClientRect().width + 'px');
+          container.classList.add('immersive');
+          container.classList.remove('drawer-open');
+          isDrawerOpen = false;
+          updateDrawerTabUI();
+          showOSD('🖥️ 沉浸满屏 (点击右侧把手悬浮呼出手记)');
+        } else {
+          container.classList.remove('immersive', 'drawer-open');
+          isDrawerOpen = false;
+          if (savedNormalStageWidth) {
+            leftPanel.style.width = savedNormalStageWidth;
+          }
+          showOSD('📖 已退出沉浸，恢复分屏工作台');
+        }
+      }
+
+      function toggleFloatingDrawer(e) {
+        if (e) e.stopPropagation();
+        if (!isImmersiveMode) return;
+
+        isDrawerOpen = !isDrawerOpen;
+        const container = document.getElementById('mainContainer');
+        container.classList.toggle('drawer-open', isDrawerOpen);
+        updateDrawerTabUI();
+
+        if (isDrawerOpen) {
+          showOSD('📖 悬浮手记已滑出');
+        } else {
+          showOSD('收起悬浮手记');
+        }
+      }
+
+      function updateDrawerTabUI() {
+        const arrow = document.getElementById('immersiveTabArrow');
+        const text = document.getElementById('immersiveTabText');
+        if (arrow && text) {
+          arrow.textContent = isDrawerOpen ? '▶' : '◀';
+          text.textContent = isDrawerOpen ? '收起' : '手记';
+        }
+      }
+      // 👆👆👆 【新增函数结束】 👆👆👆
+
+      function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
+
+      function fitVideoRatio() {
+        if (!video.src || !video.videoWidth || !video.videoHeight) {
+          showOSD('⚠️ 暂无视频就绪');
+          return;
+        }
+
+        // 如果处于沉浸模式按了 F，先退出沉浸
+        if (isImmersiveMode) {
+          toggleImmersiveMode();
+        }
+
         const isMobile = window.innerWidth <= 768;
         const ratio = video.videoWidth / video.videoHeight;
+
+        // 状态 1：当前已经是贴合状态 -> 再次按下触发【回弹恢复】
+        if (isFittedToggleState) {
+          leftPanel.classList.add('panel-smooth-transition');
+          if (isMobile) {
+            leftPanel.style.height = preFitStageWidth || '240px';
+          } else {
+            leftPanel.style.width = preFitStageWidth || '52%';
+          }
+          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+          isFittedToggleState = false;
+          showOSD('↩️ 已恢复原分屏窗口');
+          return;
+        }
+
+        // 状态 2：当前是常规状态 -> 记录原始宽度，并执行【贴合去黑边】
         if (isMobile) {
+          preFitStageWidth = leftPanel.style.height || (leftPanel.getBoundingClientRect().height + 'px');
           leftPanel.style.width = '';
           let targetHeight = Math.round(leftPanel.clientWidth / ratio);
           const maxHeight = Math.round(window.innerHeight * 0.55);
@@ -2492,15 +2664,18 @@
           leftPanel.style.height = targetHeight + 'px';
           setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
         } else {
+          preFitStageWidth = leftPanel.style.width || (leftPanel.getBoundingClientRect().width + 'px');
           leftPanel.style.height = '';
           let targetWidth = Math.round(mainContainer.clientHeight * ratio);
-          const maxAllowed = mainContainer.clientWidth - 320;
+          const maxAllowed = mainContainer.clientWidth - 210; // 保留右侧保护
           targetWidth = Math.min(Math.max(targetWidth, 280), maxAllowed);
           leftPanel.classList.add('panel-smooth-transition');
           leftPanel.style.width = targetWidth + 'px';
           setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
         }
-        showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight})`);
+
+        isFittedToggleState = true;
+        showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
       }
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
@@ -3611,120 +3786,140 @@
 
       // 键盘快捷键中枢
       document.addEventListener('keydown', (e) => {
-        const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          const addBox = document.getElementById('addNoteBox');
-          if (addBox && addBox.style.display !== 'none') { e.preventDefault(); saveNewNote(); return; }
-        }
-
-        if (e.ctrlKey && e.altKey) {
-          if (e.key === '1') { e.preventDefault(); switchTab('mynotes'); showOSD('切换至手记'); return; }
-          if (e.key === '2') { e.preventDefault(); handleSubtitleShortcutCycle(); return; }
-          if (e.key === '3') { e.preventDefault(); switchTab('notes'); showOSD('切换至智能讲义'); return; }
-        }
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
-          e.preventDefault(); switchTab('mynotes');
-          const inp = document.getElementById('quickTimeJumpInput');
-          if (inp) { inp.focus(); inp.select(); }
-          return;
-        }
-
-        if (e.ctrlKey || e.metaKey) {
-          if (e.key === 'b' || e.key === 'B') { e.preventDefault(); fitVideoRatio(); return; }
-          if (e.key === 'm' || e.key === 'M') { e.preventDefault(); openAddNoteBox(); return; }
-          if (e.key === '\\') { e.preventDefault(); video.playbackRate = 1.0; showOSD('⚡ 1.00x 原速'); return; }
-          if (e.key === '[' || e.code === 'BracketLeft') {
-            e.preventDefault(); if (!video.src) return;
-            tempInPointSec = video.currentTime; showOSD(`📍 已定入点 A: ${formatSeconds(tempInPointSec)}`); return;
+          const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const addBox = document.getElementById('addNoteBox');
+            if (addBox && addBox.style.display !== 'none') { e.preventDefault(); saveNewNote(); return; }
           }
-          if (e.key === ']' || e.code === 'BracketRight') {
-            e.preventDefault(); if (!video.src) return;
-            const outP = video.currentTime, inP = tempInPointSec !== null ? tempInPointSec : Math.max(0, outP - 10);
-            showOSD(`📍 已定出点 B: ${formatSeconds(outP)}`);
-            openAddNoteBox(); setNoteTypeMode('interval');
-            document.getElementById('noteStartTimeInput').value = formatSeconds(inP);
-            document.getElementById('noteEndTimeInput').value = formatSeconds(outP);
+
+          if (e.ctrlKey && e.altKey) {
+            if (e.key === '1') { e.preventDefault(); switchTab('mynotes'); showOSD('切换至手记'); return; }
+            if (e.key === '2') { e.preventDefault(); handleSubtitleShortcutCycle(); return; }
+            if (e.key === '3') { e.preventDefault(); switchTab('notes'); showOSD('切换至智能讲义'); return; }
+          }
+
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
+            e.preventDefault(); switchTab('mynotes');
+            const inp = document.getElementById('quickTimeJumpInput');
+            if (inp) { inp.focus(); inp.select(); }
             return;
           }
-          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (!video.src || e.repeat) return;
-            activeSpeedKey = e.key;
-            isSpeedLongPressing = false;
-            clearTimeout(speedLongPressTimer);
-            speedLongPressTimer = setTimeout(() => {
-              isSpeedLongPressing = true;
-              if (activeSpeedKey === 'ArrowUp') {
-                const sprint = getSprintSpeed();
-                savedOriginalVolume = video.volume;
-                video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
-                video.playbackRate = sprint;
-                showOSD(`⚡ ${sprint.toFixed(2)}x 冲刺`);
-              } else {
-                video.playbackRate = 0.25;
-                showOSD('🐌 0.25x 慢放');
+
+          // ================= 【改动点 1：Ctrl+键监听区】 =================
+          if (e.ctrlKey || e.metaKey) {
+            // 👈 1. 新增 Ctrl+F 监听，并删掉原来的 Ctrl+B
+            if (e.key === 'f' || e.key === 'F') {
+              e.preventDefault();
+              toggleImmersiveMode();
+              return;
+            }
+
+            if (e.key === 'm' || e.key === 'M') { e.preventDefault(); openAddNoteBox(); return; }
+            if (e.key === '\\') { e.preventDefault(); video.playbackRate = 1.0; showOSD('⚡ 1.00x 原速'); return; }
+            if (e.key === '[' || e.code === 'BracketLeft') {
+              e.preventDefault(); if (!video.src) return;
+              tempInPointSec = video.currentTime; showOSD(`📍 已定入点 A: ${formatSeconds(tempInPointSec)}`); return;
+            }
+            if (e.key === ']' || e.code === 'BracketRight') {
+              e.preventDefault(); if (!video.src) return;
+              const outP = video.currentTime, inP = tempInPointSec !== null ? tempInPointSec : Math.max(0, outP - 10);
+              showOSD(`📍 已定出点 B: ${formatSeconds(outP)}`);
+              openAddNoteBox(); setNoteTypeMode('interval');
+              document.getElementById('noteStartTimeInput').value = formatSeconds(inP);
+              document.getElementById('noteEndTimeInput').value = formatSeconds(outP);
+              return;
+            }
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (!video.src || e.repeat) return;
+              activeSpeedKey = e.key;
+              isSpeedLongPressing = false;
+              clearTimeout(speedLongPressTimer);
+              speedLongPressTimer = setTimeout(() => {
+                isSpeedLongPressing = true;
+                if (activeSpeedKey === 'ArrowUp') {
+                  const sprint = getSprintSpeed();
+                  savedOriginalVolume = video.volume;
+                  video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+                  video.playbackRate = sprint;
+                  showOSD(`⚡ ${sprint.toFixed(2)}x 冲刺`);
+                } else {
+                  video.playbackRate = 0.25;
+                  showOSD('🐌 0.25x 慢放');
+                }
+              }, 150);
+              return;
+            }
+          }
+
+          // ================= 【改动点 2：Esc 键退出抽屉/沉浸】 =================
+          if (e.key === 'Escape') {
+            // 👈 2. 增强 Escape：如果有悬浮抽屉开着先关抽屉，沉浸模式则退出沉浸
+            if (isDrawerOpen) {
+              toggleFloatingDrawer();
+              return;
+            }
+            if (isImmersiveMode) {
+              toggleImmersiveMode();
+              return;
+            }
+            closeAddNoteBox(); closeShortcutsModal(); closeMediaInfoModal(); closeSortMenu(); closeEpMenu();
+            toggleMobileNotesDrawer(false); stopLoop();
+            return;
+          }
+
+          if (!isTyping) {
+            if (e.key === 'f' || e.key === 'F') { e.preventDefault(); fitVideoRatio(); return; }
+
+            if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
+            if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
+            if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
+            // 严密判定：不仅判断 e.code，还判断 e.key，并彻底阻止页面滚屏
+            if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
+              e.preventDefault();
+              e.stopPropagation();
+              if (video.src) {
+                if (video.paused) {
+                  video.play();
+                  showOSD('▶ 播放');
+                } else {
+                  video.pause();
+                  showOSD('⏸ 暂停');
+                }
               }
-            }, 150);
-            return;
-          }
-        }
-
-        if (e.key === 'Escape') {
-          closeAddNoteBox(); closeShortcutsModal(); closeMediaInfoModal(); closeSortMenu(); closeEpMenu();
-          toggleMobileNotesDrawer(false); stopLoop();
-          return;
-        }
-
-        if (!isTyping) {
-          if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
-          if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
-          if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
-          // 严密判定：不仅判断 e.code，还判断 e.key，并彻底阻止页面滚屏
-          if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
-            e.preventDefault();
-            e.stopPropagation();
-            if (video.src) {
-              if (video.paused) {
-                video.play();
-                showOSD('▶ 播放');
-              } else {
-                video.pause();
-                showOSD('⏸ 暂停');
+              return;
+            }
+            if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              if (video.src) {
+                let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
+                video.currentTime = Math.max(0, video.currentTime - s);
+                showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
               }
+              return;
             }
-            return;
-          }
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
-              video.currentTime = Math.max(0, video.currentTime - s);
-              showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
+            if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              if (video.src) {
+                let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
+                video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
+                showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
+              }
+              return;
             }
-            return;
-          }
-          if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 5);
-              video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
-              showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (video.src) { video.volume = Math.min(1.0, Math.round((video.volume + 0.05) * 100) / 100); showOSD(`🔊 音量: ${Math.round(video.volume * 100)}%`); }
+              return;
             }
-            return;
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (video.src) { video.volume = Math.max(0.0, Math.round((video.volume - 0.05) * 100) / 100); showOSD(`🔉 音量: ${Math.round(video.volume * 100)}%`); }
+              return;
+            }
           }
-          if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (video.src) { video.volume = Math.min(1.0, Math.round((video.volume + 0.05) * 100) / 100); showOSD(`🔊 音量: ${Math.round(video.volume * 100)}%`); }
-            return;
-          }
-          if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (video.src) { video.volume = Math.max(0.0, Math.round((video.volume - 0.05) * 100) / 100); showOSD(`🔉 音量: ${Math.round(video.volume * 100)}%`); }
-            return;
-          }
-        }
-      });
+        });
+
 
       document.addEventListener('keyup', (e) => {
         if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
