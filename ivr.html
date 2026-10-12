@@ -1599,15 +1599,15 @@
         }
 
         .main-workspace {
-          flex-direction: column !important;
+          flex-direction: column;
         }
 
         .video-stage {
-          width: 100% !important;
-          min-width: 100% !important;
-          max-width: 100% !important;
-          height: auto;
-          min-height: 200px;
+          width: 100%;
+          min-width: 100%;
+          max-width: 100%;
+          height: 240px;
+          min-height: 180px;
         }
 
         .panel-resizer {
@@ -2435,7 +2435,11 @@
       let isImmersiveMode = false;     // 是否处于 Ctrl+F 满屏沉浸
       let isDrawerOpen = false;        // 沉浸时，浮层抽屉是否滑出
       let savedNormalStageWidth = null;// 沉浸前记忆的分屏宽度
-      let isFittedToggleState = false; // F 键是否处于贴合状态
+      // 区分 PC 横屏与手机竖屏的独立贴合状态（互不干扰，完全尊重用户设定）
+      let desktopIsFitted = false;
+      let mobileIsFitted = false;
+      let desktopCustomWidth = null; // 记忆横屏下用户手动拖拽的宽度
+      let mobileCustomHeight = null; // 记忆竖屏下用户手动拖拽的高度
       let preFitStageWidth = null;     // 按 F 贴合前记忆的原始分屏宽度
 
       const sortLabels = {
@@ -2672,20 +2676,27 @@
         document.body.style.userSelect = 'none';
       }
       function handleResizeMove(clientX, clientY) {
-        if (!isResizing) return;
-        const rect = mainContainer.getBoundingClientRect();
-        if (window.innerWidth <= 768) {
-          let h = clientY - rect.top;
-          if (h < 180) h = 180;
-          if (h > rect.height - 180) h = rect.height - 180;
-          leftPanel.style.height = h + 'px';
-        } else {
-          let w = clientX - rect.left;
-          if (w < 280) w = 280;
-          if (w > rect.width - 320) w = rect.width - 320;
-          leftPanel.style.width = w + 'px';
+          if (!isResizing) return;
+          const rect = mainContainer.getBoundingClientRect();
+
+          if (window.innerWidth <= 768) {
+            leftPanel.style.width = '';
+            leftPanel.style.aspectRatio = '';
+            let h = clientY - rect.top;
+            h = Math.min(Math.max(h, 180), rect.height - 180);
+            leftPanel.style.height = h + 'px';
+            mobileCustomHeight = h + 'px';
+            mobileIsFitted = false; // 用户手动拖拽，退出贴合态
+          } else {
+            leftPanel.style.height = '';
+            leftPanel.style.aspectRatio = '';
+            let w = clientX - rect.left;
+            w = Math.min(Math.max(w, 260), rect.width - 280);
+            leftPanel.style.width = w + 'px';
+            desktopCustomWidth = w + 'px';
+            desktopIsFitted = false; // 用户手动拖拽，退出贴合态
+          }
         }
-      }
       function stopResize() {
         if (isResizing) {
           isResizing = false;
@@ -2703,9 +2714,62 @@
       document.addEventListener('touchend', stopResize);
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // 绑定生命周期：视频尺寸就绪、播放切集、窗口尺寸改变、拖动左右分栏条时自动重算
-      video.addEventListener('loadedmetadata', updateSubtitlePosition);
-      window.addEventListener('resize', updateSubtitlePosition);
+      // 📱 手机端专用：自动纯几何贴合去黑边辅助函数
+        function applyMobileFit() {
+          if (!video.src || !video.videoWidth || !video.videoHeight) return;
+          const ratio = video.videoWidth / video.videoHeight;
+          leftPanel.style.width = '';
+          if (ratio >= 1.0) {
+            leftPanel.style.height = 'auto';
+            leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+          } else {
+            leftPanel.style.aspectRatio = '';
+            const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
+            leftPanel.style.height = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH) + 'px';
+          }
+        }
+
+        // 1. 视频元数据就绪监听
+        video.addEventListener('loadedmetadata', () => {
+          if (window.innerWidth <= 768) {
+            applyMobileFit();
+          } else {
+            if (desktopIsFitted) {
+              const ratio = video.videoWidth / video.videoHeight;
+              let targetW = Math.round(mainContainer.clientHeight * ratio);
+              targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
+              leftPanel.style.width = targetW + 'px';
+            }
+          }
+          updateSubtitlePosition();
+        });
+
+        // 2. 跨端窗口 Resize 监听（横竖屏切换中枢）
+        let lastIsMobileView = window.innerWidth <= 768;
+        window.addEventListener('resize', () => {
+          const currentIsMobile = window.innerWidth <= 768;
+          if (currentIsMobile !== lastIsMobileView) {
+            lastIsMobileView = currentIsMobile;
+
+            if (currentIsMobile) {
+              // 切入竖屏：当前视频立即去黑边
+              applyMobileFit();
+            } else {
+              // 切回横屏：清空手机尺寸限制，严格还原横屏原有设定
+              leftPanel.style.height = '';
+              leftPanel.style.aspectRatio = '';
+              if (desktopIsFitted && video.src && video.videoWidth) {
+                const ratio = video.videoWidth / video.videoHeight;
+                let targetW = Math.round(mainContainer.clientHeight * ratio);
+                targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
+                leftPanel.style.width = targetW + 'px';
+              } else {
+                leftPanel.style.width = desktopCustomWidth || '';
+              }
+            }
+          }
+          updateSubtitlePosition();
+        });
 
       // 监听中轴 resizer 拖动以及容器尺寸变化
       const resizeObserver = new ResizeObserver(() => {
@@ -2767,105 +2831,116 @@
 
       // ================= 核心算法：实时计算字幕相对于“真实视频画面底边”的定位 =================
       // ================= 核心算法：底边定位 + 画面等比字号缩放 =================
-        function updateSubtitlePosition() {
-          if (!video.src || !video.videoWidth || !video.videoHeight) return;
+      function updateSubtitlePosition() {
+        if (!video.src || !video.videoWidth || !video.videoHeight) return;
 
-          const wrapperRect = videoWrapper.getBoundingClientRect();
-          const boxW = wrapperRect.width;
-          const boxH = wrapperRect.height;
-          if (!boxW || !boxH) return;
+        const wrapperRect = videoWrapper.getBoundingClientRect();
+        const boxW = wrapperRect.width;
+        const boxH = wrapperRect.height;
+        if (!boxW || !boxH) return;
 
-          const videoRatio = video.videoWidth / video.videoHeight;
-          const boxRatio = boxW / boxH;
+        const videoRatio = video.videoWidth / video.videoHeight;
+        const boxRatio = boxW / boxH;
 
-          // 1. 精准推导视频画面的【实际绘制尺寸】（剔除黑边后的纯画面尺寸）
-          let renderedW = boxW;
-          let renderedH = boxH;
-          let bottomBlackBar = 0;
+        // 1. 精准推导视频画面的【实际绘制尺寸】（剔除黑边后的纯画面尺寸）
+        let renderedW = boxW;
+        let renderedH = boxH;
+        let bottomBlackBar = 0;
 
-          if (boxRatio < videoRatio) {
-            // 上下有黑边（左右撑满）
-            renderedH = boxW / videoRatio;
-            bottomBlackBar = (boxH - renderedH) / 2;
-          } else {
-            // 左右有黑边（上下撑满）
-            renderedW = boxH * videoRatio;
-          }
-
-          // 2. 底边悬浮距离（贴合视频下沿上浮，画面缩小时上浮边距也等比收敛）
-          const bottomPadding = Math.max(12, renderedH * 0.05); // 约占画面高度的 5%
-          const totalBottom = bottomBlackBar + bottomPadding;
-
-          // 3. 动态字号计算（行业黄金比例：主字幕约占画面高 4.6%，副字幕约 3.2%）
-          // Math.min/Math.max 保证在极小窗口（如 150px 高）时不小于 8px，极大屏时不大于 26px 溢出
-          const fontCn = Math.min(26, Math.max(8.5, Math.round(renderedH * 0.046)));
-          const fontForeign = Math.min(18, Math.max(7.5, Math.round(renderedH * 0.032)));
-
-          // 4. 文字描边同步按字号比例收缩（防止小字号时被 2px 粗黑边完全吞没）
-          const strokeCn = (fontCn * 0.1).toFixed(1); // 约 10% 字号粗细
-          const strokeForeign = (fontForeign * 0.09).toFixed(1);
-
-          // 5. 一次性批量注入 CSS 变量
-          videoSubOverlay.style.setProperty('--sub-bottom', `${Math.round(totalBottom)}px`);
-          videoSubOverlay.style.setProperty('--sub-font-cn', `${fontCn}px`);
-          videoSubOverlay.style.setProperty('--sub-font-foreign', `${fontForeign}px`);
-          videoSubOverlay.style.setProperty('--sub-stroke-cn', `${strokeCn}px`);
-          videoSubOverlay.style.setProperty('--sub-stroke-foreign', `${strokeForeign}px`);
+        if (boxRatio < videoRatio) {
+          // 上下有黑边（左右撑满）
+          renderedH = boxW / videoRatio;
+          bottomBlackBar = (boxH - renderedH) / 2;
+        } else {
+          // 左右有黑边（上下撑满）
+          renderedW = boxH * videoRatio;
         }
+
+        // 2. 底边悬浮距离（贴合视频下沿上浮，画面缩小时上浮边距也等比收敛）
+        const bottomPadding = Math.max(12, renderedH * 0.05); // 约占画面高度的 5%
+        const totalBottom = bottomBlackBar + bottomPadding;
+
+        // 3. 动态字号计算（行业黄金比例：主字幕约占画面高 4.6%，副字幕约 3.2%）
+        // Math.min/Math.max 保证在极小窗口（如 150px 高）时不小于 8px，极大屏时不大于 26px 溢出
+        const fontCn = Math.min(26, Math.max(8.5, Math.round(renderedH * 0.046)));
+        const fontForeign = Math.min(18, Math.max(7.5, Math.round(renderedH * 0.032)));
+
+        // 4. 文字描边同步按字号比例收缩（防止小字号时被 2px 粗黑边完全吞没）
+        const strokeCn = (fontCn * 0.1).toFixed(1); // 约 10% 字号粗细
+        const strokeForeign = (fontForeign * 0.09).toFixed(1);
+
+        // 5. 一次性批量注入 CSS 变量
+        videoSubOverlay.style.setProperty('--sub-bottom', `${Math.round(totalBottom)}px`);
+        videoSubOverlay.style.setProperty('--sub-font-cn', `${fontCn}px`);
+        videoSubOverlay.style.setProperty('--sub-font-foreign', `${fontForeign}px`);
+        videoSubOverlay.style.setProperty('--sub-stroke-cn', `${strokeCn}px`);
+        videoSubOverlay.style.setProperty('--sub-stroke-foreign', `${strokeForeign}px`);
+      }
 
       // 升级后的 fitVideoRatio 函数（两态回弹版）...
       function fitVideoRatio() {
-        if (!video.src || !video.videoWidth || !video.videoHeight) {
-          showOSD('⚠️ 暂无视频就绪');
-          return;
-        }
-
-        // 如果处于沉浸模式按了 F，先退出沉浸
-        if (isImmersiveMode) {
-          toggleImmersiveMode();
-        }
-
-        const isMobile = window.innerWidth <= 768;
-        const ratio = video.videoWidth / video.videoHeight;
-
-        // 状态 1：当前已经是贴合状态 -> 再次按下触发【回弹恢复】
-        if (isFittedToggleState) {
-          leftPanel.classList.add('panel-smooth-transition');
-          if (isMobile) {
-            leftPanel.style.height = preFitStageWidth || '240px';
-          } else {
-            leftPanel.style.width = preFitStageWidth || '52%';
+          if (!video.src || !video.videoWidth || !video.videoHeight) {
+            showOSD('⚠️ 暂无视频就绪');
+            return;
           }
-          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-          isFittedToggleState = false;
-          showOSD('↩️ 已恢复原分屏窗口');
-          return;
-        }
 
-        // 状态 2：当前是常规状态 -> 记录原始宽度，并执行【贴合去黑边】
-        if (isMobile) {
-          preFitStageWidth = leftPanel.style.height || (leftPanel.getBoundingClientRect().height + 'px');
-          leftPanel.style.width = '';
-          let targetHeight = Math.round(leftPanel.clientWidth / ratio);
-          const maxHeight = Math.round(window.innerHeight * 0.55);
-          targetHeight = Math.min(Math.max(targetHeight, 180), maxHeight);
-          leftPanel.classList.add('panel-smooth-transition');
-          leftPanel.style.height = targetHeight + 'px';
-          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-        } else {
-          preFitStageWidth = leftPanel.style.width || (leftPanel.getBoundingClientRect().width + 'px');
-          leftPanel.style.height = '';
-          let targetWidth = Math.round(mainContainer.clientHeight * ratio);
-          const maxAllowed = mainContainer.clientWidth - 210; // 保留右侧保护
-          targetWidth = Math.min(Math.max(targetWidth, 280), maxAllowed);
-          leftPanel.classList.add('panel-smooth-transition');
-          leftPanel.style.width = targetWidth + 'px';
-          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-        }
+          if (isImmersiveMode) toggleImmersiveMode();
 
-        isFittedToggleState = true;
-        showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
-      }
+          const isMobile = window.innerWidth <= 768;
+          const ratio = video.videoWidth / video.videoHeight;
+
+          if (isMobile) {
+            // ================= 手机竖屏分支 =================
+            leftPanel.classList.add('panel-smooth-transition');
+            leftPanel.style.width = '';
+
+            if (mobileIsFitted) {
+              // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认高度
+              leftPanel.style.aspectRatio = '';
+              leftPanel.style.height = mobileCustomHeight || '240px';
+              mobileIsFitted = false;
+              showOSD('↩️ 已恢复原视窗高度');
+            } else {
+              // 当前是常规态 -> 记录原高度，执行去黑边贴合
+              mobileCustomHeight = leftPanel.style.height || (leftPanel.offsetHeight + 'px');
+              if (ratio >= 1.0) {
+                leftPanel.style.height = 'auto';
+                leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+              } else {
+                leftPanel.style.aspectRatio = '';
+                const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
+                const targetH = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH);
+                leftPanel.style.height = targetH + 'px';
+              }
+              mobileIsFitted = true;
+              showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
+            }
+            setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+
+          } else {
+            // ================= PC 大屏横屏分支 =================
+            leftPanel.classList.add('panel-smooth-transition');
+            leftPanel.style.height = '';
+            leftPanel.style.aspectRatio = '';
+
+            if (desktopIsFitted) {
+              // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认分屏
+              leftPanel.style.width = desktopCustomWidth || '52%';
+              desktopIsFitted = false;
+              showOSD('↩️ 已恢复原分屏窗口');
+            } else {
+              // 当前是常规态 -> 记录原宽度，执行去黑边贴合
+              desktopCustomWidth = leftPanel.style.width || (leftPanel.offsetWidth + 'px');
+              let targetW = Math.round(mainContainer.clientHeight * ratio);
+              const maxAllowedW = mainContainer.clientWidth - 280;
+              targetW = Math.min(Math.max(targetW, 260), maxAllowedW);
+              leftPanel.style.width = targetW + 'px';
+              desktopIsFitted = true;
+              showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
+            }
+            setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+          }
+        }
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
       function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
