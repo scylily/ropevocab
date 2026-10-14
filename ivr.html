@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 浏览器版：用浏览器直接打开。EXE 请使用 src/index.html -->
 <html lang="zh-CN">
 
   <head>
@@ -2676,27 +2677,27 @@
         document.body.style.userSelect = 'none';
       }
       function handleResizeMove(clientX, clientY) {
-          if (!isResizing) return;
-          const rect = mainContainer.getBoundingClientRect();
+        if (!isResizing) return;
+        const rect = mainContainer.getBoundingClientRect();
 
-          if (window.innerWidth <= 768) {
-            leftPanel.style.width = '';
-            leftPanel.style.aspectRatio = '';
-            let h = clientY - rect.top;
-            h = Math.min(Math.max(h, 180), rect.height - 180);
-            leftPanel.style.height = h + 'px';
-            mobileCustomHeight = h + 'px';
-            mobileIsFitted = false; // 用户手动拖拽，退出贴合态
-          } else {
-            leftPanel.style.height = '';
-            leftPanel.style.aspectRatio = '';
-            let w = clientX - rect.left;
-            w = Math.min(Math.max(w, 260), rect.width - 280);
-            leftPanel.style.width = w + 'px';
-            desktopCustomWidth = w + 'px';
-            desktopIsFitted = false; // 用户手动拖拽，退出贴合态
-          }
+        if (window.innerWidth <= 768) {
+          leftPanel.style.width = '';
+          leftPanel.style.aspectRatio = '';
+          let h = clientY - rect.top;
+          h = Math.min(Math.max(h, 180), rect.height - 180);
+          leftPanel.style.height = h + 'px';
+          mobileCustomHeight = h + 'px';
+          mobileIsFitted = false; // 用户手动拖拽，退出贴合态
+        } else {
+          leftPanel.style.height = '';
+          leftPanel.style.aspectRatio = '';
+          let w = clientX - rect.left;
+          w = Math.min(Math.max(w, 260), rect.width - 280);
+          leftPanel.style.width = w + 'px';
+          desktopCustomWidth = w + 'px';
+          desktopIsFitted = false; // 用户手动拖拽，退出贴合态
         }
+      }
       function stopResize() {
         if (isResizing) {
           isResizing = false;
@@ -2715,61 +2716,61 @@
       resizer.addEventListener('dblclick', fitVideoRatio);
 
       // 📱 手机端专用：自动纯几何贴合去黑边辅助函数
-        function applyMobileFit() {
-          if (!video.src || !video.videoWidth || !video.videoHeight) return;
-          const ratio = video.videoWidth / video.videoHeight;
-          leftPanel.style.width = '';
-          if (ratio >= 1.0) {
-            leftPanel.style.height = 'auto';
-            leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
-          } else {
-            leftPanel.style.aspectRatio = '';
-            const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
-            leftPanel.style.height = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH) + 'px';
+      function applyMobileFit() {
+        if (!video.src || !video.videoWidth || !video.videoHeight) return;
+        const ratio = video.videoWidth / video.videoHeight;
+        leftPanel.style.width = '';
+        if (ratio >= 1.0) {
+          leftPanel.style.height = 'auto';
+          leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+        } else {
+          leftPanel.style.aspectRatio = '';
+          const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
+          leftPanel.style.height = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH) + 'px';
+        }
+      }
+
+      // 1. 视频元数据就绪监听
+      video.addEventListener('loadedmetadata', () => {
+        if (window.innerWidth <= 768) {
+          applyMobileFit();
+        } else {
+          if (desktopIsFitted) {
+            const ratio = video.videoWidth / video.videoHeight;
+            let targetW = Math.round(mainContainer.clientHeight * ratio);
+            targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
+            leftPanel.style.width = targetW + 'px';
           }
         }
+        updateSubtitlePosition();
+      });
 
-        // 1. 视频元数据就绪监听
-        video.addEventListener('loadedmetadata', () => {
-          if (window.innerWidth <= 768) {
+      // 2. 跨端窗口 Resize 监听（横竖屏切换中枢）
+      let lastIsMobileView = window.innerWidth <= 768;
+      window.addEventListener('resize', () => {
+        const currentIsMobile = window.innerWidth <= 768;
+        if (currentIsMobile !== lastIsMobileView) {
+          lastIsMobileView = currentIsMobile;
+
+          if (currentIsMobile) {
+            // 切入竖屏：当前视频立即去黑边
             applyMobileFit();
           } else {
-            if (desktopIsFitted) {
+            // 切回横屏：清空手机尺寸限制，严格还原横屏原有设定
+            leftPanel.style.height = '';
+            leftPanel.style.aspectRatio = '';
+            if (desktopIsFitted && video.src && video.videoWidth) {
               const ratio = video.videoWidth / video.videoHeight;
               let targetW = Math.round(mainContainer.clientHeight * ratio);
               targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
               leftPanel.style.width = targetW + 'px';
-            }
-          }
-          updateSubtitlePosition();
-        });
-
-        // 2. 跨端窗口 Resize 监听（横竖屏切换中枢）
-        let lastIsMobileView = window.innerWidth <= 768;
-        window.addEventListener('resize', () => {
-          const currentIsMobile = window.innerWidth <= 768;
-          if (currentIsMobile !== lastIsMobileView) {
-            lastIsMobileView = currentIsMobile;
-
-            if (currentIsMobile) {
-              // 切入竖屏：当前视频立即去黑边
-              applyMobileFit();
             } else {
-              // 切回横屏：清空手机尺寸限制，严格还原横屏原有设定
-              leftPanel.style.height = '';
-              leftPanel.style.aspectRatio = '';
-              if (desktopIsFitted && video.src && video.videoWidth) {
-                const ratio = video.videoWidth / video.videoHeight;
-                let targetW = Math.round(mainContainer.clientHeight * ratio);
-                targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
-                leftPanel.style.width = targetW + 'px';
-              } else {
-                leftPanel.style.width = desktopCustomWidth || '';
-              }
+              leftPanel.style.width = desktopCustomWidth || '';
             }
           }
-          updateSubtitlePosition();
-        });
+        }
+        updateSubtitlePosition();
+      });
 
       // 监听中轴 resizer 拖动以及容器尺寸变化
       const resizeObserver = new ResizeObserver(() => {
@@ -2879,68 +2880,68 @@
 
       // 升级后的 fitVideoRatio 函数（两态回弹版）...
       function fitVideoRatio() {
-          if (!video.src || !video.videoWidth || !video.videoHeight) {
-            showOSD('⚠️ 暂无视频就绪');
-            return;
-          }
-
-          if (isImmersiveMode) toggleImmersiveMode();
-
-          const isMobile = window.innerWidth <= 768;
-          const ratio = video.videoWidth / video.videoHeight;
-
-          if (isMobile) {
-            // ================= 手机竖屏分支 =================
-            leftPanel.classList.add('panel-smooth-transition');
-            leftPanel.style.width = '';
-
-            if (mobileIsFitted) {
-              // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认高度
-              leftPanel.style.aspectRatio = '';
-              leftPanel.style.height = mobileCustomHeight || '240px';
-              mobileIsFitted = false;
-              showOSD('↩️ 已恢复原视窗高度');
-            } else {
-              // 当前是常规态 -> 记录原高度，执行去黑边贴合
-              mobileCustomHeight = leftPanel.style.height || (leftPanel.offsetHeight + 'px');
-              if (ratio >= 1.0) {
-                leftPanel.style.height = 'auto';
-                leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
-              } else {
-                leftPanel.style.aspectRatio = '';
-                const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
-                const targetH = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH);
-                leftPanel.style.height = targetH + 'px';
-              }
-              mobileIsFitted = true;
-              showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
-            }
-            setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-
-          } else {
-            // ================= PC 大屏横屏分支 =================
-            leftPanel.classList.add('panel-smooth-transition');
-            leftPanel.style.height = '';
-            leftPanel.style.aspectRatio = '';
-
-            if (desktopIsFitted) {
-              // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认分屏
-              leftPanel.style.width = desktopCustomWidth || '52%';
-              desktopIsFitted = false;
-              showOSD('↩️ 已恢复原分屏窗口');
-            } else {
-              // 当前是常规态 -> 记录原宽度，执行去黑边贴合
-              desktopCustomWidth = leftPanel.style.width || (leftPanel.offsetWidth + 'px');
-              let targetW = Math.round(mainContainer.clientHeight * ratio);
-              const maxAllowedW = mainContainer.clientWidth - 280;
-              targetW = Math.min(Math.max(targetW, 260), maxAllowedW);
-              leftPanel.style.width = targetW + 'px';
-              desktopIsFitted = true;
-              showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
-            }
-            setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
-          }
+        if (!video.src || !video.videoWidth || !video.videoHeight) {
+          showOSD('⚠️ 暂无视频就绪');
+          return;
         }
+
+        if (isImmersiveMode) toggleImmersiveMode();
+
+        const isMobile = window.innerWidth <= 768;
+        const ratio = video.videoWidth / video.videoHeight;
+
+        if (isMobile) {
+          // ================= 手机竖屏分支 =================
+          leftPanel.classList.add('panel-smooth-transition');
+          leftPanel.style.width = '';
+
+          if (mobileIsFitted) {
+            // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认高度
+            leftPanel.style.aspectRatio = '';
+            leftPanel.style.height = mobileCustomHeight || '240px';
+            mobileIsFitted = false;
+            showOSD('↩️ 已恢复原视窗高度');
+          } else {
+            // 当前是常规态 -> 记录原高度，执行去黑边贴合
+            mobileCustomHeight = leftPanel.style.height || (leftPanel.offsetHeight + 'px');
+            if (ratio >= 1.0) {
+              leftPanel.style.height = 'auto';
+              leftPanel.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+            } else {
+              leftPanel.style.aspectRatio = '';
+              const maxAllowedH = Math.round(mainContainer.clientHeight * 0.52);
+              const targetH = Math.min(Math.max(Math.round(leftPanel.clientWidth / ratio), 180), maxAllowedH);
+              leftPanel.style.height = targetH + 'px';
+            }
+            mobileIsFitted = true;
+            showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
+          }
+          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+
+        } else {
+          // ================= PC 大屏横屏分支 =================
+          leftPanel.classList.add('panel-smooth-transition');
+          leftPanel.style.height = '';
+          leftPanel.style.aspectRatio = '';
+
+          if (desktopIsFitted) {
+            // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认分屏
+            leftPanel.style.width = desktopCustomWidth || '52%';
+            desktopIsFitted = false;
+            showOSD('↩️ 已恢复原分屏窗口');
+          } else {
+            // 当前是常规态 -> 记录原宽度，执行去黑边贴合
+            desktopCustomWidth = leftPanel.style.width || (leftPanel.offsetWidth + 'px');
+            let targetW = Math.round(mainContainer.clientHeight * ratio);
+            const maxAllowedW = mainContainer.clientWidth - 280;
+            targetW = Math.min(Math.max(targetW, 260), maxAllowedW);
+            leftPanel.style.width = targetW + 'px';
+            desktopIsFitted = true;
+            showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
+          }
+          setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
+        }
+      }
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
       function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
@@ -4106,6 +4107,7 @@
       }
 
       function exportNotesToMarkdown() {
+        // 浏览器版：走浏览器下载，不要改成 Tauri 导出
         if (!myNotes.length) { showOSD('⚠️ 暂无手记可导出'); return; }
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习手记";
         let md = `<!-- type: user_notes -->\n# ${title} - 学习手记\n\n> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点手记\n\n---\n\n`;
@@ -4204,8 +4206,45 @@
           return;
         }
         if (myNotes.length > 0) {
-          let nt = myNotes.map(n => `[${n.timeStr}] ${n.quote ? `原声引用:"${n.quote}" ` : ''}批注思考:${n.text}`).join('\n');
-          const p = `请将以下带时间戳手记整理为结构化实操讲义：\n课程文件：${currentVideoFileName}\n手记数据：\n${nt}`;
+          let nt = myNotes.map(n => {
+            const quotePart = n.quote ? `原声引用:"${n.quote}"` : '原声引用:(无)';
+            const rangePart = (n.end && n.end > n.start) ? `区间:${n.timeStr}` : `时间点:${n.timeStr}`;
+            return `[${n.timeStr}] ${rangePart} | ${quotePart} | 批注思考:${n.text || '(空)'}`;
+          }).join('\n');
+          const p = [
+            "请将以下「带时间戳的学习者手记」整理成一份专业、清晰、便于回看与实操查阅的“标准化实操学习讲义”。",
+            "课程文件：" + (currentVideoFileName || "视频实操教学"),
+            "数据性质：这不是完整字幕，而是学习者在观看过程中主动打点留下的稀疏锚点。每条可能包含：时间戳、原声引用（截取的讲师原话）、批注思考（学习者当时记下的要点、疑问、动作要领或个人理解）。",
+            "",
+            "整理目标：",
+            "把这些打点手记扩写、归并、结构化为一份可独立阅读的讲义，使未对照视频也能抓住关键动作、因果机理与注意事项；同时保留时间戳，便于回到原片定位。",
+            "",
+            "整理规则：",
+            "1. 以手记为骨架，禁止凭空编造未出现的情节、步骤或结论。",
+            "   - 有「原声引用」时：引用是第一事实依据，讲义表述须与原话一致，可做书面化压缩，不得改义。",
+            "   - 「批注思考」是学习者当场抓取的要点：把它改写成客观、可执行的讲义条目，去掉口语碎词，保留动作、顺序、力度、风险与因果。",
+            "   - 批注若明显是个人感受、疑问或待验证猜想，用简短备注标出（如「学习者存疑」「待对照原片」），不要写成既定事实。",
+            "   - 相邻时间、同一招式或同一阶段的多条手记应归并到同一小节，不要一条手记硬拆成一章。",
+            "   - 允许根据手记之间的先后与内在逻辑补「小节标题」和极短的衔接句，但衔接句不得引入新手记中没有的技术内容。",
+            "2. 术语与专名规范：沿用原声引用与批注里的既有叫法；写法不统一时，优先采用更规范、更常用的术语，并在首次出现时用括号带上批注原文用词。",
+            "   - 常用术语参考：SSC原则、RACK原则、绳艺、紧缚、责绳、两难、地面缚、吊缚、半吊、捕绳术、柱缚、一绳、起绳、走绳、收绳、绳路、张力、穆特结、八字扣、单柱缚、双柱缚、菱形缚、龟甲缚、折腿缚、高手小手缚、后手直臂缚、M字开脚缚、苏秦背剑、后手观音缚、十字缚等。",
+            "3. 篇章结构（按需取用，没有的板块不要硬凑）：",
+            "   - 文首用 3～6 条要点概括本课从手记能确认的核心招式、流程与安全红线。",
+            "   - 按时间顺序划分阶段，使用 `#` / `##` / `###` 标题；标题写成「阶段/招式名」，不要写成「手记1」。",
+            "   - 每一关键动作写成扁平清单：`- **客观动作抓手**：说明规范、要点、因果或注意事项`。",
+            "   - 若手记含安全、沟通、检查、解开/收绳等内容，单独收成「安全与收尾」小节，不要埋没在流水账里。",
+            "   - 文末可列「手记中未展开、回看原片时建议核对」的缺口清单（仅限手记暗示但未写清的部分）。",
+            "4. 时间戳工程化对齐：",
+            "   - 各级标题（#、##、###）末尾附带该节起始时间戳，格式 `[mm:ss]` 或手记原样时间码。",
+            "   - 正文时间戳只能放在整句或整条清单的末尾，禁止插在句中。",
+            "   - 只使用手记里出现过的时间；不要发明新手记没有的时刻。一条手记若带来多条清单，可共用同一个时间戳。",
+            "   - 若手记带有区间（起点～终点），标题用起点，关键动作可用该区间代表时刻。",
+            "5. 文风：专业教材口吻，短句、可执行、零说教。不要输出「根据你的笔记」「AI整理如下」之类元话语，不要评价学习者记得好不好。",
+            "6. 置于单一 Markdown 代码块输出，便于直接粘贴渲染。不要在代码块外再写解释。",
+            "",
+            "手记数据：",
+            nt
+          ].join('\n');
           navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【基于手记整理】提示词'));
           return;
         }
@@ -4248,11 +4287,17 @@
           str = str.replace(/`([^`]+)`/g, '<code>$1</code>');
           // 斜体: *文本* (避免误伤已解析的 strong)
           str = str.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
-          // 时码标签转换: [mm:ss] 或 [hh:mm:ss]，支持含首尾空格
-          str = str.replace(/\[\s*(\d{1,2}:\d{2}(?::\d{2})?)\s*\]/g, (m, ts) => {
-            const sec = timeToSeconds(ts.trim());
-            return `<span class="pill-tag ai-note-tag" data-sec="${sec}" onclick="jumpToPoint(${sec})">▶ ${ts.trim()}</span>`;
-          });
+          // 时码标签转换: [mm:ss] / [hh:mm:ss]，以及区间 [mm:ss ~ mm:ss]（点击一律跳到起点）
+          str = str.replace(
+            /\[\s*(\d{1,2}:\d{2}(?::\d{2})?)(?:\s*[\-–—~～]+\s*(\d{1,2}:\d{2}(?::\d{2})?))?\s*\]/g,
+            (m, startTs, endTs) => {
+              const startSec = timeToSeconds(startTs.trim());
+              const label = endTs
+                ? `${startTs.trim()} ~ ${endTs.trim()}`
+                : startTs.trim();
+              return `<span class="pill-tag ai-note-tag" data-sec="${startSec}" onclick="jumpToPoint(${startSec})">▶ ${label}</span>`;
+            }
+          );
           return str;
         }
 
