@@ -13,8 +13,9 @@ jobs:
       contents: write
 
     steps:
-      - name: 初始化错误日志
+      - name: 初始化汇报日志
         run: |
+          touch /tmp/report.log
           touch /tmp/failures.log
 
       # -----------------------------------------------------------
@@ -28,7 +29,7 @@ jobs:
           URL="${URL%/}"
           
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "❌ Project 1: SUPABASE_URL_1 或 KEY 未配置！" >> /tmp/failures.log
+            echo "❌ Project 1: SUPABASE_URL_1 或 KEY 未配置！" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
           
@@ -39,17 +40,17 @@ jobs:
             -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 1 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" >> /tmp/failures.log
+            echo "❌ Project 1 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
             ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 1 状态码异常 [$HTTP_STATUS] - $ERR_MSG" >> /tmp/failures.log
+            echo "❌ Project 1 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 1 数据库保活成功！"
+          echo "✅ Project 1: 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 2 保活
@@ -62,7 +63,7 @@ jobs:
           URL="${URL%/}"
           
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "❌ Project 2: SUPABASE_URL_2 或 KEY 未配置！" >> /tmp/failures.log
+            echo "❌ Project 2: SUPABASE_URL_2 或 KEY 未配置！" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
           
@@ -73,20 +74,20 @@ jobs:
             -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 2 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" >> /tmp/failures.log
+            echo "❌ Project 2 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
             ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 2 状态码异常 [$HTTP_STATUS] - $ERR_MSG" >> /tmp/failures.log
+            echo "❌ Project 2 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 2 数据库保活成功！"
+          echo "✅ Project 2: 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
-      # Project 3 保活
+      # Project 3 保活 (Study 教学库)
       # -----------------------------------------------------------
       - name: Ping Project 3
         continue-on-error: true
@@ -96,7 +97,7 @@ jobs:
           URL="${URL%/}"
           
           if [ -z "$URL" ] || [ -z "$KEY" ]; then
-            echo "❌ Project 3: SUPABASE_URL_3 或 KEY 未配置！" >> /tmp/failures.log
+            echo "❌ Project 3: SUPABASE_URL_3 或 KEY 未配置！" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
           
@@ -107,70 +108,17 @@ jobs:
             -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 3 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" >> /tmp/failures.log
+            echo "❌ Project 3 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
             ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 3 状态码异常 [$HTTP_STATUS] - $ERR_MSG" >> /tmp/failures.log
+            echo "❌ Project 3 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 3 数据库保活成功！"
-
-      # -----------------------------------------------------------
-      # 🚨 告警通知（微信 PushPlus 渠道，如果有失败则推送）
-      # -----------------------------------------------------------
-      - name: 发送微信告警通知
-        if: always()
-        run: |
-          TOKEN="${{ secrets.PUSHPLUS_TOKEN }}"
-          if [ -s /tmp/failures.log ]; then
-            echo "⚠️ 检测到保活失败项目，准备发送微信推送通知..."
-            CONTENT=$(cat /tmp/failures.log)
-            if [ -n "$TOKEN" ]; then
-              curl -s -X POST "http://www.pushplus.plus/send" \
-                -H "Content-Type: application/json" \
-                -d "{
-                  \"token\": \"$TOKEN\",
-                  \"title\": \"⚠️ Supabase 保活告警通知\",
-                  \"content\": \"仓库: ${{ github.repository }}<br><br><b>失败详情：</b><br>$(awk '{printf "%s<br>", $0}' /tmp/failures.log)\",
-                  \"template\": \"html\"
-                }"
-              echo "✅ 微信告警消息已成功发出！"
-            else
-              echo "ℹ️ 未配置 PUSHPLUS_TOKEN，跳过微信通知。"
-            fi
-          else
-            echo "🎉 所有项目保活正常，无需发送告警。"
-          fi
-
-      # -----------------------------------------------------------
-      # 🚨 告警通知（邮件渠道，如果有失败且配置了邮箱则推送）
-      # -----------------------------------------------------------
-      - name: 发送邮件告警通知
-        if: always()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.MAIL_SERVER || 'smtp.qq.com' }}
-          server_port: ${{ secrets.MAIL_PORT || 465 }}
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: "⚠️ Supabase 数据库保活失败提醒 - ${{ github.repository }}"
-          to: ${{ secrets.MAIL_TO }}
-          from: "GitHub Actions Bot <${{ secrets.MAIL_USERNAME }}>"
-          body: |
-            你好！你的 Supabase 定时保活任务检测到异常：
-
-            仓库: ${{ github.repository }}
-            运行记录: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-            错误明细：
-            ${{ steps.ping-1.outputs.error || '' }}
-          file: /tmp/failures.log
-        # 仅在配置了账号密码且存在报错日志时触发邮件
-        continue-on-error: true
+          echo "✅ Project 3 (Study教学库): 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
       # 原生无感防休眠（重置 GitHub 60 天定时任务倒计时）
@@ -195,6 +143,79 @@ jobs:
             git commit --allow-empty -m "chore: keep alive action [skip ci]"
             git push
             echo "✅ 成功重置 GitHub 60天定时任务倒计时！"
+            echo "🔄 GitHub 定时任务: 距上次提交已超40天，已自动提交续期" >> /tmp/report.log
           else
             echo "✅ 活跃度正常（$DAYS_DIFF 天 < 40 天），无需生成多余提交，跳过。"
+            echo "ℹ️ GitHub 定时任务: 活跃度正常（距上次提交 $DAYS_DIFF 天）" >> /tmp/report.log
           fi
+
+      # -----------------------------------------------------------
+      # 📱 手机微信即时通知（无论成功还是失败都会发送）
+      # -----------------------------------------------------------
+      - name: 推送手机微信通知
+        if: always()
+        env:
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - << 'EOF'
+          import os, urllib.request, json
+
+          token = os.environ.get("PUSHPLUS_TOKEN")
+          if not token:
+              print("⚠️ 未配置 PUSHPLUS_TOKEN，跳过手机微信推送。")
+              exit(0)
+
+          repo = os.environ.get("GITHUB_REPO")
+          run_id = os.environ.get("GITHUB_RUN_ID")
+
+          # 检查是否有失败记录
+          has_error = False
+          if os.path.exists("/tmp/failures.log"):
+              with open("/tmp/failures.log", "r", encoding="utf-8") as f:
+                  if f.read().strip():
+                      has_error = True
+
+          # 读取汇报详情
+          details = ""
+          if os.path.exists("/tmp/report.log"):
+              with open("/tmp/report.log", "r", encoding="utf-8") as f:
+                  details = f.read().strip()
+
+          if has_error:
+              title = "❌ Supabase 保活告警：发现异常！"
+          else:
+              title = "✅ Supabase 保活成功：所有项目正常"
+
+          # 组装 HTML 格式的通知内容
+          lines_html = "".join([f"<li>{line}</li>" for line in details.split("\n") if line.strip()])
+          content = f"""
+          <h3>{title}</h3>
+          <p><b>仓库：</b>{repo}</p>
+          <hr/>
+          <p><b>执行状态清单：</b></p>
+          <ul>{lines_html}</ul>
+          <hr/>
+          <p><a href="https://github.com/{repo}/actions/runs/{run_id}">👉 点击打开 GitHub Actions 运行记录</a></p>
+          """
+
+          data = {
+              "token": token,
+              "title": title,
+              "content": content,
+              "template": "html"
+          }
+
+          try:
+              req = urllib.request.Request(
+                  "http://www.pushplus.plus/send",
+                  data=json.dumps(data).encode("utf-8"),
+                  headers={"Content-Type": "application/json"}
+              )
+              with urllib.request.urlopen(req, timeout=15) as resp:
+                  result = json.loads(resp.read().decode())
+                  print("微信推送结果:", result)
+          except Exception as e:
+              print(f"❌ 微信推送发生错误: {e}")
+          EOF
