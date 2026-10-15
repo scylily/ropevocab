@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>iVideo Reader · 视频手记与智能讲义工作站</title>
     <style>
-      /* ================= 1. Aura Studio (灵光工坊) Tokens 基础规范 ================= */
+      /* ================= 1. Aura Studio Tokens 基础规范 ================= */
       :root {
         --primary: #4f46e5;
         --primary-hover: #4338ca;
@@ -47,7 +47,6 @@
       body {
         font-family: "Microsoft YaHei UI", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
         height: 100vh;
         display: flex;
@@ -57,20 +56,75 @@
         overflow: hidden;
       }
 
+      /* ================= 全局智能气泡提示系统 (Smart Tooltip) ================= */
+      [data-tooltip] {
+        position: relative;
+      }
+
+      [data-tooltip]::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: rgba(15, 23, 42, 0.92);
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.2;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+        z-index: 1000;
+      }
+
+      [data-tooltip]:hover::after {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+        transition-delay: 0.18s;
+      }
+
+      [data-tooltip-pos="left"]::after {
+        left: auto;
+        right: 0;
+        transform: translateY(4px);
+      }
+
+      [data-tooltip-pos="left"]:hover::after {
+        transform: translateY(0);
+      }
+
+      [data-tooltip-pos="bottom"]::after {
+        bottom: auto;
+        top: calc(100% + 6px);
+        transform: translateX(-50%) translateY(-4px);
+      }
+
+      [data-tooltip-pos="bottom"]:hover::after {
+        transform: translateX(-50%) translateY(0);
+      }
+
       /* ================= 2. 顶部系统工具栏 (无级流体 Header) ================= */
       header {
         height: 48px;
         background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border-light);
-        /* 👈 核心无级流体：内边距和间距随窗口宽度每 1 像素平滑连续收缩，杜绝硬断点跳变 */
-        padding: 0 clamp(8px, 1.2vw, 14px);
-        gap: clamp(4px, 0.8vw, 12px);
+        padding: 0 clamp(6px, 1.2vw, 14px);
+        gap: clamp(4px, 0.8vw, 10px);
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
         z-index: 40;
+        container-type: inline-size;
+        container-name: topHeader;
       }
 
       .header-left {
@@ -114,13 +168,12 @@
       .header-action-cluster {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
       }
 
-      /* 通用按钮规范 */
       .btn {
         height: 28px;
-        padding: 0 clamp(6px, 0.7vw, 10px);
+        padding: 0 clamp(6px, 0.8vw, 10px);
         border-radius: var(--radius-sm);
         border: none;
         outline: none;
@@ -134,6 +187,11 @@
         user-select: none;
         white-space: nowrap;
         transition: var(--transition);
+        flex-shrink: 0;
+      }
+
+      .btn svg {
+        flex-shrink: 0;
       }
 
       .btn-primary {
@@ -170,17 +228,77 @@
         color: var(--text-primary);
       }
 
+      .btn-text-full {
+        display: inline;
+      }
+
       .btn-text-short {
         display: none;
       }
 
-      /* A-4: 选集播放条 (自适应撑满中间) */
+      /* Header 容器响应规则 */
+      @container topHeader (max-width: 1080px) {
+
+        .header-btn-file .btn-text-full,
+        .header-btn-folder .btn-text-full {
+          display: none !important;
+        }
+
+        .header-btn-file .btn-text-short,
+        .header-btn-folder .btn-text-short {
+          display: inline !important;
+        }
+      }
+
+      @container topHeader (max-width: 880px) {
+
+        .header-btn-file .btn-text-short,
+        .header-btn-folder .btn-text-short,
+        #btnShortcutsDesktop .btn-text-full {
+          display: none !important;
+        }
+
+        .header-btn-file,
+        .header-btn-folder,
+        #btnShortcutsDesktop {
+          padding: 0 7px !important;
+        }
+
+        #sortMenuBtn span {
+          display: none !important;
+        }
+
+        #sortMenuBtn {
+          padding: 0 6px !important;
+        }
+
+        .status-badge .status-text {
+          display: none !important;
+        }
+
+        .status-badge {
+          padding: 4px 6px !important;
+        }
+      }
+
+      @container topHeader (max-width: 680px) {
+        .brand-name {
+          display: none !important;
+        }
+
+        .brand {
+          border-right: none;
+          padding-right: 0;
+        }
+      }
+
+      /* 选集播放条 */
       .header-center {
         display: flex;
         align-items: center;
         justify-content: center;
         flex: 1 1 180px;
-        min-width: 120px;
+        min-width: 110px;
         margin: 0 4px;
       }
 
@@ -193,29 +311,34 @@
         border-radius: 6px;
         border: 1px solid var(--border-light);
         width: 100%;
-        min-width: 120px;
+        min-width: 110px;
         position: relative;
       }
 
       .btn-ep {
         height: 24px;
-        padding: 0 7px;
+        padding: 0 6px;
         font-size: 11px;
         background: #fff;
         border: 1px solid var(--border-light);
         border-radius: 4px;
-        line-height: 1.2;
         color: var(--text-primary);
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        transition: var(--transition);
       }
 
       .btn-ep:disabled {
         opacity: 0.35;
         cursor: not-allowed;
+      }
+
+      .btn-ep:hover:not(:disabled) {
+        background: #f8fafc;
+        border-color: var(--border-medium);
       }
 
       .custom-ep-wrapper {
@@ -241,11 +364,6 @@
         gap: 6px;
         cursor: pointer;
         user-select: none;
-        transition: all 0.15s ease;
-      }
-
-      .custom-ep-btn:hover {
-        border-color: var(--text-muted);
       }
 
       .custom-ep-btn.active {
@@ -259,7 +377,6 @@
         white-space: nowrap;
       }
 
-      /* A-4.2: 选集下拉浮层水平居中 */
       .custom-ep-popover {
         position: absolute;
         top: calc(100% + 6px);
@@ -329,7 +446,6 @@
         flex-shrink: 0;
       }
 
-      /* A-5: 排序引擎 */
       .sort-dropdown-wrapper {
         position: relative;
         flex-shrink: 0;
@@ -385,11 +501,10 @@
         flex-shrink: 0;
       }
 
-      /* A-6: 状态呼吸徽章组 (流体自适应弹性收缩) */
       .status-tags {
         display: flex;
         align-items: center;
-        gap: clamp(2px, 0.4vw, 6px);
+        gap: clamp(2px, 0.4vw, 5px);
         flex-shrink: 1;
         min-width: 0;
       }
@@ -398,7 +513,7 @@
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 3px clamp(4px, 0.6vw, 8px);
+        padding: 3px clamp(4px, 0.5vw, 7px);
         border-radius: var(--radius-full);
         font-size: 11px;
         font-weight: 600;
@@ -432,7 +547,7 @@
         background: #10b981;
       }
 
-      /* ================= 3. 左侧·影院级视频舞台 ================= */
+      /* ================= 3. 视频舞台 ================= */
       .main-workspace {
         flex: 1;
         display: flex;
@@ -445,8 +560,7 @@
       .video-stage {
         width: 52%;
         min-width: 240px;
-        /* 👈 核心无级防挤死锁铁律：左侧绝不能把右侧挤出屏幕！保证右侧至少保留 280px */
-        max-width: calc(100% - 280px);
+        max-width: calc(100% - 260px);
         height: 100%;
         background: var(--surface-stage);
         position: relative;
@@ -472,28 +586,12 @@
         touch-action: pan-y;
       }
 
-      /* 视频画面主体 (封杀一切焦点白框) */
       video {
         width: 100%;
         height: 100%;
         object-fit: contain;
         outline: none !important;
         border: none !important;
-      }
-
-      video:focus,
-      video:focus-visible,
-      video:active,
-      video::-webkit-media-controls,
-      video::-webkit-media-controls-panel,
-      video::-webkit-media-controls-enclosure,
-      video::-webkit-media-controls-timeline,
-      video::-webkit-media-controls-timeline:focus,
-      video::-webkit-media-controls-timeline-container {
-        outline: none !important;
-        box-shadow: none !important;
-        border: none !important;
-        -webkit-tap-highlight-color: transparent !important;
       }
 
       .stage-empty-state {
@@ -539,7 +637,6 @@
         opacity: 1;
       }
 
-      /* B-4: 贴合画面胶囊 */
       .stage-fit-btn {
         position: absolute;
         top: 14px;
@@ -573,7 +670,6 @@
         transform: scale(1.02);
       }
 
-      /* B-5: 灵光黑曜石 OSD 胶囊 */
       .stage-osd {
         position: absolute;
         top: 14px;
@@ -588,15 +684,11 @@
         font-weight: 600;
         white-space: nowrap !important;
         box-sizing: border-box;
-
-        /* 👇 核心补齐：宽度由文字自然撑满，最大不超过屏幕的 92% 👇 */
         width: max-content;
         max-width: 92%;
-
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        line-height: 1;
         pointer-events: none;
         opacity: 0;
         transition: opacity 0.15s ease, transform 0.15s ease;
@@ -630,10 +722,8 @@
         z-index: 30;
       }
 
-      /* 浮层字幕容器：动态贴合视频实际渲染底边 */
       .stage-sub-overlay {
         position: absolute;
-        /* 👈 优先使用动态计算的 --sub-bottom，兜底 34px */
         bottom: var(--sub-bottom, 34px);
         left: 0;
         right: 0;
@@ -645,23 +735,18 @@
         z-index: 20;
         display: none;
         transition: bottom 0.15s ease-out;
-        /* 窗口缩放时平滑过渡 */
       }
 
-      /* 🌟 中文主字幕：动态跟随视频实际渲染画面等比缩放 */
       .stage-sub-overlay .v-cn {
-        /* 读取动态变量 --sub-font-cn，若无则兜底 16px */
         font-size: var(--sub-font-cn, 16px);
         font-weight: 700;
         line-height: 1.35;
         color: #ffffff;
         paint-order: stroke fill;
-        /* 描边粗细也跟随画面缩放，避免小画面时黑边糊成一坨 */
         -webkit-text-stroke: var(--sub-stroke-cn, 1.8px) #000000;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
       }
 
-      /* 🌟 外语副字幕：等比联动缩放 */
       .stage-sub-overlay .v-foreign {
         font-size: var(--sub-font-foreign, 12px);
         color: #cbd5e1;
@@ -672,7 +757,7 @@
         -webkit-text-stroke: var(--sub-stroke-foreign, 1.2px) #000000;
       }
 
-      /* ================= 4. 中轴物理弹性分割条 ================= */
+      /* ================= 4. 中轴分割条 ================= */
       .panel-resizer {
         width: 8px;
         background: var(--surface-base);
@@ -683,7 +768,6 @@
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        transition: background 0.15s;
         z-index: 35;
         touch-action: none;
       }
@@ -706,7 +790,7 @@
         background: var(--primary);
       }
 
-      /* ================= 5. 右侧多维交互工作台 (无级流体面板) ================= */
+      /* ================= 5. 右侧多维工作台 (Container Query 完全自适应) ================= */
       .notes-panel {
         flex: 1 1 auto;
         min-width: 260px;
@@ -719,7 +803,7 @@
       }
 
       .segmented-tab-container {
-        padding: 8px 14px;
+        padding: 8px 12px;
         background: #fff;
         border-bottom: 1px solid var(--border-light);
         flex-shrink: 0;
@@ -748,6 +832,7 @@
         justify-content: center;
         gap: 5px;
         transition: var(--transition);
+        white-space: nowrap;
       }
 
       .segmented-tab-item:hover {
@@ -769,7 +854,6 @@
         scroll-behavior: smooth;
       }
 
-      /* 粘性操作条 (严禁横向溢出，受保护不出界) */
       .action-subbar {
         position: sticky;
         top: -12px;
@@ -781,32 +865,21 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 4px;
+        gap: 6px;
         z-index: 10;
         box-sizing: border-box;
-        overflow: hidden;
       }
 
-      .action-subbar>div:last-child {
-        flex-shrink: 0 !important;
+      .subbar-left,
+      .subbar-right {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
       }
 
-      @container notesPanel (max-width: 260px) {
-        .action-subbar .btn-secondary span {
-          display: none !important;
-        }
-
-        .action-subbar .btn-secondary {
-          padding: 0 6px !important;
-        }
-
-        .jump-input-capsule input {
-          width: 32px !important;
-        }
-
-        .action-subbar .btn-primary span {
-          display: none !important;
-        }
+      .subbar-right {
+        flex-shrink: 0;
       }
 
       .jump-input-capsule {
@@ -816,9 +889,11 @@
         border: 1px solid var(--border-light);
         border-radius: var(--radius-sm);
         padding: 0 6px;
-        height: 26px;
+        height: 28px;
         transition: var(--transition);
-        flex-shrink: 1;
+        flex: 1 1 auto;
+        min-width: 52px;
+        max-width: 90px;
       }
 
       .jump-input-capsule:focus-within {
@@ -828,7 +903,7 @@
       }
 
       .jump-input-capsule input {
-        width: 40px;
+        width: 100%;
         border: none;
         background: transparent;
         outline: none;
@@ -840,7 +915,7 @@
 
       .lang-pill-btn {
         height: 26px;
-        padding: 0 9px;
+        padding: 0 8px;
         font-size: 11.5px;
         font-weight: 600;
         border-radius: var(--radius-sm);
@@ -849,6 +924,7 @@
         color: var(--text-secondary);
         cursor: pointer;
         transition: var(--transition);
+        white-space: nowrap;
       }
 
       .lang-pill-btn:hover {
@@ -861,6 +937,150 @@
         color: #fff !important;
         border-color: var(--primary) !important;
         box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
+      }
+
+      /* 🌟 智能讲义工具栏及按钮生态系统（核心重构） */
+      .ai-prompt-cluster {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        width: 100%;
+        flex-wrap: nowrap;
+        /* 拒绝尴尬的多行折断！ */
+      }
+
+      .ai-prompt-cluster .btn,
+      .ai-prompt-cluster label.btn {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 0 6px;
+        overflow: hidden;
+      }
+
+      .ai-prompt-cluster .btn span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .btn-trash {
+        flex: 0 0 28px !important;
+        padding: 0 !important;
+      }
+
+      .collapsed-toolbar {
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        gap: 6px;
+      }
+
+      .collapsed-toolbar-status {
+        font-size: 12px;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .collapsed-toolbar-status .status-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ================= notesPanel 阶梯自适应规则 ================= */
+      @container notesPanel (max-width: 440px) {
+
+        .subbar-btn-export .btn-text,
+        .subbar-btn-import .btn-text {
+          display: none !important;
+        }
+
+        .subbar-btn-export,
+        .subbar-btn-import {
+          padding: 0 7px !important;
+        }
+
+        .lang-pill-btn .btn-text-full {
+          display: none !important;
+        }
+
+        .lang-pill-btn .btn-text-short {
+          display: inline !important;
+        }
+
+        /* 讲义提示词按钮：切换为短词 */
+        .ai-prompt-btn .btn-text-full {
+          display: none !important;
+        }
+
+        .ai-prompt-btn .btn-text-short {
+          display: inline !important;
+        }
+      }
+
+      @container notesPanel (max-width: 360px) {
+
+        /* 讲义已生成工具栏：导出和编辑折叠为纯图标 */
+        .toolbar-btn-export .btn-text,
+        .toolbar-btn-edit .btn-text {
+          display: none !important;
+        }
+
+        .toolbar-btn-export,
+        .toolbar-btn-edit {
+          padding: 0 7px !important;
+        }
+      }
+
+      @container notesPanel (max-width: 330px) {
+
+        /* 极致收紧：标记手记折叠为纯图标 */
+        .subbar-btn-mark .btn-text-full,
+        .subbar-btn-mark .btn-text-short {
+          display: none !important;
+        }
+
+        .subbar-btn-mark {
+          padding: 0 8px !important;
+        }
+
+        .jump-input-capsule {
+          max-width: 60px;
+        }
+
+        .jump-input-capsule svg {
+          display: none;
+        }
+
+        .jump-input-capsule input {
+          font-size: 10.5px;
+        }
+
+        .segmented-tab-item {
+          font-size: 10.5px;
+          padding: 0 4px;
+        }
+
+        /* 讲义已生成文字隐去，仅留小图标 */
+        .collapsed-toolbar-status .status-text {
+          display: none !important;
+        }
+
+        /* 提示词按钮群全部收缩为“微矢量纯图标” */
+        .ai-prompt-btn .btn-text-short {
+          display: none !important;
+        }
+
+        .ai-prompt-cluster .btn,
+        .ai-prompt-cluster label.btn {
+          flex: 1 1 28px !important;
+          padding: 0 !important;
+        }
       }
 
       .composer-card {
@@ -946,7 +1166,7 @@
         box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
       }
 
-      /* 手记卡片流 (完全防折行) */
+      /* 卡片流 */
       .note-card {
         background: #ffffff;
         border: 1px solid var(--border-light);
@@ -964,7 +1184,6 @@
         transform: translateY(-1px);
       }
 
-      /* 🌟 循环区间手记：活跃高亮（淡紫背景 + 边框 + 实心紫胶囊） */
       .note-card.loop-active {
         border-color: var(--purple-border) !important;
         background: var(--purple-subtle) !important;
@@ -978,7 +1197,6 @@
         box-shadow: 0 1px 3px rgba(124, 58, 237, 0.3) !important;
       }
 
-      /* 🌟 单点标注手记：活跃高亮（淡蓝背景 + 边框 + 实心蓝胶囊） */
       .note-card.point-active {
         border-color: var(--primary-border) !important;
         background: var(--primary-subtle) !important;
@@ -1022,7 +1240,6 @@
         color: #fff;
       }
 
-      /* 🌟 讲义时间胶囊：当前播放命中时的高亮状态（与字幕完全对齐） */
       .pill-tag.active {
         background: #4f46e5 !important;
         color: #ffffff !important;
@@ -1127,7 +1344,6 @@
         white-space: pre-wrap;
       }
 
-      /* 默认普通字幕行 */
       .transcript-row {
         padding: 8px 12px;
         border-radius: var(--radius-sm);
@@ -1135,7 +1351,6 @@
         line-height: 1.55;
         font-size: 12px;
         border-left: 4px solid transparent;
-        /* 👈 预留 4px 边框位 */
         transition: all 0.15s ease;
       }
 
@@ -1143,17 +1358,12 @@
         margin-bottom: 4px;
       }
 
-      /* 🌟🌟 核心聚光灯高亮：一眼望去绝对不可能看不见！ 🌟🌟 */
       .transcript-row.active {
         background: #eef2ff !important;
-        /* 鲜明的浅靛蓝背景 */
         border-left-color: #4f46e5 !important;
-        /* 醒目的左侧 4px 品牌电光蓝柱 */
         box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12) !important;
-        /* 悬浮微投影 */
       }
 
-      /* 👈 杀手锏：当前台词的时码胶囊，瞬间变成“实心深蓝白字”！形成绝对反差！ */
       .transcript-row.active .pill-tag {
         background: #4f46e5 !important;
         color: #ffffff !important;
@@ -1161,7 +1371,6 @@
         box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3) !important;
       }
 
-      /* 当前台词中文加粗并变为深蓝品牌色 */
       .transcript-row.active .transcript-row-cn {
         color: #3730a3 !important;
         font-weight: 800 !important;
@@ -1214,7 +1423,7 @@
         margin: 4px 0 6px;
       }
 
-      /* ================= 6. 模态窗口与移动抽屉层 ================= */
+      /* ================= 6. 模态窗口与移动抽屉 ================= */
       .modal-backdrop {
         position: fixed;
         inset: 0;
@@ -1421,7 +1630,6 @@
         max-height: 75vh;
         overflow-y: auto;
         width: 100% !important;
-        max-width: 100% !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
       }
@@ -1434,39 +1642,7 @@
         margin: 0 auto 10px;
       }
 
-      /* ================= 7. 中等屏 (768px~1150px) 优雅退让 + 手机端专属架构 ================= */
-
-      /* 中等分屏时：状态标签平滑隐去次要项，选集条保持舒展 */
-      @media (max-width: 1150px) and (min-width: 769px) {
-
-        #videoStatus,
-        #assStatus {
-          display: none !important;
-        }
-
-        .header-btn-file span.btn-text-full,
-        .header-btn-folder span.btn-text-full {
-          display: none !important;
-        }
-
-        .header-btn-file span.btn-text-short,
-        .header-btn-folder span.btn-text-short {
-          display: inline !important;
-        }
-      }
-
-      @media (max-width: 950px) and (min-width: 769px) {
-        #playlistStatus {
-          display: none !important;
-        }
-
-        #btnShortcutsDesktop {
-          padding: 0 6px !important;
-        }
-      }
-
-      /* ================= 方案B增强：Ctrl+F 极致沉浸 + 悬浮抽屉 ================= */
-      /* 1. 沉浸状态下：视频绝对满屏，中轴线隐去 */
+      /* ================= 7. 沉浸模式 ================= */
       .main-workspace.immersive .video-stage {
         width: 100% !important;
         max-width: 100% !important;
@@ -1476,7 +1652,6 @@
         display: none !important;
       }
 
-      /* 2. 沉浸状态下：右侧面板转为“浮层抽屉”，隐藏在屏幕右侧外面 */
       .main-workspace.immersive .notes-panel {
         position: absolute !important;
         top: 0 !important;
@@ -1487,18 +1662,15 @@
         max-width: 85vw !important;
         z-index: 60 !important;
         transform: translateX(100%) !important;
-        /* 藏在屏幕右侧外 */
         box-shadow: none !important;
         transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease !important;
       }
 
-      /* 3. 点击把手展开抽屉：平滑滑入，悬浮在视频上方！不挤压视频！ */
       .main-workspace.immersive.drawer-open .notes-panel {
         transform: translateX(0) !important;
         box-shadow: -8px 0 32px rgba(0, 0, 0, 0.38) !important;
       }
 
-      /* 4. 浮动把手：沉浸时吸附在最右边缘 */
       .floating-drawer-tab {
         position: absolute;
         top: 50%;
@@ -1515,44 +1687,34 @@
         font-weight: 700;
         cursor: pointer;
         display: none;
-        /* 👈 默认彻底不渲染，绝不在边缘渗透任何痕迹 */
         flex-direction: column;
         align-items: center;
         gap: 6px;
         z-index: 70;
         box-shadow: none;
-        /* 👈 彻底移除向左漫射的阴影，画面纯净 */
         transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), right 0.28s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s;
       }
 
-      /* 沉浸时才唤醒渲染 */
       .main-workspace.immersive .floating-drawer-tab {
         display: flex;
+        transform: translateY(-50%) translateX(0);
       }
 
       .floating-drawer-tab:hover {
         background: var(--primary);
       }
 
-      /* 沉浸时露在屏幕最右边缘 */
-      .main-workspace.immersive .floating-drawer-tab {
-        transform: translateY(-50%) translateX(0);
-      }
-
-      /* 抽屉展开时，把手随抽屉滑到左侧，作为收起把手 */
       .main-workspace.immersive.drawer-open .floating-drawer-tab {
         right: clamp(260px, 380px, 85vw) !important;
       }
 
-      /* 移动手机端专属架构 (≤ 768px) */
+      /* ================= 8. 移动手机端专属架构 (≤ 768px) ================= */
       @media (max-width: 768px) {
         header {
           height: auto !important;
-          /* 👈 核心相对比例：上下占手机高度的 1%，左右占手机宽度的 3%！ */
           padding: 1vh 3vw !important;
           flex-direction: column !important;
           align-items: stretch !important;
-          /* 👈 核心相对比例：第一行和第二行之间，严格占手机高度的 0.8%！ */
           gap: 0.8vh !important;
         }
 
@@ -1561,26 +1723,20 @@
           align-items: center !important;
           justify-content: space-between !important;
           width: 100% !important;
-          /* 高度不再写死 px，由文字和图标自然贴合撑开 */
           height: auto !important;
         }
 
-        .btn-text-full {
-          display: none !important;
-        }
-
-        .btn-text-short {
-          display: inline !important;
+        /* 👈 核心优化：小屏幕上文件和目录按钮强制靠最右面对齐 */
+        .header-action-cluster {
+          margin-left: auto !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 6px !important;
         }
 
         .brand {
           border-right: none !important;
           padding-right: 0 !important;
-        }
-
-        #btnShortcutsDesktop,
-        .status-tags {
-          display: none !important;
         }
 
         .header-center {
@@ -1594,7 +1750,6 @@
         .playlist-bar {
           width: 100% !important;
           margin: 0 !important;
-          /* 内边距也设为相对比例，高度随文字自适应 */
           height: auto !important;
           padding: 0.4vh 1vw !important;
         }
@@ -1628,16 +1783,6 @@
           border-radius: 2px !important;
         }
 
-        .panel-resizer::before {
-          content: "";
-          position: absolute;
-          top: -10px;
-          bottom: -10px;
-          left: 0;
-          right: 0;
-          z-index: 20;
-        }
-
         .notes-panel {
           min-width: 100% !important;
           flex: 1 !important;
@@ -1647,57 +1792,6 @@
           padding: 8px 10px !important;
         }
 
-        .action-subbar .btn-secondary span {
-          display: none !important;
-        }
-
-        .action-subbar .btn-secondary {
-          padding: 0 6px !important;
-        }
-
-        /* 按钮也采用相对字号比例 (em)，字体多大，按钮就按比例自适应多大 */
-        .header-btn-file,
-        .header-btn-folder {
-          height: auto !important;
-          padding: 0.3em 0.8em !important;
-          font-size: 0.85rem !important;
-          border-radius: var(--radius-full) !important;
-        }
-
-        /* 抽屉内课时列表：长名字自然折行，100% 完整可见不破屏 */
-        #mobileDrawerList .ep-item {
-          width: 100% !important;
-          max-width: 100% !important;
-          box-sizing: border-box !important;
-          display: flex !important;
-          align-items: flex-start !important;
-          justify-content: space-between !important;
-          padding: 10px 12px !important;
-          gap: 8px !important;
-        }
-
-        #mobileDrawerList .ep-item-left {
-          min-width: 0 !important;
-          flex: 1 !important;
-          display: flex !important;
-          align-items: flex-start !important;
-          gap: 6px !important;
-        }
-
-        #mobileDrawerList .ep-item-left span:last-child {
-          white-space: normal !important;
-          word-break: break-all !important;
-          line-height: 1.45 !important;
-          font-size: 12.5px !important;
-          color: var(--text-primary) !important;
-        }
-
-        #mobileDrawerList .ep-item-badges {
-          flex-shrink: 0 !important;
-          margin-top: 2px !important;
-        }
-
-        /* 手机端上下排版，严禁出现左右侧滑抽屉把手 */
         .floating-drawer-tab {
           display: none !important;
         }
@@ -1719,16 +1813,17 @@
           <span class="brand-name">iVideo <span style="color: var(--primary);">Reader</span></span>
         </div>
 
-        <!-- 👈 核心改进：把文件和目录包裹在一起，靠右紧贴 -->
+        <!-- 小屏下靠右对齐的按钮群 -->
         <div class="header-action-cluster">
-          <button class="btn btn-secondary header-btn-file" onclick="document.getElementById('localFileInput').click()" title="打开视频、字幕或笔记">
+          <button class="btn btn-secondary header-btn-file" onclick="document.getElementById('localFileInput').click()" data-tooltip="打开视频、字幕或笔记" data-tooltip-pos="bottom">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
             </svg>
             <span class="btn-text-full">打开文件</span>
             <span class="btn-text-short">文件</span>
           </button>
-          <button class="btn btn-secondary header-btn-folder" onclick="document.getElementById('localFolderInput').click()" title="载入完整课程目录">
+
+          <button class="btn btn-secondary header-btn-folder" onclick="document.getElementById('localFolderInput').click()" data-tooltip="载入完整课程目录" data-tooltip-pos="bottom">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
             </svg>
@@ -1737,42 +1832,52 @@
           </button>
         </div>
 
-        <button id="btnShortcutsDesktop" class="btn btn-ghost" onclick="openShortcutsModal()" title="快捷键速查">快捷键</button>
+        <button id="btnShortcutsDesktop" class="btn btn-ghost" onclick="openShortcutsModal()" data-tooltip="快捷键速查 (?)" data-tooltip-pos="bottom">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
+          </svg>
+          <span class="btn-text-full">快捷键</span>
+        </button>
       </div>
 
-      <!-- A-4: 选集播放条 (自适应撑满中间空白) -->
+      <!-- A-4: 选集播放条 -->
       <div class="header-center">
         <div id="playlistControls" class="playlist-bar" style="display: none;">
-          <button class="btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" title="切换上一集 (Page Up)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <button class="btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" data-tooltip="切换上一集 (Page Up)" data-tooltip-pos="bottom">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <polygon points="19 20 9 12 19 4 19 20" />
               <line x1="5" y1="19" x2="5" y2="5" />
-            </svg></button>
+            </svg>
+          </button>
 
           <div class="custom-ep-wrapper">
             <div id="customEpBtn" class="custom-ep-btn" onclick="toggleEpMenu(event)" title="点击切换集数">
               <span id="currentEpTitle" class="custom-ep-title">正在加载集数...</span>
-              <span style="font-size: 8px; color: #94a3b8;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="flex-shrink:0;">
+              <span style="font-size: 8px; color: #94a3b8;">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" style="flex-shrink:0;">
                   <polyline points="6 9 12 15 18 9" />
-                </svg></span>
+                </svg>
+              </span>
             </div>
-            <!-- A-4.2: 居中下拉抽屉 -->
             <div id="customEpPopover" class="custom-ep-popover"></div>
           </div>
 
-          <button class="btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" title="切换下一集 (Page Down)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <button class="btn-ep" id="nextEpisodeBtn" onclick="playNextEpisode()" data-tooltip="切换下一集 (Page Down)" data-tooltip-pos="bottom">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <polygon points="5 4 15 12 5 20 5 4" />
               <line x1="19" y1="5" x2="19" y2="19" />
-            </svg></button>
+            </svg>
+          </button>
 
-          <!-- A-5: 排序引擎 -->
+          <!-- 排序引擎 -->
           <div class="sort-dropdown-wrapper">
-            <button id="sortMenuBtn" class="btn-ep" onclick="toggleSortMenu(event)" title="选择列表排序方式" style="padding: 0 6px; gap: 3px; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">
-              <!-- 经过光学紧凑校准的 12x12 上下箭头微矢量 -->
-              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0; transform: translateY(0.5px);">
+            <button id="sortMenuBtn" class="btn-ep" onclick="toggleSortMenu(event)" data-tooltip="切换选集排序" data-tooltip-pos="bottom" style="gap: 3px;">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: block; transform: translateY(0.5px);">
                 <polyline points="3 4.5 6 1.5 9 4.5" />
                 <polyline points="3 7.5 6 10.5 9 7.5" />
               </svg>
-              <span style="line-height: 1; display: inline-block;">排序</span>
+              <span class="btn-text" style="line-height: 1;">排序</span>
             </button>
             <div id="sortDropdownMenu" class="sort-dropdown-menu">
               <div class="sort-menu-item active" onclick="selectSortMode('original')" data-sort="original">
@@ -1822,19 +1927,19 @@
         </div>
       </div>
 
-      <!-- A-6: 状态呼吸徽章组 -->
+      <!-- 状态呼吸徽章组 -->
       <div class="status-tags">
-        <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" title="点击查看媒体详情">
-          <span class="status-dot"></span><span>1/1 集</span>
+        <span id="playlistStatus" class="status-badge" style="display: none;" onclick="openMediaInfoModal()" data-tooltip="选集状态" data-tooltip-pos="left">
+          <span class="status-dot"></span><span class="status-text">1/1 集</span>
         </span>
-        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看媒体详情">
-          <span class="status-dot"></span><span id="videoStatusText">视频未加载</span>
+        <span id="videoStatus" class="status-badge" onclick="openMediaInfoModal()" data-tooltip="媒体规格详情" data-tooltip-pos="left">
+          <span class="status-dot"></span><span class="status-text" id="videoStatusText">视频未加载</span>
         </span>
-        <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看字幕详情">
-          <span class="status-dot"></span><span id="assStatusText">无字幕</span>
+        <span id="assStatus" class="status-badge" onclick="openMediaInfoModal()" data-tooltip="字幕详情" data-tooltip-pos="left">
+          <span class="status-dot"></span><span class="status-text" id="assStatusText">无字幕</span>
         </span>
-        <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" title="点击查看手记沉淀">
-          <span class="status-dot"></span><span id="noteStatusText">手记: 0 条</span>
+        <span id="noteStatus" class="status-badge" onclick="openMediaInfoModal()" data-tooltip="手记沉淀详情" data-tooltip-pos="left">
+          <span class="status-dot"></span><span class="status-text" id="noteStatusText">手记: 0 条</span>
         </span>
       </div>
     </header>
@@ -1845,7 +1950,6 @@
       <div class="video-stage" id="videoZone">
         <div class="drop-overlay"></div>
 
-        <!-- B-2: 纯净引导板 -->
         <div class="stage-empty-state" id="videoTip">
           <h3 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1858,8 +1962,8 @@
         </div>
 
         <div class="video-canvas-wrapper" id="videoWrapper">
-          <button id="touchFitBtn" class="stage-fit-btn" onclick="fitVideoRatio()" title="消除黑边 / 贴合画面 (F)">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: block; flex-shrink: 0;">
+          <button id="touchFitBtn" class="stage-fit-btn" onclick="fitVideoRatio()" data-tooltip="消除黑边 / 贴合画面 (F)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="display: block;">
               <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
             </svg>
             <span>贴合画面</span>
@@ -1888,18 +1992,18 @@
         </div>
       </div>
 
-      <!-- 沉浸模式下浮现的抽屉把手 (点击切换悬浮抽屉) -->
+      <!-- 沉浸模式抽屉把手 -->
       <div id="immersiveTab" class="floating-drawer-tab" onclick="toggleFloatingDrawer(event)" title="展开/收起悬浮工作台">
         <span id="immersiveTabArrow">◀</span>
         <span id="immersiveTabText" style="writing-mode: vertical-lr; letter-spacing: 2px;">手记</span>
       </div>
 
-      <!-- 功能区 3: 中轴·物理弹性分割条 -->
+      <!-- 功能区 3: 中轴弹性分割条 -->
       <div class="panel-resizer" id="resizer" title="拖动调整分栏 / 双击贴合画面消除黑边"></div>
 
-      <!-- 功能区 4: 右侧·多维交互工作台 -->
+      <!-- 功能区 4: 右侧多维工作台 -->
       <div class="notes-panel" id="notesZone">
-        <!-- 4.1: FX-6 滑动药丸分段导航栏 -->
+        <!-- 4.1 分段导航栏 -->
         <div class="segmented-tab-container">
           <div class="segmented-tabs">
             <button id="tabBtnMynotes" class="segmented-tab-item active" onclick="switchTab('mynotes')">我的手记 <span id="notesCountBadge">(0)</span></button>
@@ -1908,17 +2012,18 @@
           </div>
         </div>
 
-        <!-- 4.2 子工作区 A: 我的手记工作区 -->
+        <!-- 4.2 子工作区 A: 我的手记 -->
         <div id="mynotesTab" class="tab-view-content">
-          <!-- 粘性操作条 -->
           <div class="action-subbar">
-            <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-              <button class="btn btn-primary" onclick="openAddNoteBox()" title="标记当前时间点 (Ctrl+M)">
+            <div class="subbar-left">
+              <button class="btn btn-primary subbar-btn-mark" onclick="openAddNoteBox()" data-tooltip="标记当前时间点 (Ctrl+M)">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M12 5v14M5 12h14" />
                 </svg>
-                <span>标记手记</span>
+                <span class="btn-text-full">标记手记</span>
+                <span class="btn-text-short">标记</span>
               </button>
+
               <div class="jump-input-capsule" title="输入时码直接回车跳转">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;">
                   <circle cx="12" cy="12" r="10" />
@@ -1928,27 +2033,27 @@
               </div>
             </div>
 
-            <!-- 右侧导出/导入/清空 (修复点 5：统一高质感微矢量 SVG 图标) -->
-            <div style="display: flex; gap: 4px; flex-shrink: 0;">
-              <button class="btn btn-secondary" onclick="exportNotesToMarkdown()" title="导出手记为 Markdown (.md)">
+            <div class="subbar-right">
+              <button class="btn btn-secondary subbar-btn-export" onclick="exportNotesToMarkdown()" data-tooltip="导出手记为 Markdown (.md)" data-tooltip-pos="left">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                <span>导出</span>
+                <span class="btn-text">导出</span>
               </button>
-              <label class="btn btn-secondary" style="cursor: pointer; margin: 0;" title="从本地 Markdown 文件导入手记">
+
+              <label class="btn btn-secondary subbar-btn-import" style="cursor: pointer; margin: 0;" data-tooltip="从本地 Markdown 文件导入手记" data-tooltip-pos="left">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
-                <span>导入</span>
+                <span class="btn-text">导入</span>
                 <input type="file" id="importNotesInput" accept=".md,.txt" style="display: none;" onchange="importNotesFromFile(event)">
               </label>
-              <!-- 修复点 5：清晰的高质感线性垃圾桶 -->
-              <button class="btn btn-ghost" style="color: #ef4444; padding: 0 6px;" onclick="clearAllNotes()" title="清空手记">
+
+              <button class="btn btn-ghost" style="color: #ef4444; padding: 0 6px;" onclick="clearAllNotes()" data-tooltip="清空所有手记" data-tooltip-pos="left">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -1959,7 +2064,7 @@
             </div>
           </div>
 
-          <!-- 灵光批注输入卡 -->
+          <!-- 批注输入卡 -->
           <div id="addNoteBox" class="composer-card" style="display: none;">
             <div class="composer-segment">
               <div id="segPoint" class="composer-segment-item active" onclick="setNoteTypeMode('point')" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
@@ -2003,57 +2108,71 @@
             </div>
           </div>
 
-          <!-- 手记卡片流 -->
           <div id="myNotesList"></div>
         </div>
 
-        <!-- 4.3 子工作区 B: 字幕逐句对照工作区 -->
+        <!-- 4.3 子工作区 B: 字幕逐句对照 -->
         <div id="transcriptTab" class="tab-view-content" style="display: none;">
           <div class="action-subbar">
             <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">字幕模式：</span>
-            <!-- 修复点 4：三态高亮切换 -->
             <div style="display: flex; gap: 4px;">
-              <button class="lang-pill-btn" id="btn-cn" onclick="setLanguage('cn')">仅中文</button>
-              <button class="lang-pill-btn active" id="btn-bi" onclick="setLanguage('bi')">双语对照</button>
-              <button class="lang-pill-btn" id="btn-foreign" onclick="setLanguage('foreign')">仅外语</button>
+              <button class="lang-pill-btn" id="btn-cn" onclick="setLanguage('cn')">
+                <span class="btn-text-full">仅中文</span>
+                <span class="btn-text-short">中</span>
+              </button>
+              <button class="lang-pill-btn active" id="btn-bi" onclick="setLanguage('bi')">
+                <span class="btn-text-full">双语对照</span>
+                <span class="btn-text-short">双</span>
+              </button>
+              <button class="lang-pill-btn" id="btn-foreign" onclick="setLanguage('foreign')">
+                <span class="btn-text-full">仅外语</span>
+                <span class="btn-text-short">外</span>
+              </button>
             </div>
           </div>
           <div id="transcriptList"></div>
         </div>
 
-        <!-- 4.4 子工作区 C: 智能讲义工作区 -->
+        <!-- 4.4 子工作区 C: 智能讲义工作区 (完全自适应重构) -->
         <div id="notesTab" class="tab-view-content" style="display: none;">
           <div id="inputBoxContainer">
             <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 10px 12px; border-radius: var(--radius-md); margin-bottom: 10px;">
               <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
                 <strong>工作流：</strong>点击复制智能提示词发给 AI。AI 输出 Markdown 代码块后贴至下方渲染：
               </p>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                <!-- 修复点 5：统一矢量图标 -->
-                <button id="copyAIPromptBtn" class="btn btn-primary" onclick="copyAIPrompt()">
+
+              <!-- 👈 核心重构：自适应单行流体弹性栏，拒绝换行碎块 -->
+              <div class="ai-prompt-cluster">
+                <button id="copyAIPromptBtn" class="btn btn-primary ai-prompt-btn" onclick="copyAIPrompt()" data-tooltip="复制学习讲义生成提示词">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                   </svg>
-                  <span>复制提示词以生成“学习讲义”</span>
+                  <span class="btn-text-full">学习讲义提示词</span>
+                  <span class="btn-text-short">讲义</span>
                 </button>
-                <button id="copyArchivePromptBtn" class="btn btn-secondary" onclick="copyArchivePrompt()">
+
+                <button id="copyArchivePromptBtn" class="btn btn-secondary ai-prompt-btn" onclick="copyArchivePrompt()" data-tooltip="复制专题档案生成提示词">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                   </svg>
-                  <span>复制提示词以生成“专题档案”</span>
+                  <span class="btn-text-full">专题档案提示词</span>
+                  <span class="btn-text-short">档案</span>
                 </button>
-                <label class="btn btn-secondary" style="cursor: pointer; margin: 0;">
+
+                <label class="btn btn-secondary ai-prompt-btn" style="cursor: pointer; margin: 0;" data-tooltip="导入本地讲义 Markdown 文件">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <span>导入讲义 (.md)</span>
+                  <span class="btn-text-full">导入讲义</span>
+                  <span class="btn-text-short">导入</span>
                   <input type="file" id="importAINotesInput" accept=".md,.txt" style="display: none;" onchange="importAINotesFromFile(event)">
                 </label>
-                <button class="btn btn-ghost" style="color: #ef4444; padding: 0 6px;" onclick="clearAINotes()" title="清空讲义">
+
+                <button class="btn btn-ghost btn-trash" style="color: #ef4444;" onclick="clearAINotes()" data-tooltip="清空当前讲义">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6" />
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -2063,32 +2182,34 @@
                 </button>
               </div>
             </div>
+
             <textarea id="notesInput" class="composer-textarea" style="height: 110px;" placeholder="在此粘贴 AI 代码块里的 Markdown 内容..."></textarea>
             <button class="btn btn-primary" onclick="renderNotes()">渲染生成交互讲义</button>
           </div>
 
-          <div id="collapsedToolbar" style="display: none; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px;">
+          <!-- 👈 核心重构：已生成讲义工具栏，增加容器折叠与纯图标支持 -->
+          <div id="collapsedToolbar" class="collapsed-toolbar">
+            <span class="collapsed-toolbar-status">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
               </svg>
-              <span>讲义已生成</span>
+              <span class="status-text">讲义已生成</span>
             </span>
-            <div style="display: flex; gap: 4px;">
-              <button class="btn btn-secondary" onclick="exportAINotesToMarkdown()">
+            <div style="display: flex; gap: 4px; flex-shrink: 0;">
+              <button class="btn btn-secondary toolbar-btn-export" onclick="exportAINotesToMarkdown()" data-tooltip="导出讲义 (.md)">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
                   <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
-                <span>导出</span>
+                <span class="btn-text">导出</span>
               </button>
-              <button class="btn btn-secondary" onclick="toggleInputBox()">
+              <button class="btn btn-secondary toolbar-btn-edit" onclick="toggleInputBox()" data-tooltip="编辑/重新生成讲义">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                 </svg>
-                <span>编辑</span>
+                <span class="btn-text">编辑</span>
               </button>
             </div>
           </div>
@@ -2098,19 +2219,16 @@
       </div>
     </div>
 
-    <!-- 功能区 5: 模态窗口与移动抽屉层 -->
-
-    <!-- E-1: 全局快捷键指南面板 -->
+    <!-- 功能区 5: 模态窗口 -->
     <div id="shortcutsModal" class="modal-backdrop" style="display: none;" onclick="closeShortcutsModal(event)">
       <div class="shortcuts-modal-box" onclick="event.stopPropagation()">
         <div class="modal-top">
           <h3 id="shortcutsModalTitle" style="display: flex; align-items: center; gap: 7px; margin: 0; line-height: 1;">
-            <!-- 微调：设置 display:block 并微偏移 0.5px，让键盘与汉字中轴绝对重合 -->
-            <svg style="display: block; flex-shrink: 0; transform: translateY(-0.5px);" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <svg style="display: block; transform: translateY(-0.5px);" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10" />
             </svg>
-            <span id="shortcutsModalTitleText" style="line-height: 1; display: inline-block;">快捷键指南</span>
+            <span id="shortcutsModalTitleText" style="line-height: 1;">快捷键指南</span>
           </h3>
           <button class="modal-close" onclick="closeShortcutsModal()">&times;</button>
         </div>
@@ -2118,7 +2236,8 @@
         <div id="shortcutsViewMain">
           <div class="modal-shortcuts-grouped">
             <div class="shortcut-group-card grp-blue">
-              <div class="shortcut-group-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <div class="shortcut-group-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
                 <span>基础播控与画面</span>
@@ -2130,7 +2249,8 @@
             </div>
 
             <div class="shortcut-group-card grp-emerald">
-              <div class="shortcut-group-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <div class="shortcut-group-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
@@ -2142,19 +2262,21 @@
             </div>
 
             <div class="shortcut-group-card grp-purple">
-              <div class="shortcut-group-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <div class="shortcut-group-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
                 </svg>
                 <span>调速与音量系统</span>
               </div>
               <div class="shortcut-item-row"><span class="key-pill">↑ / ↓</span><span>音量调节 ±5%</span></div>
-              <div class="shortcut-item-row"><span class="key-pill">Ctrl+↑</span><span>点按+0.25x / 长按自适应快进</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">Ctrl+↑</span><span>点按+0.25x / 长按冲刺快进</span></div>
               <div class="shortcut-item-row"><span class="key-pill">Ctrl+↓</span><span>点按-0.25x / 长按慢放 0.25x</span></div>
               <div class="shortcut-item-row"><span class="key-pill">Ctrl+\</span><span>一键恢复 1.0x 原速</span></div>
             </div>
 
             <div class="shortcut-group-card grp-amber">
-              <div class="shortcut-group-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <div class="shortcut-group-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
@@ -2166,7 +2288,8 @@
             </div>
 
             <div class="shortcut-group-card grp-indigo" style="grid-column: span 2;">
-              <div class="shortcut-group-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <div class="shortcut-group-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                   <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                   <line x1="8" y1="21" x2="16" y2="21" />
                   <line x1="12" y1="17" x2="12" y2="21" />
@@ -2174,62 +2297,20 @@
                 <span>核心视图直达与字幕模式</span>
               </div>
               <div class="shortcut-item-row"><span class="key-pill">Ctrl+Alt+1</span><span>直达【我的手记】</span></div>
-              <div class="shortcut-item-row"><span class="key-pill">Ctrl+Alt+2</span><span>循环切换字幕模式 (仅中文 ➔ 双语 ➔ 仅外语)</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">Ctrl+Alt+2</span><span>循环切换字幕模式</span></div>
               <div class="shortcut-item-row"><span class="key-pill">Ctrl+Alt+3</span><span>直达【智能讲义】</span></div>
             </div>
           </div>
-
-          <div style="padding: 10px 16px; background: #f8fafc; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; font-size: 11.5px;">
-            <!-- 左侧：发光小灯泡 + 文字光学居中 -->
-            <span style="color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px; line-height: 1;">
-              <svg style="display: block; flex-shrink: 0; transform: translateY(-0.5px);" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
-                <path d="M9 18h6" />
-                <path d="M10 22h4" />
-              </svg>
-              <span style="line-height: 1;">快进时保持原声不变调</span>
-            </span>
-            <!-- 右侧：小扳手 + 文字光学居中 -->
-            <span style="color: var(--primary); cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; line-height: 1;" onclick="togglePerfGuideView(true)">
-              <svg style="display: block; flex-shrink: 0; transform: translateY(-0.5px);" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-              </svg>
-              <span style="line-height: 1;">播放4K视频卡顿？硬件加速设置 »</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- 4K 硬件加速配置指引 -->
-        <div id="shortcutsViewPerf" style="display: none; padding: 16px; flex-direction: column; gap: 10px;">
-          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
-            基于 Chromium 内核播放超清本地视频时，建议开启以下 GPU 实验性开关解除显存封锁：
-          </div>
-          <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 6px; padding: 8px 10px;">
-            <div style="font-size: 11.5px; font-weight: 700; margin-bottom: 4px;">开启 GPU 栅格化 (提升超高分辨率吞吐)</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 4px 6px; border: 1px solid var(--border-medium); border-radius: 4px; font-size: 11px;">
-              <span>chrome://flags/#enable-gpu-rasterization</span>
-              <button class="btn btn-secondary" style="height: 20px; font-size: 10px;" onclick="copyFlagUrl('chrome://flags/#enable-gpu-rasterization', this)">复制</button>
-            </div>
-          </div>
-          <div style="background: #f8fafc; border: 1px solid var(--border-light); border-radius: 6px; padding: 8px 10px;">
-            <div style="font-size: 11.5px; font-weight: 700; margin-bottom: 4px;">忽略 GPU 软解黑名单 (强制启用显卡硬解)</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 4px 6px; border: 1px solid var(--border-medium); border-radius: 4px; font-size: 11px;">
-              <span>chrome://flags/#ignore-gpu-blocklist</span>
-              <button class="btn btn-secondary" style="height: 20px; font-size: 10px;" onclick="copyFlagUrl('chrome://flags/#ignore-gpu-blocklist', this)">复制</button>
-            </div>
-          </div>
-          <button class="btn btn-secondary" style="align-self: flex-end;" onclick="togglePerfGuideView(false)">« 返回快捷键指南</button>
         </div>
       </div>
     </div>
 
-    <!-- E-3: 修复点 3：媒体规格与资产详情面板 (恢复三段式卡片分隔) -->
+    <!-- 媒体信息面板 -->
     <div id="mediaInfoModal" class="modal-backdrop" style="display: none;" onclick="closeMediaInfoModal(event)">
       <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-top">
           <h3 style="display: flex; align-items: center; gap: 7px; margin: 0; line-height: 1;">
-            <!-- 微调：胶片图标尺寸校准至 14px，与 13.5px 汉字完美呼应并中轴对齐 -->
-            <svg style="display: block; flex-shrink: 0; transform: translateY(-0.5px);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <svg style="display: block; transform: translateY(-0.5px);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <rect x="2" y="2" width="20" height="20" rx="2.18" />
               <line x1="7" y1="2" x2="7" y2="22" />
               <line x1="17" y1="2" x2="17" y2="22" />
@@ -2239,14 +2320,14 @@
               <line x1="17" y1="17" x2="22" y2="17" />
               <line x1="17" y1="7" x2="22" y2="7" />
             </svg>
-            <span style="line-height: 1; display: inline-block;">当前媒体与资源详情</span>
+            <span style="line-height: 1;">当前媒体与资源详情</span>
           </h3>
           <button class="modal-close" onclick="closeMediaInfoModal()">&times;</button>
         </div>
         <div style="padding: 16px; font-size: 12px; line-height: 1.8;">
-          <!-- 视频板块卡片 -->
           <div class="media-section-card">
-            <div class="media-section-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="media-section-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18" />
                 <line x1="7" y1="2" x2="7" y2="22" />
                 <line x1="17" y1="2" x2="17" y2="22" />
@@ -2267,9 +2348,9 @@
             </div>
           </div>
 
-          <!-- 字幕板块卡片 -->
           <div class="media-section-card">
-            <div class="media-section-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="media-section-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <span>关联外挂字幕</span>
@@ -2280,9 +2361,9 @@
             </div>
           </div>
 
-          <!-- 手记与讲义板块卡片 -->
           <div class="media-section-card">
-            <div class="media-section-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="media-section-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
                 <line x1="16" y1="13" x2="8" y2="13" />
@@ -2303,25 +2384,31 @@
       <div class="drawer-sheet" onclick="event.stopPropagation()">
         <div class="drawer-handle"></div>
         <div style="font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 12px;">手记快捷管理</div>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="exportNotesToMarkdown(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="exportNotesToMarkdown(); toggleMobileNotesDrawer(false);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          <span>导出手记 (.md)</span></button>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <span>导出手记 (.md)</span>
+        </button>
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; margin-bottom: 6px;" onclick="document.getElementById('importNotesInput').click(); toggleMobileNotesDrawer(false);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          <span>导入本地手记</span></button>
-        <button class="btn btn-secondary" style="width: 100%; height: 36px; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <span>导入本地手记</span>
+        </button>
+        <button class="btn btn-secondary" style="width: 100%; height: 36px; color: #ef4444;" onclick="clearAllNotes(); toggleMobileNotesDrawer(false);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             <line x1="10" y1="11" x2="10" y2="17" />
             <line x1="14" y1="11" x2="14" y2="17" />
           </svg>
-          <span>清空手记</span></button>
+          <span>清空手记</span>
+        </button>
       </div>
     </div>
 
@@ -2329,7 +2416,6 @@
       <div class="drawer-sheet" onclick="event.stopPropagation()">
         <div class="drawer-handle"></div>
         <div id="mobileDrawerTitle" style="font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
-          <!-- 微矢量播放列表图标，彻底消灭彩色电视 Emoji -->
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <line x1="8" y1="6" x2="21" y2="6" />
             <line x1="8" y1="12" x2="21" y2="12" />
@@ -2347,16 +2433,15 @@
     <!-- ================= 核心驱动与全量算法引擎 ================= -->
     <script>
       const video = document.getElementById('videoPlayer');
-      // ================= 核心防御：点击/拖动进度条后瞬间释放焦点，白框当场蒸发 =================
       ['focus', 'click', 'mouseup', 'pointerup', 'touchend'].forEach(evtName => {
         video.addEventListener(evtName, () => {
-          // 强制剥夺视频及内部所有控件的焦点
           video.blur();
           if (document.activeElement && document.activeElement !== document.body) {
             document.activeElement.blur();
           }
         });
       });
+
       const videoTip = document.getElementById('videoTip');
       const videoZone = document.getElementById('videoZone');
       const notesZone = document.getElementById('notesZone');
@@ -2397,7 +2482,6 @@
       const mediaInfoModal = document.getElementById('mediaInfoModal');
       const shortcutsModalTitle = document.getElementById('shortcutsModalTitle');
       const shortcutsViewMain = document.getElementById('shortcutsViewMain');
-      const shortcutsViewPerf = document.getElementById('shortcutsViewPerf');
 
       let playlist = [];
       let currentPlaylistIndex = 0;
@@ -2426,22 +2510,20 @@
 
       let subtitleData = [];
       let currentActiveId = -1;
-      let currentActiveNoteId = -1; // 👈 加上这行，专门用来追踪当前高亮的手记 ID
+      let currentActiveNoteId = -1;
       let currentLang = 'bi';
       let activeLoop = null;
       let tempInPointSec = null;
       let myNotes = [];
       let osdTimeout = null;
 
-      let isImmersiveMode = false;     // 是否处于 Ctrl+F 满屏沉浸
-      let isDrawerOpen = false;        // 沉浸时，浮层抽屉是否滑出
-      let savedNormalStageWidth = null;// 沉浸前记忆的分屏宽度
-      // 区分 PC 横屏与手机竖屏的独立贴合状态（互不干扰，完全尊重用户设定）
+      let isImmersiveMode = false;
+      let isDrawerOpen = false;
+      let savedNormalStageWidth = null;
       let desktopIsFitted = false;
       let mobileIsFitted = false;
-      let desktopCustomWidth = null; // 记忆横屏下用户手动拖拽的宽度
-      let mobileCustomHeight = null; // 记忆竖屏下用户手动拖拽的高度
-      let preFitStageWidth = null;     // 按 F 贴合前记忆的原始分屏宽度
+      let desktopCustomWidth = null;
+      let mobileCustomHeight = null;
 
       const sortLabels = {
         'original': '拖入原始顺序',
@@ -2459,12 +2541,10 @@
         document.getElementById('startLabel').textContent = (type === 'interval') ? '入点 (A):' : '标记点:';
       }
 
-      // B-5: 灵光智能微矢量 OSD 渲染引擎 (彻底消灭 Emoji，转换为高阶白色微矢量)
       function showOSD(rawText, duration = 1200) {
         let iconSvg = '';
         let cleanText = rawText;
 
-        // 智能识别并注入对应的灵光微矢量图标
         if (rawText.includes('▶') || rawText.includes('播放')) {
           iconSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
           cleanText = cleanText.replace(/▶\s*/g, '');
@@ -2519,37 +2599,19 @@
         }
 
         videoOSD.innerHTML = `
-    <span style="display: inline-flex; align-items: center; gap: 6px; line-height: 1;">
-      <span style="display: flex; align-items: center; justify-content: center; flex-shrink: 0; transform: translateY(-0.5px);">${iconSvg}</span>
-      <span style="line-height: 1; display: inline-block;">${cleanText.trim()}</span>
-    </span>
-  `;
+          <span style="display: inline-flex; align-items: center; gap: 6px; line-height: 1;">
+            <span style="display: flex; align-items: center; justify-content: center; flex-shrink: 0; transform: translateY(-0.5px);">${iconSvg}</span>
+            <span style="line-height: 1; display: inline-block;">${cleanText.trim()}</span>
+          </span>
+        `;
 
         videoOSD.classList.add('show');
         clearTimeout(osdTimeout);
         osdTimeout = setTimeout(() => videoOSD.classList.remove('show'), duration);
       }
 
-      function openShortcutsModal() { togglePerfGuideView(false); shortcutsModal.style.display = 'flex'; }
+      function openShortcutsModal() { shortcutsModal.style.display = 'flex'; }
       function closeShortcutsModal() { shortcutsModal.style.display = 'none'; }
-      function togglePerfGuideView(showPerf) {
-        shortcutsViewMain.style.display = showPerf ? 'none' : 'block';
-        shortcutsViewPerf.style.display = showPerf ? 'flex' : 'none';
-        const titleSpan = document.getElementById('shortcutsModalTitleText');
-        if (titleSpan) {
-          titleSpan.textContent = showPerf ? '浏览器硬件加速设置指引' : '快捷键指南';
-        }
-      }
-
-      function copyFlagUrl(url, btn) {
-        navigator.clipboard.writeText(url).then(() => {
-          const old = btn.textContent;
-          btn.textContent = '已复制';
-          setTimeout(() => btn.textContent = old, 1200);
-          showOSD('📋 路径已复制，请在地址栏粘贴回车');
-        });
-      }
-
       function openMediaInfoModal() { updateMediaInfoModalData(); mediaInfoModal.style.display = 'flex'; }
       function closeMediaInfoModal() { mediaInfoModal.style.display = 'none'; }
       function toggleMobileNotesDrawer(show) { document.getElementById('mobileNotesDrawer').style.display = show ? 'flex' : 'none'; }
@@ -2637,8 +2699,6 @@
         if (!video.src) return;
         touchFitBtn.classList.add('visible');
         clearTimeout(touchFitTimer);
-
-        // 播放中 1.5 秒后平滑消失
         if (!video.paused) {
           touchFitTimer = setTimeout(() => {
             touchFitBtn.classList.remove('visible');
@@ -2653,7 +2713,6 @@
         }
       }
 
-      // 绑定鼠标与触摸唤醒/消失
       ['mousemove', 'touchstart', 'click'].forEach(evt => {
         videoWrapper.addEventListener(evt, () => showTouchFitBtn(), { passive: true });
       });
@@ -2676,6 +2735,7 @@
         document.body.style.cursor = window.innerWidth <= 768 ? 'row-resize' : 'col-resize';
         document.body.style.userSelect = 'none';
       }
+
       function handleResizeMove(clientX, clientY) {
         if (!isResizing) return;
         const rect = mainContainer.getBoundingClientRect();
@@ -2687,17 +2747,18 @@
           h = Math.min(Math.max(h, 180), rect.height - 180);
           leftPanel.style.height = h + 'px';
           mobileCustomHeight = h + 'px';
-          mobileIsFitted = false; // 用户手动拖拽，退出贴合态
+          mobileIsFitted = false;
         } else {
           leftPanel.style.height = '';
           leftPanel.style.aspectRatio = '';
           let w = clientX - rect.left;
-          w = Math.min(Math.max(w, 260), rect.width - 280);
+          w = Math.min(Math.max(w, 240), rect.width - 260);
           leftPanel.style.width = w + 'px';
           desktopCustomWidth = w + 'px';
-          desktopIsFitted = false; // 用户手动拖拽，退出贴合态
+          desktopIsFitted = false;
         }
       }
+
       function stopResize() {
         if (isResizing) {
           isResizing = false;
@@ -2715,7 +2776,6 @@
       document.addEventListener('touchend', stopResize);
       resizer.addEventListener('dblclick', fitVideoRatio);
 
-      // 📱 手机端专用：自动纯几何贴合去黑边辅助函数
       function applyMobileFit() {
         if (!video.src || !video.videoWidth || !video.videoHeight) return;
         const ratio = video.videoWidth / video.videoHeight;
@@ -2730,7 +2790,6 @@
         }
       }
 
-      // 1. 视频元数据就绪监听
       video.addEventListener('loadedmetadata', () => {
         if (window.innerWidth <= 768) {
           applyMobileFit();
@@ -2738,31 +2797,27 @@
           if (desktopIsFitted) {
             const ratio = video.videoWidth / video.videoHeight;
             let targetW = Math.round(mainContainer.clientHeight * ratio);
-            targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
+            targetW = Math.min(Math.max(targetW, 240), mainContainer.clientWidth - 260);
             leftPanel.style.width = targetW + 'px';
           }
         }
         updateSubtitlePosition();
       });
 
-      // 2. 跨端窗口 Resize 监听（横竖屏切换中枢）
       let lastIsMobileView = window.innerWidth <= 768;
       window.addEventListener('resize', () => {
         const currentIsMobile = window.innerWidth <= 768;
         if (currentIsMobile !== lastIsMobileView) {
           lastIsMobileView = currentIsMobile;
-
           if (currentIsMobile) {
-            // 切入竖屏：当前视频立即去黑边
             applyMobileFit();
           } else {
-            // 切回横屏：清空手机尺寸限制，严格还原横屏原有设定
             leftPanel.style.height = '';
             leftPanel.style.aspectRatio = '';
             if (desktopIsFitted && video.src && video.videoWidth) {
               const ratio = video.videoWidth / video.videoHeight;
               let targetW = Math.round(mainContainer.clientHeight * ratio);
-              targetW = Math.min(Math.max(targetW, 260), mainContainer.clientWidth - 280);
+              targetW = Math.min(Math.max(targetW, 240), mainContainer.clientWidth - 260);
               leftPanel.style.width = targetW + 'px';
             } else {
               leftPanel.style.width = desktopCustomWidth || '';
@@ -2772,13 +2827,9 @@
         updateSubtitlePosition();
       });
 
-      // 监听中轴 resizer 拖动以及容器尺寸变化
-      const resizeObserver = new ResizeObserver(() => {
-        updateSubtitlePosition();
-      });
+      const resizeObserver = new ResizeObserver(() => updateSubtitlePosition());
       resizeObserver.observe(videoWrapper);
 
-      // 👇👇👇 【就在这里！直接紧跟在 fitVideoRatio 后面粘贴新增函数】 👇👇👇
       function toggleImmersiveMode() {
         if (!video.src) { showOSD('⚠️ 请先载入视频'); return; }
 
@@ -2795,9 +2846,7 @@
         } else {
           container.classList.remove('immersive', 'drawer-open');
           isDrawerOpen = false;
-          if (savedNormalStageWidth) {
-            leftPanel.style.width = savedNormalStageWidth;
-          }
+          if (savedNormalStageWidth) leftPanel.style.width = savedNormalStageWidth;
           showOSD('已退出沉浸，恢复分屏工作台');
         }
       }
@@ -2811,11 +2860,8 @@
         container.classList.toggle('drawer-open', isDrawerOpen);
         updateDrawerTabUI();
 
-        if (isDrawerOpen) {
-          showOSD('已展开悬浮工作台');
-        } else {
-          showOSD('已收起悬浮工作台');
-        }
+        if (isDrawerOpen) showOSD('已展开悬浮工作台');
+        else showOSD('已收起悬浮工作台');
       }
 
       function updateDrawerTabUI() {
@@ -2826,12 +2872,10 @@
           text.textContent = isDrawerOpen ? '收起' : '展开';
         }
       }
-      // 👆👆👆 【新增函数结束】 👆👆👆
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
+      function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
 
-      // ================= 核心算法：实时计算字幕相对于“真实视频画面底边”的定位 =================
-      // ================= 核心算法：底边定位 + 画面等比字号缩放 =================
       function updateSubtitlePosition() {
         if (!video.src || !video.videoWidth || !video.videoHeight) return;
 
@@ -2843,34 +2887,26 @@
         const videoRatio = video.videoWidth / video.videoHeight;
         const boxRatio = boxW / boxH;
 
-        // 1. 精准推导视频画面的【实际绘制尺寸】（剔除黑边后的纯画面尺寸）
         let renderedW = boxW;
         let renderedH = boxH;
         let bottomBlackBar = 0;
 
         if (boxRatio < videoRatio) {
-          // 上下有黑边（左右撑满）
           renderedH = boxW / videoRatio;
           bottomBlackBar = (boxH - renderedH) / 2;
         } else {
-          // 左右有黑边（上下撑满）
           renderedW = boxH * videoRatio;
         }
 
-        // 2. 底边悬浮距离（贴合视频下沿上浮，画面缩小时上浮边距也等比收敛）
-        const bottomPadding = Math.max(12, renderedH * 0.05); // 约占画面高度的 5%
+        const bottomPadding = Math.max(12, renderedH * 0.05);
         const totalBottom = bottomBlackBar + bottomPadding;
 
-        // 3. 动态字号计算（行业黄金比例：主字幕约占画面高 4.6%，副字幕约 3.2%）
-        // Math.min/Math.max 保证在极小窗口（如 150px 高）时不小于 8px，极大屏时不大于 26px 溢出
         const fontCn = Math.min(26, Math.max(8.5, Math.round(renderedH * 0.046)));
         const fontForeign = Math.min(18, Math.max(7.5, Math.round(renderedH * 0.032)));
 
-        // 4. 文字描边同步按字号比例收缩（防止小字号时被 2px 粗黑边完全吞没）
-        const strokeCn = (fontCn * 0.1).toFixed(1); // 约 10% 字号粗细
+        const strokeCn = (fontCn * 0.1).toFixed(1);
         const strokeForeign = (fontForeign * 0.09).toFixed(1);
 
-        // 5. 一次性批量注入 CSS 变量
         videoSubOverlay.style.setProperty('--sub-bottom', `${Math.round(totalBottom)}px`);
         videoSubOverlay.style.setProperty('--sub-font-cn', `${fontCn}px`);
         videoSubOverlay.style.setProperty('--sub-font-foreign', `${fontForeign}px`);
@@ -2878,7 +2914,6 @@
         videoSubOverlay.style.setProperty('--sub-stroke-foreign', `${strokeForeign}px`);
       }
 
-      // 升级后的 fitVideoRatio 函数（两态回弹版）...
       function fitVideoRatio() {
         if (!video.src || !video.videoWidth || !video.videoHeight) {
           showOSD('⚠️ 暂无视频就绪');
@@ -2891,18 +2926,15 @@
         const ratio = video.videoWidth / video.videoHeight;
 
         if (isMobile) {
-          // ================= 手机竖屏分支 =================
           leftPanel.classList.add('panel-smooth-transition');
           leftPanel.style.width = '';
 
           if (mobileIsFitted) {
-            // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认高度
             leftPanel.style.aspectRatio = '';
             leftPanel.style.height = mobileCustomHeight || '240px';
             mobileIsFitted = false;
             showOSD('↩️ 已恢复原视窗高度');
           } else {
-            // 当前是常规态 -> 记录原高度，执行去黑边贴合
             mobileCustomHeight = leftPanel.style.height || (leftPanel.offsetHeight + 'px');
             if (ratio >= 1.0) {
               leftPanel.style.height = 'auto';
@@ -2919,22 +2951,19 @@
           setTimeout(() => leftPanel.classList.remove('panel-smooth-transition'), 260);
 
         } else {
-          // ================= PC 大屏横屏分支 =================
           leftPanel.classList.add('panel-smooth-transition');
           leftPanel.style.height = '';
           leftPanel.style.aspectRatio = '';
 
           if (desktopIsFitted) {
-            // 当前是贴合态 -> 按 F 回弹恢复用户设定/默认分屏
             leftPanel.style.width = desktopCustomWidth || '52%';
             desktopIsFitted = false;
             showOSD('↩️ 已恢复原分屏窗口');
           } else {
-            // 当前是常规态 -> 记录原宽度，执行去黑边贴合
             desktopCustomWidth = leftPanel.style.width || (leftPanel.offsetWidth + 'px');
             let targetW = Math.round(mainContainer.clientHeight * ratio);
-            const maxAllowedW = mainContainer.clientWidth - 280;
-            targetW = Math.min(Math.max(targetW, 260), maxAllowedW);
+            const maxAllowedW = mainContainer.clientWidth - 260;
+            targetW = Math.min(Math.max(targetW, 240), maxAllowedW);
             leftPanel.style.width = targetW + 'px';
             desktopIsFitted = true;
             showOSD(`📐 已贴合画面 (${video.videoWidth}×${video.videoHeight}) · 再按 F 恢复`);
@@ -2943,54 +2972,28 @@
         }
       }
 
-      function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
-      function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
-      // 全局窗口级别拦截：防止手滑拖在边缘时浏览器跳转页面
       ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-        window.addEventListener(evt, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }, false);
+        window.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
       });
 
-      // 拖拽计数器（彻底消灭子元素导致的虚线框疯狂闪烁）
       let dragCounter = 0;
       [videoZone, notesZone].forEach(zone => {
-        zone.addEventListener('dragenter', (e) => {
-          e.preventDefault();
-          dragCounter++;
-          zone.classList.add('drag-over');
-        });
-
-        zone.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy'; // 明确告诉浏览器显示绿色加号/复制光标
-          zone.classList.add('drag-over');
-        });
-
+        zone.addEventListener('dragenter', (e) => { e.preventDefault(); dragCounter++; zone.classList.add('drag-over'); });
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; zone.classList.add('drag-over'); });
         zone.addEventListener('dragleave', (e) => {
-          e.preventDefault();
-          dragCounter--;
-          if (dragCounter <= 0) {
-            dragCounter = 0;
-            zone.classList.remove('drag-over');
-          }
+          e.preventDefault(); dragCounter--;
+          if (dragCounter <= 0) { dragCounter = 0; zone.classList.remove('drag-over'); }
         });
-
         zone.addEventListener('drop', async (e) => {
-          dragCounter = 0;
-          zone.classList.remove('drag-over');
-          await handleDropEvent(e);
+          dragCounter = 0; zone.classList.remove('drag-over'); await handleDropEvent(e);
         });
       });
 
-      // 核心拖拽响应中枢：双重降级保障
       async function handleDropEvent(e) {
         e.preventDefault();
         e.stopPropagation();
 
         let files = [];
-        // 优先使用高级 Entry API 读取（支持文件夹递归）
         if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
           const entries = [];
           for (let i = 0; i < e.dataTransfer.items.length; i++) {
@@ -3007,44 +3010,31 @@
             }
           }
         }
-        // 降级兜底：若 Entry API 读取为空（如直接拖单文件），采用标准 files 集合
         if (files.length === 0 && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
           files = Array.from(e.dataTransfer.files);
         }
 
-        if (files.length > 0) {
-          autoMatchAndLoad(files);
-        } else {
-          showOSD('⚠️ 未检测到有效文件');
-        }
+        if (files.length > 0) autoMatchAndLoad(files);
+        else showOSD('⚠️ 未检测到有效文件');
       }
 
-      // 健壮的文件夹与文件递归扫描器 (带容错降级)
       async function scanFilesFromEntry(entry) {
         let res = [];
         if (!entry) return res;
         if (entry.isFile) {
-          const file = await new Promise((resolve) => {
-            entry.file(resolve, () => resolve(null));
-          });
+          const file = await new Promise((resolve) => entry.file(resolve, () => resolve(null)));
           if (file) res.push(file);
         } else if (entry.isDirectory) {
           try {
             const reader = entry.createReader();
-            const entries = await new Promise((resolve) => {
-              reader.readEntries(resolve, () => resolve([]));
-            });
+            const entries = await new Promise((resolve) => reader.readEntries(resolve, () => resolve([])));
             for (let sub of entries) {
               res.push(...await scanFilesFromEntry(sub));
             }
-          } catch (e) {
-            console.warn('读取目录失败:', e);
-          }
+          } catch (e) { }
         }
         return res;
       }
-
-
 
       async function autoMatchAndLoad(files) {
         if (!files?.length) return;
@@ -3070,7 +3060,7 @@
             try {
               const text = await file.slice(0, 500).text();
               if (text.includes('type: ai_notes')) isAi = true;
-              else if (text.includes('type: user_notes') || text.includes('重点批注') || text.includes('片段循环') || text.includes('### [')) isUser = true;
+              else if (text.includes('type: user_notes') || text.includes('重点批注') || text.includes('### [')) isUser = true;
               else isAi = true;
             } catch (e) { isAi = true; }
           }
@@ -3146,7 +3136,7 @@
 
         playlistControls.style.display = 'flex';
         playlistStatus.style.display = 'inline-flex';
-        playlistStatus.querySelector('span:last-child').textContent = `${currentPlaylistIndex + 1}/${playlist.length} 集`;
+        playlistStatus.querySelector('.status-text').textContent = `${currentPlaylistIndex + 1}/${playlist.length} 集`;
 
         const cur = playlist[currentPlaylistIndex];
         if (cur) currentEpTitle.textContent = `${currentPlaylistIndex + 1}. ${cur.name}`;
@@ -3190,45 +3180,25 @@
         nextEpisodeBtn.disabled = (currentPlaylistIndex === playlist.length - 1);
       }
 
-      // A-4.3: 切集通知智能算法 (小屏幕极简克制，只报集数进度)
-      // A-4.3: 切集通知系统 (小屏极简报进度，PC大屏完整展示全名与资产清单)
       function notifyEpisodeLoaded(index) {
         const item = playlist[index];
         if (!item) return;
 
         const isMobile = window.innerWidth <= 768;
-
-        // 📱 1. 手机/小屏幕设备：严格极简，只报进度，绝不占地
         if (isMobile) {
-          if (playlist.length > 1) {
-            showOSD(`▶ 第 ${index + 1} / ${playlist.length} 集`, 1400);
-          } else {
-            showOSD(`▶ 视频已就绪`, 1400);
-          }
+          showOSD(playlist.length > 1 ? `▶ 第 ${index + 1} / ${playlist.length} 集` : `▶ 视频已就绪`, 1400);
           return;
         }
 
-        // 💻 2. PC / 大分辨率屏幕：100% 完整展示！不切断任何字符！
         const assets = [];
-        if (myNotes && myNotes.length > 0) {
-          assets.push(`${myNotes.length}条手记`);
-        }
-        if (subtitleData && subtitleData.length > 0) {
-          assets.push('字幕');
-        }
+        if (myNotes && myNotes.length > 0) assets.push(`${myNotes.length}条手记`);
+        if (subtitleData && subtitleData.length > 0) assets.push('字幕');
         const savedAi = localStorage.getItem('reader_ai_notes_' + currentVideoFileName);
         const aiRaw = document.getElementById('notesInput') ? document.getElementById('notesInput').value.trim() : '';
-        if (savedAi || aiRaw) {
-          assets.push('讲义');
-        }
+        if (savedAi || aiRaw) assets.push('讲义');
 
         let assetStr = assets.length > 0 ? (' | ' + assets.join('  ')) : '';
-
-        // 👈 核心恢复：完整输出完整文件名 item.name，彻底解除 11 个字符的限制！
-        let title = playlist.length > 1
-          ? `第 ${index + 1}/${playlist.length} 集 · ${item.name}`
-          : item.name;
-
+        let title = playlist.length > 1 ? `第 ${index + 1}/${playlist.length} 集 · ${item.name}` : item.name;
         showOSD(`▶ ${title}${assetStr}`, 2200);
       }
 
@@ -3430,18 +3400,12 @@
         return hasHan(single) ? { primary: single, secondary: '' } : { primary: single, secondary: single };
       }
 
-      // ================= 播放监听：画面字幕更新 + 右侧字幕逐句数学级精准居中跟随 =================
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
 
-        /* 👇👇👇 从这里开始粘贴：智能讲义高亮 👇👇👇 */
-        // 🌟 讲义时间节点实时侦测：支持所有相同时间点同时高亮
         const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
         if (aiTags.length > 0) {
-          // 1. 提取所有不重复的时间刻度并排序
           const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
-
-          // 2. 找出当前播放时间所处的有效秒数 targetSec
           let targetSec = null;
           for (let i = 0; i < uniqueSecs.length; i++) {
             const sec = uniqueSecs[i];
@@ -3452,7 +3416,6 @@
             }
           }
 
-          // 3. 将所有等于 targetSec 的胶囊全部点亮（大标题、小标题、列表项一起亮）
           let hasNewActive = false;
           let firstActiveTag = null;
           aiTags.forEach(tag => {
@@ -3468,14 +3431,11 @@
             }
           });
 
-          // 4. 当刚切入该时间段且在“智能讲义”界面时，平滑滚动至第一个对应标签
           if (hasNewActive && firstActiveTag && currentTab === 'notes') {
             firstActiveTag.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
         }
-        /* 👆👆👆 智能讲义高亮结束 👆👆👆 */
 
-        /* 👇👇👇 我的手记：单点与区间高亮 + 全设备（PC/移动端）数学绝对居中追踪 👇👇👇 */
         if (myNotes && myNotes.length > 0) {
           let matchedNote = null;
           for (let i = 0; i < myNotes.length; i++) {
@@ -3503,24 +3463,17 @@
             const isManualLooping = (activeLoop && activeLoop.id === note.id);
 
             if (isMatched || isManualLooping) {
-              if (note.type === 'interval') {
-                cardEl.classList.add('loop-active');
-              } else {
-                cardEl.classList.add('point-active');
-              }
+              if (note.type === 'interval') cardEl.classList.add('loop-active');
+              else cardEl.classList.add('point-active');
             } else {
               cardEl.classList.remove('point-active');
-              if (!isManualLooping) {
-                cardEl.classList.remove('loop-active');
-              }
+              if (!isManualLooping) cardEl.classList.remove('loop-active');
             }
           });
 
           const matchedId = matchedNote ? matchedNote.id : -1;
           if (currentActiveNoteId !== matchedId) {
             currentActiveNoteId = matchedId;
-
-            // 🌟 核心防抢占锁：只要正在编辑手记，绝不自动滚屏打扰！
             if (editingNoteId !== null) return;
 
             if (matchedNote && currentTab === 'mynotes') {
@@ -3529,33 +3482,24 @@
               if (activeCard && scrollBox) {
                 const cardRect = activeCard.getBoundingClientRect();
                 const boxRect = scrollBox.getBoundingClientRect();
-
-                // 🌟 动态探测上方操作栏高度：PC/手机自适应扣除
                 const topBar = scrollBox.querySelector('.action-subbar');
                 const topBarHeight = topBar ? topBar.offsetHeight : 45;
 
-                // 精准定位：只在下方容器内部计算中心点
                 const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
                 const cardCenterY = cardRect.top + (cardRect.height / 2);
                 const delta = cardCenterY - visibleCenterY;
 
-                scrollBox.scrollTo({
-                  top: scrollBox.scrollTop + delta,
-                  behavior: 'smooth'
-                });
+                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
               }
             }
           }
         }
-        /* 👆👆👆 手记居中追踪高亮结束 👆👆👆 */
 
-        // 1. 片段无限循环越界重绕逻辑
         if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
           video.currentTime = activeLoop.start;
           video.play();
         }
 
-        // 2. 无字幕时退出
         if (!subtitleData.length) {
           if (lastRenderedCueId !== -1) {
             videoSubOverlay.style.display = 'none';
@@ -3564,7 +3508,6 @@
           return;
         }
 
-        // 3. 查找当前播放时间轴对应的字幕句 (带索引缓存加速)
         let currentCue = null;
         if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
           const c = subtitleData[cachedSubIndex];
@@ -3582,9 +3525,7 @@
           }
         }
 
-        // 4. 命中当前台词句
         if (currentCue) {
-          // A. 更新视频画面中央的浮层字幕
           if (lastRenderedCueId !== currentCue.id) {
             lastRenderedCueId = currentCue.id;
             videoSubOverlay.style.display = 'block';
@@ -3604,45 +3545,31 @@
             }
           }
 
-          // B. 🌟 右侧列表逐句高亮 + 容器数学级绝对居中平滑滚动 (彻底杜绝失灵！)
-          if (video.playbackRate > 1.25 || isSpeedLongPressing) return; // 极速冲刺时节流防眼花
+          if (video.playbackRate > 1.25 || isSpeedLongPressing) return;
 
           if (currentActiveId !== currentCue.id) {
             currentActiveId = currentCue.id;
-
-            // 移除上一个台词高亮
             document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
 
-            // 点亮当前台词句
             const activeEl = document.getElementById('sub-' + currentCue.id);
-            if (activeEl) {// 🌟 核心绝杀：彻底排除上方视频高度干扰，扣除粘性栏遮挡，台词 100% 稳居视口正中心！
+            if (activeEl) {
               activeEl.classList.add('active');
               const scrollBox = document.getElementById('transcriptTab');
               if (scrollBox) {
                 const now = performance.now();
                 if (now - lastScrollTimestamp > 280) {
                   lastScrollTimestamp = now;
-
                   const activeRect = activeEl.getBoundingClientRect();
                   const boxRect = scrollBox.getBoundingClientRect();
-
-                  // 计算真实可见区域中心点 (避开顶部 40px 粘性操作条的遮挡)
-                  // 👈 核心微调：将对焦点向下沉 25px，彻底保证胶囊头、中文、外文 100% 毫无遮挡露在正中央！
                   const visibleCenterY = boxRect.top + 65 + (boxRect.height - 65) / 2;
                   const activeCenterY = activeRect.top + (activeRect.height / 2);
                   const delta = activeCenterY - visibleCenterY;
-
-                  // 平滑绝对修正
-                  scrollBox.scrollTo({
-                    top: scrollBox.scrollTop + delta,
-                    behavior: 'smooth'
-                  });
+                  scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
                 }
               }
             }
           }
         } else {
-          // 当前时间段没有台词，隐藏视频上的字幕条
           if (lastRenderedCueId !== -1) {
             videoSubOverlay.style.display = 'none';
             lastRenderedCueId = -1;
@@ -3666,18 +3593,13 @@
           const parts = str.split(':');
           let h = 0, m = 0, s = 0;
           if (parts.length === 3) {
-            h = parseFloat(parts[0]) || 0;
-            m = parseFloat(parts[1]) || 0;
-            s = parseFloat(parts[2]) || 0;
+            h = parseFloat(parts[0]) || 0; m = parseFloat(parts[1]) || 0; s = parseFloat(parts[2]) || 0;
             return h * 3600 + m * 60 + s;
           } else if (parts.length === 2) {
-            // 🌟 核心纠正：两段时码，第一段绝对是分钟(m)，第二段是秒(s)！小时为0！
-            m = parseFloat(parts[0]) || 0;
-            s = parseFloat(parts[1]) || 0;
+            m = parseFloat(parts[0]) || 0; s = parseFloat(parts[1]) || 0;
             return m * 60 + s;
           }
         }
-
         return parseSmartTimecode(str) || 0;
       }
 
@@ -3698,10 +3620,8 @@
         return isNaN(val) ? null : val;
       }
 
-      // 核心：严格对齐字幕格式，小于1小时显示 mm:ss，大于等于1小时显示 hh:mm:ss
       function formatSeconds(sec) {
         if (typeof sec === 'string') {
-          // 兼容纠正：如果被误存成 06:00:23 这种畸形时码，自动剔除中间多余的 00
           if (/^\d{2}:00:\d{2}$/.test(sec)) {
             const parts = sec.split(':');
             sec = parseFloat(parts[0]) * 60 + parseFloat(parts[2]);
@@ -3713,9 +3633,7 @@
         const h = Math.floor(sec / 3600);
         const m = Math.floor((sec % 3600) / 60);
         const s = Math.floor(sec % 60);
-        if (h > 0) {
-          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
+        if (h > 0) return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
       }
 
@@ -3734,7 +3652,6 @@
         }
       }
 
-      // D-2.1: 修复点 4：三态高亮切换逻辑
       function setLanguage(lang) {
         currentLang = lang;
         document.querySelectorAll('.lang-pill-btn').forEach(btn => btn.classList.remove('active'));
@@ -3744,11 +3661,7 @@
 
       function handleSubtitleShortcutCycle() {
         if (!subtitleData.length) { showOSD('当前视频无字幕'); return; }
-        if (currentTab !== 'transcript') {
-          switchTab('transcript');
-          showOSD(`切换至字幕`);
-          return;
-        }
+        if (currentTab !== 'transcript') { switchTab('transcript'); showOSD(`切换至字幕`); return; }
         const cycle = ['cn', 'bi', 'foreign'];
         const next = cycle[(cycle.indexOf(currentLang) + 1) % cycle.length];
         setLanguage(next);
@@ -3828,7 +3741,6 @@
         let hasDirtyDataHealed = false;
 
         myNotes.forEach(note => {
-          // 🌟 核心自愈：自动侦测并清洗被污染的历史数据 (把 06:00:23 瞬间还原为 06:23)
           if (note.timeStr && /^\d{1,2}:00:\d{2}/.test(note.timeStr)) {
             const p = note.timeStr.split(':');
             const m = parseInt(p[0], 10);
@@ -3854,7 +3766,6 @@
             ? (note.end ? `${formatSeconds(note.start)} ~ ${formatSeconds(note.end)}` : note.timeStr)
             : formatSeconds(note.start);
 
-          // 循环胶囊与单点胶囊统一加上小三角 ▶
           let badgeHtml = isLoop
             ? `<span class="pill-tag-loop ${isCurrentlyLooping ? 'looping' : ''}" onclick="startIntervalLoop(${note.start}, ${note.end}, ${note.id})">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
@@ -3880,24 +3791,19 @@
           container.appendChild(card);
         });
 
-        // 如果自动清洗了脏数据，立刻写回本地记忆库，彻底净化缓存
-        if (hasDirtyDataHealed) {
-          saveNotesToLocalStorage();
-        }
+        if (hasDirtyDataHealed) saveNotesToLocalStorage();
       }
 
       function openAddNoteBox() {
         if (!video.src) { showOSD('⚠️ 请先载入视频'); return; }
         switchTab('mynotes');
 
-        // 若之前有正在原地编辑的卡片，先恢复原样
         const addBox = document.getElementById('addNoteBox');
         const list = document.getElementById('myNotesList');
         if (editingNoteId) {
           const prevCard = document.getElementById('note-card-' + editingNoteId);
           if (prevCard) prevCard.style.display = '';
         }
-        // 归位到手记列表的最顶端
         list.parentNode.insertBefore(addBox, list);
 
         editingNoteId = null;
@@ -3929,7 +3835,6 @@
         else document.getElementById('noteEndTimeInput').value = timeStr;
       }
 
-      // 🌟 原地编辑终极版：零多余空白 + 下沿严格贴合手记框底边 + 防切底
       function editNote(id) {
         const note = myNotes.find(n => n.id === id);
         if (!note) return;
@@ -3938,15 +3843,12 @@
         const scrollBox = document.getElementById('mynotesTab');
         const currentCard = document.getElementById('note-card-' + id);
 
-        // 如果之前有其他卡片在编辑，先恢复原样
         if (editingNoteId && editingNoteId !== id) {
           const prevCard = document.getElementById('note-card-' + editingNoteId);
           if (prevCard) prevCard.style.display = '';
         }
 
         editingNoteId = id;
-
-        // 填充当前手记数据
         setNoteTypeMode(note.type);
         document.getElementById('noteStartTimeInput').value = formatSeconds(note.start);
         document.getElementById('noteEndTimeInput').value = note.end ? formatSeconds(note.end) : formatSeconds(note.start + 10);
@@ -3960,14 +3862,12 @@
           quoteEl.style.display = 'none';
         }
 
-        // 原地展开编辑框，隐藏原卡片（完全不加任何多余 padding，保持 0 留白）
         if (currentCard) {
           addBox.style.display = 'block';
           currentCard.parentNode.insertBefore(addBox, currentCard);
           currentCard.style.display = 'none';
         }
 
-        // 🌟 核心对齐计算：让编辑框底边精准贴在框架下沿
         if (scrollBox && addBox) {
           setTimeout(() => {
             const boxRect = addBox.getBoundingClientRect();
@@ -3977,25 +3877,13 @@
 
             const visibleTop = containerRect.top + topBarHeight;
             const visibleBottom = containerRect.bottom;
-
             let targetScrollTop = scrollBox.scrollTop;
 
-            // 情况 1：如果是最后一条，或者编辑框底部超出了框架底部
-            if (boxRect.bottom > visibleBottom) {
-              // 精确向下滚到位，使得编辑框下沿刚好严丝合缝压在框架下沿
-              targetScrollTop += (boxRect.bottom - visibleBottom) + 4;
-            }
-            // 情况 2：如果是靠上的卡片，顶部被操作栏遮挡，向上微调
-            else if (boxRect.top < visibleTop) {
-              targetScrollTop -= (visibleTop - boxRect.top) + 8;
-            }
+            if (boxRect.bottom > visibleBottom) targetScrollTop += (boxRect.bottom - visibleBottom) + 4;
+            else if (boxRect.top < visibleTop) targetScrollTop -= (visibleTop - boxRect.top) + 8;
 
-            scrollBox.scrollTo({
-              top: Math.max(0, targetScrollTop),
-              behavior: 'smooth'
-            });
+            scrollBox.scrollTo({ top: Math.max(0, targetScrollTop), behavior: 'smooth' });
 
-            // 🌟 破案关键：加上 { preventScroll: true }，聚焦输入框时绝对禁止浏览器原生滚屏横插一杠！
             const textarea = document.getElementById('noteContentInput');
             if (textarea) {
               textarea.focus({ preventScroll: true });
@@ -4008,15 +3896,13 @@
       function closeAddNoteBox() {
         const addBox = document.getElementById('addNoteBox');
         const list = document.getElementById('myNotesList');
-
         if (editingNoteId) {
           const prevCard = document.getElementById('note-card-' + editingNoteId);
           if (prevCard) prevCard.style.display = '';
         }
-
         addBox.style.display = 'none';
         list.parentNode.insertBefore(addBox, list);
-        editingNoteId = null; // 解除防抢占锁
+        editingNoteId = null;
       }
 
       function saveNewNote() {
@@ -4061,18 +3947,13 @@
 
         myNotes.sort((a, b) => a.start - b.start);
         saveNotesToLocalStorage();
-
-        // 关键顺序：先关掉编辑框归位，再重新渲染卡片
         closeAddNoteBox();
         renderMyNotesList();
         renderPlaylistUI();
 
-        // 🌟 原地停靠：保存后将视口稳稳留在刚修改完的卡片上
         setTimeout(() => {
           const targetCard = document.getElementById('note-card-' + savedNoteId);
-          if (targetCard) {
-            targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
+          if (targetCard) targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 30);
       }
 
@@ -4107,7 +3988,6 @@
       }
 
       function exportNotesToMarkdown() {
-        // 浏览器版：走浏览器下载，不要改成 Tauri 导出
         if (!myNotes.length) { showOSD('⚠️ 暂无手记可导出'); return; }
         let title = currentVideoFileName ? currentVideoFileName.replace(/\.[^/.]+$/, "") : "视频学习手记";
         let md = `<!-- type: user_notes -->\n# ${title} - 学习手记\n\n> 导出日期：${new Date().toLocaleString()} | 共 ${myNotes.length} 条打点手记\n\n---\n\n`;
@@ -4180,8 +4060,8 @@
       }
 
       function updateAIPromptButtonLabel() {
-        if (subtitleData.length > 0) copyAIPromptBtn.querySelector('span').textContent = '复制提示词以生成“学习讲义”';
-        else if (myNotes.length > 0) copyAIPromptBtn.querySelector('span').textContent = `复制“手记整理讲义”提示词 (${myNotes.length}条)`;
+        if (subtitleData.length > 0) copyAIPromptBtn.querySelector('.btn-text-full').textContent = '学习讲义提示词';
+        else if (myNotes.length > 0) copyAIPromptBtn.querySelector('.btn-text-full').textContent = `手记讲义 (${myNotes.length})`;
       }
 
       function copyAIPrompt() {
@@ -4192,60 +4072,28 @@
             "课程文件：" + (currentVideoFileName || "视频实操教学"),
             "",
             "整理规则：",
-            "1. 忠实客观记录（零主观发挥与说教）：严禁脑补推论，完整保留原声中的动作指令与因果机理，剔除废话口语。",
-            "2. 双语事实校验与术语规范：以外语原声为第一事实依据纠正机翻译错。",
-            "   - 常用术语参考：SSC原则、RACK原则、绳艺、紧缚、责绳、两难、地面缚、吊缚、半吊、捕绳术、柱缚、一绳、起绳、走绳、收绳、绳路、张力、穆特结、八字扣、单柱缚、双柱缚、菱形缚、龟甲缚、折腿缚、高手小手缚、后手直臂缚、M字开脚缚、苏秦背剑、后手观音缚、十字缚等。",
-            "3. “前置认知抓手”与扁平清单排版：正文单层扁平清单 `- **客观动作抓手**：说明规范 [mm:ss]`。",
-            "4. 时间戳工程化对齐：各级标题（#、##、###）末尾附带单一章节时间戳，正文时间戳且仅能附带在整句落幅末尾 [mm:ss]。",
-            "5. 置于单一 Markdown 代码块输出。",
+            "1. 忠实客观记录：严禁脑补，完整保留动作指令与因果机理，剔除废话口语。",
+            "2. 术语规范：沿用标准技术专名与招式名。",
+            "3. 扁平清单排版：正文单层扁平清单 `- **动作抓手**：说明规范 [mm:ss]`。",
+            "4. 置于单一 Markdown 代码块输出。",
             "",
             "字幕数据：",
             condensed
           ].join('\n');
-          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【实操学习讲义】提示词'));
+          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【学习讲义】提示词'));
           return;
         }
         if (myNotes.length > 0) {
-          let nt = myNotes.map(n => {
-            const quotePart = n.quote ? `原声引用:"${n.quote}"` : '原声引用:(无)';
-            const rangePart = (n.end && n.end > n.start) ? `区间:${n.timeStr}` : `时间点:${n.timeStr}`;
-            return `[${n.timeStr}] ${rangePart} | ${quotePart} | 批注思考:${n.text || '(空)'}`;
-          }).join('\n');
+          let nt = myNotes.map(n => `[${n.timeStr}] 原声:"${n.quote || '无'}" | 批注:${n.text || '(空)'}`).join('\n');
           const p = [
-            "请将以下「带时间戳的学习者手记」整理成一份专业、清晰、便于回看与实操查阅的“标准化实操学习讲义”。",
+            "请将以下「带时间戳的学习者手记」整理成一份专业、清晰的“标准化实操学习讲义”。",
             "课程文件：" + (currentVideoFileName || "视频实操教学"),
-            "数据性质：这不是完整字幕，而是学习者在观看过程中主动打点留下的稀疏锚点。每条可能包含：时间戳、原声引用（截取的讲师原话）、批注思考（学习者当时记下的要点、疑问、动作要领或个人理解）。",
-            "",
-            "整理目标：",
-            "把这些打点手记扩写、归并、结构化为一份可独立阅读的讲义，使未对照视频也能抓住关键动作、因果机理与注意事项；同时保留时间戳，便于回到原片定位。",
-            "",
-            "整理规则：",
-            "1. 以手记为骨架，禁止凭空编造未出现的情节、步骤或结论。",
-            "   - 有「原声引用」时：引用是第一事实依据，讲义表述须与原话一致，可做书面化压缩，不得改义。",
-            "   - 「批注思考」是学习者当场抓取的要点：把它改写成客观、可执行的讲义条目，去掉口语碎词，保留动作、顺序、力度、风险与因果。",
-            "   - 批注若明显是个人感受、疑问或待验证猜想，用简短备注标出（如「学习者存疑」「待对照原片」），不要写成既定事实。",
-            "   - 相邻时间、同一招式或同一阶段的多条手记应归并到同一小节，不要一条手记硬拆成一章。",
-            "   - 允许根据手记之间的先后与内在逻辑补「小节标题」和极短的衔接句，但衔接句不得引入新手记中没有的技术内容。",
-            "2. 术语与专名规范：沿用原声引用与批注里的既有叫法；写法不统一时，优先采用更规范、更常用的术语，并在首次出现时用括号带上批注原文用词。",
-            "   - 常用术语参考：SSC原则、RACK原则、绳艺、紧缚、责绳、两难、地面缚、吊缚、半吊、捕绳术、柱缚、一绳、起绳、走绳、收绳、绳路、张力、穆特结、八字扣、单柱缚、双柱缚、菱形缚、龟甲缚、折腿缚、高手小手缚、后手直臂缚、M字开脚缚、苏秦背剑、后手观音缚、十字缚等。",
-            "3. 篇章结构（按需取用，没有的板块不要硬凑）：",
-            "   - 文首用 3～6 条要点概括本课从手记能确认的核心招式、流程与安全红线。",
-            "   - 按时间顺序划分阶段，使用 `#` / `##` / `###` 标题；标题写成「阶段/招式名」，不要写成「手记1」。",
-            "   - 每一关键动作写成扁平清单：`- **客观动作抓手**：说明规范、要点、因果或注意事项`。",
-            "   - 若手记含安全、沟通、检查、解开/收绳等内容，单独收成「安全与收尾」小节，不要埋没在流水账里。",
-            "   - 文末可列「手记中未展开、回看原片时建议核对」的缺口清单（仅限手记暗示但未写清的部分）。",
-            "4. 时间戳工程化对齐：",
-            "   - 各级标题（#、##、###）末尾附带该节起始时间戳，格式 `[mm:ss]` 或手记原样时间码。",
-            "   - 正文时间戳只能放在整句或整条清单的末尾，禁止插在句中。",
-            "   - 只使用手记里出现过的时间；不要发明新手记没有的时刻。一条手记若带来多条清单，可共用同一个时间戳。",
-            "   - 若手记带有区间（起点～终点），标题用起点，关键动作可用该区间代表时刻。",
-            "5. 文风：专业教材口吻，短句、可执行、零说教。不要输出「根据你的笔记」「AI整理如下」之类元话语，不要评价学习者记得好不好。",
-            "6. 置于单一 Markdown 代码块输出，便于直接粘贴渲染。不要在代码块外再写解释。",
+            "规则：保留手记时间戳，提炼客观动作机理，置于单一 Markdown 代码块输出。",
             "",
             "手记数据：",
             nt
           ].join('\n');
-          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【基于手记整理】提示词'));
+          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【手记整理】提示词'));
           return;
         }
         showOSD('暂无字幕或手记');
@@ -4257,44 +4105,29 @@
         const p = [
           "请将以下带有时间戳的双语视频字幕文本，整理重构成一篇系统、严谨的“专业技术参考长文/专题档案教材”。",
           "课程文件：" + (currentVideoFileName || "视频技术解析"),
-          "",
-          "整理规则：",
-          "1. 绝对忠实原意，完整保留讲师在原声中的因果推导与逻辑机理。",
-          "2. 沉浸教材段落叙述体例，严禁碎片化断句。",
-          "3. 时间戳仅允许标注在各级标题（#、##、###）末尾，正文内部严禁逐句插入时间戳！",
-          "4. 置于单一 Markdown 代码块输出。",
+          "规则：绝对忠实原意，段落叙述体例，时间戳置于标题末尾，置于单一 Markdown 代码块输出。",
           "",
           "字幕数据：",
           condensed
         ].join('\n');
-        navigator.clipboard.writeText(p).then(() => showOSD('已复制【纯净版专题档案】提示词'));
+        navigator.clipboard.writeText(p).then(() => showOSD('已复制【专题档案】提示词'));
       }
 
-      // ================= 智能讲义 Markdown 全功能转译引擎 =================
       function parseMarkdownToHtml(mdText) {
         if (!mdText) return '';
-
-        // 1. 剥离外层代码块包裹 (如 ```markdown ... ```)
         let text = mdText.replace(/^```(?:markdown)?\s*\n?|\n?```$/gi, '').trim();
 
-        // 2. 行内样式转译辅助函数
         function parseInline(str) {
           if (!str) return '';
-          // 粗体: **文本** 或 __文本__
           str = str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
           str = str.replace(/__(.+?)__/g, '<strong>$1</strong>');
-          // 行内代码: `code`
           str = str.replace(/`([^`]+)`/g, '<code>$1</code>');
-          // 斜体: *文本* (避免误伤已解析的 strong)
           str = str.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
-          // 时码标签转换: [mm:ss] / [hh:mm:ss]，以及区间 [mm:ss ~ mm:ss]（点击一律跳到起点）
           str = str.replace(
             /\[\s*(\d{1,2}:\d{2}(?::\d{2})?)(?:\s*[\-–—~～]+\s*(\d{1,2}:\d{2}(?::\d{2})?))?\s*\]/g,
             (m, startTs, endTs) => {
               const startSec = timeToSeconds(startTs.trim());
-              const label = endTs
-                ? `${startTs.trim()} ~ ${endTs.trim()}`
-                : startTs.trim();
+              const label = endTs ? `${startTs.trim()} ~ ${endTs.trim()}` : startTs.trim();
               return `<span class="pill-tag ai-note-tag" data-sec="${startSec}" onclick="jumpToPoint(${startSec})">▶ ${label}</span>`;
             }
           );
@@ -4303,9 +4136,7 @@
 
         const lines = text.split('\n');
         const output = [];
-        let inUl = false;
-        let inOl = false;
-        let inQuote = false;
+        let inUl = false, inOl = false, inQuote = false;
 
         function closeListsAndQuotes() {
           if (inUl) { output.push('</ul>'); inUl = false; }
@@ -4317,42 +4148,17 @@
           const rawLine = lines[i];
           const line = rawLine.trim();
 
-          // 空行：重置当前包裹块
-          if (!line) {
-            closeListsAndQuotes();
-            continue;
-          }
-
-          // 分割线 (--- 或 ***)
+          if (!line) { closeListsAndQuotes(); continue; }
           if (/^(?:---|\*\*\*|___)$/.test(line)) {
             closeListsAndQuotes();
             output.push('<hr style="border:none;border-top:1px solid var(--border-light);margin:12px 0;">');
             continue;
           }
+          if (line.startsWith('#### ')) { closeListsAndQuotes(); output.push(`<h4>${parseInline(line.slice(5))}</h4>`); continue; }
+          if (line.startsWith('### ')) { closeListsAndQuotes(); output.push(`<h3>${parseInline(line.slice(4))}</h3>`); continue; }
+          if (line.startsWith('## ')) { closeListsAndQuotes(); output.push(`<h2>${parseInline(line.slice(3))}</h2>`); continue; }
+          if (line.startsWith('# ')) { closeListsAndQuotes(); output.push(`<h1>${parseInline(line.slice(2))}</h1>`); continue; }
 
-          // 各级标题 (# ~ ####)
-          if (line.startsWith('#### ')) {
-            closeListsAndQuotes();
-            output.push(`<h4>${parseInline(line.slice(5))}</h4>`);
-            continue;
-          }
-          if (line.startsWith('### ')) {
-            closeListsAndQuotes();
-            output.push(`<h3>${parseInline(line.slice(4))}</h3>`);
-            continue;
-          }
-          if (line.startsWith('## ')) {
-            closeListsAndQuotes();
-            output.push(`<h2>${parseInline(line.slice(3))}</h2>`);
-            continue;
-          }
-          if (line.startsWith('# ')) {
-            closeListsAndQuotes();
-            output.push(`<h1>${parseInline(line.slice(2))}</h1>`);
-            continue;
-          }
-
-          // 引用块 (> ...)
           if (line.startsWith('> ')) {
             if (inUl || inOl) closeListsAndQuotes();
             if (!inQuote) {
@@ -4362,34 +4168,20 @@
             output.push(`<p style="margin:2px 0;">${parseInline(line.slice(2))}</p>`);
             continue;
           }
-
-          // 无序列表 (- ... 或 * ...)
           if (/^[-*•]\s+/.test(line)) {
             if (inOl) { output.push('</ol>'); inOl = false; }
             if (inQuote) { output.push('</blockquote>'); inQuote = false; }
-            if (!inUl) {
-              output.push('<ul style="padding-left:18px;margin:4px 0 6px;">');
-              inUl = true;
-            }
-            const itemText = line.replace(/^[-*•]\s+/, '');
-            output.push(`<li style="margin:3px 0;">${parseInline(itemText)}</li>`);
+            if (!inUl) { output.push('<ul style="padding-left:18px;margin:4px 0 6px;">'); inUl = true; }
+            output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^[-*•]\s+/, ''))}</li>`);
             continue;
           }
-
-          // 有序数字列表 (1. ... 2. ...)
           if (/^\d+\.\s+/.test(line)) {
             if (inUl) { output.push('</ul>'); inUl = false; }
             if (inQuote) { output.push('</blockquote>'); inQuote = false; }
-            if (!inOl) {
-              output.push('<ol style="padding-left:18px;margin:4px 0 6px;">');
-              inOl = true;
-            }
-            const itemText = line.replace(/^\d+\.\s+/, '');
-            output.push(`<li style="margin:3px 0;">${parseInline(itemText)}</li>`);
+            if (!inOl) { output.push('<ol style="padding-left:18px;margin:4px 0 6px;">'); inOl = true; }
+            output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^\d+\.\s+/, ''))}</li>`);
             continue;
           }
-
-          // 常规段落文本
           closeListsAndQuotes();
           output.push(`<p style="margin:4px 0;line-height:1.6;">${parseInline(line)}</p>`);
         }
@@ -4439,7 +4231,6 @@
         e.target.value = '';
       }
 
-      // ================= 选项卡切换中枢 (带字幕即时精准对焦) =================
       function switchTab(tab) {
         currentTab = tab;
         document.querySelectorAll('.segmented-tab-item').forEach(b => b.classList.remove('active'));
@@ -4451,7 +4242,6 @@
           document.getElementById('tabBtnMynotes').classList.add('active');
           document.getElementById('mynotesTab').style.display = 'block';
 
-          // 🌟 切到手记瞬间，若当前有正在播放的手记，立即激光对焦居中（PC/手机全自适应）
           if (currentActiveNoteId !== -1) {
             setTimeout(() => {
               const activeCard = document.getElementById('note-card-' + currentActiveNoteId);
@@ -4459,12 +4249,8 @@
               if (activeCard && scrollBox) {
                 const cardRect = activeCard.getBoundingClientRect();
                 const boxRect = scrollBox.getBoundingClientRect();
-
-                // 动态获取操作栏高度（PC端约48px，手机端约42px，精准扣除）
                 const topBar = scrollBox.querySelector('.action-subbar');
                 const topBarHeight = topBar ? topBar.offsetHeight : 45;
-
-                // 严格只在下方手记区域内部计算中心点
                 const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
                 const delta = (cardRect.top + cardRect.height / 2) - visibleCenterY;
                 scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
@@ -4475,7 +4261,6 @@
           document.getElementById('tabBtnTranscript').classList.add('active');
           document.getElementById('transcriptTab').style.display = 'block';
 
-          // 🌟 核心对焦：切换到字幕选项卡瞬间，激光对焦当前台词到有效视野中心！
           setTimeout(() => {
             const curTime = video.currentTime;
             const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
@@ -4486,12 +4271,10 @@
               const scrollBox = document.getElementById('transcriptTab');
               if (activeEl && scrollBox) {
                 activeEl.classList.add('active');
-
                 const activeRect = activeEl.getBoundingClientRect();
                 const boxRect = scrollBox.getBoundingClientRect();
                 const visibleCenterY = boxRect.top + 40 + (boxRect.height - 40) / 2;
                 const delta = (activeRect.top + activeRect.height / 2) - visibleCenterY;
-
                 scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
               }
             }
@@ -4502,7 +4285,6 @@
         }
       }
 
-      // 键盘快捷键中枢
       document.addEventListener('keydown', (e) => {
         const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
@@ -4523,15 +4305,8 @@
           return;
         }
 
-        // ================= 【改动点 1：Ctrl+键监听区】 =================
         if (e.ctrlKey || e.metaKey) {
-          // 👈 1. 新增 Ctrl+F 监听，并删掉原来的 Ctrl+B
-          if (e.key === 'f' || e.key === 'F') {
-            e.preventDefault();
-            toggleImmersiveMode();
-            return;
-          }
-
+          if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleImmersiveMode(); return; }
           if (e.key === 'm' || e.key === 'M') { e.preventDefault(); openAddNoteBox(); return; }
           if (e.key === '\\') { e.preventDefault(); video.playbackRate = 1.0; showOSD('⚡ 1.00x 原速'); return; }
           if (e.key === '[' || e.code === 'BracketLeft') {
@@ -4570,17 +4345,9 @@
           }
         }
 
-        // ================= 【改动点 2：Esc 键退出抽屉/沉浸】 =================
         if (e.key === 'Escape') {
-          // 👈 2. 增强 Escape：如果有悬浮抽屉开着先关抽屉，沉浸模式则退出沉浸
-          if (isDrawerOpen) {
-            toggleFloatingDrawer();
-            return;
-          }
-          if (isImmersiveMode) {
-            toggleImmersiveMode();
-            return;
-          }
+          if (isDrawerOpen) { toggleFloatingDrawer(); return; }
+          if (isImmersiveMode) { toggleImmersiveMode(); return; }
           closeAddNoteBox(); closeShortcutsModal(); closeMediaInfoModal(); closeSortMenu(); closeEpMenu();
           toggleMobileNotesDrawer(false); stopLoop();
           return;
@@ -4588,29 +4355,21 @@
 
         if (!isTyping) {
           if (e.key === 'f' || e.key === 'F') { e.preventDefault(); fitVideoRatio(); return; }
-
           if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
           if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
           if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
-          // 严密判定：不仅判断 e.code，还判断 e.key，并彻底阻止页面滚屏
           if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
             e.preventDefault();
             e.stopPropagation();
             if (video.src) {
-              if (video.paused) {
-                video.play();
-                showOSD('▶ 播放');
-              } else {
-                video.pause();
-                showOSD('⏸ 暂停');
-              }
+              if (video.paused) { video.play(); showOSD('▶ 播放'); }
+              else { video.pause(); showOSD('⏸ 暂停'); }
             }
             return;
           }
           if (e.key === 'ArrowLeft') {
             e.preventDefault();
             if (video.src) {
-              // 单按 1 秒，Ctrl+按 15 秒，Shift+按 30 秒
               let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
               video.currentTime = Math.max(0, video.currentTime - s);
               showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
@@ -4620,7 +4379,6 @@
           if (e.key === 'ArrowRight') {
             e.preventDefault();
             if (video.src) {
-              // 单按 1 秒，Ctrl+按 15 秒，Shift+按 30 秒
               let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
               video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
               showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
@@ -4639,7 +4397,6 @@
           }
         }
       });
-
 
       document.addEventListener('keyup', (e) => {
         if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
@@ -4666,58 +4423,35 @@
         }
       });
 
-      // ================= 全局沉浸模式智能收起交互中枢 =================
-
-      // 1. 点击屏幕其他位置（包括点击视频区）时，自动收起工作台
       document.addEventListener('pointerdown', (e) => {
-        // 仅在沉浸模式且抽屉处于展开状态时生效
         if (!isImmersiveMode || !isDrawerOpen) return;
-
         const notesPanel = document.getElementById('notesZone');
         const drawerTab = document.getElementById('immersiveTab');
-
-        // 如果点击的目标不在右侧抽屉面板内，且不在把手按钮内，则自动收起
         if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
           toggleFloatingDrawer();
         }
       }, true);
 
-
-      // 2. 鼠标离开工作台 3 秒后自动收起，移回则取消收起
       let autoHideTimer = null;
-      const AUTO_HIDE_DELAY = 3000; // 自动收起的延迟时间（毫秒），3000 即 3 秒，可根据需要微调
+      const AUTO_HIDE_DELAY = 3000;
 
       function startAutoHideTimer() {
         if (!isImmersiveMode || !isDrawerOpen) return;
         clearTimeout(autoHideTimer);
         autoHideTimer = setTimeout(() => {
-          if (isImmersiveMode && isDrawerOpen) {
-            toggleFloatingDrawer();
-          }
+          if (isImmersiveMode && isDrawerOpen) toggleFloatingDrawer();
         }, AUTO_HIDE_DELAY);
       }
+      function clearAutoHideTimer() { clearTimeout(autoHideTimer); }
 
-      function clearAutoHideTimer() {
-        clearTimeout(autoHideTimer);
-      }
-
-      // 监听右侧工作台面板和把手的鼠标移入与移出
       const notesZoneEl = document.getElementById('notesZone');
       const immersiveTabEl = document.getElementById('immersiveTab');
-
       [notesZoneEl, immersiveTabEl].forEach(el => {
         if (!el) return;
-        // 鼠标移出工作台或把手时开始 3 秒倒计时
-        el.addEventListener('mouseleave', () => {
-          startAutoHideTimer();
-        });
-        // 鼠标重新移入时清空倒计时，保持展开
-        el.addEventListener('mouseenter', () => {
-          clearAutoHideTimer();
-        });
+        el.addEventListener('mouseleave', () => startAutoHideTimer());
+        el.addEventListener('mouseenter', () => clearAutoHideTimer());
       });
 
-      // ================= 触屏专属：单指长按视频画面冲刺加速 =================
       let touchPressTimer = null;
       let isTouchSpeedUp = false;
       let touchStartX = 0;
@@ -4725,7 +4459,6 @@
 
       videoWrapper.addEventListener('touchstart', (e) => {
         if (!video.src || video.paused) return;
-        // 仅在单指触摸时触发长按加速
         if (e.touches.length === 1) {
           isTouchSpeedUp = false;
           touchStartX = e.touches[0].clientX;
@@ -4734,25 +4467,21 @@
 
           touchPressTimer = setTimeout(() => {
             isTouchSpeedUp = true;
-            const targetSprintRate = getSprintSpeed(); // 智能匹配 1.5x~2.5x
+            const targetSprintRate = getSprintSpeed();
             savedOriginalVolume = video.volume;
-            video.volume = Math.max(0.15, savedOriginalVolume * 0.7); // 防爆音
-            video.preservesPitch = true; // 保持原声不变调
+            video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+            video.preservesPitch = true;
             video.playbackRate = targetSprintRate;
-
             showOSD(`⚡ ${targetSprintRate.toFixed(2)}x 冲刺`);
-          }, 200); // 长按 200ms 触发
+          }, 200);
         }
       }, { passive: true });
 
-      // 手指滑动超过 10px 视为滚屏或手势，自动取消加速
       videoWrapper.addEventListener('touchmove', (e) => {
         if (!isTouchSpeedUp && e.touches.length === 1) {
           const moveX = Math.abs(e.touches[0].clientX - touchStartX);
           const moveY = Math.abs(e.touches[0].clientY - touchStartY);
-          if (moveX > 10 || moveY > 10) {
-            clearTimeout(touchPressTimer);
-          }
+          if (moveX > 10 || moveY > 10) clearTimeout(touchPressTimer);
         }
       }, { passive: true });
 
@@ -4766,7 +4495,6 @@
             video.playbackRate = 1.0;
             showOSD('⚡ 1.00x 原速');
 
-            // 松手后自动同步居中字幕行
             setTimeout(() => {
               const cur = video.currentTime;
               const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
@@ -4786,8 +4514,6 @@
 
       videoWrapper.addEventListener('touchend', endTouchSpeedUp);
       videoWrapper.addEventListener('touchcancel', endTouchSpeedUp);
-
-
     </script>
   </body>
 
