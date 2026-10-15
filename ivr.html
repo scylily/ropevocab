@@ -56,60 +56,6 @@
         overflow: hidden;
       }
 
-      /* ================= 全局智能气泡提示系统 (Smart Tooltip) ================= */
-      [data-tooltip] {
-        position: relative;
-      }
-
-      [data-tooltip]::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: calc(100% + 6px);
-        left: 50%;
-        transform: translateX(-50%) translateY(4px);
-        background: rgba(15, 23, 42, 0.92);
-        color: #ffffff;
-        font-size: 11px;
-        font-weight: 500;
-        line-height: 1.2;
-        padding: 4px 8px;
-        border-radius: var(--radius-sm);
-        white-space: nowrap;
-        pointer-events: none;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-        z-index: 1000;
-      }
-
-      [data-tooltip]:hover::after {
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(-50%) translateY(0);
-        transition-delay: 0.18s;
-      }
-
-      [data-tooltip-pos="left"]::after {
-        left: auto;
-        right: 0;
-        transform: translateY(4px);
-      }
-
-      [data-tooltip-pos="left"]:hover::after {
-        transform: translateY(0);
-      }
-
-      [data-tooltip-pos="bottom"]::after {
-        bottom: auto;
-        top: calc(100% + 6px);
-        transform: translateX(-50%) translateY(-4px);
-      }
-
-      [data-tooltip-pos="bottom"]:hover::after {
-        transform: translateX(-50%) translateY(0);
-      }
-
       /* ================= 2. 顶部系统工具栏 (无级流体 Header) ================= */
       header {
         height: 48px;
