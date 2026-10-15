@@ -258,6 +258,11 @@
         margin: 0 4px;
       }
 
+      /* ✅ 建议放在全局 CSS 的 .header-center 后面：全端通杀幽灵占位 */
+      .header-center:has(#playlistControls[style*="display: none"]) {
+        display: none !important;
+      }
+
       .playlist-bar {
         display: flex;
         align-items: center;
@@ -1756,13 +1761,10 @@
           display: none !important;
         }
 
+        /* 🌟 把快捷键和小圆点一并彻底隐藏，净化手机端 */
+        #btnShortcutsDesktop,
         .status-tags {
-          display: flex !important;
-          justify-content: flex-end !important;
-          /* 水平靠右 */
-          margin-left: auto !important;
-          /* 强制右推 */
-          padding-right: 2px !important;
+          display: none !important;
         }
       }
     </style>
