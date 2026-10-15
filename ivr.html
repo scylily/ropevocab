@@ -251,17 +251,25 @@
       }
 
       @container topHeader (max-width: 880px) {
-
-        .header-btn-file .btn-text-short,
-        .header-btn-folder .btn-text-short,
         #btnShortcutsDesktop .btn-text-full {
           display: none !important;
+          /* 快捷键保持小键盘纯图标 */
+        }
+
+        #btnShortcutsDesktop {
+          padding: 0 7px !important;
+        }
+
+        /* 🌟 核心：确保「文件」与「目录」文字始终常驻 */
+        .header-btn-file .btn-text-short,
+        .header-btn-folder .btn-text-short {
+          display: inline !important;
         }
 
         .header-btn-file,
-        .header-btn-folder,
-        #btnShortcutsDesktop {
-          padding: 0 7px !important;
+        .header-btn-folder {
+          padding: 0 8px !important;
+          /* 恢复适度内边距 */
         }
 
         #sortMenuBtn span {
@@ -283,7 +291,9 @@
 
       @container topHeader (max-width: 680px) {
         .brand-name {
-          display: none !important;
+          display: inline;
+          font-size: 12.5px;
+          /* 字体微调，保持精致 */
         }
 
         .brand {
@@ -1726,6 +1736,10 @@
           height: auto !important;
         }
 
+        #btnShortcutsDesktop {
+          display: none !important;
+        }
+
         /* 👈 核心优化：小屏幕上文件和目录按钮强制靠最右面对齐 */
         .header-action-cluster {
           margin-left: auto !important;
@@ -1794,6 +1808,15 @@
 
         .floating-drawer-tab {
           display: none !important;
+        }
+
+        .status-tags {
+          display: flex !important;
+          justify-content: flex-end !important;
+          /* 水平靠右 */
+          margin-left: auto !important;
+          /* 强制右推 */
+          padding-right: 2px !important;
         }
       }
     </style>
