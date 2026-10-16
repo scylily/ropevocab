@@ -50,7 +50,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Project 1: 状态码 200 保活成功" >> /tmp/report.log
+          echo "✅ Project 1(IBTI & ropevocab): 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 2 保活
@@ -84,7 +84,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Project 2: 状态码 200 保活成功" >> /tmp/report.log
+          echo "✅ Project 2(s4r): 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 3 保活 (Study 教学库)
@@ -118,7 +118,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Project 3 (Study教学库): 状态码 200 保活成功" >> /tmp/report.log
+          echo "✅ Project 3 (Study): 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
       # 原生无感防休眠（重置 GitHub 60 天定时任务倒计时）
