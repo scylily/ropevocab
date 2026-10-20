@@ -1,17 +1,12 @@
-
-
-
 const SUPABASE_URL = "https://supabase.v4rope.com";
 const SUPABASE_ANON_KEY = "sb_publishable_26_l2bawRKyTELKRlUO4XA_jhhMgAY7";
-
 
 const DRAFT_KEY = "ibti_quiz_draft_v1";
 const DRAFT_TTL = 7 * 24 * 60 * 60 * 1000;
 
 let currentQuiz = [];
 let userAnswers = [];
-window.cachedIntro = ""; 
-
+window.cachedIntro = "";
 
 function showLoading(text = "加载中...") {
   const overlay = document.getElementById("loading-overlay");
@@ -25,18 +20,22 @@ function hideLoading() {
   if (overlay) overlay.style.display = "none";
 }
 
-
 async function initQuiz() {
-  
   const rawDraft = localStorage.getItem(DRAFT_KEY);
   if (rawDraft) {
     try {
       const draft = JSON.parse(rawDraft);
-      
-      const hasAnswers = draft && draft.answersMap && Object.keys(draft.answersMap).length > 0;
 
-      
-      if (hasAnswers && draft.questions && draft.questions.length > 0 && draft.savedAt && (Date.now() - draft.savedAt <= DRAFT_TTL)) {
+      const hasAnswers =
+        draft && draft.answersMap && Object.keys(draft.answersMap).length > 0;
+
+      if (
+        hasAnswers &&
+        draft.questions &&
+        draft.questions.length > 0 &&
+        draft.savedAt &&
+        Date.now() - draft.savedAt <= DRAFT_TTL
+      ) {
         console.log("💡 检出包含答题记录的草稿，锁定加载上次抽取的 20 道题目");
         currentQuiz = draft.questions;
 
@@ -46,25 +45,24 @@ async function initQuiz() {
           if (modalBody) modalBody.innerHTML = marked.parse(draft.intro);
         }
 
-        renderQuiz(); 
+        renderQuiz();
         hideLoading();
-        return; 
+        return;
       }
     } catch (e) {
       console.warn("读取本地草稿题目异常，将重新向云端抽取", e);
     }
   }
 
-  
   showLoading("正在为您生成测试题目...");
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_quiz`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      }
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
     });
 
     if (!response.ok) throw new Error("获取题库失败");
@@ -80,7 +78,6 @@ async function initQuiz() {
     }
 
     renderQuiz();
-    
   } catch (error) {
     console.error(error);
     alert("题库加载失败，请检查网络后刷新重试！");
@@ -88,7 +85,6 @@ async function initQuiz() {
     hideLoading();
   }
 }
-
 
 function renderQuiz() {
   const container = document.getElementById("quiz-container");
@@ -101,7 +97,6 @@ function renderQuiz() {
     div.className = "q-item";
     div.id = "q-" + qIdx;
 
-    
     let optIdxs = [0, 1, 2, 3, 4].sort(() => Math.random() - 0.5);
 
     let optionsHtml = optIdxs
@@ -122,50 +117,47 @@ function renderQuiz() {
     container.appendChild(div);
   });
 
-  
   restoreDraft();
 }
 
-
 function selectOpt(el, qIdx, weightIdx) {
   const parent = el.parentElement;
-  parent.querySelectorAll(".option-label").forEach((child) => child.classList.remove("selected"));
+  parent
+    .querySelectorAll(".option-label")
+    .forEach((child) => child.classList.remove("selected"));
   el.classList.add("selected");
 
   userAnswers[qIdx] = {
     id: currentQuiz[qIdx].id,
     weight: weightIdx,
-    optText: currentQuiz[qIdx].options[weightIdx]
+    optText: currentQuiz[qIdx].options[weightIdx],
   };
 
-  
   saveDraft();
 }
-
-
-
 
 function saveDraft() {
   try {
     const answersMap = {};
     let count = 0;
-    userAnswers.forEach(ans => {
+    userAnswers.forEach((ans) => {
       if (ans && ans.id !== undefined && ans.weight !== undefined) {
         answersMap[ans.id] = ans.weight;
         count++;
       }
     });
 
-    
     if (count > 0 && currentQuiz && currentQuiz.length > 0) {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({
-        savedAt: Date.now(),
-        questions: currentQuiz, 
-        answersMap: answersMap,
-        intro: window.cachedIntro || ""
-      }));
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({
+          savedAt: Date.now(),
+          questions: currentQuiz,
+          answersMap: answersMap,
+          intro: window.cachedIntro || "",
+        }),
+      );
     } else if (count === 0) {
-      
       clearDraft();
     }
   } catch (e) {
@@ -173,13 +165,11 @@ function saveDraft() {
   }
 }
 
-
 function clearDraft() {
   try {
     localStorage.removeItem(DRAFT_KEY);
   } catch (e) {}
 }
-
 
 function restoreDraft() {
   try {
@@ -188,8 +178,7 @@ function restoreDraft() {
     const draft = JSON.parse(raw);
     if (!draft || !draft.answersMap) return;
 
-    
-    if (draft.savedAt && (Date.now() - draft.savedAt > DRAFT_TTL)) {
+    if (draft.savedAt && Date.now() - draft.savedAt > DRAFT_TTL) {
       console.log("草稿已超过 7 天，自动清除");
       clearDraft();
       return;
@@ -203,8 +192,9 @@ function restoreDraft() {
       if (savedWeight !== undefined) {
         const qElem = document.getElementById("q-" + qIdx);
         if (qElem) {
-          
-          const inputElem = qElem.querySelector(`input[value="${savedWeight}"]`);
+          const inputElem = qElem.querySelector(
+            `input[value="${savedWeight}"]`,
+          );
           if (inputElem) {
             const labelElem = inputElem.closest(".option-label");
             if (labelElem) {
@@ -214,7 +204,7 @@ function restoreDraft() {
               userAnswers[qIdx] = {
                 id: q.id,
                 weight: savedWeight,
-                optText: q.options[savedWeight]
+                optText: q.options[savedWeight],
               };
               restoredCount++;
             }
@@ -224,13 +214,14 @@ function restoreDraft() {
     });
 
     if (restoredCount > 0) {
-      console.log(`💡 已自动为您恢复上次未完成的 ${restoredCount} 道题的答案！`);
+      console.log(
+        `💡 已自动为您恢复上次未完成的 ${restoredCount} 道题的答案！`,
+      );
     }
   } catch (e) {
     console.warn("恢复草稿失败:", e);
   }
 }
-
 
 function resetQuizAndDraft() {
   if (confirm("确定要清空已选择的所有答案并重新测试吗？")) {
@@ -238,7 +229,6 @@ function resetQuizAndDraft() {
     location.reload();
   }
 }
-
 
 function showReview() {
   let unanswered = [];
@@ -256,7 +246,9 @@ function showReview() {
       target.style.transition = "background-color 0.5s";
       target.style.backgroundColor = "#fff1f0";
       target.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => { target.style.backgroundColor = ""; }, 2000);
+      setTimeout(() => {
+        target.style.backgroundColor = "";
+      }, 2000);
     }
     return;
   }
@@ -266,14 +258,14 @@ function showReview() {
   window.scrollTo(0, 0);
 
   const sideNameMap = {
-    'M': '寻求掌控',
-    'S': '听从安排',
-    'I': '主导引领',
-    'R': '愿意顺从',
-    'C': '讲道理',
-    'O': '看感觉',
-    'G': '需要安全感',
-    'D': '喜欢寻求刺激'
+    M: "寻求掌控",
+    S: "听从安排",
+    I: "主导引领",
+    R: "愿意顺从",
+    C: "讲道理",
+    O: "看感觉",
+    G: "需要安全感",
+    D: "喜欢寻求刺激",
   };
 
   const list = document.getElementById("review-list");
@@ -295,7 +287,7 @@ function showReview() {
         <div class="review-item">
           <div class="review-q">
             ${i + 1}. ${qData.question}
-            ${isCore ? '<span class="core-tag">核心动力</span>' : ''}
+            ${isCore ? '<span class="core-tag">核心动力</span>' : ""}
           </div>
           <div class="review-a">
             你的选择：${userAnswers[i].optText}
@@ -314,9 +306,9 @@ function backToQuiz() {
 
 async function generateReport() {
   showLoading("云端正在分析算分并生成报告...");
-  const payload = userAnswers.map(ans => ({
+  const payload = userAnswers.map((ans) => ({
     id: ans.id,
-    weight: ans.weight
+    weight: ans.weight,
   }));
 
   try {
@@ -324,17 +316,17 @@ async function generateReport() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
-      body: JSON.stringify({ p_answers: payload })
+      body: JSON.stringify({ p_answers: payload }),
     });
 
     if (!response.ok) throw new Error("算分服务响应失败");
 
     const result = await response.json();
     renderResultView(result);
-    clearDraft(); 
+    clearDraft();
   } catch (error) {
     console.error(error);
     alert("报告生成失败，请重试！");
@@ -394,8 +386,14 @@ function drawRadar(s) {
     type: "radar",
     data: {
       labels: [
-        "寻求掌控(M)", "主导引领(I)", "理智分析(C)", "喜欢寻求刺激(D)",
-        "听从安排(S)", "愿意顺从(R)", "身体感受(O)", "需要安全感(G)"
+        "寻求掌控(M)",
+        "主导引领(I)",
+        "理智分析(C)",
+        "喜欢寻求刺激(D)",
+        "听从安排(S)",
+        "愿意顺从(R)",
+        "身体感受(O)",
+        "需要安全感(G)",
       ],
       datasets: [
         {
@@ -405,9 +403,9 @@ function drawRadar(s) {
           borderColor: "rgba(197, 160, 89, 1)",
           borderWidth: 1,
           pointBackgroundColor: "#1a1a1a",
-          pointRadius: 3
-        }
-      ]
+          pointRadius: 3,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -424,12 +422,12 @@ function drawRadar(s) {
           pointLabels: {
             padding: 10,
             font: { size: 12, family: "PingFang SC" },
-            color: "#666"
-          }
-        }
+            color: "#666",
+          },
+        },
       },
-      plugins: { legend: { display: false }, tooltip: { enabled: true } }
-    }
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+    },
   });
 }
 
@@ -437,61 +435,118 @@ function downloadImage(id, name) {
   const element = document.getElementById(id);
   if (!element) return;
 
+
+  if (typeof html2canvas === "undefined") {
+    alert("长图生成组件正在加载中，请稍候再试或刷新页面！");
+    return;
+  }
+
+
   let processToast = document.getElementById("image-processing-toast");
   if (!processToast) {
     processToast = document.createElement("div");
     processToast.id = "image-processing-toast";
     processToast.innerHTML = `
-      <div style="background: rgba(0,0,0,0.8); color: white; padding: 15px 25px; border-radius: 8px; text-align: center; font-size: 0.95rem; z-index: 10001;">
+      <div style="background: rgba(0,0,0,0.85); color: white; padding: 16px 28px; border-radius: 8px; text-align: center; font-size: 0.95rem; z-index: 10001; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
         <span id="toast-text">正在生成长图，请稍候片刻...</span>
       </div>
     `;
     Object.assign(processToast.style, {
-      position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-      backgroundColor: "rgba(255,255,255,0.1)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: "10000"
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.15)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: "10000",
     });
     document.body.appendChild(processToast);
   } else {
     processToast.style.display = "flex";
   }
 
+
+  const elementHeight = element.scrollHeight || element.offsetHeight;
+  let dynamicScale = 1.5;
+  if (elementHeight > 3000) {
+    dynamicScale = 1;
+  }
+
   setTimeout(() => {
     html2canvas(element, {
-      scale: 2,
+      scale: dynamicScale,
       backgroundColor: "#ffffff",
       useCORS: true,
-      ignoreElements: (el) => el.id === "image-processing-toast" || el.id === "image-download-overlay" || el.classList.contains("btn-group"),
+      allowTaint: false,
+      logging: false,
+      foreignObjectRendering: false,
+      imageTimeout: 5000,
+      ignoreElements: (el) => {
+        if (!el) return false;
+        if (
+          el.id === "image-processing-toast" ||
+          el.id === "image-download-overlay"
+        )
+          return true;
+        if (
+          el.classList &&
+          typeof el.classList.contains === "function" &&
+          el.classList.contains("btn-group")
+        )
+          return true;
+        return false;
+      },
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.getElementById(id);
         if (clonedElement) {
           clonedElement.style.paddingLeft = "20px";
           clonedElement.style.paddingRight = "20px";
           clonedElement.style.boxSizing = "border-box";
-          const qrFooter = clonedElement.querySelector('.share-qr-footer');
-          if (qrFooter) qrFooter.style.display = 'block';
+          const qrFooter = clonedElement.querySelector(".share-qr-footer");
+          if (qrFooter) qrFooter.style.display = "block";
         }
-      }
-    }).then((canvas) => {
-      const imageData = canvas.toDataURL("image/png");
-      let overlay = document.getElementById("image-download-overlay");
-      if (!overlay) {
-        overlay = document.createElement("div");
-        overlay.id = "image-download-overlay";
-        overlay.innerHTML = `
-          <div class="overlay-content">
-            <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
-            <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
-            <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px;" />
-            <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #c5a059; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭预览</button>
-          </div>
-        `;
-        document.body.appendChild(overlay);
-      }
-      document.getElementById("generated-image").src = imageData;
-      processToast.style.display = "none";
-      overlay.style.display = "flex";
-    });
-  }, 1000);
+      },
+    })
+      .then((canvas) => {
+        try {
+          const imageData = canvas.toDataURL("image/png");
+          let overlay = document.getElementById("image-download-overlay");
+          if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.id = "image-download-overlay";
+            overlay.innerHTML = `
+            <div class="overlay-content">
+              <p style="margin: 0 0 5px; font-weight: bold; color: #333;">温馨提示：图片已生成</p>
+              <p style="margin: 0 0 15px; font-size: 0.95rem; color: #666;"><strong>请长按下方图片保存到相册</strong></p>
+              <img id="generated-image" src="" style="width: 100%; max-height: 60vh; object-fit: contain; border-radius: 4px;" />
+              <button onclick="document.getElementById('image-download-overlay').style.display='none'" style="margin-top: 15px; background: #c5a059; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer;">关闭预览</button>
+            </div>
+          `;
+            document.body.appendChild(overlay);
+          }
+          document.getElementById("generated-image").src = imageData;
+          processToast.style.display = "none";
+          overlay.style.display = "flex";
+        } catch (exportErr) {
+          console.error("图片数据导出失败:", exportErr);
+          processToast.style.display = "none";
+          alert(
+            "长图生成失败：当前设备内存不足，建议您直接使用手机自带的截屏功能。",
+          );
+        }
+      })
+      .catch((err) => {
+        
+        console.error("html2canvas 渲染异常:", err);
+        processToast.style.display = "none";
+        alert(
+          "长图生成遇到阻碍，建议您直接使用手机自带的【截长图】功能保存页面。",
+        );
+      });
+  }, 300);
 }
 
 function openModal(modalId) {
@@ -506,7 +561,9 @@ function toggleWeChatQR() {
   const qr = document.getElementById("wechat-qr-popup");
   if (qr) qr.classList.toggle("active");
 }
-function openIntroModal() { openModal("intro-modal"); }
+function openIntroModal() {
+  openModal("intro-modal");
+}
 function openContactModal() {
   openModal("contact-modal");
   loadContactData();
@@ -516,13 +573,16 @@ window.onload = initQuiz;
 
 async function loadContactData() {
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/site_contacts?is_active=eq.true&order=sort_order.asc`, {
-      method: "GET",
-      headers: {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/site_contacts?is_active=eq.true&order=sort_order.asc`,
+      {
+        method: "GET",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      },
+    );
 
     if (!response.ok) throw new Error("获取联系方式失败");
 
@@ -538,12 +598,12 @@ function renderContactModal(contacts) {
   if (!modalBody) return;
 
   let buttonsHtml = '<div class="social-buttons">';
-  let qrHtml = '';
+  let qrHtml = "";
 
-  contacts.forEach(item => {
-    const key = (item.platform_key || '').toLowerCase();
+  contacts.forEach((item) => {
+    const key = (item.platform_key || "").toLowerCase();
 
-    if (key.includes('wechat')) {
+    if (key.includes("wechat")) {
       buttonsHtml += `
         <div class="social-btn wechat" onclick="toggleWeChatQR()">
           <i class="${item.icon_class}"></i><span>${item.platform_name}</span>
@@ -554,7 +614,7 @@ function renderContactModal(contacts) {
         <div id="wechat-qr-popup" class="qr-popup">
           <img src="${item.url}" alt="${item.platform_name}" class="qr-code" />
           <p class="qr-tip">请使用微信扫描二维码加入群聊</p>
-          ${item.extra_text ? `<p class="qr-tip-small">或添加微信号: <code>${item.extra_text}</code></p>` : ''}
+          ${item.extra_text ? `<p class="qr-tip-small">或添加微信号: <code>${item.extra_text}</code></p>` : ""}
         </div>
       `;
     } else {
@@ -566,6 +626,6 @@ function renderContactModal(contacts) {
     }
   });
 
-  buttonsHtml += '</div>';
+  buttonsHtml += "</div>";
   modalBody.innerHTML = buttonsHtml + qrHtml;
 }
