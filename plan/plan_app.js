@@ -2,9 +2,7 @@
  * 绳缚专业教学与教案管理系统 - 前端交互核心 (纯正工作坊实战版 · 彻底杜绝AI胡编)
  */
 
-// 提示词版本锁：一旦版本更新，自动强制冲刷浏览器残留的旧缓存，防止恶性旧提示词绑架
-var PROMPT_VERSION = "2026_MASTER_REAL_V2";
-
+// 系统出厂提示词（已深度注入：针对学员短板纠偏 + 针对当前模特身体弱点的专属口令）
 var DEFAULT_PROMPTS = {
   p1:
     "【角色定义与绝对行话准则】\n" +
@@ -22,29 +20,31 @@ var DEFAULT_PROMPTS = {
     "1. 【课前 10 分钟：前置技能摸底与认知诊断】：\n" +
     "   - 必须设立讲师现场提问摸底口令；\n" +
     "   - 检查学员最基础平结是否会滑脱、手腕是否悬空、起手是用蛮力拔河还是用身体自重收绳；\n" +
+    "   - 【模特身体状态确认】：开工前针对本次模特的关节活动度、既往伤病、神经耐受进行触诊核对；\n" +
     "2. 【走线技术与结构拆解】：\n" +
     "   - 必须按照真实的走绳逻辑写明：定位圈 ➔ 锁扣建立 ➔ 导向引绳 ➔ 关键受力圈 ➔ 打闩(Kannuki)固定 ➔ 绳尾自锁；\n" +
     "   - 涉及绑法必须给出母卷标准三语（如：高手小手缚 TK / Box Tie / 高手小手縛り - Takatekote-shibari）；\n" +
     "   - 真实的对比矩阵（如：骨架自锁型 vs 肌肉顺应型走绳的绳圈咬合点差异）；\n" +
-    "3. 【现场实操带练口令流 (Verbal Cues)】：必须是讲师在工作坊大声喝止或纠正学员坏动作的真实口语；\n" +
-    "4. 【生理解剖与巡场必查清单】：标准 - [ ] checklist 格式；\n" +
-    "5. 【解绳程序与 Aftercare 退潮】：逆向拆除高张力辅助绳、关节被动放松、保暖补糖。",
+    "3. 【现场实操带练口令流 (Verbal Cues)】：必须是讲师在现场针对“学员发力短板”与“当前模特生理特点”大声喝止或纠错的真实口语；\n" +
+    "4. 【生理解剖与巡场必查清单】：标准 - [ ] checklist 格式，必须量身包含当前模特专属避坑项；\n" +
+    "5. 【解绳程序与 Aftercare 退潮】：逆向拆除高张力辅助绳、关节被动放松、保暖补糖，以及当前模特的退潮偏好。",
 
   p3:
     "【真实的工作坊带练话术 (Verbal Cues) 规范】\n" +
-    "带练口令必须纯正地道，例如：\n" +
-    "- 纠正蛮力：“手腕松开！别用二头肌跟模特拔河！退后半步，把你的身体重心沉下去，用你的体重把绳子带直，不是用手死拽！”\n" +
-    "- 呼吸连带：“别急着走下一圈。手掌贴住模特背部，等她呼气、两肩自然沉下去的那个瞬间，顺着那个空隙走绳！”\n" +
-    "- 检查自锁：“两只手完全放开绳子。看，绳圈滑开了没有？如果放手就松，说明你压根没锁住，重来！”\n" +
-    "- 神经避让：“手伸进去摸一下模特大臂外侧中下段，留不出两指余量立刻松解！那是桡神经，你想让她明天垂腕吗？”",
+    "带练口令必须纯正地道，且【必须结合当前模特的生理特点与当日状态】进行个性化现场喝止，例如：\n" +
+    "- 针对模特关节受限/超伸：“学员手停住！注意模特的肘关节天然超伸，大臂收绳时绝对不能锁死角度，留出半拳余量，你想把她韧带拉伤吗？！”\n" +
+    "- 针对模特特定神经敏感：“手摸一下模特桡神经三角区！这名模特的桡神经浅表敏感，你的下绳圈压得太低了，往上移两指，避开三角区！”\n" +
+    "- 针对学员蛮力习惯：“手腕松开！别用二头肌跟模特拔河！退后半步，把你的身体重心沉下去，用你的体重把绳子带直，不是用手死拽！”\n" +
+    "- 呼吸连带：“别急着走下一圈。手掌贴住模特背部，等她呼气、两肩自然沉下去的那个瞬间，顺着那个空隙走绳！”",
 
   p4:
     "【生理解剖与危机干预落地】\n" +
-    "必须精准引用母卷真实医学事实：\n" +
+    "必须精准引用母卷真实医学事实，并结合搭档模特特点：\n" +
     "1. 外周神经卡压三字经：【桡管虎口，腕管中指尖，肘管小指环】；\n" +
-    "2. 鉴别诊断：整肢发紫发冷是血液循环问题；特定皮节刺痛且解绳后不退是神经损伤；\n" +
-    "3. 出现垂腕（桡神经）、猿手（正中神经）、爪状手（尺神经）必须立刻卸绳微调；麻木超2小时建议手外科就诊（做 EMG/NCV 肌电图）；\n" +
-    "4. 晕厥黄金四步骤：立即水平放平 ➔ 解除束缚 ➔ 垫高下肢20~30度 ➔ 通气降温补糖（严禁立刻站立）。",
+    "2. 针对搭档模特身心档案中的【关节超伸/伤病史/神经循环弱点】，在教案第 Ⅳ、Ⅴ 节中列出针对该模特的专项巡场排查项；\n" +
+    "3. 鉴别诊断：整肢发紫发冷是血液循环问题；特定皮节刺痛且解绳后不退是神经损伤；\n" +
+    "4. 出现垂腕（桡神经）、猿手（正中神经）、爪状手（尺神经）必须立刻卸绳微调；麻木超2小时建议手外科就诊（做 EMG/NCV 肌电图）；\n" +
+    "5. 晕厥黄金四步骤：立即水平放平 ➔ 解除束缚 ➔ 垫高下肢20~30度 ➔ 通气降温补糖（严禁立刻站立）。",
 };
 
 // 全局状态管理
@@ -81,9 +81,9 @@ var aiTimerInterval = null;
 var aiSecondsElapsed = 0;
 var activePromptTab = 1;
 
-// 初始化生命周期 (带自动破旧缓存锁)
+// 初始化生命周期 (自动感知提示词修改并自适应，无需手动版本锁)
 window.addEventListener("DOMContentLoaded", async function () {
-  enforcePromptVersion();
+  autoSyncPrompts();
   initSupabaseClient();
   restoreLocalCache();
   refreshIndicators();
@@ -97,19 +97,33 @@ window.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
-// 自动检测并强制清理恶性旧提示词缓存
-function enforcePromptVersion() {
-  var localVer = localStorage.getItem("kb_prompt_version");
-  if (localVer !== PROMPT_VERSION) {
-    console.log(
-      "🔄 检测到系统提示词规范升级，自动清除旧缓存并同步工作坊标准规范...",
-    );
-    localStorage.setItem("kinbaku_prompt_p1", DEFAULT_PROMPTS.p1);
-    localStorage.setItem("kinbaku_prompt_p2", DEFAULT_PROMPTS.p2);
-    localStorage.setItem("kinbaku_prompt_p3", DEFAULT_PROMPTS.p3);
-    localStorage.setItem("kinbaku_prompt_p4", DEFAULT_PROMPTS.p4);
-    localStorage.setItem("kb_prompt_version", PROMPT_VERSION);
+// 【核心自适应机制】：自动生成内容指纹，只要代码里的 DEFAULT_PROMPTS 有修改，刷新瞬间自适应
+function autoSyncPrompts() {
+  var currentHash = getPromptHash();
+  var savedHash = localStorage.getItem("kb_prompt_auto_hash");
+
+  if (savedHash !== currentHash) {
+    for (var i = 1; i <= 4; i++) {
+      localStorage.removeItem("kinbaku_prompt_p" + i);
+    }
+    localStorage.removeItem("kb_prompt_version");
+    localStorage.setItem("kb_prompt_auto_hash", currentHash);
+    console.log("⚡ 检测到代码提示词有更新，已自动适应最新修改！");
   }
+}
+
+// 计算提示词内容哈希指纹（完全自动，无需人工维护版本号）
+function getPromptHash() {
+  var str =
+    DEFAULT_PROMPTS.p1 +
+    DEFAULT_PROMPTS.p2 +
+    DEFAULT_PROMPTS.p3 +
+    DEFAULT_PROMPTS.p4;
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0;
+  }
+  return hash.toString();
 }
 
 // 异步加载 knowledge.md 母卷全文
@@ -134,7 +148,6 @@ var DEFAULT_SB_URL = "https://owenzbyonahuzattostk.supabase.co";
 var DEFAULT_SB_KEY = "sb_publishable_LZ8WvFjXLwWVjHaQ8gYr2A_ZJ3yAvgd";
 
 function initSupabaseClient() {
-  // 优先取本地自定义配置，若无则使用系统内置专属默认端点
   var url = localStorage.getItem("kb_supabase_url") || DEFAULT_SB_URL;
   var key = localStorage.getItem("kb_supabase_anon") || DEFAULT_SB_KEY;
 
@@ -552,7 +565,6 @@ function selectStudentById(id) {
   renderStudentList();
 }
 
-// 【新增辅助函数】：精确到年/月/日 时:分 (例如：2026/10/23 15:30)
 function formatPlanDateTime(isoStr) {
   if (!isoStr) return "";
   var d = new Date(isoStr);
@@ -564,7 +576,6 @@ function formatPlanDateTime(isoStr) {
   return y + "/" + m + "/" + day + " " + hh + ":" + mm;
 }
 
-// 【更新】：增加时分展示、显示突破目标、增加删除教案操作
 async function loadStudentPlans(studentId) {
   var box = document.getElementById("planListContainer");
   box.innerHTML =
@@ -584,7 +595,6 @@ async function loadStudentPlans(studentId) {
     }
     box.innerHTML = data
       .map(function (p) {
-        // 1. 时间戳精确到时、分
         var dateStr = formatPlanDateTime(p.created_at);
         var modelName = p.models ? p.models.name : "通用生理防护";
         var goalsText = p.learning_goals
@@ -608,12 +618,10 @@ async function loadStudentPlans(studentId) {
           " | <strong>课时排期：</strong>" +
           (p.schedule || "常规课时") +
           "</div>" +
-          // 2. 显示当时设定的教学目标 (加载全部文案，不截断)
           '<div class="item-card-goals">' +
           "<strong>设定突破目标：</strong>" +
           goalsText +
           "</div>" +
-          // 3. 右下角操作区：增加【删除当前教案】，并阻断父级卡片点击事件 (stopPropagation)
           '<div class="item-card-actions" onclick="event.stopPropagation()">' +
           '<span class="action-link action-link-danger" onclick="deleteTeachingPlan(\'' +
           p.id +
@@ -636,7 +644,6 @@ async function loadStudentPlans(studentId) {
   }
 }
 
-// 【新增函数】：在云端彻底删除教案并刷新列表
 async function deleteTeachingPlan(planId, topicEncoded) {
   var topic = decodeURIComponent(topicEncoded || "此教案");
   if (
@@ -659,7 +666,6 @@ async function deleteTeachingPlan(planId, topicEncoded) {
   }
 }
 
-// 【更新】：载入历史教案时，把当时的突破目标也同步回填到输入框中
 async function loadHistoricalPlan(planId) {
   try {
     var { data, error } = await sbClient
@@ -848,7 +854,6 @@ async function submitModelForm() {
 }
 
 /* ================= 5. 一键归档当前教案至云端 ================= */
-/* ================= 5. 一键归档当前教案至云端 ================= */
 async function saveCurrentPlanToSupabase() {
   if (!sbClient || !currentUser) {
     alert("请先登录讲师账号后方可将教案存入云端！");
@@ -882,7 +887,6 @@ async function saveCurrentPlanToSupabase() {
     courseStore.schedule ||
     document.getElementById("inpSchedule").value.trim() ||
     "1对1私教";
-  // 【提取突破目标】：从缓存或界面输入框中读取
   var goals =
     courseStore.goals ||
     (document.getElementById("inpGoals")
@@ -897,7 +901,7 @@ async function saveCurrentPlanToSupabase() {
     model_id: modelPickerVal || null,
     topic: topic,
     schedule: schedule,
-    learning_goals: goals, // 【新增此字段】：保存本期设定的突破目标
+    learning_goals: goals,
     plan_content: currentLectureText,
     quick_notes: "",
   };
@@ -906,7 +910,6 @@ async function saveCurrentPlanToSupabase() {
     var { error } = await sbClient.from("teaching_plans").insert([planPayload]);
 
     if (error) {
-      // 容错降级：如果数据库未执行 SQL 添加 learning_goals 列，自动剔除重试，避免阻断保存
       if (error.message && error.message.indexOf("learning_goals") !== -1) {
         delete planPayload.learning_goals;
         var retry = await sbClient.from("teaching_plans").insert([planPayload]);
@@ -933,7 +936,6 @@ function closeDialog(id) {
 }
 
 function openUnifiedSettingsModal() {
-  // 当本地缓存为空时，自动回显你的专属默认配置，再也不用手动敲键盘输入
   document.getElementById("sbProjectUrlInput").value =
     localStorage.getItem("kb_supabase_url") || DEFAULT_SB_URL;
   document.getElementById("sbAnonKeyInput").value =
@@ -980,13 +982,13 @@ function switchPromptTab(tabIdx) {
 }
 
 function resetAllPromptTabs() {
-  if (confirm("确定要将全部提示词模块恢复为纯正工作坊出厂标准吗？")) {
+  if (confirm("确定要将全部提示词模块恢复为代码中的最新标准吗？")) {
     for (var i = 1; i <= 4; i++) {
       document.getElementById("sysPromptPart" + i).value =
         DEFAULT_PROMPTS["p" + i];
-      localStorage.setItem("kinbaku_prompt_p" + i, DEFAULT_PROMPTS["p" + i]);
+      localStorage.removeItem("kinbaku_prompt_p" + i);
     }
-    alert("已成功刷新为最新实战工作坊指令集！");
+    alert("已成功恢复为代码最新指令集！");
   }
 }
 
@@ -1105,7 +1107,6 @@ async function executeGeneration() {
     return;
   }
 
-  // 同步字段
   courseStore.topic = document.getElementById("inpTopic").value.trim();
   courseStore.schedule =
     document.getElementById("inpSchedule").value.trim() || "1对1私教 2.0小时";
@@ -1188,7 +1189,6 @@ async function requestCloudLLM(apiKey) {
   var modelName =
     localStorage.getItem("kinbaku_api_model") || "deepseek-ai/DeepSeek-V3";
 
-  // 1. 尝试动态加载知识库母卷全文
   var fullMasterDoc = await loadMasterKnowledge();
   var p1 = localStorage.getItem("kinbaku_prompt_p1") || DEFAULT_PROMPTS.p1;
   var p2 = localStorage.getItem("kinbaku_prompt_p2") || DEFAULT_PROMPTS.p2;
@@ -1205,7 +1205,6 @@ async function requestCloudLLM(apiKey) {
       fullMasterDoc;
   }
 
-  // 2. 组装受众上下文
   var audienceContext = currentStudent
     ? "【授课受众画像】：" +
       currentStudent.name +
@@ -1219,7 +1218,6 @@ async function requestCloudLLM(apiKey) {
       (currentStudent.learning_goals || "全面进阶")
     : "【授课受众画像】：具备常规走绳基础的学员，亟需纠正发力习惯、掌握身体重心带绳。";
 
-  // 3. 组装模特上下文
   var modelContext = currentModel
     ? "【本次搭档模特身心档案】：" +
       currentModel.name +
@@ -1246,11 +1244,11 @@ async function requestCloudLLM(apiKey) {
         ? "\n- ⚠️ 本日临时状态特别提示：" + modelStore.todayNotes
         : "");
 
-  // 4. 组装前置检查项
   var prereqContext = courseStore.prereq
     ? "【课前基础摸底与前置检查/注意事项】：\n" + courseStore.prereq
     : "【课前基础摸底与前置检查/注意事项】：课前检查学员基础双平结的紧实度与倒折自锁手感；摸底其对骨架支撑与身体重心带绳的认知。";
 
+  // 【核心注入】：强制 AI 必须根据搭档模特的身体特点生成个性化带练口令与安全检查
   var userPrompt =
     "【本次课程核心主题】：" +
     courseStore.topic +
@@ -1267,9 +1265,11 @@ async function requestCloudLLM(apiKey) {
     "\n\n" +
     prereqContext +
     "\n\n" +
-    "请严格遵循工作坊实操铁律与挂载的母卷全景知识库，输出一份言之有物、步骤地道、带练口令直截了当的专业教案 Markdown。";
+    "【核心强制要求】：\n" +
+    "1. 本教案严禁通用化套词！必须深入结合上方提供的【搭档模特身心档案】（包括模特的关节受限、超伸情况、神经敏感区、既往伤病史以及本日临时状态），在教案的【现场实操带练口令流 (Verbal Cues)】中，至少设计 1~2 处讲师点名针对该模特身体弱点对学员大声喝止或纠正动作的实操口语！\n" +
+    "2. 在【生理解剖与巡场必查清单】中，必须明确列出以该模特名字开头的专属避坑排查项（如避开特定受限关节、神经减压等）！\n" +
+    "请严格遵循工作坊实操铁律与挂载的母卷全景知识库，输出一份言之有物、步骤地道、真正针对该学员与该模特生理特点的专业教案 Markdown。";
 
-  // 🌟 核心杀手锏：将 temperature 强行压低至 0.2，彻底锁死 AI 发散胡编的开关！
   var res = await fetch(endpoint, {
     method: "POST",
     headers: {
@@ -1294,7 +1294,7 @@ async function requestCloudLLM(apiKey) {
   renderMarkdownToScreen(data.choices[0].message.content);
 }
 
-// 离线兜底降级教案 (同样彻底去除伪科学，符合工作坊老手水准)
+// 离线兜底降级教案
 function buildLocalKinbakuSyllabus() {
   var topic = courseStore.topic || "现代绳缚受力平衡与手感纠偏";
   var schedule = courseStore.schedule || "1对1私教 2.0小时";
@@ -1531,9 +1531,10 @@ function convertMarkdownToHtml(text) {
       outHtml.push("</ul>");
       inList = false;
     }
+    // 【排版优化】：配合新 CSS 的自适应有序列表
     if (/^\s*\d+\.\s+(.*$)/.test(line)) {
       outHtml.push(
-        '<p style="padding-left: 1.25rem;">' + escapeInline(line) + "</p>",
+        '<p class="md-ordered-line">' + escapeInline(line) + "</p>",
       );
       continue;
     }
