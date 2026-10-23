@@ -4,7 +4,7 @@ on:
   schedule:
     # 每周一、周四的中午 12:00 (UTC) 自动定时执行
     - cron: '0 12 * * 1,4'
-  workflow_dispatch: # 支持手动点按钮立即触发测试
+  workflow_dispatch: # 支持手动点击测试
 
 jobs:
   ping-db:
@@ -33,24 +33,34 @@ jobs:
             exit 1
           fi
           
-          echo "🚀 正在向 Project 1 发起保活查询..."
-          HTTP_STATUS=$(curl -sS -o response.json -w "%{http_code}" \
-            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+          echo "🚀 正在向 Project 1 发起数据库写事务保活..."
+          HTTP_STATUS=$(curl -sS -o /tmp/resp_1.json -w "%{http_code}" \
+            -X PATCH "$URL/rest/v1/_keepalive?id=eq.1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{"updated_at": "now()"}' 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 1 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
+            echo "❌ Project 1 网络解析/连接失败: $HTTP_STATUS" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 1 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
+            ERR_MSG=$(cat /tmp/resp_1.json 2>/dev/null || echo "无响应体")
+            echo "❌ Project 1 数据库写事务失败 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 1(IBTI & ropevocab): 状态码 200 保活成功" >> /tmp/report.log
+          # 提取 Supabase 数据库引擎回传的实际写入时间
+          DB_TIME=$(python3 -c "import json; data=json.load(open('/tmp/resp_1.json')); print(data[0]['updated_at'] if data else 'EMPTY')")
+          if [ "$DB_TIME" = "EMPTY" ]; then
+            echo "❌ Project 1 表中无 id=1 记录，未产生有效写入！" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          echo "✅ Project 1(IBTI): Postgres 事务写入成功 [DB确认存活时间: $DB_TIME]" | tee -a /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 2 保活
@@ -67,24 +77,33 @@ jobs:
             exit 1
           fi
           
-          echo "🚀 正在向 Project 2 发起保活查询..."
-          HTTP_STATUS=$(curl -sS -o response.json -w "%{http_code}" \
-            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+          echo "🚀 正在向 Project 2 发起数据库写事务保活..."
+          HTTP_STATUS=$(curl -sS -o /tmp/resp_2.json -w "%{http_code}" \
+            -X PATCH "$URL/rest/v1/_keepalive?id=eq.1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{"updated_at": "now()"}' 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 2 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
+            echo "❌ Project 2 网络解析/连接失败: $HTTP_STATUS" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 2 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
+            ERR_MSG=$(cat /tmp/resp_2.json 2>/dev/null || echo "无响应体")
+            echo "❌ Project 2 数据库写事务失败 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 2(s4r): 状态码 200 保活成功" >> /tmp/report.log
+          DB_TIME=$(python3 -c "import json; data=json.load(open('/tmp/resp_2.json')); print(data[0]['updated_at'] if data else 'EMPTY')")
+          if [ "$DB_TIME" = "EMPTY" ]; then
+            echo "❌ Project 2 表中无 id=1 记录，未产生有效写入！" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          echo "✅ Project 2(s4r): Postgres 事务写入成功 [DB确认存活时间: $DB_TIME]" | tee -a /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 3 保活 (Study 教学库)
@@ -101,24 +120,33 @@ jobs:
             exit 1
           fi
           
-          echo "🚀 正在向 Project 3 发起保活查询..."
-          HTTP_STATUS=$(curl -sS -o response.json -w "%{http_code}" \
-            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+          echo "🚀 正在向 Project 3 发起数据库写事务保活..."
+          HTTP_STATUS=$(curl -sS -o /tmp/resp_3.json -w "%{http_code}" \
+            -X PATCH "$URL/rest/v1/_keepalive?id=eq.1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{"updated_at": "now()"}' 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 3 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
+            echo "❌ Project 3 网络解析/连接失败: $HTTP_STATUS" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 3 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
+            ERR_MSG=$(cat /tmp/resp_3.json 2>/dev/null || echo "无响应体")
+            echo "❌ Project 3 数据库写事务失败 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          echo "✅ Project 3 (Study): 状态码 200 保活成功" >> /tmp/report.log
+          DB_TIME=$(python3 -c "import json; data=json.load(open('/tmp/resp_3.json')); print(data[0]['updated_at'] if data else 'EMPTY')")
+          if [ "$DB_TIME" = "EMPTY" ]; then
+            echo "❌ Project 3 表中无 id=1 记录，未产生有效写入！" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          echo "✅ Project 3(Study): Postgres 事务写入成功 [DB确认存活时间: $DB_TIME]" | tee -a /tmp/report.log
 
       # -----------------------------------------------------------
       # Project 4 保活 (plan 教案系统)
@@ -135,25 +163,33 @@ jobs:
             exit 1
           fi
           
-          echo "🚀 正在向 Project 4 发起保活查询..."
-          HTTP_STATUS=$(curl -sS -o response.json -w "%{http_code}" \
-            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+          echo "🚀 正在向 Project 4 发起数据库写事务保活..."
+          HTTP_STATUS=$(curl -sS -o /tmp/resp_4.json -w "%{http_code}" \
+            -X PATCH "$URL/rest/v1/_keepalive?id=eq.1" \
             -H "apikey: $KEY" \
-            -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
+            -H "Authorization: Bearer $KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d '{"updated_at": "now()"}' 2>&1) || CURL_EXIT=$?
           
           if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
-            echo "❌ Project 4 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
+            echo "❌ Project 4 网络解析/连接失败: $HTTP_STATUS" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
           if [ "$HTTP_STATUS" -ne 200 ]; then
-            ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
-            echo "❌ Project 4 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
+            ERR_MSG=$(cat /tmp/resp_4.json 2>/dev/null || echo "无响应体")
+            echo "❌ Project 4 数据库写事务失败 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
             exit 1
           fi
 
-          # 你可以把下方的 "(新项目名称)" 改成该项目的别名以便区分
-          echo "✅ Project 4 (plan): 状态码 200 保活成功" >> /tmp/report.log
+          DB_TIME=$(python3 -c "import json; data=json.load(open('/tmp/resp_4.json')); print(data[0]['updated_at'] if data else 'EMPTY')")
+          if [ "$DB_TIME" = "EMPTY" ]; then
+            echo "❌ Project 4 表中无 id=1 记录，未产生有效写入！" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          echo "✅ Project 4(plan): Postgres 事务写入成功 [DB确认存活时间: $DB_TIME]" | tee -a /tmp/report.log
 
       # -----------------------------------------------------------
       # 原生无感防休眠（重置 GitHub 60 天定时任务倒计时）
@@ -185,7 +221,7 @@ jobs:
           fi
 
       # -----------------------------------------------------------
-      # 📱 手机微信即时通知（无论成功还是失败都会发送）
+      # 📱 手机微信即时通知（附带 Supabase 数据库签名回执）
       # -----------------------------------------------------------
       - name: 推送手机微信通知
         if: always()
@@ -205,33 +241,31 @@ jobs:
           repo = os.environ.get("GITHUB_REPO")
           run_id = os.environ.get("GITHUB_RUN_ID")
 
-          # 检查是否有失败记录
           has_error = False
           if os.path.exists("/tmp/failures.log"):
               with open("/tmp/failures.log", "r", encoding="utf-8") as f:
                   if f.read().strip():
                       has_error = True
 
-          # 读取汇报详情
           details = ""
           if os.path.exists("/tmp/report.log"):
               with open("/tmp/report.log", "r", encoding="utf-8") as f:
                   details = f.read().strip()
 
           if has_error:
-              title = "❌ Supabase 保活告警：发现异常！"
+              title = "❌ Supabase 数据库写事务保活失败！"
           else:
-              title = "✅ Supabase 保活成功：所有项目正常"
+              title = "✅ Supabase 数据库写事务确认存活"
 
-          # 组装 HTML 格式的通知内容
-          lines_html = "".join([f"<li>{line}</li>" for line in details.split("\n") if line.strip()])
+          lines_html = "".join([f"<li style='margin-bottom:6px;'>{line}</li>" for line in details.split("\n") if line.strip()])
           content = f"""
           <h3>{title}</h3>
-          <p><b>仓库：</b>{repo}</p>
+          <p><b>执行仓库：</b>{repo}</p>
           <hr/>
-          <p><b>执行状态清单：</b></p>
+          <p><b>Supabase 引擎事务响应确认：</b></p>
           <ul>{lines_html}</ul>
           <hr/>
+          <p style="font-size:12px;color:#666;">注：每条记录后括号内的时间戳是由 Supabase 底层 Postgres 引擎在执行写入时生成并回传的绝对时间证据。</p>
           <p><a href="https://github.com/{repo}/actions/runs/{run_id}">👉 点击打开 GitHub Actions 运行记录</a></p>
           """
 
