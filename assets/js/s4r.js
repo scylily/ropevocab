@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://s4rstudy.v4rope.com";
-const SUPABASE_ANON_KEY = "sb_publishable_J_s2HOy7kY8mpmEohAYZkw_4gAiqJf2";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNwamptdXpyY3ZnYmFla2lxa3J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwNjA4NDMsImV4cCI6MjEwMDYzNjg0M30.rb24UDs5zCLKbgw3RYRfxhHwh48OP1LmjlrvYoErWQE";
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
