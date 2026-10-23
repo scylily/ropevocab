@@ -121,6 +121,41 @@ jobs:
           echo "✅ Project 3 (Study): 状态码 200 保活成功" >> /tmp/report.log
 
       # -----------------------------------------------------------
+      # Project 4 保活 (新组织的新项目)
+      # -----------------------------------------------------------
+      - name: Ping Project 4
+        continue-on-error: true
+        run: |
+          URL="${{ secrets.SUPABASE_URL_4 }}"
+          KEY="${{ secrets.SUPABASE_ANON_KEY_4 }}"
+          URL="${URL%/}"
+          
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "❌ Project 4: SUPABASE_URL_4 或 KEY 未配置！" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+          
+          echo "🚀 正在向 Project 4 发起保活查询..."
+          HTTP_STATUS=$(curl -sS -o response.json -w "%{http_code}" \
+            -X GET "$URL/rest/v1/_keepalive?select=id&limit=1" \
+            -H "apikey: $KEY" \
+            -H "Authorization: Bearer $KEY" 2>&1) || CURL_EXIT=$?
+          
+          if [ -n "$CURL_EXIT" ] && [ "$CURL_EXIT" -ne 0 ]; then
+            echo "❌ Project 4 网络解析/连接失败 (curl exit: $CURL_EXIT, 错误: $HTTP_STATUS)" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            ERR_MSG=$(cat response.json 2>/dev/null || echo "无响应体")
+            echo "❌ Project 4 状态码异常 [$HTTP_STATUS] - $ERR_MSG" | tee -a /tmp/report.log >> /tmp/failures.log
+            exit 1
+          fi
+
+          # 你可以把下方的 "(新项目名称)" 改成该项目的别名以便区分
+          echo "✅ Project 4 (新项目): 状态码 200 保活成功" >> /tmp/report.log
+
+      # -----------------------------------------------------------
       # 原生无感防休眠（重置 GitHub 60 天定时任务倒计时）
       # -----------------------------------------------------------
       - name: 检出仓库代码
