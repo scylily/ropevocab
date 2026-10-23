@@ -84,6 +84,7 @@ var activePromptTab = 1;
 // 初始化生命周期 (自动感知提示词修改并自适应，无需手动版本锁)
 window.addEventListener("DOMContentLoaded", async function () {
   autoSyncPrompts();
+  initMarkdownEngine();
   initSupabaseClient();
   restoreLocalCache();
   refreshIndicators();
@@ -96,6 +97,25 @@ window.addEventListener("DOMContentLoaded", async function () {
     updateThemeSvg(true);
   }
 });
+
+// 初始化 Marked 解析引擎与 KaTeX 公式集成
+function initMarkdownEngine() {
+  if (window.marked && window.markedKatex) {
+    marked.use(
+      markedKatex({
+        throwOnError: false,
+        nonStandard: true,
+      })
+    );
+  }
+  if (window.marked) {
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+      pedantic: false,
+    });
+  }
+}
 
 // 【核心自适应机制】：自动生成内容指纹，只要代码里的 DEFAULT_PROMPTS 有修改，刷新瞬间自适应
 function autoSyncPrompts() {
@@ -143,7 +163,6 @@ async function loadMasterKnowledge() {
 }
 
 /* ================= 1. Supabase 初始化与登录鉴权 ================= */
-// 【专属默认配置】：写入后换任何设备都无需重新输入
 var DEFAULT_SB_URL = "https://owenzbyonahuzattostk.supabase.co";
 var DEFAULT_SB_KEY = "sb_publishable_LZ8WvFjXLwWVjHaQ8gYr2A_ZJ3yAvgd";
 
@@ -219,7 +238,7 @@ async function executeLecturerLogin() {
     openUnifiedSettingsModal();
     return;
   }
-  var email = document.getElementById("inpAuthEmail").value.trim();
+  var email = document.getElementById("inpAuthAuthEmail") ? document.getElementById("inpAuthAuthEmail").value.trim() : document.getElementById("inpAuthEmail").value.trim();
   var password = document.getElementById("inpAuthPassword").value.trim();
 
   if (!email || !password) return alert("请完整输入邮箱和密码");
@@ -315,7 +334,7 @@ function onAudienceSelectChanged() {
   if (!sId) {
     currentStudent = null;
     var label = document.getElementById("labelCurrentStudent");
-    if (label) label.innerText = "受众档案库";
+    if (label) label.innerText = "学员档案库";
   } else {
     currentStudent = cachedStudents.find(function (x) {
       return x.id === sId;
@@ -344,7 +363,7 @@ function updateAudienceSummaryCard() {
       "</span>";
   } else {
     card.innerHTML =
-      '<span style="color: var(--muted);">💡 请在上方选择或新建受众。AI 将调取该画像的发力习惯与短板，输出针对性带练口令。</span>';
+      '<span style="color: var(--muted);">💡 请在上方选择或新建学员。AI 将调取该画像的发力习惯与短板，输出针对性带练口令。</span>';
   }
 }
 
@@ -449,7 +468,7 @@ function clearPrepData() {
 function openStudentHub() {
   if (!currentUser) {
     if (
-      confirm("受众档案库需要讲师登录以保障学员与模特隐私。\n是否立即登录？")
+      confirm("学员档案库需要讲师登录以保障学员与模特隐私。\n是否立即登录？")
     ) {
       openAuthModal();
     }
@@ -500,7 +519,7 @@ function renderStudentList() {
   var box = document.getElementById("studentListContainer");
   if (!cachedStudents.length) {
     box.innerHTML =
-      '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">暂无受众档案，点击右上角【+ 录入新受众画像】创建</div>';
+      '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">暂无学员档案，点击右上角【+ 录入新学员画像】创建</div>';
     return;
   }
   box.innerHTML = cachedStudents
@@ -517,7 +536,7 @@ function renderStudentList() {
         s.name +
         "</span>" +
         '<span class="item-card-badge">' +
-        (s.level_stage || "受众画像") +
+        (s.level_stage || "学员画像") +
         "</span>" +
         "</div>" +
         '<div class="item-card-desc"><strong>发力习惯/短板：</strong>' +
@@ -529,7 +548,7 @@ function renderStudentList() {
         "')\">编辑画像</span>" +
         '<span class="action-link" onclick="selectStudentById(\'' +
         s.id +
-        "')\">查看该受众教案史 ➔</span>" +
+        "')\">查看该学员教案史 ➔</span>" +
         "</div>" +
         "</div>"
       );
@@ -551,10 +570,10 @@ function selectStudentById(id) {
 
   var sumBox = document.getElementById("selectedStudentSummary");
   sumBox.innerHTML =
-    "<strong>当前聚焦受众：" +
+    "<strong>当前聚焦学员：" +
     s.name +
     "</strong> (" +
-    (s.level_stage || "受众画像") +
+    (s.level_stage || "学员画像") +
     ")<br>" +
     '<span style="color: var(--muted);">短板细节：' +
     (s.habits_bottlenecks || "无") +
@@ -590,7 +609,7 @@ async function loadStudentPlans(studentId) {
     if (error) throw error;
     if (!data || !data.length) {
       box.innerHTML =
-        '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">该受众尚无教案记录，点击右上角【+ 制定新教案】开始备课</div>';
+        '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">该学员尚无教案记录，点击右上角【+ 制定新教案】开始备课</div>';
       return;
     }
     box.innerHTML = data
@@ -729,7 +748,7 @@ function renderModelList() {
 }
 
 function startNewPlanForCurrentStudent() {
-  if (!currentStudent) return alert("请先选择一位受众");
+  if (!currentStudent) return alert("请先选择一位学员");
   document.getElementById("inpTopic").value = "";
   document.getElementById("inpGoals").value = "";
   document.getElementById("inpPrereq").value = "";
@@ -742,7 +761,7 @@ function openStudentFormModal(studentId) {
   var title = document.getElementById("lblStudentFormTitle");
   var idInp = document.getElementById("editStudentId");
   if (studentId) {
-    title.innerText = "修改受众画像档案";
+    title.innerText = "修改学员画像档案";
     var s = cachedStudents.find(function (x) {
       return x.id === studentId;
     });
@@ -754,7 +773,7 @@ function openStudentFormModal(studentId) {
     document.getElementById("formStudentGoals").value = s.learning_goals || "";
     document.getElementById("formStudentContact").value = s.contact_notes || "";
   } else {
-    title.innerText = "录入受众画像档案";
+    title.innerText = "录入学员画像档案";
     idInp.value = "";
     document.getElementById("formStudentName").value = "";
     document.getElementById("formStudentLevel").value = "";
@@ -788,7 +807,7 @@ async function submitStudentForm() {
     }
     closeDialog("dialogStudentForm");
     await refreshSupabaseData();
-    alert("受众档案保存成功！");
+    alert("学员档案保存成功！");
   } catch (e) {
     alert("保存失败: " + e.message);
   }
@@ -865,7 +884,7 @@ async function saveCurrentPlanToSupabase() {
   }
   if (!currentStudent) {
     var pick = prompt(
-      "请指定本篇教案所属的受众名称 (或在【受众档案库】中选定)：",
+      "请指定本篇教案所属的学员名称 (或在【学员档案库】中选定)：",
     );
     if (!pick) return;
     var found = cachedStudents.find(function (s) {
@@ -874,7 +893,7 @@ async function saveCurrentPlanToSupabase() {
     if (found) {
       currentStudent = found;
     } else {
-      alert("未找到名为【" + pick + "】的受众，请先在档案库中建档。");
+      alert("未找到名为【" + pick + "】的学员，请先在档案库中建档。");
       return;
     }
   }
@@ -921,7 +940,7 @@ async function saveCurrentPlanToSupabase() {
       }
       throw error;
     }
-    alert("教案已成功归档到受众【" + currentStudent.name + "】的云端档案库！");
+    alert("教案已成功归档到学员【" + currentStudent.name + "】的云端档案库！");
   } catch (err) {
     alert("保存至云端失败: " + err.message);
   }
@@ -1248,7 +1267,6 @@ async function requestCloudLLM(apiKey) {
     ? "【课前基础摸底与前置检查/注意事项】：\n" + courseStore.prereq
     : "【课前基础摸底与前置检查/注意事项】：课前检查学员基础双平结的紧实度与倒折自锁手感；摸底其对骨架支撑与身体重心带绳的认知。";
 
-  // 【核心注入】：强制 AI 必须根据搭档模特的身体特点生成个性化带练口令与安全检查
   var userPrompt =
     "【本次课程核心主题】：" +
     courseStore.topic +
@@ -1298,7 +1316,7 @@ async function requestCloudLLM(apiKey) {
 function buildLocalKinbakuSyllabus() {
   var topic = courseStore.topic || "现代绳缚受力平衡与手感纠偏";
   var schedule = courseStore.schedule || "1对1私教 2.0小时";
-  var audName = currentStudent ? currentStudent.name : "标准受众画像";
+  var audName = currentStudent ? currentStudent.name : "标准学员画像";
   var prereq =
     courseStore.prereq ||
     "课前检查双平结打结扎实度，摸底其对后手缚受力的理解。";
@@ -1309,7 +1327,7 @@ function buildLocalKinbakuSyllabus() {
     "\n\n" +
     "> ⏱️ **教学形态**：" +
     schedule +
-    " | **受众画像**：" +
+    " | **学员画像**：" +
     audName +
     " | **制定日期**：" +
     new Date().toLocaleDateString("zh-CN") +
@@ -1317,12 +1335,12 @@ function buildLocalKinbakuSyllabus() {
     "---\n\n" +
     "## Ⅰ. 课前 10 分钟：前置技能摸底与认知诊断\n" +
     "> 🗣️ **讲师现场提问与摸底口令**：\n" +
-    "> “在正式走绳之前，先打一个标准平结我看看。注意看你的手腕——收紧绳圈时是靠手臂的死力往后拽，还是用身体重心的后坐力自然带紧？”\n" +
+    "> “在正式走绳之前，先打一个标准平结我看看。注意看你的手腕——收紧绳圈时是靠手臂的死力往后拽，还是用身体重心的后坐力自然带紧？”\n\n" +
     "- **准入自查点**：" +
     prereq +
     "\n" +
     "- **认知纠偏**：若学员动作显露僵硬或手臂代偿，暂缓推进高位结构，先进行 5 分钟重心收绳徒手脱敏。\n\n" +
-    "## Ⅱ. 核心走绳线路拆解与流派对比\n" +
+    "## Ⅱ. 核心走绳线路拆解与流派对比\n\n" +
     "| 对比维度 | 骨架自锁型走绳 | 肌肉顺应型走绳 |\n" +
     "| :--- | :--- | :--- |\n" +
     "| 张力建立 | 依赖绳圈自身摩擦咬合与倒折锁扣 | 顺应肌纤维走向渐进式收束 |\n" +
@@ -1343,7 +1361,7 @@ function buildLocalKinbakuSyllabus() {
   );
 }
 
-/* ================= 8. Markdown 渲染引擎 ================= */
+/* ================= 8. Markdown 渲染引擎 (工业级 Marked 驱动) ================= */
 function renderMarkdownToScreen(text) {
   var cleanText = text ? text.trim() : "";
   currentLectureText = cleanText;
@@ -1374,190 +1392,24 @@ function renderMarkdownToScreen(text) {
   if (placeholder) placeholder.style.display = "none";
   if (docBox) {
     docBox.style.display = isRawEditorOn ? "none" : "block";
-    docBox.innerHTML = convertMarkdownToHtml(cleanText);
+
+    // 采用 Marked 官方解析引擎解析 (无缝支持 KaTeX 与 GFM)
+    if (window.marked) {
+      docBox.innerHTML = marked.parse(cleanText);
+    } else {
+      docBox.innerHTML = cleanText;
+    }
+
+    // 增强任务复选框样式
+    docBox.querySelectorAll('input[type="checkbox"]').forEach(function (chk) {
+      if (chk.parentElement) {
+        chk.parentElement.classList.add("check-line-item");
+      }
+    });
   }
   document.getElementById("labelStatus").innerText =
     "教案已就绪 (" + new Date().toLocaleTimeString() + ")";
   if (statusBadge) statusBadge.className = "badge-dot active";
-}
-
-function convertMarkdownToHtml(text) {
-  if (!text) return "";
-  var clean = text
-    .trim()
-    .replace(/^```(?:markdown|md)?\s*[\r\n]+/, "")
-    .replace(/[\r\n]+```\s*$/, "");
-  var lines = clean.split(/\r?\n/);
-  var outHtml = [];
-  var inTable = false,
-    inList = false,
-    inBlockquote = false,
-    inCodeBlock = false;
-  var codeBuffer = [];
-
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i];
-    if (/^\s*```/.test(line)) {
-      if (inCodeBlock) {
-        outHtml.push(
-          '<pre class="code-box"><code>' +
-            codeBuffer.join("\n") +
-            "</code></pre>",
-        );
-        codeBuffer = [];
-        inCodeBlock = false;
-      } else {
-        if (inList) {
-          outHtml.push("</ul>");
-          inList = false;
-        }
-        if (inTable) {
-          outHtml.push("</tbody></table></div>");
-          inTable = false;
-        }
-        if (inBlockquote) {
-          outHtml.push("</blockquote>");
-          inBlockquote = false;
-        }
-        inCodeBlock = true;
-        codeBuffer = [];
-      }
-      continue;
-    }
-    if (inCodeBlock) {
-      codeBuffer.push(
-        line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"),
-      );
-      continue;
-    }
-    if (/^\s*---+\s*$/.test(line)) {
-      if (inList) {
-        outHtml.push("</ul>");
-        inList = false;
-      }
-      if (inTable) {
-        outHtml.push("</tbody></table></div>");
-        inTable = false;
-      }
-      if (inBlockquote) {
-        outHtml.push("</blockquote>");
-        inBlockquote = false;
-      }
-      outHtml.push("<hr>");
-      continue;
-    }
-    if (
-      line.trim().indexOf("|") === 0 &&
-      line.trim().lastIndexOf("|") === line.trim().length - 1
-    ) {
-      var cells = line
-        .split("|")
-        .slice(1, -1)
-        .map(function (c) {
-          return c.trim();
-        });
-      if (!inTable) {
-        inTable = true;
-        outHtml.push('<div class="table-overflow"><table><thead><tr>');
-        cells.forEach(function (c) {
-          outHtml.push("<th>" + escapeInline(c) + "</th>");
-        });
-        outHtml.push("</tr></thead><tbody>");
-        if (lines[i + 1] && lines[i + 1].indexOf("---") !== -1) i++;
-        continue;
-      } else {
-        outHtml.push("<tr>");
-        cells.forEach(function (c) {
-          outHtml.push("<td>" + escapeInline(c) + "</td>");
-        });
-        outHtml.push("</tr>");
-        continue;
-      }
-    } else if (inTable) {
-      outHtml.push("</tbody></table></div>");
-      inTable = false;
-    }
-    if (/^\s*>\s*/.test(line)) {
-      var bq = line.replace(/^\s*>\s*/, "");
-      if (!inBlockquote) {
-        inBlockquote = true;
-        outHtml.push("<blockquote>");
-      }
-      outHtml.push("<p>" + escapeInline(bq) + "</p>");
-      continue;
-    } else if (inBlockquote) {
-      outHtml.push("</blockquote>");
-      inBlockquote = false;
-    }
-    if (/^\s*###\s+(.*$)/.test(line)) {
-      outHtml.push(
-        "<h3>" + escapeInline(line.replace(/^\s*###\s+/, "")) + "</h3>",
-      );
-      continue;
-    }
-    if (/^\s*##\s+(.*$)/.test(line)) {
-      outHtml.push(
-        "<h2>" + escapeInline(line.replace(/^\s*##\s+/, "")) + "</h2>",
-      );
-      continue;
-    }
-    if (/^\s*#\s+(.*$)/.test(line)) {
-      outHtml.push(
-        "<h1>" + escapeInline(line.replace(/^\s*#\s+/, "")) + "</h1>",
-      );
-      continue;
-    }
-    if (/^\s*[-*+]\s*\[([ xX])\]\s*(.*$)/.test(line)) {
-      var m = line.match(/^\s*[-*+]\s*\[([ xX])\]\s*(.*$)/);
-      var chk = m[1].toLowerCase() === "x" ? "checked" : "";
-      outHtml.push(
-        '<div class="check-line"><input type="checkbox" ' +
-          chk +
-          "> <span>" +
-          escapeInline(m[2]) +
-          "</span></div>",
-      );
-      continue;
-    }
-    if (/^\s*[-*+]\s+(.*$)/.test(line)) {
-      var item = line.replace(/^\s*[-*+]\s+/, "");
-      if (!inList) {
-        outHtml.push("<ul>");
-        inList = true;
-      }
-      outHtml.push("<li>" + escapeInline(item) + "</li>");
-      continue;
-    } else if (inList) {
-      outHtml.push("</ul>");
-      inList = false;
-    }
-    // 【排版优化】：配合新 CSS 的自适应有序列表
-    if (/^\s*\d+\.\s+(.*$)/.test(line)) {
-      outHtml.push(
-        '<p class="md-ordered-line">' + escapeInline(line) + "</p>",
-      );
-      continue;
-    }
-    if (!line.trim()) continue;
-    outHtml.push("<p>" + escapeInline(line) + "</p>");
-  }
-  if (inCodeBlock)
-    outHtml.push(
-      '<pre class="code-box"><code>' + codeBuffer.join("\n") + "</code></pre>",
-    );
-  if (inTable) outHtml.push("</tbody></table></div>");
-  if (inList) outHtml.push("</ul>");
-  if (inBlockquote) outHtml.push("</blockquote>");
-  return outHtml.join("\n");
-}
-
-function escapeInline(str) {
-  if (!str) return "";
-  return str
-    .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
-    .replace(/(^|[^*])\*(?!\*)([^*]+)\*(?!\*)/g, "$1<em>$2</em>");
 }
 
 /* ================= 9. 编辑与提词大字模式 ================= */
@@ -1677,7 +1529,7 @@ function saveAsWord() {
   if (!currentLectureText) return alert("当前没有可导出的教案");
   var bodyHtml = document.getElementById("renderedDocTarget").innerHTML;
   var docPrefix =
-    '\u003Chtml xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"\u003E\u003Chead\u003E\u003Cmeta charset="utf-8"\u003E\u003Ctitle\u003E教案\u003C/title\u003E\u003Cstyle\u003Ebody{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7}h1{font-size:18pt;color:#991b1b;border-bottom:2pt solid #991b1b}h2{font-size:14pt;color:#b91c1c;border-left:4pt solid #b91c1c;padding-left:6pt}table{border-collapse:collapse;width:100%;margin:10pt 0}th,td{border:1pt solid #cbd5e1;padding:6pt 8pt;text-align:left}th{background-color:#f1f5f9}blockquote{background:#fef3c7;border-left:4pt solid #d97706;padding:8pt}\u003C/style\u003E\u003C/head\u003E\u003Cbody\u003E';
+    '\u003Chtml xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"\u003E\u003Chead\u003E\u003Cmeta charset="utf-8"\u003E\u003Ctitle\u003E教案\u003C/title\u003E\u003Cstyle\u003Ebody{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7}h1{font-size:18pt;color:#991b1b;border-bottom:2pt solid #991b1b}h2{font-size:14pt;color:#b91c1c;border-left:4pt solid #b91c1c;padding-left:6pt}h3{font-size:12pt;color:#991b1b}h4{font-size:11pt;font-weight:bold;color:#333}table{border-collapse:collapse;width:100%;margin:10pt 0}th,td{border:1pt solid #cbd5e1;padding:6pt 8pt;text-align:left}th{background-color:#f1f5f9}blockquote{background:#fef3c7;border-left:4pt solid #d97706;padding:8pt}\u003C/style\u003E\u003C/head\u003E\u003Cbody\u003E';
   var docSuffix = "\u003C/body\u003E\u003C/html\u003E";
   var fullDocContent = docPrefix + bodyHtml + docSuffix;
   var blob = new Blob(["\ufeff" + fullDocContent], {
