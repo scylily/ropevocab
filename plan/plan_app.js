@@ -130,20 +130,20 @@ async function loadMasterKnowledge() {
 
 /* ================= 1. Supabase 初始化与登录鉴权 ================= */
 // 【专属默认配置】：写入后换任何设备都无需重新输入
-var DEFAULT_SB_URL = 'https://owenzbyonahuzattostk.supabase.co';
-var DEFAULT_SB_KEY = 'sb_publishable_LZ8WvFjXLwWVjHaQ8gYr2A_ZJ3yAvgd';
+var DEFAULT_SB_URL = "https://owenzbyonahuzattostk.supabase.co";
+var DEFAULT_SB_KEY = "sb_publishable_LZ8WvFjXLwWVjHaQ8gYr2A_ZJ3yAvgd";
 
 function initSupabaseClient() {
   // 优先取本地自定义配置，若无则使用系统内置专属默认端点
-  var url = localStorage.getItem('kb_supabase_url') || DEFAULT_SB_URL;
-  var key = localStorage.getItem('kb_supabase_anon') || DEFAULT_SB_KEY;
+  var url = localStorage.getItem("kb_supabase_url") || DEFAULT_SB_URL;
+  var key = localStorage.getItem("kb_supabase_anon") || DEFAULT_SB_KEY;
 
   if (url && key && window.supabase) {
     try {
       sbClient = window.supabase.createClient(url, key);
       checkUserSession();
     } catch (e) {
-      console.warn('Supabase 初始化异常', e);
+      console.warn("Supabase 初始化异常", e);
     }
   } else {
     updateAuthUI(null);
@@ -608,8 +608,8 @@ async function loadStudentPlans(studentId) {
           " | <strong>课时排期：</strong>" +
           (p.schedule || "常规课时") +
           "</div>" +
-          // 2. 显示当时设定的教学目标
-          '<div class="item-card-desc" style="color: var(--accent); margin-top: 0.15rem;">' +
+          // 2. 显示当时设定的教学目标 (加载全部文案，不截断)
+          '<div class="item-card-goals">' +
           "<strong>设定突破目标：</strong>" +
           goalsText +
           "</div>" +
@@ -934,20 +934,29 @@ function closeDialog(id) {
 
 function openUnifiedSettingsModal() {
   // 当本地缓存为空时，自动回显你的专属默认配置，再也不用手动敲键盘输入
-  document.getElementById('sbProjectUrlInput').value = localStorage.getItem('kb_supabase_url') || DEFAULT_SB_URL;
-  document.getElementById('sbAnonKeyInput').value = localStorage.getItem('kb_supabase_anon') || DEFAULT_SB_KEY;
+  document.getElementById("sbProjectUrlInput").value =
+    localStorage.getItem("kb_supabase_url") || DEFAULT_SB_URL;
+  document.getElementById("sbAnonKeyInput").value =
+    localStorage.getItem("kb_supabase_anon") || DEFAULT_SB_KEY;
 
-  document.getElementById('apiEndpointInput').value = localStorage.getItem('kinbaku_api_endpoint') || '';
-  document.getElementById('apiKeyInput').value = localStorage.getItem('kinbaku_api_key') || '';
-  document.getElementById('apiModelInput').value = localStorage.getItem('kinbaku_api_model') || '';
+  document.getElementById("apiEndpointInput").value =
+    localStorage.getItem("kinbaku_api_endpoint") || "";
+  document.getElementById("apiKeyInput").value =
+    localStorage.getItem("kinbaku_api_key") || "";
+  document.getElementById("apiModelInput").value =
+    localStorage.getItem("kinbaku_api_model") || "";
 
-  document.getElementById('sysPromptPart1').value = localStorage.getItem('kinbaku_prompt_p1') || DEFAULT_PROMPTS.p1;
-  document.getElementById('sysPromptPart2').value = localStorage.getItem('kinbaku_prompt_p2') || DEFAULT_PROMPTS.p2;
-  document.getElementById('sysPromptPart3').value = localStorage.getItem('kinbaku_prompt_p3') || DEFAULT_PROMPTS.p3;
-  document.getElementById('sysPromptPart4').value = localStorage.getItem('kinbaku_prompt_p4') || DEFAULT_PROMPTS.p4;
+  document.getElementById("sysPromptPart1").value =
+    localStorage.getItem("kinbaku_prompt_p1") || DEFAULT_PROMPTS.p1;
+  document.getElementById("sysPromptPart2").value =
+    localStorage.getItem("kinbaku_prompt_p2") || DEFAULT_PROMPTS.p2;
+  document.getElementById("sysPromptPart3").value =
+    localStorage.getItem("kinbaku_prompt_p3") || DEFAULT_PROMPTS.p3;
+  document.getElementById("sysPromptPart4").value =
+    localStorage.getItem("kinbaku_prompt_p4") || DEFAULT_PROMPTS.p4;
 
   switchSettingsMainTab(1);
-  openDialog('dialogSettings');
+  openDialog("dialogSettings");
 }
 
 function switchSettingsMainTab(tabIdx) {
