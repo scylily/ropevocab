@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>绳缚专业教学与教案管理系统</title>
+    <!-- 引入 Supabase 官方轻量 SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="plan_style.css">
+  </head>
+
+  <body>
+
+    <!-- ================= 顶栏控制台 ================= -->
+    <header>
+      <div class="nav-wrap">
+        <!-- 左侧：品牌信息 -->
+        <div class="brand-box">
+          <div class="brand-logo">∞</div>
+          <div class="brand-name">绳缚教学教案系统</div>
+        </div>
+
+        <!-- 右侧：响应式控制坞 (PC端显示图文胶囊，手机端自适应为纯图标) -->
+        <div class="nav-actions">
+          <!-- ① 学员档案库 -->
+          <button class="pill-btn" onclick="openStudentHub()" id="btnStudentHub" title="学员档案库 (查看学员与工作坊)">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span class="btn-text" id="labelCurrentStudent">学员档案库</span>
+          </button>
+
+          <!-- ② 备课筹备 -->
+          <button class="pill-btn" onclick="openPrepDrawer()" id="btnPrepPill" title="本期授课筹备">
+            <span class="dot-indicator" id="indicatorStatus"></span>
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span class="btn-text" id="labelPrepPill">本期授课筹备</span>
+          </button>
+
+          <!-- ③ 讲师登录/认证 -->
+          <button class="pill-btn" onclick="openAuthModal()" id="btnAuthPill" title="讲师登录">
+            <span class="dot-indicator" id="authIndicator"></span>
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span class="btn-text" id="authStatusText">讲师登录</span>
+          </button>
+
+          <!-- ④ 辅助工具箱 -->
+          <div class="dropdown-container">
+            <button class="btn btn-gray" title="工具箱与设置" onclick="toggleDropdown(event, 'topMenuPanel')">
+              <svg class="svg-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="1" />
+                <circle cx="19" cy="12" r="1" />
+                <circle cx="5" cy="12" r="1" />
+              </svg>
+            </button>
+            <div class="dropdown-panel" id="topMenuPanel">
+              <div class="dropdown-opt" onclick="openUnifiedSettingsModal()">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span>AI 引擎与数据库配置</span>
+              </div>
+              <label class="dropdown-opt" style="cursor: pointer;">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span>导入外部教案</span>
+                <input type="file" accept=".md,.txt" style="display: none;" onchange="loadMarkdownFile(event)">
+              </label>
+              <div class="dropdown-opt" onclick="switchTheme()">
+                <svg class="svg-icon" id="themeSvg" viewBox="0 0 24 24">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+                <span>明暗模式切换</span>
+              </div>
+              <div class="dropdown-opt" onclick="resetCurrentLecture()">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                <span>清空当前教案</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= 教案主舞台 ================= -->
+    <main>
+      <div class="stage-container">
+        <article class="paper-card" id="articlePaper">
+
+          <!-- 卡片顶栏 -->
+          <div class="card-topbar">
+            <div class="card-status-box">
+              <span class="badge-dot" id="cardStatusBadge"></span>
+              <span id="labelStatus">教案就绪状态</span>
+            </div>
+            <div class="card-topbar-actions">
+              <!-- 一键存档到云端 -->
+              <button class="btn btn-red" onclick="saveCurrentPlanToSupabase()" title="将当前教案归档至选定学员名下">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span>保存至云端</span>
+              </button>
+              <button class="btn btn-gray" onclick="copyLectureContent()" title="复制当前教案全文">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>复制全文</span>
+              </button>
+              <button class="btn btn-gray" onclick="resetCurrentLecture()" title="清空当前教案">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                <span>清空</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 源码编辑文本区 -->
+          <textarea id="sourceEditorBox" oninput="onRawEditorChange()"></textarea>
+
+          <!-- AI 实时编纂进度舱 -->
+          <div class="ai-loading-box" id="aiLoadingStage">
+            <div class="spinner-disc"></div>
+            <div style="font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem;">繩道 AI 讲师引擎正在深度推演...</div>
+            <div style="font-size: 0.75rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.35rem;" id="aiTimerCounter">
+              <svg class="svg-icon" style="width: 1em; height: 1em;" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span id="aiTimerCounterText">已耗时: 00 秒 | 正在连接大模型</span>
+            </div>
+
+            <div class="progress-track">
+              <div class="progress-bar-active" id="aiProgressBar"></div>
+            </div>
+
+            <div class="step-fade-text" id="aiStepNarrator">正在调阅全景知识库母卷与工作坊实操规程...</div>
+            <div style="font-size: 0.7rem; color: var(--muted); margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.3rem;">
+              <svg class="svg-icon" style="width: 1.1em; height: 1.1em;" viewBox="0 0 24 24">
+                <path d="M9 18h6" />
+                <path d="M10 22h4" />
+                <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z" />
+              </svg>
+              <span>提示：严格杜绝伪科学与假大空，生成真实走绳线路与现场纠偏口令</span>
+            </div>
+          </div>
+
+          <!-- 空引导视图 (极度纯净，无多余图标) -->
+          <div class="empty-wrapper" id="emptyPlaceholder" style="padding: 5rem 1rem;">
+            <div class="empty-head" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.65rem;">本期专属教案尚未生成</div>
+            <div class="empty-sub" style="max-width: 28rem; margin: 0 auto; color: var(--muted); line-height: 1.8;">
+              点击右上角【本期授课筹备】快速完成“选学员 ➔ 搭模特 ➔ 定目标与前置检查”三步，即可推演极具实战细节的完整教案。
+            </div>
+          </div>
+
+          <!-- 教案正文渲染输出区 -->
+          <div class="article-body" id="renderedDocTarget" style="display: none;"></div>
+
+        </article>
+      </div>
+    </main>
+
+    <!-- ================= 底栏核心控制坞 ================= -->
+    <div class="mobile-bottom-dock" id="bottomActionDock">
+      <button class="btn btn-red dock-main-btn" id="btnRunGenerate" onclick="executeGeneration()">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+        <span>生成教案</span>
+      </button>
+
+      <button class="btn btn-gray" id="btnDockToggleEdit" onclick="switchRawEditor()" title="切换编辑/预览视图">
+        <svg class="svg-icon" id="dockEditSvg" viewBox="0 0 24 24">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+        </svg>
+        <span id="dockEditText">编辑</span>
+      </button>
+
+      <button class="btn btn-gray" id="btnStage" onclick="switchStageMode()" title="现场提词大字模式">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+        <span>提词</span>
+      </button>
+
+      <div class="dropdown-container" style="flex: 1; min-width: 0;">
+        <button class="btn btn-gray" style="width: 100%;" onclick="toggleDropdown(event, 'exportMenuPanel')">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>导出</span>
+        </button>
+        <div class="dropdown-panel" id="exportMenuPanel" style="bottom: 100%; top: auto; margin-bottom: 0.35rem;">
+          <div class="dropdown-opt" onclick="saveAsMarkdown()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            <span>导出 Markdown</span>
+          </div>
+          <div class="dropdown-opt" onclick="saveAsWord()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <span>导出 Word 教案</span>
+          </div>
+          <div class="dropdown-opt" onclick="window.print()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            <span>打印 / 存为 PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 授课提词模式底部浮动条 ================= -->
+    <div class="teleprompter-bar" id="teleprompterBar">
+      <span class="pulse-dot"></span>
+      <span style="font-weight: 700;">题词器</span>
+      <span class="v-divider"></span>
+      <span style="cursor: pointer; color: #f87171; display: inline-flex; align-items: center; gap: 0.35rem;" onclick="appendQuickNote()">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        <span>即时速记</span>
+      </span>
+      <span class="v-divider"></span>
+      <span style="cursor: pointer; color: #94a3b8;" onclick="switchStageMode()">退出提词</span>
+    </div>
+
+    <!-- ================= 授课筹备全书 (极致打磨：三步直达流) ================= -->
+    <div class="modal-backdrop" id="dialogPrep">
+      <div class="modal-card">
+        <div class="sheet-handle"></div>
+        <div class="modal-top">
+          <span class="modal-caption">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            <span>本期授课筹备 (三步定制流)</span>
+          </span>
+          <button class="modal-x" onclick="closeDialog('dialogPrep')">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="tab-content" style="gap: 1.15rem; padding: 1.1rem 1.25rem;">
+
+          <!-- ① 谁在学 (学员画像) -->
+          <section class="prep-step-card">
+            <div class="prep-step-title">
+              <span class="step-num-badge">1</span>
+              <span>谁在学：授课学员画像 (个体学员 / 班级群像)</span>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <select class="field-input" id="selAudiencePicker" onchange="onAudienceSelectChanged()" style="font-weight: 600;">
+                <option value="">-- 选择已有学员 / 工作坊群像 --</option>
+              </select>
+              <button class="btn btn-gray" onclick="openStudentFormModal()" style="min-height: 2.1rem; padding: 0 0.65rem;" title="录入新学员">+ 新建学员</button>
+            </div>
+            <!-- 学员短板与习惯只读摘要 -->
+            <div class="preview-mini-card" id="audienceSummaryCard">
+              <span style="color: var(--muted);">💡 请在上方选择或新建学员。AI 将调取该画像的发力习惯与短板，输出针对性带练口令。</span>
+            </div>
+          </section>
+
+          <!-- ② 谁来搭 (模特档案) -->
+          <section class="prep-step-card">
+            <div class="prep-step-title">
+              <span class="step-num-badge">2</span>
+              <span>谁来搭：本次搭配搭档模特</span>
+            </div>
+            <div style="display: flex; gap: 0.4rem; align-items: center;">
+              <select class="field-input" id="selModelPicker" onchange="onModelSelectChanged()" style="font-weight: 600;">
+                <option value="">-- 通用生理安全防护 (未指定特定模特) --</option>
+              </select>
+              <button class="btn btn-gray" onclick="openModelFormModal()" style="min-height: 2.1rem; padding: 0 0.65rem;" title="录入新模特">+ 新建模特</button>
+            </div>
+            <!-- 模特身心特征紧凑只读卡 -->
+            <div class="preview-mini-card" id="modelSummaryCard">
+              <span style="color: var(--muted);">🛡️ 当前启用《通用生理安全基准准则》：上臂桡神经三角区净空、掐甲充血测试 &lt; 2 秒。</span>
+            </div>
+            <!-- 本日临时状态特别提示 -->
+            <div class="field-wrap" style="margin-top: 0.35rem;">
+              <label style="font-size: 0.72rem; color: var(--accent);">⚠️ 本日临时生理/状态特别提示 (选填，仅作用于本期)：</label>
+              <input type="text" class="field-input" id="inpModelTodayNotes" placeholder="例如：模特今天落枕，避开左侧颈肩受力；或睡眠偏少注意防晕绳...">
+            </div>
+          </section>
+
+          <!-- ③ 怎么学 (课题、目标与前置摸底检查) -->
+          <section class="prep-step-card">
+            <div class="prep-step-title">
+              <span class="step-num-badge">3</span>
+              <span>怎么学：课题、突破目标与前置摸底</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.5rem;">
+              <div class="field-wrap">
+                <label>本次课程核心主题 *</label>
+                <input type="text" class="field-input" id="inpTopic" placeholder="例如：奈加流后手缚起手自锁与防脱扣带练">
+              </div>
+              <div class="field-wrap">
+                <label>授课形态与课时排期 *</label>
+                <input type="text" class="field-input" id="inpSchedule" placeholder="例如：1对1私教 3小时 / 4对学员小班工作坊">
+              </div>
+            </div>
+            <div class="field-wrap" style="margin-top: 0.35rem;">
+              <label>本期预期达成的教学突破目标</label>
+              <input type="text" class="field-input" id="inpGoals" placeholder="例如：掌握用身体自重带直绳索；建立萨默维尔称人结自锁信任；戒除二头肌蛮力拔河。">
+            </div>
+            <!-- 灵魂字段：课前基础摸底与前置检查/注意事项 -->
+            <div class="field-wrap" style="margin-top: 0.35rem;">
+              <label style="color: var(--accent); font-weight: 700;">🔍 课前基础摸底与前置检查 / 注意事项 (教学法灵魂)：</label>
+              <textarea class="field-input" id="inpPrereq" rows="2" placeholder="例如：先让学员打一个基础双平结，看是否滑脱；空手摸底学员对骨架支撑的理解；排查起手时是否习惯用手臂死拉绳尾..."></textarea>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="clearPrepData()" title="清空筹备内容">清空内容</button>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn btn-gray" onclick="closeDialog('dialogPrep')">取消</button>
+            <button class="btn btn-red" onclick="commitPrepData()">
+              <svg class="svg-icon" viewBox="0 0 24 24">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>保存筹备并就绪</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 独立弹窗：学员画像档案与历次教案总库 ================= -->
+    <div class="modal-backdrop" id="dialogStudentHub">
+      <div class="modal-card">
+        <div class="sheet-handle"></div>
+        <div class="modal-top">
+          <span class="modal-caption">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>学员档案库与教案史</span>
+          </span>
+          <button class="modal-x" onclick="closeDialog('dialogStudentHub')">✕</button>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" id="tabHubBtn1" onclick="switchHubTab(1)">① 学员资料名录</button>
+          <button class="tab-btn" id="tabHubBtn2" onclick="switchHubTab(2)">② 当前学员教案史</button>
+          <button class="tab-btn" id="tabHubBtn3" onclick="switchHubTab(3)">③ 模特资料库</button>
+        </div>
+
+        <!-- Tab 1: 学员列表 & 新建学员 -->
+        <div class="tab-content" id="tabHubContent1">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">所有学员画像档案：</span>
+            <button class="btn btn-red" onclick="openStudentFormModal()" style="min-height: 2rem; padding: 0.2rem 0.6rem; font-size: 0.75rem;">+ 录入新学员画像</button>
+          </div>
+          <div id="studentListContainer" class="list-container">
+            <div style="text-align: center; color: var(--muted); padding: 2rem 0;">正在加载学员数据...</div>
+          </div>
+        </div>
+
+        <!-- Tab 2: 当前学员的历次教案时间线 -->
+        <div class="tab-content" id="tabHubContent2" style="display: none;">
+          <div id="selectedStudentSummary" style="background: var(--card); border: var(--border-thin) solid var(--border); border-radius: var(--radius-btn); padding: 0.75rem; font-size: 0.8rem; line-height: 1.6;">
+            尚未选定学员。请先在【学员画像名录】中选择一位学员或班级。
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">该学员的名下教案记录：</span>
+            <button class="btn btn-red" onclick="startNewPlanForCurrentStudent()" style="min-height: 2rem; padding: 0.2rem 0.6rem; font-size: 0.75rem;">+ 为该学员制定新教案</button>
+          </div>
+          <div id="planListContainer" class="list-container">
+            <div style="text-align: center; color: var(--muted); padding: 2rem 0;">请先选定学员</div>
+          </div>
+        </div>
+
+        <!-- Tab 3: 模特身心档案库 -->
+        <div class="tab-content" id="tabHubContent3" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">模特档案资源池：</span>
+            <button class="btn btn-red" onclick="openModelFormModal()" style="min-height: 2rem; padding: 0.2rem 0.6rem; font-size: 0.75rem;">+ 录入新模特档案</button>
+          </div>
+          <div id="modelListContainer" class="list-container">
+            <div style="text-align: center; color: var(--muted); padding: 2rem 0;">正在加载模特数据...</div>
+          </div>
+        </div>
+
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="refreshSupabaseData()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M23 4v6h-6" />
+              <path d="M1 20v-6h6" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+            <span>刷新云端</span>
+          </button>
+          <button class="btn btn-red" onclick="closeDialog('dialogStudentHub')">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 独立弹窗：新建/编辑学员画像 ================= -->
+    <div class="modal-backdrop" id="dialogStudentForm" style="z-index: 110;">
+      <div class="modal-card" style="max-height: 75vh;">
+        <div class="modal-top">
+          <span class="modal-caption" id="lblStudentFormTitle">录入学员画像</span>
+          <button class="modal-x" onclick="closeDialog('dialogStudentForm')">✕</button>
+        </div>
+        <div class="tab-content">
+          <input type="hidden" id="editStudentId" value="">
+          <div class="field-wrap">
+            <label>学员姓名 / 班级群像名称 *</label>
+            <input type="text" class="field-input" id="formStudentName" placeholder="例如：阿强（个人私教） 或 2026秋季中级悬吊工作坊（班级群像）">
+          </div>
+          <div class="field-wrap">
+            <label>技术阶段 / 授课性质</label>
+            <input type="text" class="field-input" id="formStudentLevel" placeholder="例如：半年私教纠偏 / 4对学员小班破冰 / 进阶悬吊专项">
+          </div>
+          <div class="field-wrap">
+            <label>发力习惯与短板瓶颈 *</label>
+            <textarea class="field-input" id="formStudentBottlenecks" rows="3" placeholder="请详述细节：例如习惯死拉绳尾导致绳圈变形、打结慌乱、起手用二头肌蛮力拔河、缺乏呼吸连带..."></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>长期预期达成目标</label>
+            <textarea class="field-input" id="formStudentGoals" rows="2" placeholder="例如：掌握用身体自重带绳，理清不同流派自锁逻辑差异..."></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>微信 / 联系方式 / 特殊备注</label>
+            <input type="text" class="field-input" id="formStudentContact" placeholder="选填，仅讲师可见">
+          </div>
+        </div>
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogStudentForm')">取消</button>
+          <button class="btn btn-red" onclick="submitStudentForm()">保存学员档案</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 独立弹窗：新建/编辑模特档案 ================= -->
+    <div class="modal-backdrop" id="dialogModelForm" style="z-index: 110;">
+      <div class="modal-card" style="max-height: 80vh;">
+        <div class="modal-top">
+          <span class="modal-caption" id="lblModelFormTitle">录入模特身心档案</span>
+          <button class="modal-x" onclick="closeDialog('dialogModelForm')">✕</button>
+        </div>
+        <div class="tab-content">
+          <input type="hidden" id="editModelId" value="">
+          <div class="field-wrap">
+            <label>模特姓名 / 代号 *</label>
+            <input type="text" class="field-input" id="formModelName" placeholder="例如：小鱼">
+          </div>
+          <div class="field-wrap">
+            <label>搭档属性 / 信任基础</label>
+            <input type="text" class="field-input" id="formModelRelation" placeholder="例如：常年搭档 / 工作坊签约示范助教 / 临时练习模特">
+          </div>
+          <div class="field-wrap">
+            <label>骨骼、关节活动度 (肩/肘/胸/髋)</label>
+            <textarea class="field-input" id="formModelJoints" rows="2" placeholder="例如：双肩后旋内扣偏紧；手肘有轻微天然超伸..."></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>神经耐受与微循环 (桡神经/晕绳/血色)</label>
+            <textarea class="field-input" id="formModelNerve" rows="2" placeholder="例如：桡神经表浅敏感，指尖易发麻；末梢回血测试正常..."></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>既往伤病史、皮肤软组织耐受</label>
+            <textarea class="field-input" id="formModelInjury" rows="2" placeholder="例如：无骨折史；左侧斜方肌紧绷；皮肤易摩擦起痧..."></textarea>
+          </div>
+          <div class="field-wrap">
+            <label>心理阈值、安全词与退潮偏好 (Aftercare)</label>
+            <textarea class="field-input" id="formModelPsychology" rows="2" placeholder="例如：安全词“红灯”；解绳后需5分钟平躺保温..."></textarea>
+          </div>
+        </div>
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogModelForm')">取消</button>
+          <button class="btn btn-red" onclick="submitModelForm()">保存模特档案</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 独立弹窗：讲师登录鉴权 ================= -->
+    <div class="modal-backdrop" id="dialogAuth">
+      <div class="modal-card" style="max-height: 55vh; max-width: 26rem;">
+        <div class="modal-top">
+          <span class="modal-caption">讲师专属登录</span>
+          <button class="modal-x" onclick="closeDialog('dialogAuth')">✕</button>
+        </div>
+        <div class="tab-content" id="authBoxContent">
+          <div class="field-wrap">
+            <label>讲师账号 (邮箱)</label>
+            <input type="email" class="field-input" id="inpAuthEmail" placeholder="you@example.com">
+          </div>
+          <div class="field-wrap">
+            <label>登录密码</label>
+            <input type="password" class="field-input" id="inpAuthPassword" placeholder="******">
+          </div>
+          <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem;">
+            登录后自动连接 Supabase 云端数据库，解锁学员与模特档案库，并自动拉取云端大模型 API Key。
+          </div>
+        </div>
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogAuth')">取消</button>
+          <button class="btn btn-red" id="btnExecuteLogin" onclick="executeLecturerLogin()">登录并连接</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 独立弹窗：AI 引擎与数据库配置 ================= -->
+    <div class="modal-backdrop" id="dialogSettings">
+      <div class="modal-card">
+        <div class="sheet-handle"></div>
+        <div class="modal-top">
+          <span class="modal-caption">系统云端与大模型配置</span>
+          <button class="modal-x" onclick="closeDialog('dialogSettings')">✕</button>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" id="tabMainSetBtn1" onclick="switchSettingsMainTab(1)">① 云端 Supabase 端点</button>
+          <button class="tab-btn" id="tabMainSetBtn2" onclick="switchSettingsMainTab(2)">② AI 引擎与 Key</button>
+          <button class="tab-btn" id="tabMainSetBtn3" onclick="switchSettingsMainTab(3)">③ 讲师提示词模块</button>
+        </div>
+
+        <!-- Tab 1: Supabase 配置 -->
+        <div class="tab-content" id="tabMainSetContent1">
+          <div class="field-wrap">
+            <label>Supabase Project URL *</label>
+            <input type="text" class="field-input" id="sbProjectUrlInput" placeholder="https://xxxxxxxxxxxx.supabase.co">
+          </div>
+          <div class="field-wrap">
+            <label>Supabase Anon / Public Key *</label>
+            <input type="password" class="field-input" id="sbAnonKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+          </div>
+          <div style="font-size: 0.72rem; color: var(--muted); line-height: 1.6;">
+            提示：登录后网页会自动从您云端的 <code>system_secrets</code> 表安全获取大模型 API Key，不会在本地源码中泄露。
+          </div>
+        </div>
+
+        <!-- Tab 2: AI 引擎配置 -->
+        <div class="tab-content" id="tabMainSetContent2" style="display: none;">
+          <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">大模型服务预设端点：</label>
+          <div class="preset-group">
+            <span class="preset-chip" onclick="applyApiPreset('siliconflow')">硅基流动 (DeepSeek-V3 推荐)</span>
+            <span class="preset-chip" onclick="applyApiPreset('gemini')">Google Gemini (1.5 Flash)</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.5rem;">
+            <div class="field-wrap">
+              <label>API Base URL</label>
+              <input type="text" class="field-input" id="apiEndpointInput" placeholder="https://api.siliconflow.cn/v1/chat/completions">
+            </div>
+            <div class="field-wrap">
+              <label>本地临时 API Key (留空则优先使用云端 Key)</label>
+              <input type="password" class="field-input" id="apiKeyInput" placeholder="sk-...">
+            </div>
+          </div>
+          <div class="field-wrap">
+            <label>模型名称 (Model Name)</label>
+            <input type="text" class="field-input" id="apiModelInput" placeholder="deepseek-ai/DeepSeek-V3">
+          </div>
+        </div>
+
+        <!-- Tab 3: 提示词模块 -->
+        <div class="tab-content" id="tabMainSetContent3" style="display: none;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+            <label style="font-weight: 700; color: var(--accent); font-size: 0.78rem;">讲师行动准则子模块：</label>
+            <span style="font-size: 0.72rem; color: var(--accent); text-decoration: underline; cursor: pointer;" onclick="resetAllPromptTabs()">恢复出厂规范</span>
+          </div>
+          <div class="tab-bar" style="margin-bottom: 0.5rem; background: var(--bg);">
+            <button class="tab-btn active" id="tabPromptBtn1" onclick="switchPromptTab(1)">① 角色红线</button>
+            <button class="tab-btn" id="tabPromptBtn2" onclick="switchPromptTab(2)">② 因课架构</button>
+            <button class="tab-btn" id="tabPromptBtn3" onclick="switchPromptTab(3)">③ 现场口述</button>
+            <button class="tab-btn" id="tabPromptBtn4" onclick="switchPromptTab(4)">④ 安全复位</button>
+          </div>
+          <div id="tabPromptBox1" style="display: flex; flex-direction: column; gap: 0.3rem; flex: 1;">
+            <textarea class="field-input" id="sysPromptPart1" style="font-family: monospace; font-size: 0.8rem; line-height: 1.6; height: clamp(14rem, 36vh, 22rem);"></textarea>
+          </div>
+          <div id="tabPromptBox2" style="display: none; flex-direction: column; gap: 0.3rem; flex: 1;">
+            <textarea class="field-input" id="sysPromptPart2" style="font-family: monospace; font-size: 0.8rem; line-height: 1.6; height: clamp(14rem, 36vh, 22rem);"></textarea>
+          </div>
+          <div id="tabPromptBox3" style="display: none; flex-direction: column; gap: 0.3rem; flex: 1;">
+            <textarea class="field-input" id="sysPromptPart3" style="font-family: monospace; font-size: 0.8rem; line-height: 1.6; height: clamp(14rem, 36vh, 22rem);"></textarea>
+          </div>
+          <div id="tabPromptBox4" style="display: none; flex-direction: column; gap: 0.3rem; flex: 1;">
+            <textarea class="field-input" id="sysPromptPart4" style="font-family: monospace; font-size: 0.8rem; line-height: 1.6; height: clamp(14rem, 36vh, 22rem);"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogSettings')">取消</button>
+          <button class="btn btn-red" onclick="commitUnifiedSettings()">保存全部配置</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 引入独立 JavaScript -->
+    <script src="plan_app.js"></script>
+  </body>
+
+</html>
