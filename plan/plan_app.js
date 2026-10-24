@@ -1466,26 +1466,33 @@ function renderMarkdownToScreen(text) {
       wrapper.appendChild(flowContainer);
     });
 
-    // ④ 增强任务复选框：解除 disabled 禁用，支持点击打勾与整行交互
+    // ④ 增强任务复选框：标准 change 机制，彻底支持打勾与划线
     docBox.querySelectorAll('input[type="checkbox"]').forEach(function (chk) {
-      chk.removeAttribute("disabled"); // 核心解法：移去 marked.js 默认锁定的只读属性
+      chk.removeAttribute("disabled"); // 彻底移除禁用
+      chk.style.pointerEvents = "auto";
+      chk.style.cursor = "pointer";
 
       var parentLine = chk.parentElement;
       if (parentLine) {
         parentLine.classList.add("check-line-item");
         parentLine.style.cursor = "pointer";
 
-        // 点击整行也能顺畅打勾/取消打勾
-        parentLine.onclick = function (e) {
-          if (e.target !== chk) {
-            chk.checked = !chk.checked;
-          }
+        // 1. 当复选框自身状态改变时，更新视觉划线
+        chk.onchange = function () {
           if (chk.checked) {
-            parentLine.style.opacity = "0.6";
+            parentLine.style.opacity = "0.55";
             parentLine.style.textDecoration = "line-through";
           } else {
             parentLine.style.opacity = "1";
             parentLine.style.textDecoration = "none";
+          }
+        };
+
+        // 2. 如果点击的是这一行的文字（而不是直接点中框框），代为切换勾选并触发更新
+        parentLine.onclick = function (e) {
+          if (e.target !== chk) {
+            chk.checked = !chk.checked;
+            chk.dispatchEvent(new Event("change"));
           }
         };
       }
