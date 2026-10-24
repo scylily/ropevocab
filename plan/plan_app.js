@@ -1466,10 +1466,28 @@ function renderMarkdownToScreen(text) {
       wrapper.appendChild(flowContainer);
     });
 
-    // ④ 增强任务复选框样式
+    // ④ 增强任务复选框：解除 disabled 禁用，支持点击打勾与整行交互
     docBox.querySelectorAll('input[type="checkbox"]').forEach(function (chk) {
-      if (chk.parentElement) {
-        chk.parentElement.classList.add("check-line-item");
+      chk.removeAttribute("disabled"); // 核心解法：移去 marked.js 默认锁定的只读属性
+
+      var parentLine = chk.parentElement;
+      if (parentLine) {
+        parentLine.classList.add("check-line-item");
+        parentLine.style.cursor = "pointer";
+
+        // 点击整行也能顺畅打勾/取消打勾
+        parentLine.onclick = function (e) {
+          if (e.target !== chk) {
+            chk.checked = !chk.checked;
+          }
+          if (chk.checked) {
+            parentLine.style.opacity = "0.6";
+            parentLine.style.textDecoration = "line-through";
+          } else {
+            parentLine.style.opacity = "1";
+            parentLine.style.textDecoration = "none";
+          }
+        };
       }
     });
   }
