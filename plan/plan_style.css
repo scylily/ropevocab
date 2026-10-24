@@ -4,12 +4,14 @@
    1. 设计变量与排版基底 (Variables & Base)
    2. 顶栏导航与品牌控制 (Header & Navbar)
    3. 教案主舞台与 Markdown 渲染引擎 (Stage & Markdown Article)
-   4. 授课提词模式与悬浮条 (Teleprompter & Stage Mode)
-   5. 底部悬浮控制坞与快捷按钮 (Bottom Action Dock)
-   6. 模态框对话框系统 (Modal Dialog System)
-   7. 受众画像、模特档案与教案历史卡片 (CRM Cards & Hub)
-   8. 移动端专属响应式适配套件 (Mobile Responsive Suite @max-width: 36rem)
-   9. 打印输出适配 (Print Media)
+   4. 表格工坊级美化与横滑防截断 (Table Overflow Protection)
+   5. 流程链条卡片系统 (Chain Flow Box)
+   6. 授课提词模式与悬浮条 (Teleprompter & Stage Mode)
+   7. 底部悬浮控制坞 (Bottom Action Dock)
+   8. 模态框对话框系统 (Modal Dialog System)
+   9. 受众画像、模特档案与教案历史卡片 (CRM Cards & Hub)
+   10. 移动端专属响应式适配套件 (@max-width: 36rem)
+   11. 打印输出适配 (Print Media)
    ========================================================================== */
 
 /* ================= 1. 设计变量与排版基底 ================= */
@@ -297,6 +299,7 @@ main {
   width: min(100%, 56rem);
   display: flex;
   flex-direction: column;
+  min-width: 0; /* 核心：防止子容器内容把父级挤破 */
 }
 
 .paper-card {
@@ -309,6 +312,7 @@ main {
   min-height: 70dvh;
   display: flex;
   flex-direction: column;
+  min-width: 0; /* 核心：Flex 环境下强制收紧超宽内容 */
 }
 
 .card-topbar {
@@ -351,6 +355,12 @@ main {
 }
 
 /* Markdown 正文排版 */
+.article-body {
+  width: 100%;
+  min-width: 0; /* 核心防护 */
+  word-wrap: break-word;
+}
+
 .article-body h1 {
   font-size: clamp(1.4rem, 4vw, 2rem);
   font-weight: 800;
@@ -449,50 +459,7 @@ main {
   line-height: 1.75;
 }
 
-.table-overflow {
-  width: 100%;
-  overflow-x: auto;
-  margin: 1.25rem 0;
-  border: var(--border-thin) solid var(--border);
-  border-radius: 0.65rem;
-  background: var(--paper);
-}
-
-.article-body table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8125rem;
-  text-align: left;
-}
-
-.article-body th {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 700;
-  padding: 0.75rem 0.85rem;
-  border-bottom: var(--border-thin) solid var(--border);
-  white-space: nowrap;
-}
-
-.article-body td {
-  padding: 0.65rem 0.85rem;
-  border-bottom: var(--border-thin) solid var(--border);
-  line-height: 1.6;
-}
-
-.article-body tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.article-body tbody tr:nth-child(even) {
-  background: rgba(0, 0, 0, 0.015);
-}
-
-[data-theme="dark"] .article-body tbody tr:nth-child(even) {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* 原生任务复选框排版美化 */
+/* 原生任务复选框 */
 .article-body li:has(input[type="checkbox"]),
 .check-line-item {
   list-style: none !important;
@@ -523,16 +490,193 @@ main {
   display: block;
 }
 
-/* KaTeX 块级公式排版美化 (解决截图 1) */
-.katex-display {
-  margin: 1rem 0 !important;
-  padding: 0.75rem 1rem;
+/* ================= 4. 双模工坊表格与微型卡片系统 ================= */
+
+.pro-table-wrapper {
+  width: 100%;
+  margin: 1rem 0;
+  box-sizing: border-box;
+}
+
+/* ---------------- ① PC 电脑端（>36rem）：精炼紧凑原生表格 ---------------- */
+@media (min-width: 36.01rem) {
+  .pro-card-flow {
+    display: none !important; /* PC 端坚决隐藏卡片，只看紧凑表格 */
+  }
+
+  .pro-table-wrapper table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.8125rem; /* 精炼字号，不笨重 */
+    line-height: 1.5;
+    border: var(--border-thin) solid var(--border);
+    border-radius: var(--radius-btn);
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  .pro-table-wrapper th {
+    background: var(--card);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 0.5rem 0.65rem;
+    border-bottom: 0.1rem solid var(--border);
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .pro-table-wrapper td {
+    padding: 0.55rem 0.65rem; /* 压缩内边距，告别空旷 */
+    border-bottom: var(--border-thin) solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .pro-table-wrapper tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .pro-table-wrapper td:first-child {
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-right: var(--border-thin) solid var(--border);
+    white-space: nowrap;
+    width: 1%; /* 紧贴文字宽度，给后面列留足空间 */
+  }
+
+  .pro-table-wrapper tbody tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.015);
+  }
+  [data-theme="dark"] .pro-table-wrapper tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+/* ---------------- ② 手机移动端（≤36rem）：极致压缩紧凑微型卡片 ---------------- */
+@media (max-width: 36rem) {
+  .pro-table-wrapper table {
+    display: none !important; /* 手机端隐藏难以阅读的横向表格 */
+  }
+
+  .pro-card-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem; /* 大幅缩减卡片间距 */
+    width: 100%;
+  }
+
+  /* 紧凑卡片本体 */
+  .pro-card-item {
+    background: var(--card);
+    border: var(--border-thin) solid var(--border);
+    border-radius: 0.4rem;
+    padding: 0.45rem 0.65rem; /* 大幅缩水，紧凑排布 */
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  /* 顶栏徽章标签：精炼小胶囊 */
+  .pro-card-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem; /* 小巧精致 */
+    padding: 0.15rem 0.45rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  /* 键值对行：极致精炼间距 */
+  .pro-card-row {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.25rem 0; /* 压缩行间距 */
+    border-top: var(--border-thin) dashed rgba(0, 0, 0, 0.08);
+    font-size: 0.76rem; /* 高信息密度，舒适阅读 */
+    line-height: 1.5;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  [data-theme="dark"] .pro-card-row {
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .pro-card-row:first-of-type {
+    border-top: none;
+  }
+
+  .pro-card-label {
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.74rem;
+  }
+
+  .pro-card-val {
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* 提词大字模式自适应 */
+.stage-mode .pro-card-item {
+  padding: 0.75rem 0.95rem;
+}
+.stage-mode .pro-card-badge {
+  font-size: 1.05rem;
+  padding: 0.25rem 0.65rem;
+}
+.stage-mode .pro-card-row {
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+/* ================= 5. 流程链条卡片系统 ================= */
+.chain-flow-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 0.85rem;
   background: var(--card);
-  border-radius: var(--radius-btn);
   border: var(--border-thin) solid var(--border);
-  overflow-x: auto;
-  overflow-y: hidden;
+  border-radius: var(--radius-btn);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  box-sizing: border-box;
+}
+
+.chain-node {
+  background: var(--paper);
+  border: var(--border-thin) solid var(--border);
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.45rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   text-align: center;
+  line-height: 1.5;
+}
+
+.chain-arrow {
+  color: var(--accent);
+  font-size: 1.15rem;
+  font-weight: 900;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
 }
 
 .code-box, pre {
@@ -647,7 +791,7 @@ main {
   line-height: 1.7;
 }
 
-/* ================= 4. 授课提词模式与悬浮条 ================= */
+/* ================= 6. 授课提词模式与悬浮条 ================= */
 .stage-mode .article-body h1 {
   font-size: clamp(1.8rem, 4.5vw, 2.25rem);
 }
@@ -665,6 +809,26 @@ main {
 .stage-mode .article-body input[type="checkbox"] {
   width: 1.35em;
   height: 1.35em;
+}
+
+.stage-mode .chain-node {
+  font-size: 1.15rem !important;
+  padding: 0.55rem 1rem !important;
+}
+
+.stage-mode .chain-arrow {
+  font-size: 1.35rem !important;
+}
+
+.stage-mode .article-body table {
+  font-size: 0.95rem !important;
+  line-height: 1.7 !important;
+  min-width: 30rem !important;
+}
+
+.stage-mode .article-body th,
+.stage-mode .article-body td {
+  padding: 0.85rem 0.75rem !important;
 }
 
 .teleprompter-bar {
@@ -722,7 +886,7 @@ main {
   }
 }
 
-/* ================= 5. 底部悬浮控制坞与快捷按钮 ================= */
+/* ================= 7. 底部悬浮控制坞 ================= */
 .mobile-bottom-dock {
   position: fixed;
   bottom: 1rem;
@@ -757,29 +921,7 @@ main {
   flex: 1.35 !important;
 }
 
-.btn-text-short {
-  display: none;
-}
-
-@media (max-width: 25rem) {
-  .btn-text-full {
-    display: none;
-  }
-  .btn-text-short {
-    display: inline-flex;
-  }
-  .mobile-bottom-dock {
-    width: 96%;
-    padding: 0.35rem 0.35rem;
-    gap: 0.25rem;
-    bottom: 0.75rem;
-  }
-  .mobile-bottom-dock .btn {
-    padding: 0.35rem 0.2rem;
-  }
-}
-
-/* ================= 6. 模态框对话框系统 ================= */
+/* ================= 8. 模态框对话框系统 ================= */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -970,7 +1112,7 @@ textarea.field-input {
   color: var(--accent);
 }
 
-/* ================= 7. 受众画像、模特档案与教案历史卡片 ================= */
+/* ================= 9. 受众画像、模特档案与教案历史卡片 ================= */
 .list-container {
   display: flex;
   flex-direction: column;
@@ -1090,7 +1232,6 @@ textarea.field-input {
   text-decoration: underline;
 }
 
-/* 备课三步流卡片与预览 */
 .prep-step-card {
   background: var(--paper);
   border: var(--border-thin) solid var(--border);
@@ -1134,9 +1275,14 @@ textarea.field-input {
   line-height: 1.6;
 }
 
-/* ================= 8. 移动端专属响应式适配套件 (@max-width: 36rem) ================= */
+#selectedStudentSummary {
+  padding: 0.45rem 0.65rem !important;
+  margin-bottom: 0.2rem !important;
+  border-radius: var(--radius-btn);
+}
+
+/* ================= 10. 移动端专属响应式适配套件 (@max-width: 36rem) ================= */
 @media (max-width: 36rem) {
-  /* ① 顶栏紧凑正方形图标布局 */
   .brand-name {
     display: none;
   }
@@ -1172,18 +1318,18 @@ textarea.field-input {
     border: 1.5px solid var(--paper);
   }
 
-  /* ② 弹窗抽屉式自适应 */
+  /* 弹窗抽屉拉升至顶栏下沿 */
   .modal-backdrop {
     align-items: flex-end;
     padding: 0;
   }
   .modal-card {
     max-width: 100%;
-    border-radius: 1.25rem 1.25rem 0 0;
+    border-radius: 1rem 1rem 0 0;
     border-bottom: none;
-    height: 82vh;
-    height: 82dvh;
-    max-height: 82dvh;
+    height: calc(100vh - 3.6rem);
+    height: calc(100dvh - 3.6rem);
+    max-height: calc(100dvh - 3.6rem);
     animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .sheet-handle {
@@ -1198,7 +1344,6 @@ textarea.field-input {
     padding: 0.45rem 0.25rem !important;
   }
 
-  /* ③ 档案卡片紧凑微调 */
   .item-card {
     padding: 0.5rem 0.65rem !important;
   }
@@ -1209,7 +1354,7 @@ textarea.field-input {
     font-size: 0.62rem !important;
   }
 
-  /* ④ 教案舞台与边距释放：大幅扩展正文横向宽度 */
+  /* 教案主舞台边距优化 */
   main {
     padding: 0.35rem 0.35rem 6.5rem 0.35rem !important;
   }
@@ -1218,7 +1363,7 @@ textarea.field-input {
     border-radius: 0.65rem !important;
   }
 
-  /* ⑤ 常规阅读模式（非提词状态） */
+  /* 阅读模式字号 */
   .paper-card:not(.stage-mode) .article-body h1 {
     font-size: 1.25rem !important;
     margin: 1rem 0 0.75rem 0 !important;
@@ -1245,26 +1390,21 @@ textarea.field-input {
     word-break: break-word;
   }
 
-  /* ⑥ 提词大字模式专属唤醒 */
-  .stage-mode .article-body h1 {
-    font-size: 1.65rem !important;
+  /* 链条卡片手机端竖向排列 */
+  .chain-flow-box {
+    flex-direction: column !important;
+    gap: 0.45rem !important;
+    padding: 0.85rem 0.65rem !important;
   }
-  .stage-mode .article-body h2 {
-    font-size: 1.35rem !important;
+  .chain-node {
+    width: 92% !important;
   }
-  .stage-mode .article-body h3 {
-    font-size: 1.15rem !important;
-  }
-  .stage-mode .article-body h4 {
-    font-size: 1.05rem !important;
-  }
-  .stage-mode .article-body p,
-  .stage-mode .article-body li {
-    font-size: 1.22rem !important;
-    line-height: 2.1 !important;
+  .chain-arrow {
+    transform: rotate(90deg) !important;
+    margin: 0.1rem 0 !important;
   }
 
-  /* ⑦ 列表与引用缩进减负 */
+  /* 列表与引用缩进微调 */
   .article-body ul,
   .article-body ol {
     padding-left: 1rem !important;
@@ -1283,25 +1423,15 @@ textarea.field-input {
     font-size: 0.8rem !important;
   }
 
-  /* ⑧ 对比矩阵表格手机端紧凑自适应 */
-  .table-overflow {
-    margin: 0.65rem 0 !important;
-    border-radius: 0.45rem !important;
-  }
+  /* 表格在移动端的防切出优化 */
   .article-body table {
-    font-size: 0.74rem !important;
-    width: 100% !important;
+    font-size: 0.76rem !important;
+    line-height: 1.55 !important;
+    min-width: 25rem !important;
   }
   .article-body th,
   .article-body td {
-    padding: 0.45rem 0.35rem !important;
-    line-height: 1.4 !important;
-  }
-  .article-body table tr th:first-child,
-  .article-body table tr td:first-child {
-    white-space: nowrap !important;
-    width: 1% !important;
-    font-weight: 700;
+    padding: 0.6rem 0.5rem !important;
   }
 }
 
@@ -1314,7 +1444,7 @@ textarea.field-input {
   }
 }
 
-/* ================= 9. 打印输出适配 ================= */
+/* ================= 11. 打印输出适配 ================= */
 @media print {
   header,
   .card-topbar,

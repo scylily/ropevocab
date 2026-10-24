@@ -50,11 +50,11 @@ var DEFAULT_PROMPTS = {
 // 全局状态管理
 var sbClient = null;
 var currentUser = null;
-var currentStudent = null; // 当前聚焦的受众画像 (个体或群像)
-var currentModel = null; // 当前选定的模特
+var currentStudent = null;
+var currentModel = null;
 var cachedStudents = [];
 var cachedModels = [];
-var cachedMasterKnowledge = null; // 全景知识库母卷内存缓存
+var cachedMasterKnowledge = null;
 
 var courseStore = {
   topic: "",
@@ -81,7 +81,7 @@ var aiTimerInterval = null;
 var aiSecondsElapsed = 0;
 var activePromptTab = 1;
 
-// 初始化生命周期 (自动感知提示词修改并自适应，无需手动版本锁)
+// 初始化生命周期
 window.addEventListener("DOMContentLoaded", async function () {
   autoSyncPrompts();
   initMarkdownEngine();
@@ -98,7 +98,7 @@ window.addEventListener("DOMContentLoaded", async function () {
   }
 });
 
-// 初始化 Marked 解析引擎与 KaTeX 公式集成
+// 初始化 Marked 解析引擎
 function initMarkdownEngine() {
   if (window.marked && window.markedKatex) {
     marked.use(
@@ -117,7 +117,7 @@ function initMarkdownEngine() {
   }
 }
 
-// 【核心自适应机制】：自动生成内容指纹，只要代码里的 DEFAULT_PROMPTS 有修改，刷新瞬间自适应
+// 自动感知提示词修改
 function autoSyncPrompts() {
   var currentHash = getPromptHash();
   var savedHash = localStorage.getItem("kb_prompt_auto_hash");
@@ -132,7 +132,6 @@ function autoSyncPrompts() {
   }
 }
 
-// 计算提示词内容哈希指纹（完全自动，无需人工维护版本号）
 function getPromptHash() {
   var str =
     DEFAULT_PROMPTS.p1 +
@@ -146,7 +145,6 @@ function getPromptHash() {
   return hash.toString();
 }
 
-// 异步加载 knowledge.md 母卷全文
 async function loadMasterKnowledge() {
   if (cachedMasterKnowledge) return cachedMasterKnowledge;
   try {
@@ -238,7 +236,7 @@ async function executeLecturerLogin() {
     openUnifiedSettingsModal();
     return;
   }
-  var email = document.getElementById("inpAuthAuthEmail") ? document.getElementById("inpAuthAuthEmail").value.trim() : document.getElementById("inpAuthEmail").value.trim();
+  var email = document.getElementById("inpAuthEmail").value.trim();
   var password = document.getElementById("inpAuthPassword").value.trim();
 
   if (!email || !password) return alert("请完整输入邮箱和密码");
@@ -297,7 +295,7 @@ async function syncCloudSecrets() {
   }
 }
 
-/* ================= 2. 极简三步备课流交互 ================= */
+/* ================= 2. 备课三步流 ================= */
 function openPrepDrawer() {
   populateAudiencePicker();
   populateModelPicker();
@@ -464,7 +462,7 @@ function clearPrepData() {
   }
 }
 
-/* ================= 3. 受众与模特档案库 (Hub) ================= */
+/* ================= 3. 学员与模特档案库 ================= */
 function openStudentHub() {
   if (!currentUser) {
     if (
@@ -570,14 +568,9 @@ function selectStudentById(id) {
 
   var sumBox = document.getElementById("selectedStudentSummary");
   sumBox.innerHTML =
-    "<strong>当前聚焦学员：" +
-    s.name +
-    "</strong> (" +
-    (s.level_stage || "学员画像") +
-    ")<br>" +
-    '<span style="color: var(--muted);">短板细节：' +
-    (s.habits_bottlenecks || "无") +
-    "</span>";
+    '<div style="text-align: left; font-size: 0.85rem;">' +
+    '学员：<strong style="font-size: 1rem; color: var(--accent);">' + s.name + '</strong>' +
+    '</div>';
 
   switchHubTab(2);
   loadStudentPlans(s.id);
@@ -1114,7 +1107,7 @@ function applyApiPreset(type) {
   }
 }
 
-/* ================= 7. 宗师教案生成引擎 (母卷直连 · 严格去浮夸风) ================= */
+/* ================= 7. 宗师教案生成引擎 ================= */
 async function executeGeneration() {
   if (
     !courseStore.saved &&
@@ -1361,7 +1354,7 @@ function buildLocalKinbakuSyllabus() {
   );
 }
 
-/* ================= 8. Markdown 渲染引擎 (工业级 Marked 驱动) ================= */
+/* ================= 8. Markdown 渲染引擎 (双模原生结构) ================= */
 function renderMarkdownToScreen(text) {
   var cleanText = text ? text.trim() : "";
   currentLectureText = cleanText;
@@ -1393,20 +1386,86 @@ function renderMarkdownToScreen(text) {
   if (docBox) {
     docBox.style.display = isRawEditorOn ? "none" : "block";
 
-    // 采用 Marked 官方解析引擎解析 (无缝支持 KaTeX 与 GFM)
-    if (window.marked) {
-      docBox.innerHTML = marked.parse(cleanText);
-    } else {
-      docBox.innerHTML = cleanText;
-    }
+    // ① 将 $$ 流程转化为干净的链条容器
+    var processedText = cleanText.replace(/\$\$(.*?)\$\$/gs, function (match, content) {
+      var pureText = content.replace(/\\text\{([^}]+)\}/g, "$1").trim();
+      if (/\\longrightarrow|\\rightarrow|->|→/.test(pureText)) {
+        var steps = pureText.split(/\\longrightarrow|\\rightarrow|->|→/);
+        var stepsHtml = '<div class="chain-flow-box">';
+        steps.forEach(function (step, idx) {
+          stepsHtml += '<span class="chain-node">' + step.trim() + '</span>';
+          if (idx < steps.length - 1) {
+            stepsHtml += '<span class="chain-arrow">➔</span>';
+          }
+        });
+        stepsHtml += '</div>';
+        return stepsHtml;
+      }
+      return match;
+    });
 
-    // 增强任务复选框样式
+    // ② 调用 Marked 解析
+    docBox.innerHTML = window.marked ? marked.parse(processedText) : processedText;
+
+    // ③ 双模自适应：PC 保留纯正原生紧凑表格，手机端伴生微型卡片
+    docBox.querySelectorAll('table').forEach(function (tbl) {
+      if (tbl.parentElement.classList.contains('pro-table-wrapper')) return;
+
+      var headers = [];
+      tbl.querySelectorAll('thead th').forEach(function (th) {
+        headers.push(th.innerText.trim());
+      });
+
+      var flowContainer = document.createElement('div');
+      flowContainer.className = 'pro-card-flow';
+
+      tbl.querySelectorAll('tbody tr').forEach(function (tr) {
+        var tds = tr.querySelectorAll('td');
+        if (!tds.length) return;
+
+        var card = document.createElement('div');
+        card.className = 'pro-card-item';
+
+        var badge = document.createElement('div');
+        badge.className = 'pro-card-badge';
+        badge.innerText = tds[0] ? tds[0].innerText.trim() : '';
+        card.appendChild(badge);
+
+        for (var i = 1; i < tds.length; i++) {
+          var row = document.createElement('div');
+          row.className = 'pro-card-row';
+
+          var label = document.createElement('span');
+          label.className = 'pro-card-label';
+          label.innerText = (headers[i] || '详情') + '：';
+
+          var val = document.createElement('span');
+          val.className = 'pro-card-val';
+          val.innerHTML = tds[i].innerHTML;
+
+          row.appendChild(label);
+          row.appendChild(val);
+          card.appendChild(row);
+        }
+        flowContainer.appendChild(card);
+      });
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'pro-table-wrapper';
+
+      tbl.parentNode.insertBefore(wrapper, tbl);
+      wrapper.appendChild(tbl);
+      wrapper.appendChild(flowContainer);
+    });
+
+    // ④ 增强任务复选框样式
     docBox.querySelectorAll('input[type="checkbox"]').forEach(function (chk) {
       if (chk.parentElement) {
         chk.parentElement.classList.add("check-line-item");
       }
     });
   }
+
   document.getElementById("labelStatus").innerText =
     "教案已就绪 (" + new Date().toLocaleTimeString() + ")";
   if (statusBadge) statusBadge.className = "badge-dot active";
