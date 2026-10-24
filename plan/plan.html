@@ -30,7 +30,7 @@
           <div class="brand-name">绳缚教学教案系统</div>
         </div>
 
-        <!-- 右侧：响应式控制坞 (PC端显示图文胶囊，手机端自适应为纯图标) -->
+        <!-- 右侧：响应式控制坞 -->
         <div class="nav-actions">
           <!-- ① 学员档案库 -->
           <button class="pill-btn" onclick="openStudentHub()" id="btnStudentHub" title="学员档案库 (查看学员与工作坊)">
@@ -63,9 +63,16 @@
             <span class="btn-text" id="authStatusText">讲师登录</span>
           </button>
 
-          <!-- ④ 辅助工具箱 -->
+          <!-- ④ 明暗模式切换：纯图标通透交互 -->
+          <button class="icon-only-btn" onclick="switchTheme()" title="切换明暗主题">
+            <svg class="svg-icon" id="themeSvg" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+
+          <!-- ⑤ 辅助工具箱 (三个点：纯图标通透交互) -->
           <div class="dropdown-container">
-            <button class="btn btn-gray" title="工具箱与设置" onclick="toggleDropdown(event, 'topMenuPanel')">
+            <button class="icon-only-btn" title="工具箱与设置" onclick="toggleDropdown(event, 'topMenuPanel')">
               <svg class="svg-icon" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="1" />
                 <circle cx="19" cy="12" r="1" />
@@ -89,12 +96,6 @@
                 <span>导入外部教案</span>
                 <input type="file" accept=".md,.txt" style="display: none;" onchange="loadMarkdownFile(event)">
               </label>
-              <div class="dropdown-opt" onclick="switchTheme()">
-                <svg class="svg-icon" id="themeSvg" viewBox="0 0 24 24">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-                <span>明暗模式切换</span>
-              </div>
               <div class="dropdown-opt" onclick="resetCurrentLecture()">
                 <svg class="svg-icon" viewBox="0 0 24 24">
                   <polyline points="3 6 5 6 21 6" />
@@ -120,28 +121,12 @@
               <span id="labelStatus">教案就绪状态</span>
             </div>
             <div class="card-topbar-actions">
-              <!-- 一键存档到云端 -->
-              <button class="btn btn-red" onclick="saveCurrentPlanToSupabase()" title="将当前教案归档至选定学员名下">
-                <svg class="svg-icon" viewBox="0 0 24 24">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                  <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                <span>保存至云端</span>
-              </button>
               <button class="btn btn-gray" onclick="copyLectureContent()" title="复制当前教案全文">
                 <svg class="svg-icon" viewBox="0 0 24 24">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
                 <span>复制全文</span>
-              </button>
-              <button class="btn btn-gray" onclick="resetCurrentLecture()" title="清空当前教案">
-                <svg class="svg-icon" viewBox="0 0 24 24">
-                  <polyline points="3 6 5 6 21 6" />
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                </svg>
-                <span>清空</span>
               </button>
             </div>
           </div>
@@ -172,11 +157,11 @@
                 <path d="M10 22h4" />
                 <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z" />
               </svg>
-              <span>提示：严格杜绝伪科学与假大空，生成真实走绳线路与现场纠偏口令</span>
+              <span>提示：严格杜绝伪科学与假大空，生成真实走绳线路与细致引导词</span>
             </div>
           </div>
 
-          <!-- 空引导视图 (极度纯净，无多余图标) -->
+          <!-- 空引导视图 -->
           <div class="empty-wrapper" id="emptyPlaceholder" style="padding: 5rem 1rem;">
             <div class="empty-head" style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.65rem;">本期专属教案尚未生成</div>
             <div class="empty-sub" style="max-width: 28rem; margin: 0 auto; color: var(--muted); line-height: 1.8;">
@@ -216,8 +201,9 @@
         <span>提词</span>
       </button>
 
-      <div class="dropdown-container" style="flex: 1; min-width: 0;">
-        <button class="btn btn-gray" style="width: 100%;" onclick="toggleDropdown(event, 'exportMenuPanel')">
+      <!-- 导出容器：加入 dock-dropdown-item 确保 1:1:1 绝对等宽 -->
+      <div class="dropdown-container dock-dropdown-item">
+        <button class="btn btn-gray" onclick="toggleDropdown(event, 'exportMenuPanel')">
           <svg class="svg-icon" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
             <polyline points="7 10 12 15 17 10"></polyline>
@@ -226,6 +212,14 @@
           <span>导出</span>
         </button>
         <div class="dropdown-panel" id="exportMenuPanel" style="bottom: 100%; top: auto; margin-bottom: 0.35rem;">
+          <div class="dropdown-opt" onclick="saveCurrentPlanToSupabase()" title="将当前教案归档至选定学员名下">
+            <svg class="svg-icon" style="color: var(--accent);" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span style="font-weight: 600;">保存至云端</span>
+          </div>
           <div class="dropdown-opt" onclick="saveAsMarkdown()">
             <svg class="svg-icon" viewBox="0 0 24 24">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -268,7 +262,7 @@
       <span style="cursor: pointer; color: #94a3b8;" onclick="switchStageMode()">退出提词</span>
     </div>
 
-    <!-- ================= 授课筹备全书 (极致打磨：三步直达流) ================= -->
+    <!-- ================= 授课筹备全书 ================= -->
     <div class="modal-backdrop" id="dialogPrep">
       <div class="modal-card">
         <div class="sheet-handle"></div>
@@ -289,8 +283,7 @@
         </div>
 
         <div class="tab-content" style="gap: 1.15rem; padding: 1.1rem 1.25rem;">
-
-          <!-- ① 谁在学 (学员画像) -->
+          <!-- ① 谁在学 -->
           <section class="prep-step-card">
             <div class="prep-step-title">
               <span class="step-num-badge">1</span>
@@ -302,13 +295,12 @@
               </select>
               <button class="btn btn-gray" onclick="openStudentFormModal()" style="min-height: 2.1rem; padding: 0 0.65rem;" title="录入新学员">+ 新建学员</button>
             </div>
-            <!-- 学员短板与习惯只读摘要 -->
             <div class="preview-mini-card" id="audienceSummaryCard">
               <span style="color: var(--muted);">💡 请在上方选择或新建学员。AI 将调取该画像的发力习惯与短板，输出针对性带练口令。</span>
             </div>
           </section>
 
-          <!-- ② 谁来搭 (模特档案) -->
+          <!-- ② 谁来搭 -->
           <section class="prep-step-card">
             <div class="prep-step-title">
               <span class="step-num-badge">2</span>
@@ -320,18 +312,16 @@
               </select>
               <button class="btn btn-gray" onclick="openModelFormModal()" style="min-height: 2.1rem; padding: 0 0.65rem;" title="录入新模特">+ 新建模特</button>
             </div>
-            <!-- 模特身心特征紧凑只读卡 -->
             <div class="preview-mini-card" id="modelSummaryCard">
               <span style="color: var(--muted);">🛡️ 当前启用《通用生理安全基准准则》：上臂桡神经三角区净空、掐甲充血测试 &lt; 2 秒。</span>
             </div>
-            <!-- 本日临时状态特别提示 -->
             <div class="field-wrap" style="margin-top: 0.35rem;">
               <label style="font-size: 0.72rem; color: var(--accent);">⚠️ 本日临时生理/状态特别提示 (选填，仅作用于本期)：</label>
               <input type="text" class="field-input" id="inpModelTodayNotes" placeholder="例如：模特今天落枕，避开左侧颈肩受力；或睡眠偏少注意防晕绳...">
             </div>
           </section>
 
-          <!-- ③ 怎么学 (课题、目标与前置摸底检查) -->
+          <!-- ③ 怎么学 -->
           <section class="prep-step-card">
             <div class="prep-step-title">
               <span class="step-num-badge">3</span>
@@ -351,16 +341,13 @@
               <label>本期预期达成的教学突破目标</label>
               <input type="text" class="field-input" id="inpGoals" placeholder="例如：掌握用身体自重带直绳索；建立萨默维尔称人结自锁信任；戒除二头肌蛮力拔河。">
             </div>
-            <!-- 灵魂字段：课前基础摸底与前置检查/注意事项 -->
             <div class="field-wrap" style="margin-top: 0.35rem;">
               <label style="color: var(--accent); font-weight: 700;">🔍 课前基础摸底与前置检查 / 注意事项 (教学法灵魂)：</label>
               <textarea class="field-input" id="inpPrereq" rows="2" placeholder="例如：先让学员打一个基础双平结，看是否滑脱；空手摸底学员对骨架支撑的理解；排查起手时是否习惯用手臂死拉绳尾..."></textarea>
             </div>
           </section>
-
         </div>
 
-        <!-- 底部操作栏 -->
         <div class="modal-bottom">
           <button class="btn btn-gray" onclick="clearPrepData()" title="清空筹备内容">清空内容</button>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
@@ -401,7 +388,6 @@
           <button class="tab-btn" id="tabHubBtn3" onclick="switchHubTab(3)">③ 模特资料库</button>
         </div>
 
-        <!-- Tab 1: 学员列表 & 新建学员 -->
         <div class="tab-content" id="tabHubContent1">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">所有学员画像档案：</span>
@@ -412,7 +398,6 @@
           </div>
         </div>
 
-        <!-- Tab 2: 当前学员的历次教案时间线 -->
         <div class="tab-content" id="tabHubContent2" style="display: none;">
           <div id="selectedStudentSummary" style="background: var(--card); border: var(--border-thin) solid var(--border); border-radius: var(--radius-btn); padding: 0.75rem; font-size: 0.8rem; line-height: 1.6;">
             尚未选定学员。请先在【学员画像名录】中选择一位学员或班级。
@@ -426,7 +411,6 @@
           </div>
         </div>
 
-        <!-- Tab 3: 模特身心档案库 -->
         <div class="tab-content" id="tabHubContent3" style="display: none;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.8rem; font-weight: 700; color: var(--muted);">模特档案资源池：</span>
@@ -571,7 +555,6 @@
           <button class="tab-btn" id="tabMainSetBtn3" onclick="switchSettingsMainTab(3)">③ 讲师提示词模块</button>
         </div>
 
-        <!-- Tab 1: Supabase 配置 -->
         <div class="tab-content" id="tabMainSetContent1">
           <div class="field-wrap">
             <label>Supabase Project URL *</label>
@@ -586,7 +569,6 @@
           </div>
         </div>
 
-        <!-- Tab 2: AI 引擎配置 -->
         <div class="tab-content" id="tabMainSetContent2" style="display: none;">
           <label style="font-size: 0.75rem; font-weight: 700; color: var(--muted);">大模型服务预设端点：</label>
           <div class="preset-group">
@@ -609,7 +591,6 @@
           </div>
         </div>
 
-        <!-- Tab 3: 提示词模块 -->
         <div class="tab-content" id="tabMainSetContent3" style="display: none;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
             <label style="font-weight: 700; color: var(--accent); font-size: 0.78rem;">讲师行动准则子模块：</label>
@@ -618,7 +599,7 @@
           <div class="tab-bar" style="margin-bottom: 0.5rem; background: var(--bg);">
             <button class="tab-btn active" id="tabPromptBtn1" onclick="switchPromptTab(1)">① 角色红线</button>
             <button class="tab-btn" id="tabPromptBtn2" onclick="switchPromptTab(2)">② 因课架构</button>
-            <button class="tab-btn" id="tabPromptBtn3" onclick="switchPromptTab(3)">③ 现场口述</button>
+            <button class="tab-btn" id="tabPromptBtn3" onclick="switchPromptTab(3)">③ 现场引导</button>
             <button class="tab-btn" id="tabPromptBtn4" onclick="switchPromptTab(4)">④ 安全复位</button>
           </div>
           <div id="tabPromptBox1" style="display: flex; flex-direction: column; gap: 0.3rem; flex: 1;">
