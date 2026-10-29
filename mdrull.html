@@ -37,6 +37,17 @@
             position: relative;
         }
 
+        /* 强调文本样式增强 */
+        strong {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .spec-box strong {
+            color: #78350f;
+            font-weight: 700;
+        }
+
         /* 侧边导航栏 */
         .sidebar {
             width: var(--sidebar-width);
@@ -284,13 +295,13 @@
             background: #f8fafc;
             font-weight: 600;
         }
-        .preview-box code.inline-code {
+        .preview-box code.inline-code, code {
             background-color: #f1f5f9;
             color: #b91c1c;
             padding: 2px 5px;
             border-radius: 4px;
             font-family: 'Fira Code', monospace;
-            font-size: 0.85em;
+            font-size: 0.88em;
         }
         .preview-box mark {
             background: #fef08a;
@@ -450,7 +461,7 @@
             </div>
         </div>
 
-        <!-- 3. 分界线与版面划分 (重点补充) -->
+        <!-- 3. 分界线与版面划分 -->
         <div class="card-item" id="sec-hr" data-keywords="分界线 分割线 横线 hr divider --- ***">
             <div class="card-header">
                 <div class="card-title">➖ 分界线与版面划分 (Dividers / Horizontal Rule)</div>
@@ -491,7 +502,7 @@
             </div>
         </div>
 
-        <!-- 4. 段落、强制换行与转义符号 (重点补充) -->
+        <!-- 4. 段落、强制换行与转义符号 -->
         <div class="card-item" id="sec-spacing" data-keywords="换行 空行 转义 br spacing newline escape">
             <div class="card-header">
                 <div class="card-title">↵ 段落、强制换行与转义 (Spacing & Escaping)</div>
@@ -575,7 +586,7 @@
             </div>
         </div>
 
-        <!-- 6. 脚注与文末补充说明 (重点补充) -->
+        <!-- 6. 脚注与文末补充说明 -->
         <div class="card-item" id="sec-footnote" data-keywords="脚注 引用 注释 footnote reference">
             <div class="card-header">
                 <div class="card-title">📌 文档脚注与文末注释 (Footnotes)</div>
@@ -852,6 +863,7 @@ def fetch_user_data(user_id: int):
     </main>
 
     <script>
+        // 一键复制源码函数
         function copySource(btn) {
             const pre = btn.closest('div').nextElementSibling.querySelector('pre');
             const text = pre.innerText;
@@ -866,6 +878,7 @@ def fetch_user_data(user_id: int):
             });
         }
 
+        // 侧边栏搜索过滤
         function filterCards() {
             const query = document.getElementById('filterInput').value.toLowerCase().trim();
             const cards = document.querySelectorAll('.card-item');
@@ -881,6 +894,20 @@ def fetch_user_data(user_id: int):
                 }
             });
         }
+
+        // 核心支持：自动将非源码区的 Markdown 粗体语法 (**强调内容**) 真实渲染为 <strong>
+        function parseInlineMarkdown() {
+            // 获取所有提示框与规则表格单元格，排除预格式化源码框 (pre)
+            const targets = document.querySelectorAll('.spec-box, .rules-table td');
+            
+            targets.forEach(el => {
+                // 正则匹配 **内容** 并替换为 <strong>内容</strong>
+                el.innerHTML = el.innerHTML.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            });
+        }
+
+        // 页面就绪后立即执行解析
+        window.addEventListener('DOMContentLoaded', parseInlineMarkdown);
     </script>
 </body>
 </html>
