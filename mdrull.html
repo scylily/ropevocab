@@ -19,7 +19,7 @@
             --warning-bg: #fffbeb;
             --warning-border: #f59e0b;
             --warning-text: #92400e;
-            --sidebar-width: 260px;
+            --sidebar-width: 250px;
         }
 
         * {
@@ -32,12 +32,12 @@
             font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            display: flex;
             min-height: 100vh;
             line-height: 1.6;
+            position: relative;
         }
 
-        /* 侧边导航栏 */
+        /* 侧边导航栏：悬浮固定在左侧 */
         .sidebar {
             width: var(--sidebar-width);
             background: rgba(255, 255, 255, 0.95);
@@ -109,12 +109,11 @@
             color: var(--brand-primary);
         }
 
-        /* 主体内容区 */
+        /* 核心改动：主体内容在全屏幕居中 */
         .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 2.5rem 3rem;
-            max-width: 1200px;
+            max-width: 1050px;       /* 规范阅读宽度，避免超宽屏拉伸变形 */
+            margin: 0 auto;          /* 真正实现视口水平绝对居中 */
+            padding: 3rem 1.5rem;
         }
 
         header.page-header {
@@ -312,10 +311,27 @@
             font-weight: 600;
         }
 
-        /* 移动端与小屏适配 */
+        /* 响应式适配：屏幕较窄时防止侧边栏遮挡主体 */
+        @media (max-width: 1600px) {
+            .main-content {
+                /* 当屏幕宽度不足以让左右留白容纳侧边栏时，留出侧边栏宽度并轻微内缩 */
+                margin-left: max(var(--sidebar-width), calc((100vw - 1050px) / 2));
+                margin-right: auto;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+                margin-right: 0;
+                max-width: none;
+                padding: 2rem;
+            }
+        }
+
         @media (max-width: 960px) {
             .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 1.5rem 1rem; }
+            .main-content { margin-left: 0; margin-right: 0; padding: 1.5rem 1rem; }
             .split-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -350,7 +366,7 @@
         </ul>
     </nav>
 
-    <!-- 主体内容 -->
+    <!-- 主体内容：居中展示 -->
     <main class="main-content">
         <header class="page-header">
             <h1>Markdown 写作提示器与标准速查</h1>
