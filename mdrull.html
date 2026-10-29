@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 极致速查与写作提示器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --brand-primary: #4f46e5;
+            --brand-light: #eef2ff;
+            --code-bg: #1e1e2e;
+            --code-fg: #cdd6f4;
+            --warning-bg: #fffbeb;
+            --warning-border: #f59e0b;
+            --warning-text: #92400e;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* 侧边导航栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--brand-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-size: 0.85rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--brand-primary);
+        }
+
+        .nav-group-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 0.75rem 0 0.25rem 0.5rem;
+        }
+
+        .nav-list {
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .nav-list a {
+            display: block;
+            padding: 0.45rem 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            margin-bottom: 2px;
+        }
+
+        .nav-list a:hover {
+            background-color: var(--brand-light);
+            color: var(--brand-primary);
+        }
+
+        /* 主体内容区 */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2.5rem 3rem;
+            max-width: 1200px;
+        }
+
+        header.page-header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.25rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* 卡片模块与分栏展示 */
+        .card-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            scroll-margin-top: 1.5rem;
+        }
+
+        .card-header {
+            background: #fafbfc;
+            padding: 0.9rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+
+        .badge-core { background: #fee2e2; color: #dc2626; }
+        .badge-high { background: #e0e7ff; color: #4338ca; }
+        .badge-struct { background: #ecfdf5; color: #047857; }
+        .badge-advance { background: #fef3c7; color: #b45309; }
+
+        .card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* 规范与技巧提示框 */
+        .spec-box {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 0.75rem 1rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.88rem;
+            color: var(--warning-text);
+        }
+
+        /* 左右对照视图 */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .panel-header {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .source-wrapper {
+            position: relative;
+        }
+
+        .source-wrapper pre {
+            background: var(--code-bg);
+            color: var(--code-fg);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            min-height: 120px;
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 预览渲染效果组件 */
+        .preview-box {
+            border: 1px dashed #cbd5e1;
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .preview-box h1 { font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 700; }
+        .preview-box h2 { font-size: 1.3rem; margin-bottom: 0.4rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.2rem; }
+        .preview-box h3 { font-size: 1.05rem; margin-bottom: 0.4rem; font-weight: 600; }
+        .preview-box blockquote {
+            border-left: 4px solid var(--brand-primary);
+            padding-left: 0.85rem;
+            color: var(--text-muted);
+            background: #f8fafc;
+            margin: 0.5rem 0;
+            padding: 0.4rem 0.85rem;
+            border-radius: 0 4px 4px 0;
+        }
+        .preview-box table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        .preview-box th, .preview-box td {
+            border: 1px solid var(--border-color);
+            padding: 0.45rem 0.75rem;
+        }
+        .preview-box th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        .preview-box code.inline-code {
+            background-color: #f1f5f9;
+            color: #b91c1c;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85em;
+        }
+        .preview-box mark {
+            background: #fef08a;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+
+        /* 排版呼吸感全屏卡片 */
+        .rules-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            margin-top: 0.5rem;
+        }
+        .rules-table th, .rules-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        .rules-table th {
+            background-color: #fafbfc;
+            font-weight: 600;
+        }
+
+        /* 移动端与小屏适配 */
+        @media (max-width: 960px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 1.5rem 1rem; }
+            .split-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 侧边栏导航 -->
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span>🚀</span> MD Prompt Manual
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="filterInput" placeholder="输入关键字搜索规范..." oninput="filterCards()">
+        </div>
+
+        <ul class="nav-list" id="navList">
+            <div class="nav-group-title">必记核心（高频）</div>
+            <li><a href="#sec-headings">📝 标题层级 Heading</a></li>
+            <li><a href="#sec-text">✨ 行内文本修饰 Text</a></li>
+            <li><a href="#sec-list">📊 复合列表与任务 List</a></li>
+            
+            <div class="nav-group-title">结构与工程</div>
+            <li><a href="#sec-code">💻 围栏式代码块 Code</a></li>
+            <li><a href="#sec-quote">💬 引用与警告 Blockquote</a></li>
+            <li><a href="#sec-media">🔗 超链接与图片 Link</a></li>
+            <li><a href="#sec-table">📅 结构化表格 Table</a></li>
+            
+            <div class="nav-group-title">进阶拓展与原则</div>
+            <li><a href="#sec-adv">🧩 折叠与高亮 Advanced</a></li>
+            <li><a href="#sec-zen">💡 呼吸感排版三原则 Standard</a></li>
+        </ul>
+    </nav>
+
+    <!-- 主体内容 -->
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Markdown 写作提示器与标准速查</h1>
+            <p>即写即对 • 代码复制 • 视觉排版呼吸感指引</p>
+        </header>
+
+        <!-- 1. 标题层级 -->
+        <div class="card-item" id="sec-headings" data-keywords="标题 一级标题 二级标题 headings">
+            <div class="card-header">
+                <div class="card-title">📝 标题层级 (Headings)</div>
+                <span class="badge badge-core">核心规范</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇文档**只保留一个一级标题**（作为文首主标题）。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre># 文档一级主标题
+## 核心业务章节
+### 细分流程步骤</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <h1 style="margin:0 0 0.5rem 0;">文档一级主标题</h1>
+                            <h2 style="margin:0 0 0.5rem 0;">核心业务章节</h2>
+                            <h3 style="margin:0;">细分流程步骤</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 行内文本修饰 -->
+        <div class="card-item" id="sec-text" data-keywords="粗体 斜体 删除线 行内代码 text bold italic inline code">
+            <div class="card-header">
+                <div class="card-title">✨ 行内文本修饰 (Inline Text)</div>
+                <span class="badge badge-high">高频使用</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">💡 技巧：修饰符（如 <code>**</code>、<code>`</code>）紧贴词语两端，变量、按键、专有名词一律使用行内代码反引号包裹。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>**强烈推荐** 使用两个星号包裹
+*次要信息* 或倾斜提示用单星号
+~~过时废弃的操作~~ 用双波浪线
+按下 `Ctrl + C` 或配置 `config.json`</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <p><strong>强烈推荐</strong> 使用两个星号包裹</p>
+                            <p><em>次要信息</em> 或倾斜提示用单星号</p>
+                            <p><del>过时废弃的操作</del> 用双波浪线</p>
+                            <p>按下 <code class="inline-code">Ctrl + C</code> 或配置 <code class="inline-code">config.json</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 复合列表与任务 -->
+        <div class="card-item" id="sec-list" data-keywords="列表 任务清单 todo list task 有序 无序">
+            <div class="card-header">
+                <div class="card-title">📊 复合列表与任务 (Lists & Tasks)</div>
+                <span class="badge badge-struct">结构化</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">📌 避坑：不要在同一篇文档中混用 <code>*</code> 和 <code>-</code>。子级缩进建议使用 **4 个空格**。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>- 技术架构规划
+    - 数据库设计
+    - 前端组件拆分
+1. 第一阶段环境构建
+2. 第二阶段核心部署
+- [x] 完成单元测试
+- [ ] 生产环境部署待审核</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <ul style="padding-left: 1.2rem; margin-bottom: 0.5rem;">
+                                <li>技术架构规划
+                                    <ul style="padding-left: 1.2rem;">
+                                        <li>数据库设计</li>
+                                        <li>前端组件拆分</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ol style="padding-left: 1.2rem; margin-bottom: 0.5rem;">
+                                <li>第一阶段环境构建</li>
+                                <li>第二阶段核心部署</li>
+                            </ol>
+                            <div style="font-size: 0.9rem;">
+                                <div><input type="checkbox" checked disabled> 完成单元测试</div>
+                                <div><input type="checkbox" disabled> 生产环境部署待审核</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 围栏式代码块 -->
+        <div class="card-item" id="sec-code" data-keywords="代码块 代码高亮 code block python bash">
+            <div class="card-header">
+                <div class="card-title">💻 围栏式代码块 (Code Block)</div>
+                <span class="badge badge-high">工程必备</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">🚀 规范：开头三个反引号后**必须显式注明小写语言别名**（如 python, bash, json），以激活语法高亮。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>```python
+def fetch_user_data(user_id: int):
+    # 语言别名自动赋予语法高亮
+    return {"status": 200, "user": user_id}
+```</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box" style="padding: 0; overflow: hidden; background: #1e1e2e;">
+                            <pre style="background: transparent; color: #cdd6f4; border:none; padding:1rem;"><span style="color:#f38ba8">def</span> <span style="color:#89b4fa">fetch_user_data</span>(user_id: <span style="color:#f9e2af">int</span>):<br>    <span style="color:#6c7086"># 语言别名自动赋予语法高亮</span><br>    <span style="color:#f38ba8">return</span> {<span style="color:#a6e3a1">"status"</span>: <span style="color:#fab387">200</span>, <span style="color:#a6e3a1">"user"</span>: user_id}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 引用与说明 -->
+        <div class="card-item" id="sec-quote" data-keywords="引用 警告 blockquote tips">
+            <div class="card-header">
+                <div class="card-title">💬 引用与警示 (Blockquote)</div>
+                <span class="badge badge-struct">结构化</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">💬 技巧：引用块常用于标注注意事项、协议说明或提示框。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>&gt; **提示：** 执行该脚本前，请务必先备份相关数据目录。
+&gt;
+&gt; 支持跨段落连续引用。</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <blockquote>
+                                <strong>提示：</strong> 执行该脚本前，请务必先备份相关数据目录。
+                                <br><br>
+                                支持跨段落连续引用。
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 超链接与多媒体 -->
+        <div class="card-item" id="sec-media" data-keywords="链接 图片 link image media">
+            <div class="card-header">
+                <div class="card-title">🔗 链接与多媒体 (Links & Images)</div>
+                <span class="badge badge-high">高频使用</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">🎯 记忆诀窍：图片语法仅比超链接在最前方**多一个半角感叹号 <code>!</code>**。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>[访问官方指南](https://example.com)
+
+![状态架构示意图](https://dummyimage.com/180x45/4f46e5/ffffff&text=Arch+Image)</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <a href="#" style="color:var(--brand-primary); text-decoration:none; font-weight:600;">访问官方指南 ↗</a>
+                            <div style="margin-top:0.75rem;">
+                                <img src="https://dummyimage.com/180x45/4f46e5/ffffff&text=Arch+Image" alt="状态架构示意图" style="border-radius:4px; max-width:180px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 数据表格 -->
+        <div class="card-item" id="sec-table" data-keywords="表格 对齐 table align">
+            <div class="card-header">
+                <div class="card-title">📅 数据表格 (Data Tables)</div>
+                <span class="badge badge-advance">精准排版</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">📐 对齐控制：第二行分隔符中冒号位置控制对齐：<code>:---</code> 左对齐，<code>:---:</code> 居中对齐，<code>---:</code> 右对齐。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>| 功能模块 (左) | 当前状态 (中) | 耗时 (右) |
+| :--- | :---: | ---: |
+| 交互框架优化 | 🟢 已完成 | 3.5h |
+| 跨端适配排查 | 🟡 进行中 | 1.2h |</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left;">功能模块 (左)</th>
+                                        <th style="text-align: center;">当前状态 (中)</th>
+                                        <th style="text-align: right;">耗时 (右)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: left;">交互框架优化</td>
+                                        <td style="text-align: center;">🟢 已完成</td>
+                                        <td style="text-align: right;">3.5h</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;">跨端适配排查</td>
+                                        <td style="text-align: center;">🟡 进行中</td>
+                                        <td style="text-align: right;">1.2h</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. 扩展语法与HTML -->
+        <div class="card-item" id="sec-adv" data-keywords="折叠 高亮 details summary mark html advance">
+            <div class="card-header">
+                <div class="card-title">🧩 折叠与高亮 (Extensions & HTML)</div>
+                <span class="badge badge-advance">进阶排版</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">💡 扩展特性：Markdown 原生兼容原生 HTML，可用 <code>&lt;details&gt;</code> 收纳长日志或长代码。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown / HTML)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>这是 ==重点强调== 的内容（部分渲染器扩展）。
+
+&lt;details&gt;
+&lt;summary&gt;👉 点击展开查看详细配置参数&lt;/summary&gt;
+- Port: 8080
+- Host: 127.0.0.1
+&lt;/details&gt;</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <p style="margin-bottom:0.75rem;">这是 <mark>重点强调</mark> 的内容。</p>
+                            <details style="border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem 0.75rem; background: #fafbfc;">
+                                <summary style="cursor: pointer; font-weight: 600; font-size: 0.9rem;">👉 点击展开查看详细配置参数</summary>
+                                <ul style="padding-left: 1.25rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                                    <li>Port: 8080</li>
+                                    <li>Host: 127.0.0.1</li>
+                                </ul>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. 呼吸感排版三原则 -->
+        <div class="card-item" id="sec-zen" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
+            <div class="card-header">
+                <div class="card-title">💡 终极写作呼吸感排版规范</div>
+                <span class="badge badge-core">专业素养</span>
+            </div>
+            <div class="card-body" style="padding-top: 0.5rem;">
+                <div style="overflow-x: auto;">
+                    <table class="rules-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 22%;">排版维度</th>
+                                <th style="width: 48%;">黄金准则与示例</th>
+                                <th style="width: 30%;">设计意图</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>中西文混排空格</strong></td>
+                                <td>汉字与半角英文、数字之间**手动保留一个半角空格**。<br>
+                                    ✅ 正确：使用 Python 处理了 200 条数据。<br>
+                                    ❌ 错误：使用Python处理了200条数据。
+                                </td>
+                                <td>避免字符过密，建立良好的视觉节奏与“呼吸感”，提升专业质感。</td>
+                            </tr>
+                            <tr>
+                                <td><strong>空行阻断机制</strong></td>
+                                <td>段落与段落、段落与代码块/表格之间，**必须保留且仅保留一个完整空行**。</td>
+                                <td>防止不同 Markdown 渲染引擎（如 GitHub、Hugo）产生行内误拼接。</td>
+                            </tr>
+                            <tr>
+                                <td><strong>全小写文件命名</strong></td>
+                                <td>文件名全部小写，禁止空格，词语之间用短横线 <code>-</code> 链接。<br>
+                                    ✅ 正确：<code>2024-api-v2-specs.md</code><br>
+                                    ❌ 错误：<code>API Specs (Final).md</code>
+                                </td>
+                                <td>杜绝跨操作系统（Linux 与 Windows 大小写敏感度差异）引发的死链。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 一键复制源码函数
+        function copySource(btn) {
+            const pre = btn.closest('div').nextElementSibling.querySelector('pre');
+            const text = pre.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = '已复制!';
+                btn.style.backgroundColor = '#10b981';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '';
+                }, 1500);
+            });
+        }
+
+        // 侧边栏搜索过滤
+        function filterCards() {
+            const query = document.getElementById('filterInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card-item');
+
+            cards.forEach(card => {
+                const keywords = card.getAttribute('data-keywords') ? card.getAttribute('data-keywords').toLowerCase() : '';
+                const text = card.innerText.toLowerCase();
+                
+                if (text.includes(query) || keywords.includes(query)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
