@@ -37,7 +37,7 @@
             position: relative;
         }
 
-        /* 侧边导航栏：悬浮固定在左侧 */
+        /* 侧边导航栏 */
         .sidebar {
             width: var(--sidebar-width);
             background: rgba(255, 255, 255, 0.95);
@@ -109,10 +109,10 @@
             color: var(--brand-primary);
         }
 
-        /* 核心改动：主体内容在全屏幕居中 */
+        /* 页面居中设计 */
         .main-content {
-            max-width: 1050px;       /* 规范阅读宽度，避免超宽屏拉伸变形 */
-            margin: 0 auto;          /* 真正实现视口水平绝对居中 */
+            max-width: 1050px;
+            margin: 0 auto;
             padding: 3rem 1.5rem;
         }
 
@@ -134,7 +134,7 @@
             font-size: 1rem;
         }
 
-        /* 卡片模块与分栏展示 */
+        /* 卡片设计 */
         .card-item {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -181,7 +181,6 @@
             gap: 1rem;
         }
 
-        /* 规范与技巧提示框 */
         .spec-box {
             background-color: var(--warning-bg);
             border-left: 4px solid var(--warning-border);
@@ -191,7 +190,7 @@
             color: var(--warning-text);
         }
 
-        /* 左右对照视图 */
+        /* 双分栏布局 */
         .split-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -242,7 +241,7 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* 预览渲染效果组件 */
+        /* 渲染预览区样式 */
         .preview-box {
             border: 1px dashed #cbd5e1;
             background-color: #ffffff;
@@ -258,6 +257,11 @@
         .preview-box h1 { font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 700; }
         .preview-box h2 { font-size: 1.3rem; margin-bottom: 0.4rem; font-weight: 600; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.2rem; }
         .preview-box h3 { font-size: 1.05rem; margin-bottom: 0.4rem; font-weight: 600; }
+        .preview-box hr {
+            border: 0;
+            border-top: 2px dashed #cbd5e1;
+            margin: 0.8rem 0;
+        }
         .preview-box blockquote {
             border-left: 4px solid var(--brand-primary);
             padding-left: 0.85rem;
@@ -293,8 +297,12 @@
             padding: 0.1rem 0.3rem;
             border-radius: 3px;
         }
+        .preview-box sup a {
+            color: var(--brand-primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-        /* 排版呼吸感全屏卡片 */
         .rules-table {
             width: 100%;
             border-collapse: collapse;
@@ -311,10 +319,8 @@
             font-weight: 600;
         }
 
-        /* 响应式适配：屏幕较窄时防止侧边栏遮挡主体 */
         @media (max-width: 1600px) {
             .main-content {
-                /* 当屏幕宽度不足以让左右留白容纳侧边栏时，留出侧边栏宽度并轻微内缩 */
                 margin-left: max(var(--sidebar-width), calc((100vw - 1050px) / 2));
                 margin-right: auto;
             }
@@ -338,7 +344,7 @@
 </head>
 <body>
 
-    <!-- 侧边栏导航 -->
+    <!-- 侧边导航栏 -->
     <nav class="sidebar">
         <div class="sidebar-brand">
             <span>🚀</span> MD Prompt Manual
@@ -354,19 +360,24 @@
             <li><a href="#sec-text">✨ 行内文本修饰 Text</a></li>
             <li><a href="#sec-list">📊 复合列表与任务 List</a></li>
             
+            <div class="nav-group-title">排版与版面分割（高频）</div>
+            <li><a href="#sec-hr">➖ 分界线与版面划分 Divider</a></li>
+            <li><a href="#sec-spacing">↵ 段落、强制换行与转义 Spacing</a></li>
+            <li><a href="#sec-footnote">📌 注脚与补充引用 Footnote</a></li>
+
             <div class="nav-group-title">结构与工程</div>
             <li><a href="#sec-code">💻 围栏式代码块 Code</a></li>
-            <li><a href="#sec-quote">💬 引用与警告 Blockquote</a></li>
+            <li><a href="#sec-quote">💬 引用与警示 Blockquote</a></li>
             <li><a href="#sec-media">🔗 超链接与图片 Link</a></li>
             <li><a href="#sec-table">📅 结构化表格 Table</a></li>
             
-            <div class="nav-group-title">进阶拓展与原则</div>
+            <div class="nav-group-title">进阶拓展与规范</div>
             <li><a href="#sec-adv">🧩 折叠与高亮 Advanced</a></li>
             <li><a href="#sec-zen">💡 呼吸感排版三原则 Standard</a></li>
         </ul>
     </nav>
 
-    <!-- 主体内容：居中展示 -->
+    <!-- 主体居中容器 -->
     <main class="main-content">
         <header class="page-header">
             <h1>Markdown 写作提示器与标准速查</h1>
@@ -380,7 +391,7 @@
                 <span class="badge badge-core">核心规范</span>
             </div>
             <div class="card-body">
-                <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇文档**只保留一个一级标题**（作为文首主标题）。</div>
+                <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇文档**只保留一个一级标题**。</div>
                 <div class="split-grid">
                     <div>
                         <div class="panel-header">
@@ -412,7 +423,7 @@
                 <span class="badge badge-high">高频使用</span>
             </div>
             <div class="card-body">
-                <div class="spec-box">💡 技巧：修饰符（如 <code>**</code>、<code>`</code>）紧贴词语两端，变量、按键、专有名词一律使用行内代码反引号包裹。</div>
+                <div class="spec-box">💡 技巧：修饰符（如 <code>**</code>、<code>`</code>）紧贴词语两端，专有名词与按键用行内代码反引号包裹。</div>
                 <div class="split-grid">
                     <div>
                         <div class="panel-header">
@@ -439,14 +450,90 @@
             </div>
         </div>
 
-        <!-- 3. 复合列表与任务 -->
+        <!-- 3. 分界线与版面划分 (重点补充) -->
+        <div class="card-item" id="sec-hr" data-keywords="分界线 分割线 横线 hr divider --- ***">
+            <div class="card-header">
+                <div class="card-title">➖ 分界线与版面划分 (Dividers / Horizontal Rule)</div>
+                <span class="badge badge-core">极易踩坑</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">
+                    🚨 <strong>绝对禁忌：</strong>写 <code>---</code> 时，**上方必须留一个完整空行**！若直接紧贴上一行文字，Markdown 会把上一行文字直接渲染成巨大的 <code>&lt;h2&gt;</code> 标题！
+                </div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>上一章节结束内容总结。
+
+---
+
+这是跨大板块的新章节内容。
+
+***
+三个减号或三个星号均可作为分割线。</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <p style="color:var(--text-muted); font-size:0.9rem;">上一章节结束内容总结。</p>
+                            <hr>
+                            <p style="font-weight: 500;">这是跨大板块的新章节内容。</p>
+                            <hr>
+                            <p style="color:var(--text-muted); font-size:0.85rem;">三个减号或三个星号均可作为分割线。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 段落、强制换行与转义符号 (重点补充) -->
+        <div class="card-item" id="sec-spacing" data-keywords="换行 空行 转义 br spacing newline escape">
+            <div class="card-header">
+                <div class="card-title">↵ 段落、强制换行与转义 (Spacing & Escaping)</div>
+                <span class="badge badge-high">高频规则</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">💡 规则：直接回车换行并不会生成新段落！要紧凑换行，在行尾敲 **2个半角空格** 或使用 <code>&lt;br&gt;</code>；若要展示 <code>*</code>、<code>#</code> 原字符，在前面加反斜杠 <code>\</code>。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>第一行末尾打两个空格  
+紧接着就是第二行（紧凑换行）
+
+或者直接使用&lt;br&gt;标签强制换行。
+
+\*这不是斜体\*，\# 这不是标题（加反斜杠转义）</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <p style="margin-bottom: 0.5rem;">第一行末尾打两个空格<br>紧接着就是第二行（紧凑换行）</p>
+                            <p style="margin-bottom: 0.5rem;">或者直接使用<br>强制换行。</p>
+                            <p>*这不是斜体*，# 这不是标题（加反斜杠转义）</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 复合列表与任务 -->
         <div class="card-item" id="sec-list" data-keywords="列表 任务清单 todo list task 有序 无序">
             <div class="card-header">
                 <div class="card-title">📊 复合列表与任务 (Lists & Tasks)</div>
                 <span class="badge badge-struct">结构化</span>
             </div>
             <div class="card-body">
-                <div class="spec-box">📌 避坑：不要在同一篇文档中混用 <code>*</code> 和 <code>-</code>。子级缩进建议使用 **4 个空格**。</div>
+                <div class="spec-box">📌 避坑：同一篇文档中无序列表符保持统一。子级列表建议缩进 **4 个空格**。</div>
                 <div class="split-grid">
                     <div>
                         <div class="panel-header">
@@ -488,7 +575,46 @@
             </div>
         </div>
 
-        <!-- 4. 围栏式代码块 -->
+        <!-- 6. 脚注与文末补充说明 (重点补充) -->
+        <div class="card-item" id="sec-footnote" data-keywords="脚注 引用 注释 footnote reference">
+            <div class="card-header">
+                <div class="card-title">📌 文档脚注与文末注释 (Footnotes)</div>
+                <span class="badge badge-advance">学术与长文</span>
+            </div>
+            <div class="card-body">
+                <div class="spec-box">📖 适用场景：正文中引用了术语或引用，不想打断正文阅读体验，使用 <code>[^1]</code> 自动排版到底部。</div>
+                <div class="split-grid">
+                    <div>
+                        <div class="panel-header">
+                            <span>💻 源码 (Markdown)</span>
+                            <button class="btn-copy" onclick="copySource(this)">复制</button>
+                        </div>
+                        <div class="source-wrapper">
+                            <pre>Markdown 是一种轻量级标记语言[^1]。
+它的排版哲学推崇呼吸感与可读性[^2]。
+
+[^1]: 由约翰·格鲁伯（John Gruber）于2004年创建。
+[^2]: 指段落空行适度，中英文留有半角空格。</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel-header">🎨 渲染效果 (Preview)</div>
+                        <div class="preview-box">
+                            <p style="margin-bottom: 0.75rem;">
+                                Markdown 是一种轻量级标记语言<sup><a href="#">[1]</a></sup>。<br>
+                                它的排版哲学推崇呼吸感与可读性<sup><a href="#">[2]</a></sup>。
+                            </p>
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 0.5rem; font-size: 0.82rem; color: var(--text-muted);">
+                                <div>[1] 由约翰·格鲁伯（John Gruber）于2004年创建。</div>
+                                <div>[2] 指段落空行适度，中英文留有半角空格。</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 围栏式代码块 -->
         <div class="card-item" id="sec-code" data-keywords="代码块 代码高亮 code block python bash">
             <div class="card-header">
                 <div class="card-title">💻 围栏式代码块 (Code Block)</div>
@@ -520,14 +646,14 @@ def fetch_user_data(user_id: int):
             </div>
         </div>
 
-        <!-- 5. 引用与说明 -->
+        <!-- 8. 引用与警示 -->
         <div class="card-item" id="sec-quote" data-keywords="引用 警告 blockquote tips">
             <div class="card-header">
                 <div class="card-title">💬 引用与警示 (Blockquote)</div>
                 <span class="badge badge-struct">结构化</span>
             </div>
             <div class="card-body">
-                <div class="spec-box">💬 技巧：引用块常用于标注注意事项、协议说明或提示框。</div>
+                <div class="spec-box">💬 技巧：引用块常用于标注注意事项、协议说明或操作提醒。</div>
                 <div class="split-grid">
                     <div>
                         <div class="panel-header">
@@ -554,7 +680,7 @@ def fetch_user_data(user_id: int):
             </div>
         </div>
 
-        <!-- 6. 超链接与多媒体 -->
+        <!-- 9. 超链接与多媒体 -->
         <div class="card-item" id="sec-media" data-keywords="链接 图片 link image media">
             <div class="card-header">
                 <div class="card-title">🔗 链接与多媒体 (Links & Images)</div>
@@ -587,7 +713,7 @@ def fetch_user_data(user_id: int):
             </div>
         </div>
 
-        <!-- 7. 数据表格 -->
+        <!-- 10. 数据表格 -->
         <div class="card-item" id="sec-table" data-keywords="表格 对齐 table align">
             <div class="card-header">
                 <div class="card-title">📅 数据表格 (Data Tables)</div>
@@ -638,14 +764,14 @@ def fetch_user_data(user_id: int):
             </div>
         </div>
 
-        <!-- 8. 扩展语法与HTML -->
+        <!-- 11. 扩展语法与HTML -->
         <div class="card-item" id="sec-adv" data-keywords="折叠 高亮 details summary mark html advance">
             <div class="card-header">
                 <div class="card-title">🧩 折叠与高亮 (Extensions & HTML)</div>
                 <span class="badge badge-advance">进阶排版</span>
             </div>
             <div class="card-body">
-                <div class="spec-box">💡 扩展特性：Markdown 原生兼容原生 HTML，可用 <code>&lt;details&gt;</code> 收纳长日志或长代码。</div>
+                <div class="spec-box">💡 扩展特性：Markdown 原生兼容 HTML，使用 <code>&lt;details&gt;</code> 收纳长配置或日志，让文章主体更清爽。</div>
                 <div class="split-grid">
                     <div>
                         <div class="panel-header">
@@ -679,7 +805,7 @@ def fetch_user_data(user_id: int):
             </div>
         </div>
 
-        <!-- 9. 呼吸感排版三原则 -->
+        <!-- 12. 终极呼吸感排版准则 -->
         <div class="card-item" id="sec-zen" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
             <div class="card-header">
                 <div class="card-title">💡 终极写作呼吸感排版规范</div>
@@ -702,20 +828,20 @@ def fetch_user_data(user_id: int):
                                     ✅ 正确：使用 Python 处理了 200 条数据。<br>
                                     ❌ 错误：使用Python处理了200条数据。
                                 </td>
-                                <td>避免字符过密，建立良好的视觉节奏与“呼吸感”，提升专业质感。</td>
+                                <td>避免中英字符粘连，建立阅读视线节奏，提升整体文本的高级感。</td>
                             </tr>
                             <tr>
                                 <td><strong>空行阻断机制</strong></td>
-                                <td>段落与段落、段落与代码块/表格之间，**必须保留且仅保留一个完整空行**。</td>
-                                <td>防止不同 Markdown 渲染引擎（如 GitHub、Hugo）产生行内误拼接。</td>
+                                <td>段落间、分界线 <code>---</code> 上下、代码块与文字之间，**必须保留且只保留一个空行**。</td>
+                                <td>防止不同平台的解析器（GitHub、VuePress）出现布局重叠与粘连事故。</td>
                             </tr>
                             <tr>
                                 <td><strong>全小写文件命名</strong></td>
-                                <td>文件名全部小写，禁止空格，词语之间用短横线 <code>-</code> 链接。<br>
-                                    ✅ 正确：<code>2024-api-v2-specs.md</code><br>
-                                    ❌ 错误：<code>API Specs (Final).md</code>
+                                <td>文档文件名全部小写，禁止使用空格，词语间统一用短横线 <code>-</code>。<br>
+                                    ✅ 正确：<code>2024-system-manual.md</code><br>
+                                    ❌ 错误：<code>System Manual (Final).md</code>
                                 </td>
-                                <td>杜绝跨操作系统（Linux 与 Windows 大小写敏感度差异）引发的死链。</td>
+                                <td>对跨平台 Linux/Windows 服务器最友好，绝不会在网页或图片路径中报 404 死链。</td>
                             </tr>
                         </tbody>
                     </table>
@@ -726,7 +852,6 @@ def fetch_user_data(user_id: int):
     </main>
 
     <script>
-        // 一键复制源码函数
         function copySource(btn) {
             const pre = btn.closest('div').nextElementSibling.querySelector('pre');
             const text = pre.innerText;
@@ -741,7 +866,6 @@ def fetch_user_data(user_id: int):
             });
         }
 
-        // 侧边栏搜索过滤
         function filterCards() {
             const query = document.getElementById('filterInput').value.toLowerCase().trim();
             const cards = document.querySelectorAll('.card-item');
