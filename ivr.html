@@ -199,14 +199,12 @@
       @container topHeader (max-width: 880px) {
         #btnShortcutsDesktop .btn-text-full {
           display: none !important;
-          /* 快捷键保持小键盘纯图标 */
         }
 
         #btnShortcutsDesktop {
           padding: 0 7px !important;
         }
 
-        /* 🌟 核心：确保「文件」与「目录」文字始终常驻 */
         .header-btn-file .btn-text-short,
         .header-btn-folder .btn-text-short {
           display: inline !important;
@@ -215,7 +213,6 @@
         .header-btn-file,
         .header-btn-folder {
           padding: 0 8px !important;
-          /* 恢复适度内边距 */
         }
 
         #sortMenuBtn span {
@@ -239,7 +236,6 @@
         .brand-name {
           display: inline;
           font-size: 12.5px;
-          /* 字体微调，保持精致 */
         }
 
         .brand {
@@ -258,7 +254,6 @@
         margin: 0 4px;
       }
 
-      /* ✅ 建议放在全局 CSS 的 .header-center 后面：全端通杀幽灵占位 */
       .header-center:has(#playlistControls[style*="display: none"]) {
         display: none !important;
       }
@@ -512,7 +507,7 @@
       .main-workspace {
         flex: 1;
         display: flex;
-        overflow: hidden;
+        overflow: hidden !important;
         position: relative;
         width: 100%;
         height: 100%;
@@ -758,7 +753,7 @@
         display: flex;
         flex-direction: column;
         background: var(--surface-card);
-        overflow: hidden;
+        overflow: hidden !important;
         container-type: inline-size;
         container-name: notesPanel;
       }
@@ -900,14 +895,12 @@
         box-shadow: 0 1px 2px rgba(79, 70, 229, 0.25);
       }
 
-      /* 🌟 智能讲义工具栏及按钮生态系统（核心重构） */
       .ai-prompt-cluster {
         display: flex;
         align-items: center;
         gap: 5px;
         width: 100%;
         flex-wrap: nowrap;
-        /* 拒绝尴尬的多行折断！ */
       }
 
       .ai-prompt-cluster .btn,
@@ -953,7 +946,7 @@
         text-overflow: ellipsis;
       }
 
-      /* ================= notesPanel 阶梯自适应规则 ================= */
+      /* notesPanel 阶梯自适应规则 */
       @container notesPanel (max-width: 440px) {
 
         .subbar-btn-export .btn-text,
@@ -974,7 +967,6 @@
           display: inline !important;
         }
 
-        /* 讲义提示词按钮：切换为短词 */
         .ai-prompt-btn .btn-text-full {
           display: none !important;
         }
@@ -986,7 +978,6 @@
 
       @container notesPanel (max-width: 360px) {
 
-        /* 讲义已生成工具栏：导出和编辑折叠为纯图标 */
         .toolbar-btn-export .btn-text,
         .toolbar-btn-edit .btn-text {
           display: none !important;
@@ -1000,7 +991,6 @@
 
       @container notesPanel (max-width: 330px) {
 
-        /* 极致收紧：标记手记折叠为纯图标 */
         .subbar-btn-mark .btn-text-full,
         .subbar-btn-mark .btn-text-short {
           display: none !important;
@@ -1027,12 +1017,10 @@
           padding: 0 4px;
         }
 
-        /* 讲义已生成文字隐去，仅留小图标 */
         .collapsed-toolbar-status .status-text {
           display: none !important;
         }
 
-        /* 提示词按钮群全部收缩为“微矢量纯图标” */
         .ai-prompt-btn .btn-text-short {
           display: none !important;
         }
@@ -1691,7 +1679,6 @@
           display: none !important;
         }
 
-        /* 👈 核心优化：小屏幕上文件和目录按钮强制靠最右面对齐 */
         .header-action-cluster {
           margin-left: auto !important;
           display: flex !important;
@@ -1761,7 +1748,6 @@
           display: none !important;
         }
 
-        /* 🌟 把快捷键和小圆点一并彻底隐藏，净化手机端 */
         #btnShortcutsDesktop,
         .status-tags {
           display: none !important;
@@ -1784,7 +1770,6 @@
           <span class="brand-name">iVideo <span style="color: var(--primary);">Reader</span></span>
         </div>
 
-        <!-- 小屏下靠右对齐的按钮群 -->
         <div class="header-action-cluster">
           <button class="btn btn-secondary header-btn-file" onclick="document.getElementById('localFileInput').click()" data-tooltip="打开视频、字幕或笔记" data-tooltip-pos="bottom">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1812,7 +1797,7 @@
         </button>
       </div>
 
-      <!-- A-4: 选集播放条 -->
+      <!-- 选集播放条 -->
       <div class="header-center">
         <div id="playlistControls" class="playlist-bar" style="display: none;">
           <button class="btn-ep" id="prevEpisodeBtn" onclick="playPrevEpisode()" data-tooltip="切换上一集 (Page Up)" data-tooltip-pos="bottom">
@@ -2104,7 +2089,7 @@
           <div id="transcriptList"></div>
         </div>
 
-        <!-- 4.4 子工作区 C: 智能讲义工作区 (完全自适应重构) -->
+        <!-- 4.4 子工作区 C: 智能讲义工作区 -->
         <div id="notesTab" class="tab-view-content" style="display: none;">
           <div id="inputBoxContainer">
             <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 10px 12px; border-radius: var(--radius-md); margin-bottom: 10px;">
@@ -2112,7 +2097,6 @@
                 <strong>工作流：</strong>点击复制智能提示词发给 AI。AI 输出 Markdown 代码块后贴至下方渲染：
               </p>
 
-              <!-- 👈 核心重构：自适应单行流体弹性栏，拒绝换行碎块 -->
               <div class="ai-prompt-cluster">
                 <button id="copyAIPromptBtn" class="btn btn-primary ai-prompt-btn" onclick="copyAIPrompt()" data-tooltip="复制学习讲义生成提示词">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2158,7 +2142,6 @@
             <button class="btn btn-primary" onclick="renderNotes()">渲染生成交互讲义</button>
           </div>
 
-          <!-- 👈 核心重构：已生成讲义工具栏，增加容器折叠与纯图标支持 -->
           <div id="collapsedToolbar" class="collapsed-toolbar">
             <span class="collapsed-toolbar-status">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2216,7 +2199,7 @@
               <div class="shortcut-item-row"><span class="key-pill">Space</span><span>播放 / 暂停</span></div>
               <div class="shortcut-item-row"><span class="key-pill">PageUp / PageDown</span><span>上一集 / 下一集</span></div>
               <div class="shortcut-item-row"><span class="key-pill">F</span><span>贴合画面 / 消除黑边</span></div>
-              <div class="shortcut-item-row"><span class="key-pill">Ctrl+F</span><span>充满画面</span></div>
+              <div class="shortcut-item-row"><span class="key-pill">Ctrl+F</span><span>充满画面 (沉浸模式)</span></div>
             </div>
 
             <div class="shortcut-group-card grp-emerald">
@@ -2495,6 +2478,7 @@
       let mobileIsFitted = false;
       let desktopCustomWidth = null;
       let mobileCustomHeight = null;
+      let hoverDrawerTimer = null; // 悬浮收起缓冲计时器
 
       const sortLabels = {
         'original': '拖入原始顺序',
@@ -2801,6 +2785,7 @@
       const resizeObserver = new ResizeObserver(() => updateSubtitlePosition());
       resizeObserver.observe(videoWrapper);
 
+      /* ================= 沉浸模式与悬浮感应核心重构 ================= */
       function toggleImmersiveMode() {
         if (!video.src) { showOSD('⚠️ 请先载入视频'); return; }
 
@@ -2813,26 +2798,35 @@
           container.classList.remove('drawer-open');
           isDrawerOpen = false;
           updateDrawerTabUI();
-          showOSD('沉浸满屏 (点击右侧把手呼出悬浮工作台)');
+          showOSD('充满画面 (鼠标移至右侧边缘自动滑出)');
         } else {
           container.classList.remove('immersive', 'drawer-open');
           isDrawerOpen = false;
+          clearTimeout(hoverDrawerTimer);
           if (savedNormalStageWidth) leftPanel.style.width = savedNormalStageWidth;
-          showOSD('已退出沉浸，恢复分屏工作台');
+          showOSD('已恢复原分屏工作台');
+          syncActiveViewToCurrentTime();
         }
       }
 
       function toggleFloatingDrawer(e) {
         if (e) e.stopPropagation();
         if (!isImmersiveMode) return;
+        setDrawerOpenState(!isDrawerOpen);
+      }
 
-        isDrawerOpen = !isDrawerOpen;
+      function setDrawerOpenState(open) {
+        if (!isImmersiveMode) return;
+        if (isDrawerOpen === open) return;
+        isDrawerOpen = open;
         const container = document.getElementById('mainContainer');
         container.classList.toggle('drawer-open', isDrawerOpen);
         updateDrawerTabUI();
 
-        if (isDrawerOpen) showOSD('已展开悬浮工作台');
-        else showOSD('已收起悬浮工作台');
+        if (isDrawerOpen) {
+          // 展开瞬间，一次性精准同步滚动到当前播放进度
+          setTimeout(() => syncActiveViewToCurrentTime(), 60);
+        }
       }
 
       function updateDrawerTabUI() {
@@ -2840,9 +2834,100 @@
         const text = document.getElementById('immersiveTabText');
         if (arrow && text) {
           arrow.textContent = isDrawerOpen ? '▶' : '◀';
-          text.textContent = isDrawerOpen ? '收起' : '展开';
+          text.textContent = isDrawerOpen ? '收起' : '手记';
         }
       }
+
+      /* 核心功能：打开瞬间一次性同步对齐当前播放进度（手记/讲义/字幕） */
+      function syncActiveViewToCurrentTime() {
+        const curTime = video.currentTime;
+        if (currentTab === 'mynotes' && myNotes.length > 0) {
+          let matchedNote = null;
+          for (let i = 0; i < myNotes.length; i++) {
+            const note = myNotes[i];
+            if (note.type === 'interval') {
+              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
+            } else {
+              const nextNote = myNotes[i + 1];
+              const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
+              if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
+            }
+          }
+          if (matchedNote) {
+            const activeCard = document.getElementById('note-card-' + matchedNote.id);
+            const scrollBox = document.getElementById('mynotesTab');
+            if (activeCard && scrollBox) {
+              const cardTop = activeCard.offsetTop;
+              const cardHeight = activeCard.offsetHeight;
+              const boxHeight = scrollBox.clientHeight;
+              scrollBox.scrollTo({ top: Math.max(0, cardTop - (boxHeight / 2) + (cardHeight / 2)), behavior: 'smooth' });
+            }
+          }
+        } else if (currentTab === 'notes') {
+          const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
+          if (aiTags.length > 0) {
+            const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
+            let targetSec = null;
+            for (let i = 0; i < uniqueSecs.length; i++) {
+              const sec = uniqueSecs[i];
+              const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
+              if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
+            }
+            if (targetSec !== null) {
+              const matchedTag = aiTags.find(t => parseFloat(t.getAttribute('data-sec')) === targetSec);
+              const scrollBox = document.getElementById('notesTab');
+              if (matchedTag && scrollBox) {
+                const tagTop = matchedTag.offsetTop;
+                const boxHeight = scrollBox.clientHeight;
+                scrollBox.scrollTo({ top: Math.max(0, tagTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+              }
+            }
+          }
+        } else if (currentTab === 'transcript' && subtitleData.length > 0) {
+          const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
+          if (currentCue) {
+            const activeEl = document.getElementById('sub-' + currentCue.id);
+            const scrollBox = document.getElementById('transcriptTab');
+            if (activeEl && scrollBox) {
+              const rowTop = activeEl.offsetTop;
+              const boxHeight = scrollBox.clientHeight;
+              scrollBox.scrollTo({ top: Math.max(0, rowTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+            }
+          }
+        }
+      }
+
+      /* 沉浸全屏状态下：鼠标移到右侧热区自动滑出，离开延时收起 */
+      document.addEventListener('mousemove', (e) => {
+        if (!isImmersiveMode) return;
+        // 鼠标移至屏幕最右侧（距离右边框 <= 16px）时自动展开
+        if (e.clientX >= window.innerWidth - 16 && !isDrawerOpen) {
+          clearTimeout(hoverDrawerTimer);
+          setDrawerOpenState(true);
+        }
+      });
+
+      const notesZoneEl = document.getElementById('notesZone');
+      const immersiveTabEl = document.getElementById('immersiveTab');
+
+      [notesZoneEl, immersiveTabEl].forEach(el => {
+        if (!el) return;
+        el.addEventListener('mouseenter', () => {
+          if (!isImmersiveMode) return;
+          clearTimeout(hoverDrawerTimer);
+          setDrawerOpenState(true);
+        });
+        el.addEventListener('mouseleave', (e) => {
+          if (!isImmersiveMode) return;
+          clearTimeout(hoverDrawerTimer);
+          // 设置 350ms 舒适缓冲区，避免鼠标误移出瞬间闪缩
+          hoverDrawerTimer = setTimeout(() => {
+            if (isImmersiveMode && isDrawerOpen) {
+              setDrawerOpenState(false);
+            }
+          }, 350);
+        });
+      });
 
       function handleFileSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
       function handleFolderSelect(e) { if (e.target.files?.length) autoMatchAndLoad(Array.from(e.target.files)); e.target.value = ''; }
@@ -3371,9 +3456,13 @@
         return hasHan(single) ? { primary: single, secondary: '' } : { primary: single, secondary: single };
       }
 
+      /* ================= timeupdate 智能驱动与防拉扯引擎 ================= */
       video.addEventListener('timeupdate', () => {
         const curTime = video.currentTime;
+        // 🌟 核心防错守卫：若处于全屏沉浸且抽屉未展开，绝不触发任何 DOM 滚动
+        const allowScroll = (!isImmersiveMode || isDrawerOpen);
 
+        // 1. 讲义时间码状态追踪与滚动
         const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
         if (aiTags.length > 0) {
           const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
@@ -3381,10 +3470,7 @@
           for (let i = 0; i < uniqueSecs.length; i++) {
             const sec = uniqueSecs[i];
             const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
-            if (curTime >= sec && curTime < nextSec) {
-              targetSec = sec;
-              break;
-            }
+            if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
           }
 
           let hasNewActive = false;
@@ -3402,27 +3488,28 @@
             }
           });
 
-          if (hasNewActive && firstActiveTag && currentTab === 'notes') {
-            firstActiveTag.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          // 仅在允许滚动且面板处于展开状态时，使用内部相对 scrollTop 滚动，杜绝 scrollIntoView 视口拉扯
+          if (allowScroll && hasNewActive && firstActiveTag && currentTab === 'notes') {
+            const scrollBox = document.getElementById('notesTab');
+            if (scrollBox) {
+              const tagTop = firstActiveTag.offsetTop;
+              const boxHeight = scrollBox.clientHeight;
+              scrollBox.scrollTo({ top: Math.max(0, tagTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+            }
           }
         }
 
+        // 2. 我的手记状态追踪与滚动
         if (myNotes && myNotes.length > 0) {
           let matchedNote = null;
           for (let i = 0; i < myNotes.length; i++) {
             const note = myNotes[i];
             if (note.type === 'interval') {
-              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) {
-                matchedNote = note;
-                break;
-              }
+              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
             } else {
               const nextNote = myNotes[i + 1];
               const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
-              if (curTime >= note.start && curTime < pointEnd) {
-                matchedNote = note;
-                break;
-              }
+              if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
             }
           }
 
@@ -3447,20 +3534,14 @@
             currentActiveNoteId = matchedId;
             if (editingNoteId !== null) return;
 
-            if (matchedNote && currentTab === 'mynotes') {
+            if (allowScroll && matchedNote && currentTab === 'mynotes') {
               const activeCard = document.getElementById('note-card-' + matchedNote.id);
               const scrollBox = document.getElementById('mynotesTab');
               if (activeCard && scrollBox) {
-                const cardRect = activeCard.getBoundingClientRect();
-                const boxRect = scrollBox.getBoundingClientRect();
-                const topBar = scrollBox.querySelector('.action-subbar');
-                const topBarHeight = topBar ? topBar.offsetHeight : 45;
-
-                const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
-                const cardCenterY = cardRect.top + (cardRect.height / 2);
-                const delta = cardCenterY - visibleCenterY;
-
-                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
+                const cardTop = activeCard.offsetTop;
+                const cardHeight = activeCard.offsetHeight;
+                const boxHeight = scrollBox.clientHeight;
+                scrollBox.scrollTo({ top: Math.max(0, cardTop - (boxHeight / 2) + (cardHeight / 2)), behavior: 'smooth' });
               }
             }
           }
@@ -3525,17 +3606,16 @@
             const activeEl = document.getElementById('sub-' + currentCue.id);
             if (activeEl) {
               activeEl.classList.add('active');
-              const scrollBox = document.getElementById('transcriptTab');
-              if (scrollBox) {
-                const now = performance.now();
-                if (now - lastScrollTimestamp > 280) {
-                  lastScrollTimestamp = now;
-                  const activeRect = activeEl.getBoundingClientRect();
-                  const boxRect = scrollBox.getBoundingClientRect();
-                  const visibleCenterY = boxRect.top + 65 + (boxRect.height - 65) / 2;
-                  const activeCenterY = activeRect.top + (activeRect.height / 2);
-                  const delta = activeCenterY - visibleCenterY;
-                  scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
+              if (allowScroll) {
+                const scrollBox = document.getElementById('transcriptTab');
+                if (scrollBox) {
+                  const now = performance.now();
+                  if (now - lastScrollTimestamp > 280) {
+                    lastScrollTimestamp = now;
+                    const rowTop = activeEl.offsetTop;
+                    const boxHeight = scrollBox.clientHeight;
+                    scrollBox.scrollTo({ top: Math.max(0, rowTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+                  }
                 }
               }
             }
@@ -4039,32 +4119,48 @@
         if (subtitleData.length > 0) {
           const condensed = getCondensedBilingualSubtitles();
           const p = [
-            "请将以下带有时间戳的双语视频字幕文本，整理成一份专业、清晰且便于实操查阅的“标准化实操学习讲义”。",
+            "请将以下带有时间戳的双语视频字幕文本，整理成一份专业、清晰且便于实操查阅的“时间轴线性实操讲义”。",
             "课程文件：" + (currentVideoFileName || "视频实操教学"),
             "",
-            "整理规则：",
-            "1. 忠实客观记录：严禁脑补，完整保留动作指令与因果机理，剔除废话口语。",
-            "2. 术语规范：沿用标准技术专名与招式名。",
-            "3. 扁平清单排版：正文单层扁平清单 `- **动作抓手**：说明规范 [mm:ss]`。",
-            "4. 置于单一 Markdown 代码块输出。",
+            "【核心定位与原则】：",
+            "这是一份【随堂实操记录流】，必须严格模拟学习者边看视频边记录的真实过程，绝对以视频的“物理时间推进”为主轴！",
+            "",
+            "【严格执行规则】：",
+            "1. 严格时间单向递增（核心戒律）：",
+            "   - 正文所有清单项必须严格按照视频物理时间戳（00:00 → 视频结束）自上而下单调递增排列！",
+            "   - 绝对严禁按主题做跨时间段的大归并！即使视频开头和结尾讲了同一个解剖部位或招式，也必须在各自发生的时间节点分别记录，严禁将后面 50 分钟的内容提取到前面 10 分钟合并！",
+            "2. 进度式分段（禁止主题式分段）：",
+            "   - 若使用标题分段，只能按视频演进的时间阶段划分,但不要输出诸如'阶段一'、'阶段二'这种强行制作阶段类型的字眼（例如：`## 前置准备与基础概念 [00:00 - 10:30]`），绝不允许按抽象知识点做全片大汇总式的分类标题。",
+            "3. 扁平清单与原子化跳转时码：",
+            "   - 正文统一采用单层扁平清单排版：`- **动作抓手/核心要点**：规范说明 [mm:ss]`。",
+            "   - 单条清单项末尾只能且必须保留单一精准时间戳（如 [12:28]），严禁出现多重堆叠时码（如严禁 [11:04, 12:28]），确保每个时码都是独立的视频切片跳转锚点。",
+            "4. 忠实客观与专业术语：",
+            "   - 忠实记录动作机理、解剖点位与操作规程，剔除寒暄口语废话，统一采用标准医学与绳缚专业技术术语。",
+            "5. 置于单一 Markdown 代码块输出。",
             "",
             "字幕数据：",
             condensed
           ].join('\n');
-          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【学习讲义】提示词'));
+          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【时间轴线性讲义】提示词'));
           return;
         }
+
         if (myNotes.length > 0) {
           let nt = myNotes.map(n => `[${n.timeStr}] 原声:"${n.quote || '无'}" | 批注:${n.text || '(空)'}`).join('\n');
           const p = [
-            "请将以下「带时间戳的学习者手记」整理成一份专业、清晰的“标准化实操学习讲义”。",
+            "请将以下「带时间戳的学习者手记」整理成一份专业、规范的“时间轴线性学习手记讲义”。",
             "课程文件：" + (currentVideoFileName || "视频实操教学"),
-            "规则：保留手记时间戳，提炼客观动作机理，置于单一 Markdown 代码块输出。",
+            "",
+            "【严格执行规则】：",
+            "1. 严格时间单向递增：必须 100% 维持原手记的先后时间顺序自上而下排列，严禁打乱时间次序，严禁跨时间合并手记条目。",
+            "2. 单点对应与润色：逐一对应每条手记时间戳，将简略的批注提炼润色为标准的动作要领、因果机理与防错规范。",
+            "3. 扁平清单排版：统一输出为 `- **动作抓手/核心要点**：规范说明 [mm:ss]`，每条末尾保留唯一时间戳用于播放跳转。",
+            "4. 置于单一 Markdown 代码块输出。",
             "",
             "手记数据：",
             nt
           ].join('\n');
-          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【手记整理】提示词'));
+          navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【时间轴手记讲义】提示词'));
           return;
         }
         showOSD('暂无字幕或手记');
@@ -4074,14 +4170,27 @@
         if (!subtitleData.length) { showOSD('暂无字幕数据'); return; }
         const condensed = getCondensedBilingualSubtitles();
         const p = [
-          "请将以下带有时间戳的双语视频字幕文本，整理重构成一篇系统、严谨的“专业技术参考长文/专题档案教材”。",
+          "请将以下带有时间戳的双语视频字幕文本，完全打破时间的线性限制，重新聚类重构成一篇系统、权威、深度的“专业技术参考长文/专题百科档案”。",
           "课程文件：" + (currentVideoFileName || "视频技术解析"),
-          "规则：绝对忠实原意，段落叙述体例，时间戳置于标题末尾，置于单一 Markdown 代码块输出。",
+          "",
+          "【核心定位与原则】：",
+          "本档案【不是】随堂笔记，而是【全片知识树的结构化大集成】！你需要站在教科书编撰者的高度，将全片分散在各处的所有零散论述、原理解释、演示细节与观众答疑彻底打碎并融会贯通，构建出逻辑严密的完整知识体系体系。",
+          "",
+          "【严格执行规则】：",
+          "1. 打破时间限制做全片主题归纳（核心要求）：",
+          "   - 彻底打破视频物理播放顺序！将全片所有相关的观点、操作、禁忌按逻辑聚类到对应的主题章节中（例如：将开篇原理与片尾答疑合并提炼进统一的原理章节）。",
+          "2. 深度叙述体例与长文排版：",
+          "   - 采用多级章节标题（`#`、`##`、`###`）构建结构化长文，使用大段落深度叙述、对比总结列表或专业解析框架，拒绝流水账。",
+          "3. 来源溯源引用：",
+          "   - 在各章节的关键论点、动作要领或重要结论后，以括号形式内联注明视频出处时间戳作为论据支撑（例如：`……可能导致桡神经麻痹下垂 [46:38]。`）。",
+          "4. 忠实原意，严禁虚构：",
+          "   - 概念、机理与实操细节必须全部源自字幕事实，严禁自行脑补未提及的技术细节。",
+          "5. 置于单一 Markdown 代码块输出。",
           "",
           "字幕数据：",
           condensed
         ].join('\n');
-        navigator.clipboard.writeText(p).then(() => showOSD('已复制【专题档案】提示词'));
+        navigator.clipboard.writeText(p).then(() => showOSD('📋 已复制【全局专题档案】提示词'));
       }
 
       function parseMarkdownToHtml(mdText) {
@@ -4203,289 +4312,245 @@
       }
 
       function switchTab(tab) {
-        currentTab = tab;
-        document.querySelectorAll('.segmented-tab-item').forEach(b => b.classList.remove('active'));
-        document.getElementById('mynotesTab').style.display = 'none';
-        document.getElementById('transcriptTab').style.display = 'none';
-        document.getElementById('notesTab').style.display = 'none';
+          currentTab = tab;
+          document.querySelectorAll('.segmented-tab-item').forEach(b => b.classList.remove('active'));
+          document.getElementById('mynotesTab').style.display = 'none';
+          document.getElementById('transcriptTab').style.display = 'none';
+          document.getElementById('notesTab').style.display = 'none';
 
-        if (tab === 'mynotes') {
-          document.getElementById('tabBtnMynotes').classList.add('active');
-          document.getElementById('mynotesTab').style.display = 'block';
-
-          if (currentActiveNoteId !== -1) {
-            setTimeout(() => {
-              const activeCard = document.getElementById('note-card-' + currentActiveNoteId);
-              const scrollBox = document.getElementById('mynotesTab');
-              if (activeCard && scrollBox) {
-                const cardRect = activeCard.getBoundingClientRect();
-                const boxRect = scrollBox.getBoundingClientRect();
-                const topBar = scrollBox.querySelector('.action-subbar');
-                const topBarHeight = topBar ? topBar.offsetHeight : 45;
-                const visibleCenterY = boxRect.top + topBarHeight + (boxRect.height - topBarHeight) / 2;
-                const delta = (cardRect.top + cardRect.height / 2) - visibleCenterY;
-                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
-              }
-            }, 60);
+          if (tab === 'mynotes') {
+            document.getElementById('tabBtnMynotes').classList.add('active');
+            document.getElementById('mynotesTab').style.display = 'block';
+          } else if (tab === 'transcript') {
+            document.getElementById('tabBtnTranscript').classList.add('active');
+            document.getElementById('transcriptTab').style.display = 'block';
+          } else if (tab === 'notes') {
+            document.getElementById('tabBtnNotes').classList.add('active');
+            document.getElementById('notesTab').style.display = 'block';
           }
-        } else if (tab === 'transcript') {
-          document.getElementById('tabBtnTranscript').classList.add('active');
-          document.getElementById('transcriptTab').style.display = 'block';
 
+          // 切换标签页后，平滑定位到当前视频播放进度
           setTimeout(() => {
-            const curTime = video.currentTime;
-            const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
-            if (currentCue) {
-              currentActiveId = currentCue.id;
-              document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
-              const activeEl = document.getElementById('sub-' + currentCue.id);
-              const scrollBox = document.getElementById('transcriptTab');
-              if (activeEl && scrollBox) {
-                activeEl.classList.add('active');
-                const activeRect = activeEl.getBoundingClientRect();
-                const boxRect = scrollBox.getBoundingClientRect();
-                const visibleCenterY = boxRect.top + 40 + (boxRect.height - 40) / 2;
-                const delta = (activeRect.top + activeRect.height / 2) - visibleCenterY;
-                scrollBox.scrollTo({ top: scrollBox.scrollTop + delta, behavior: 'smooth' });
-              }
-            }
-          }, 60);
-        } else if (tab === 'notes') {
-          document.getElementById('tabBtnNotes').classList.add('active');
-          document.getElementById('notesTab').style.display = 'block';
-        }
-      }
-
-      document.addEventListener('keydown', (e) => {
-        const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          const addBox = document.getElementById('addNoteBox');
-          if (addBox && addBox.style.display !== 'none') { e.preventDefault(); saveNewNote(); return; }
+            syncActiveViewToCurrentTime();
+          }, 50);
         }
 
-        if (e.ctrlKey && e.altKey) {
-          if (e.key === '1') { e.preventDefault(); switchTab('mynotes'); showOSD('切换至手记'); return; }
-          if (e.key === '2') { e.preventDefault(); handleSubtitleShortcutCycle(); return; }
-          if (e.key === '3') { e.preventDefault(); switchTab('notes'); showOSD('切换至智能讲义'); return; }
-        }
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
-          e.preventDefault(); switchTab('mynotes');
-          const inp = document.getElementById('quickTimeJumpInput');
-          if (inp) { inp.focus(); inp.select(); }
-          return;
-        }
-
-        if (e.ctrlKey || e.metaKey) {
-          if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleImmersiveMode(); return; }
-          if (e.key === 'm' || e.key === 'M') { e.preventDefault(); openAddNoteBox(); return; }
-          if (e.key === '\\') { e.preventDefault(); video.playbackRate = 1.0; showOSD('⚡ 1.00x 原速'); return; }
-          if (e.key === '[' || e.code === 'BracketLeft') {
-            e.preventDefault(); if (!video.src) return;
-            tempInPointSec = video.currentTime; showOSD(`📍 已定入点 A: ${formatSeconds(tempInPointSec)}`); return;
+        /* ================= 全局键盘快捷键驱动 ================= */
+        document.addEventListener('keydown', (e) => {
+          const isTyping = ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName);
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const addBox = document.getElementById('addNoteBox');
+            if (addBox && addBox.style.display !== 'none') { e.preventDefault(); saveNewNote(); return; }
           }
-          if (e.key === ']' || e.code === 'BracketRight') {
-            e.preventDefault(); if (!video.src) return;
-            const outP = video.currentTime, inP = tempInPointSec !== null ? tempInPointSec : Math.max(0, outP - 10);
-            showOSD(`📍 已定出点 B: ${formatSeconds(outP)}`);
-            openAddNoteBox(); setNoteTypeMode('interval');
-            document.getElementById('noteStartTimeInput').value = formatSeconds(inP);
-            document.getElementById('noteEndTimeInput').value = formatSeconds(outP);
+
+          if (e.ctrlKey && e.altKey) {
+            if (e.key === '1') { e.preventDefault(); switchTab('mynotes'); showOSD('切换至手记'); return; }
+            if (e.key === '2') { e.preventDefault(); handleSubtitleShortcutCycle(); return; }
+            if (e.key === '3') { e.preventDefault(); switchTab('notes'); showOSD('切换至智能讲义'); return; }
+          }
+
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'g' || e.key === 'G')) {
+            e.preventDefault(); switchTab('mynotes');
+            const inp = document.getElementById('quickTimeJumpInput');
+            if (inp) { inp.focus(); inp.select(); }
             return;
           }
-          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (!video.src || e.repeat) return;
-            activeSpeedKey = e.key;
-            isSpeedLongPressing = false;
+
+          if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleImmersiveMode(); return; }
+            if (e.key === 'm' || e.key === 'M') { e.preventDefault(); openAddNoteBox(); return; }
+            if (e.key === '\\') { e.preventDefault(); video.playbackRate = 1.0; showOSD('⚡ 1.00x 原速'); return; }
+            if (e.key === '[' || e.code === 'BracketLeft') {
+              e.preventDefault(); if (!video.src) return;
+              tempInPointSec = video.currentTime; showOSD(`📍 已定入点 A: ${formatSeconds(tempInPointSec)}`); return;
+            }
+            if (e.key === ']' || e.code === 'BracketRight') {
+              e.preventDefault(); if (!video.src) return;
+              const outP = video.currentTime, inP = tempInPointSec !== null ? tempInPointSec : Math.max(0, outP - 10);
+              showOSD(`📍 已定出点 B: ${formatSeconds(outP)}`);
+              openAddNoteBox(); setNoteTypeMode('interval');
+              document.getElementById('noteStartTimeInput').value = formatSeconds(inP);
+              document.getElementById('noteEndTimeInput').value = formatSeconds(outP);
+              return;
+            }
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (!video.src || e.repeat) return;
+              activeSpeedKey = e.key;
+              isSpeedLongPressing = false;
+              clearTimeout(speedLongPressTimer);
+              speedLongPressTimer = setTimeout(() => {
+                isSpeedLongPressing = true;
+                if (activeSpeedKey === 'ArrowUp') {
+                  const sprint = getSprintSpeed();
+                  savedOriginalVolume = video.volume;
+                  video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+                  video.playbackRate = sprint;
+                  showOSD(`⚡ ${sprint.toFixed(2)}x 冲刺`);
+                } else {
+                  video.playbackRate = 0.25;
+                  showOSD('🐌 0.25x 慢放');
+                }
+              }, 150);
+              return;
+            }
+          }
+
+          if (e.key === 'Escape') {
+            if (isDrawerOpen) { setDrawerOpenState(false); return; }
+            if (isImmersiveMode) { toggleImmersiveMode(); return; }
+            closeAddNoteBox(); closeShortcutsModal(); closeMediaInfoModal(); closeSortMenu(); closeEpMenu();
+            toggleMobileNotesDrawer(false); stopLoop();
+            return;
+          }
+
+          if (!isTyping) {
+            if (e.key === 'f' || e.key === 'F') { e.preventDefault(); fitVideoRatio(); return; }
+            if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
+            if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
+            if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
+            if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
+              e.preventDefault();
+              e.stopPropagation();
+              if (video.src) {
+                if (video.paused) { video.play(); showOSD('▶ 播放'); }
+                else { video.pause(); showOSD('⏸ 暂停'); }
+              }
+              return;
+            }
+            if (e.key === 'ArrowLeft') {
+              e.preventDefault();
+              if (video.src) {
+                let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
+                video.currentTime = Math.max(0, video.currentTime - s);
+                showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
+              }
+              return;
+            }
+            if (e.key === 'ArrowRight') {
+              e.preventDefault();
+              if (video.src) {
+                let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
+                video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
+                showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
+              }
+              return;
+            }
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (video.src) { video.volume = Math.min(1.0, Math.round((video.volume + 0.05) * 100) / 100); showOSD(`🔊 音量: ${Math.round(video.volume * 100)}%`); }
+              return;
+            }
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (video.src) { video.volume = Math.max(0.0, Math.round((video.volume - 0.05) * 100) / 100); showOSD(`🔉 音量: ${Math.round(video.volume * 100)}%`); }
+              return;
+            }
+          }
+        });
+
+        document.addEventListener('keyup', (e) => {
+          if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
             clearTimeout(speedLongPressTimer);
-            speedLongPressTimer = setTimeout(() => {
-              isSpeedLongPressing = true;
-              if (activeSpeedKey === 'ArrowUp') {
-                const sprint = getSprintSpeed();
-                savedOriginalVolume = video.volume;
-                video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
-                video.playbackRate = sprint;
-                showOSD(`⚡ ${sprint.toFixed(2)}x 冲刺`);
-              } else {
-                video.playbackRate = 0.25;
-                showOSD('🐌 0.25x 慢放');
+            if (isSpeedLongPressing) {
+              if (video.src) {
+                video.volume = savedOriginalVolume;
+                video.playbackRate = 1.0;
+                showOSD('⚡ 1.00x 原速');
               }
-            }, 150);
-            return;
-          }
-        }
-
-        if (e.key === 'Escape') {
-          if (isDrawerOpen) { toggleFloatingDrawer(); return; }
-          if (isImmersiveMode) { toggleImmersiveMode(); return; }
-          closeAddNoteBox(); closeShortcutsModal(); closeMediaInfoModal(); closeSortMenu(); closeEpMenu();
-          toggleMobileNotesDrawer(false); stopLoop();
-          return;
-        }
-
-        if (!isTyping) {
-          if (e.key === 'f' || e.key === 'F') { e.preventDefault(); fitVideoRatio(); return; }
-          if (e.key === 'PageUp') { e.preventDefault(); playPrevEpisode(); return; }
-          if (e.key === 'PageDown') { e.preventDefault(); playNextEpisode(); return; }
-          if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openShortcutsModal(); return; }
-          if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
-            e.preventDefault();
-            e.stopPropagation();
-            if (video.src) {
-              if (video.paused) { video.play(); showOSD('▶ 播放'); }
-              else { video.pause(); showOSD('⏸ 暂停'); }
-            }
-            return;
-          }
-          if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
-              video.currentTime = Math.max(0, video.currentTime - s);
-              showOSD(`⏪ -${s}s (${formatSeconds(video.currentTime)})`);
-            }
-            return;
-          }
-          if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            if (video.src) {
-              let s = e.ctrlKey ? 15 : (e.shiftKey ? 30 : 1);
-              video.currentTime = Math.min(video.duration || 999999, video.currentTime + s);
-              showOSD(`⏩ +${s}s (${formatSeconds(video.currentTime)})`);
-            }
-            return;
-          }
-          if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (video.src) { video.volume = Math.min(1.0, Math.round((video.volume + 0.05) * 100) / 100); showOSD(`🔊 音量: ${Math.round(video.volume * 100)}%`); }
-            return;
-          }
-          if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (video.src) { video.volume = Math.max(0.0, Math.round((video.volume - 0.05) * 100) / 100); showOSD(`🔉 音量: ${Math.round(video.volume * 100)}%`); }
-            return;
-          }
-        }
-      });
-
-      document.addEventListener('keyup', (e) => {
-        if (activeSpeedKey && (e.key === activeSpeedKey || e.key === 'Control' || e.key === 'Meta')) {
-          clearTimeout(speedLongPressTimer);
-          if (isSpeedLongPressing) {
-            if (video.src) {
-              video.volume = savedOriginalVolume;
-              video.playbackRate = 1.0;
-              showOSD('⚡ 1.00x 原速');
-            }
-          } else {
-            if (video.src) {
-              if (activeSpeedKey === 'ArrowUp') {
-                video.playbackRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
-                showOSD(`⚡ ${video.playbackRate.toFixed(2)}x`);
-              } else if (activeSpeedKey === 'ArrowDown') {
-                video.playbackRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
-                showOSD(`⚡ ${video.playbackRate.toFixed(2)}x`);
-              }
-            }
-          }
-          activeSpeedKey = null;
-          isSpeedLongPressing = false;
-        }
-      });
-
-      document.addEventListener('pointerdown', (e) => {
-        if (!isImmersiveMode || !isDrawerOpen) return;
-        const notesPanel = document.getElementById('notesZone');
-        const drawerTab = document.getElementById('immersiveTab');
-        if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
-          toggleFloatingDrawer();
-        }
-      }, true);
-
-      let autoHideTimer = null;
-      const AUTO_HIDE_DELAY = 3000;
-
-      function startAutoHideTimer() {
-        if (!isImmersiveMode || !isDrawerOpen) return;
-        clearTimeout(autoHideTimer);
-        autoHideTimer = setTimeout(() => {
-          if (isImmersiveMode && isDrawerOpen) toggleFloatingDrawer();
-        }, AUTO_HIDE_DELAY);
-      }
-      function clearAutoHideTimer() { clearTimeout(autoHideTimer); }
-
-      const notesZoneEl = document.getElementById('notesZone');
-      const immersiveTabEl = document.getElementById('immersiveTab');
-      [notesZoneEl, immersiveTabEl].forEach(el => {
-        if (!el) return;
-        el.addEventListener('mouseleave', () => startAutoHideTimer());
-        el.addEventListener('mouseenter', () => clearAutoHideTimer());
-      });
-
-      let touchPressTimer = null;
-      let isTouchSpeedUp = false;
-      let touchStartX = 0;
-      let touchStartY = 0;
-
-      videoWrapper.addEventListener('touchstart', (e) => {
-        if (!video.src || video.paused) return;
-        if (e.touches.length === 1) {
-          isTouchSpeedUp = false;
-          touchStartX = e.touches[0].clientX;
-          touchStartY = e.touches[0].clientY;
-          clearTimeout(touchPressTimer);
-
-          touchPressTimer = setTimeout(() => {
-            isTouchSpeedUp = true;
-            const targetSprintRate = getSprintSpeed();
-            savedOriginalVolume = video.volume;
-            video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
-            video.preservesPitch = true;
-            video.playbackRate = targetSprintRate;
-            showOSD(`⚡ ${targetSprintRate.toFixed(2)}x 冲刺`);
-          }, 200);
-        }
-      }, { passive: true });
-
-      videoWrapper.addEventListener('touchmove', (e) => {
-        if (!isTouchSpeedUp && e.touches.length === 1) {
-          const moveX = Math.abs(e.touches[0].clientX - touchStartX);
-          const moveY = Math.abs(e.touches[0].clientY - touchStartY);
-          if (moveX > 10 || moveY > 10) clearTimeout(touchPressTimer);
-        }
-      }, { passive: true });
-
-      function endTouchSpeedUp() {
-        clearTimeout(touchPressTimer);
-        if (isTouchSpeedUp) {
-          isTouchSpeedUp = false;
-          if (video.src) {
-            video.volume = savedOriginalVolume;
-            video.preservesPitch = true;
-            video.playbackRate = 1.0;
-            showOSD('⚡ 1.00x 原速');
-
-            setTimeout(() => {
-              const cur = video.currentTime;
-              const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
-              if (activeCue) {
-                if (currentActiveElement) currentActiveElement.classList.remove('active');
-                const el = document.getElementById('sub-' + activeCue.id);
-                if (el) {
-                  el.classList.add('active');
-                  currentActiveElement = el;
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              if (video.src) {
+                if (activeSpeedKey === 'ArrowUp') {
+                  video.playbackRate = Math.min(3.0, Math.round((video.playbackRate + 0.25) * 100) / 100);
+                  showOSD(`⚡ ${video.playbackRate.toFixed(2)}x`);
+                } else if (activeSpeedKey === 'ArrowDown') {
+                  video.playbackRate = Math.max(0.25, Math.round((video.playbackRate - 0.25) * 100) / 100);
+                  showOSD(`⚡ ${video.playbackRate.toFixed(2)}x`);
                 }
               }
-            }, 40);
+            }
+            activeSpeedKey = null;
+            isSpeedLongPressing = false;
+          }
+        });
+
+        document.addEventListener('pointerdown', (e) => {
+          if (!isImmersiveMode || !isDrawerOpen) return;
+          const notesPanel = document.getElementById('notesZone');
+          const drawerTab = document.getElementById('immersiveTab');
+          if (notesPanel && !notesPanel.contains(e.target) && drawerTab && !drawerTab.contains(e.target)) {
+            setDrawerOpenState(false);
+          }
+        }, true);
+
+        let touchPressTimer = null;
+        let isTouchSpeedUp = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        videoWrapper.addEventListener('touchstart', (e) => {
+          if (!video.src || video.paused) return;
+          if (e.touches.length === 1) {
+            isTouchSpeedUp = false;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            clearTimeout(touchPressTimer);
+
+            touchPressTimer = setTimeout(() => {
+              isTouchSpeedUp = true;
+              const targetSprintRate = getSprintSpeed();
+              savedOriginalVolume = video.volume;
+              video.volume = Math.max(0.15, savedOriginalVolume * 0.7);
+              video.preservesPitch = true;
+              video.playbackRate = targetSprintRate;
+              showOSD(`⚡ ${targetSprintRate.toFixed(2)}x 冲刺`);
+            }, 200);
+          }
+        }, { passive: true });
+
+        videoWrapper.addEventListener('touchmove', (e) => {
+          if (!isTouchSpeedUp && e.touches.length === 1) {
+            const moveX = Math.abs(e.touches[0].clientX - touchStartX);
+            const moveY = Math.abs(e.touches[0].clientY - touchStartY);
+            if (moveX > 10 || moveY > 10) clearTimeout(touchPressTimer);
+          }
+        }, { passive: true });
+
+        function endTouchSpeedUp() {
+          clearTimeout(touchPressTimer);
+          if (isTouchSpeedUp) {
+            isTouchSpeedUp = false;
+            if (video.src) {
+              video.volume = savedOriginalVolume;
+              video.preservesPitch = true;
+              video.playbackRate = 1.0;
+              showOSD('⚡ 1.00x 原速');
+
+              setTimeout(() => {
+                const cur = video.currentTime;
+                const activeCue = subtitleData.find(item => cur >= item.start && cur <= item.end);
+                if (activeCue) {
+                  if (currentActiveElement) currentActiveElement.classList.remove('active');
+                  const el = document.getElementById('sub-' + activeCue.id);
+                  if (el) {
+                    el.classList.add('active');
+                    currentActiveElement = el;
+                    const scrollBox = document.getElementById('transcriptTab');
+                    if (scrollBox && (!isImmersiveMode || isDrawerOpen)) {
+                      const rowTop = el.offsetTop;
+                      const boxHeight = scrollBox.clientHeight;
+                      scrollBox.scrollTo({ top: Math.max(0, rowTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+                    }
+                  }
+                }
+              }, 40);
+            }
           }
         }
-      }
 
-      videoWrapper.addEventListener('touchend', endTouchSpeedUp);
-      videoWrapper.addEventListener('touchcancel', endTouchSpeedUp);
-    </script>
+        videoWrapper.addEventListener('touchend', endTouchSpeedUp);
+        videoWrapper.addEventListener('touchcancel', endTouchSpeedUp);
+      </script>
   </body>
 
 </html>
