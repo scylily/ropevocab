@@ -1657,6 +1657,102 @@
         right: clamp(260px, 380px, 85vw) !important;
       }
 
+/* ================= 讲义与档案 Markdown 响应式卡片表格 ================= */
+      .notes-rendered .md-table-wrapper {
+        width: 100% !important;
+        overflow: visible !important;
+        margin: 10px 0 16px 0 !important;
+      }
+
+      /* 核心重构：将表格直接升维为纵向卡片流，彻底消灭横向滚动条 */
+      .notes-rendered table.md-table {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        border: none !important;
+        background: transparent !important;
+        width: 100% !important;
+      }
+
+      /* 隐藏挤成细条的横向传统表头 */
+      .notes-rendered table.md-table thead {
+        display: none !important;
+      }
+
+      .notes-rendered table.md-table tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
+
+      /* 每一行数据变成一张独立的现代卡片 */
+      .notes-rendered table.md-table tr {
+        display: flex !important;
+        flex-direction: column !important;
+        background: #ffffff !important;
+        border: 1px solid var(--border-medium) !important;
+        border-radius: var(--radius-md) !important;
+        padding: 10px 12px !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+        gap: 6px !important;
+        transition: var(--transition) !important;
+      }
+
+      .notes-rendered table.md-table tr:hover {
+        border-color: var(--primary-border) !important;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.08) !important;
+      }
+
+      .notes-rendered table.md-table td {
+        display: block !important;
+        border: none !important;
+        padding: 3px 0 !important;
+        background: transparent !important;
+        font-size: 12px !important;
+        line-height: 1.6 !important;
+      }
+
+      /* 卡片首项（神经名称）作为卡片大标题高亮 */
+      .notes-rendered table.md-table tr td:first-child {
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
+        color: var(--primary) !important;
+        border-bottom: 1px dashed var(--border-light) !important;
+        padding-bottom: 6px !important;
+        margin-bottom: 4px !important;
+      }
+
+      /* 自动提取表头名称作为专属内容前缀标签 */
+      .notes-rendered table.md-table td[data-label]::before {
+        content: "【" attr(data-label) "】";
+        font-weight: 700 !important;
+        color: var(--text-muted) !important;
+        font-size: 11px !important;
+        display: block !important;
+        margin-bottom: 2px !important;
+      }
+
+      /* 首项大标题不需要前缀标签 */
+      .notes-rendered table.md-table tr td:first-child::before {
+        display: none !important;
+      }
+
+      .notes-rendered blockquote {
+        margin: 8px 0 !important;
+        padding: 6px 12px !important;
+        background: #f8fafc !important;
+        border-left: 3.5px solid var(--primary) !important;
+        color: var(--text-secondary) !important;
+        border-radius: 0 4px 4px 0 !important;
+      }
+
+      .notes-rendered hr {
+        border: none !important;
+        border-top: 1px solid var(--border-light) !important;
+        margin: 16px 0 !important;
+      }
+
       /* ================= 8. 移动手机端专属架构 (≤ 768px) ================= */
       @media (max-width: 768px) {
         header {
@@ -2839,63 +2935,66 @@
       }
 
       /* 核心功能：打开瞬间一次性同步对齐当前播放进度（手记/讲义/字幕） */
-      function syncActiveViewToCurrentTime() {
-        const curTime = video.currentTime;
-        if (currentTab === 'mynotes' && myNotes.length > 0) {
-          let matchedNote = null;
-          for (let i = 0; i < myNotes.length; i++) {
-            const note = myNotes[i];
-            if (note.type === 'interval') {
-              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
-            } else {
-              const nextNote = myNotes[i + 1];
-              const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
-              if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
-            }
-          }
-          if (matchedNote) {
-            const activeCard = document.getElementById('note-card-' + matchedNote.id);
-            const scrollBox = document.getElementById('mynotesTab');
-            if (activeCard && scrollBox) {
-              const cardTop = activeCard.offsetTop;
-              const cardHeight = activeCard.offsetHeight;
-              const boxHeight = scrollBox.clientHeight;
-              scrollBox.scrollTo({ top: Math.max(0, cardTop - (boxHeight / 2) + (cardHeight / 2)), behavior: 'smooth' });
-            }
-          }
-        } else if (currentTab === 'notes') {
-          const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
-          if (aiTags.length > 0) {
-            const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
-            let targetSec = null;
-            for (let i = 0; i < uniqueSecs.length; i++) {
-              const sec = uniqueSecs[i];
-              const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
-              if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
-            }
-            if (targetSec !== null) {
-              const matchedTag = aiTags.find(t => parseFloat(t.getAttribute('data-sec')) === targetSec);
-              const scrollBox = document.getElementById('notesTab');
-              if (matchedTag && scrollBox) {
-                const tagTop = matchedTag.offsetTop;
-                const boxHeight = scrollBox.clientHeight;
-                scrollBox.scrollTo({ top: Math.max(0, tagTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+      /* 核心修复：基于视口物理像素差值的全能居中滚动算法，100% 免疫表格/列表嵌套偏移 */
+        function smoothScrollToElement(scrollBox, targetEl) {
+          if (!scrollBox || !targetEl) return;
+          const boxRect = scrollBox.getBoundingClientRect();
+          const targetRect = targetEl.getBoundingClientRect();
+          // 计算目标元素相对于滚动容器顶部的真实绝对坐标
+          const absoluteTop = targetRect.top - boxRect.top + scrollBox.scrollTop;
+          const targetScrollTop = absoluteTop - (scrollBox.clientHeight / 2) + (targetRect.height / 2);
+
+          scrollBox.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth'
+          });
+        }
+
+        /* 核心功能：打开瞬间一次性精准同步滚动到当前播放进度 */
+        function syncActiveViewToCurrentTime() {
+          const curTime = video.currentTime;
+          if (currentTab === 'mynotes' && myNotes.length > 0) {
+            let matchedNote = null;
+            for (let i = 0; i < myNotes.length; i++) {
+              const note = myNotes[i];
+              if (note.type === 'interval') {
+                if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
+              } else {
+                const nextNote = myNotes[i + 1];
+                const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
+                if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
               }
             }
-          }
-        } else if (currentTab === 'transcript' && subtitleData.length > 0) {
-          const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
-          if (currentCue) {
-            const activeEl = document.getElementById('sub-' + currentCue.id);
-            const scrollBox = document.getElementById('transcriptTab');
-            if (activeEl && scrollBox) {
-              const rowTop = activeEl.offsetTop;
-              const boxHeight = scrollBox.clientHeight;
-              scrollBox.scrollTo({ top: Math.max(0, rowTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+            if (matchedNote) {
+              const activeCard = document.getElementById('note-card-' + matchedNote.id);
+              const scrollBox = document.getElementById('mynotesTab');
+              smoothScrollToElement(scrollBox, activeCard);
+            }
+          } else if (currentTab === 'notes') {
+            const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
+            if (aiTags.length > 0) {
+              const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
+              let targetSec = null;
+              for (let i = 0; i < uniqueSecs.length; i++) {
+                const sec = uniqueSecs[i];
+                const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
+                if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
+              }
+              if (targetSec !== null) {
+                const matchedTag = aiTags.find(t => parseFloat(t.getAttribute('data-sec')) === targetSec);
+                const scrollBox = document.getElementById('notesTab');
+                smoothScrollToElement(scrollBox, matchedTag);
+              }
+            }
+          } else if (currentTab === 'transcript' && subtitleData.length > 0) {
+            const currentCue = subtitleData.find(c => curTime >= c.start && curTime <= c.end);
+            if (currentCue) {
+              const activeEl = document.getElementById('sub-' + currentCue.id);
+              const scrollBox = document.getElementById('transcriptTab');
+              smoothScrollToElement(scrollBox, activeEl);
             }
           }
         }
-      }
 
       /* 沉浸全屏状态下：鼠标移到右侧热区自动滑出，离开延时收起 */
       document.addEventListener('mousemove', (e) => {
@@ -3457,176 +3556,166 @@
       }
 
       /* ================= timeupdate 智能驱动与防拉扯引擎 ================= */
-      video.addEventListener('timeupdate', () => {
-        const curTime = video.currentTime;
-        // 🌟 核心防错守卫：若处于全屏沉浸且抽屉未展开，绝不触发任何 DOM 滚动
-        const allowScroll = (!isImmersiveMode || isDrawerOpen);
+        video.addEventListener('timeupdate', () => {
+          const curTime = video.currentTime;
+          // 核心防错守卫：若处于全屏沉浸且抽屉未展开，绝不触发任何 DOM 滚动
+          const allowScroll = (!isImmersiveMode || isDrawerOpen);
 
-        // 1. 讲义时间码状态追踪与滚动
-        const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
-        if (aiTags.length > 0) {
-          const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
-          let targetSec = null;
-          for (let i = 0; i < uniqueSecs.length; i++) {
-            const sec = uniqueSecs[i];
-            const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
-            if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
-          }
+          // 1. 讲义时间码状态追踪与居中平滑对齐
+          const aiTags = Array.from(document.querySelectorAll('.ai-note-tag'));
+          if (aiTags.length > 0) {
+            const uniqueSecs = Array.from(new Set(aiTags.map(t => parseFloat(t.getAttribute('data-sec'))))).sort((a, b) => a - b);
+            let targetSec = null;
+            for (let i = 0; i < uniqueSecs.length; i++) {
+              const sec = uniqueSecs[i];
+              const nextSec = (i + 1 < uniqueSecs.length) ? uniqueSecs[i + 1] : Infinity;
+              if (curTime >= sec && curTime < nextSec) { targetSec = sec; break; }
+            }
 
-          let hasNewActive = false;
-          let firstActiveTag = null;
-          aiTags.forEach(tag => {
-            const sec = parseFloat(tag.getAttribute('data-sec'));
-            if (targetSec !== null && sec === targetSec) {
-              if (!tag.classList.contains('active')) {
-                tag.classList.add('active');
-                hasNewActive = true;
+            let hasNewActive = false;
+            let firstActiveTag = null;
+            aiTags.forEach(tag => {
+              const sec = parseFloat(tag.getAttribute('data-sec'));
+              if (targetSec !== null && sec === targetSec) {
+                if (!tag.classList.contains('active')) {
+                  tag.classList.add('active');
+                  hasNewActive = true;
+                }
+                if (!firstActiveTag) firstActiveTag = tag;
+              } else {
+                tag.classList.remove('active');
               }
-              if (!firstActiveTag) firstActiveTag = tag;
-            } else {
-              tag.classList.remove('active');
-            }
-          });
+            });
 
-          // 仅在允许滚动且面板处于展开状态时，使用内部相对 scrollTop 滚动，杜绝 scrollIntoView 视口拉扯
-          if (allowScroll && hasNewActive && firstActiveTag && currentTab === 'notes') {
-            const scrollBox = document.getElementById('notesTab');
-            if (scrollBox) {
-              const tagTop = firstActiveTag.offsetTop;
-              const boxHeight = scrollBox.clientHeight;
-              scrollBox.scrollTo({ top: Math.max(0, tagTop - (boxHeight / 2) + 20), behavior: 'smooth' });
-            }
-          }
-        }
-
-        // 2. 我的手记状态追踪与滚动
-        if (myNotes && myNotes.length > 0) {
-          let matchedNote = null;
-          for (let i = 0; i < myNotes.length; i++) {
-            const note = myNotes[i];
-            if (note.type === 'interval') {
-              if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
-            } else {
-              const nextNote = myNotes[i + 1];
-              const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
-              if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
+            if (allowScroll && hasNewActive && firstActiveTag && currentTab === 'notes') {
+              const scrollBox = document.getElementById('notesTab');
+              smoothScrollToElement(scrollBox, firstActiveTag);
             }
           }
 
-          myNotes.forEach(note => {
-            const cardEl = document.getElementById('note-card-' + note.id);
-            if (!cardEl) return;
-
-            const isMatched = (matchedNote && matchedNote.id === note.id);
-            const isManualLooping = (activeLoop && activeLoop.id === note.id);
-
-            if (isMatched || isManualLooping) {
-              if (note.type === 'interval') cardEl.classList.add('loop-active');
-              else cardEl.classList.add('point-active');
-            } else {
-              cardEl.classList.remove('point-active');
-              if (!isManualLooping) cardEl.classList.remove('loop-active');
+          // 2. 我的手记状态追踪与居中平滑对齐
+          if (myNotes && myNotes.length > 0) {
+            let matchedNote = null;
+            for (let i = 0; i < myNotes.length; i++) {
+              const note = myNotes[i];
+              if (note.type === 'interval') {
+                if (curTime >= note.start && curTime <= (note.end || note.start + 5)) { matchedNote = note; break; }
+              } else {
+                const nextNote = myNotes[i + 1];
+                const pointEnd = nextNote ? Math.min(note.start + 4, nextNote.start) : (note.start + 4);
+                if (curTime >= note.start && curTime < pointEnd) { matchedNote = note; break; }
+              }
             }
-          });
 
-          const matchedId = matchedNote ? matchedNote.id : -1;
-          if (currentActiveNoteId !== matchedId) {
-            currentActiveNoteId = matchedId;
-            if (editingNoteId !== null) return;
+            myNotes.forEach(note => {
+              const cardEl = document.getElementById('note-card-' + note.id);
+              if (!cardEl) return;
 
-            if (allowScroll && matchedNote && currentTab === 'mynotes') {
-              const activeCard = document.getElementById('note-card-' + matchedNote.id);
-              const scrollBox = document.getElementById('mynotesTab');
-              if (activeCard && scrollBox) {
-                const cardTop = activeCard.offsetTop;
-                const cardHeight = activeCard.offsetHeight;
-                const boxHeight = scrollBox.clientHeight;
-                scrollBox.scrollTo({ top: Math.max(0, cardTop - (boxHeight / 2) + (cardHeight / 2)), behavior: 'smooth' });
+              const isMatched = (matchedNote && matchedNote.id === note.id);
+              const isManualLooping = (activeLoop && activeLoop.id === note.id);
+
+              if (isMatched || isManualLooping) {
+                if (note.type === 'interval') cardEl.classList.add('loop-active');
+                else cardEl.classList.add('point-active');
+              } else {
+                cardEl.classList.remove('point-active');
+                if (!isManualLooping) cardEl.classList.remove('loop-active');
+              }
+            });
+
+            const matchedId = matchedNote ? matchedNote.id : -1;
+            if (currentActiveNoteId !== matchedId) {
+              currentActiveNoteId = matchedId;
+              if (editingNoteId !== null) return;
+
+              if (allowScroll && matchedNote && currentTab === 'mynotes') {
+                const activeCard = document.getElementById('note-card-' + matchedNote.id);
+                const scrollBox = document.getElementById('mynotesTab');
+                smoothScrollToElement(scrollBox, activeCard);
               }
             }
           }
-        }
 
-        if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
-          video.currentTime = activeLoop.start;
-          video.play();
-        }
-
-        if (!subtitleData.length) {
-          if (lastRenderedCueId !== -1) {
-            videoSubOverlay.style.display = 'none';
-            lastRenderedCueId = -1;
+          // 3. 区间循环保护
+          if (activeLoop && (curTime >= activeLoop.end || curTime < activeLoop.start - 0.5)) {
+            video.currentTime = activeLoop.start;
+            video.play();
           }
-          return;
-        }
 
-        let currentCue = null;
-        if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
-          const c = subtitleData[cachedSubIndex];
-          if (curTime >= c.start && curTime <= c.end) currentCue = c;
-          else if (cachedSubIndex + 1 < subtitleData.length && curTime >= subtitleData[cachedSubIndex + 1].start && curTime <= subtitleData[cachedSubIndex + 1].end) {
-            cachedSubIndex++;
-            currentCue = subtitleData[cachedSubIndex];
+          // 4. 外挂字幕实时渲染与滚动
+          if (!subtitleData.length) {
+            if (lastRenderedCueId !== -1) {
+              videoSubOverlay.style.display = 'none';
+              lastRenderedCueId = -1;
+            }
+            return;
           }
-        }
-        if (!currentCue) {
-          const idx = subtitleData.findIndex(item => curTime >= item.start && curTime <= item.end);
-          if (idx !== -1) {
-            cachedSubIndex = idx;
-            currentCue = subtitleData[idx];
-          }
-        }
 
-        if (currentCue) {
-          if (lastRenderedCueId !== currentCue.id) {
-            lastRenderedCueId = currentCue.id;
-            videoSubOverlay.style.display = 'block';
-            if (currentLang === 'cn') {
-              videoSubCn.textContent = currentCue.cn;
-              videoSubCn.style.display = 'block';
-              videoSubForeign.style.display = 'none';
-            } else if (currentLang === 'foreign') {
-              videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
-              videoSubForeign.style.display = 'block';
-              videoSubCn.style.display = 'none';
-            } else {
-              videoSubCn.textContent = currentCue.cn;
-              videoSubForeign.textContent = currentCue.foreign;
-              videoSubCn.style.display = 'block';
-              videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+          let currentCue = null;
+          if (cachedSubIndex >= 0 && cachedSubIndex < subtitleData.length) {
+            const c = subtitleData[cachedSubIndex];
+            if (curTime >= c.start && curTime <= c.end) currentCue = c;
+            else if (cachedSubIndex + 1 < subtitleData.length && curTime >= subtitleData[cachedSubIndex + 1].start && curTime <= subtitleData[cachedSubIndex + 1].end) {
+              cachedSubIndex++;
+              currentCue = subtitleData[cachedSubIndex];
+            }
+          }
+          if (!currentCue) {
+            const idx = subtitleData.findIndex(item => curTime >= item.start && curTime <= item.end);
+            if (idx !== -1) {
+              cachedSubIndex = idx;
+              currentCue = subtitleData[idx];
             }
           }
 
-          if (video.playbackRate > 1.25 || isSpeedLongPressing) return;
+          if (currentCue) {
+            if (lastRenderedCueId !== currentCue.id) {
+              lastRenderedCueId = currentCue.id;
+              videoSubOverlay.style.display = 'block';
+              if (currentLang === 'cn') {
+                videoSubCn.textContent = currentCue.cn;
+                videoSubCn.style.display = 'block';
+                videoSubForeign.style.display = 'none';
+              } else if (currentLang === 'foreign') {
+                videoSubForeign.textContent = currentCue.foreign || currentCue.raw;
+                videoSubForeign.style.display = 'block';
+                videoSubCn.style.display = 'none';
+              } else {
+                videoSubCn.textContent = currentCue.cn;
+                videoSubForeign.textContent = currentCue.foreign;
+                videoSubCn.style.display = 'block';
+                videoSubForeign.style.display = currentCue.foreign ? 'block' : 'none';
+              }
+            }
 
-          if (currentActiveId !== currentCue.id) {
-            currentActiveId = currentCue.id;
-            document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
+            if (video.playbackRate > 1.25 || isSpeedLongPressing) return;
 
-            const activeEl = document.getElementById('sub-' + currentCue.id);
-            if (activeEl) {
-              activeEl.classList.add('active');
-              if (allowScroll) {
-                const scrollBox = document.getElementById('transcriptTab');
-                if (scrollBox) {
-                  const now = performance.now();
-                  if (now - lastScrollTimestamp > 280) {
-                    lastScrollTimestamp = now;
-                    const rowTop = activeEl.offsetTop;
-                    const boxHeight = scrollBox.clientHeight;
-                    scrollBox.scrollTo({ top: Math.max(0, rowTop - (boxHeight / 2) + 20), behavior: 'smooth' });
+            if (currentActiveId !== currentCue.id) {
+              currentActiveId = currentCue.id;
+              document.querySelectorAll('.transcript-row.active').forEach(el => el.classList.remove('active'));
+
+              const activeEl = document.getElementById('sub-' + currentCue.id);
+              if (activeEl) {
+                activeEl.classList.add('active');
+                if (allowScroll) {
+                  const scrollBox = document.getElementById('transcriptTab');
+                  if (scrollBox) {
+                    const now = performance.now();
+                    if (now - lastScrollTimestamp > 280) {
+                      lastScrollTimestamp = now;
+                      smoothScrollToElement(scrollBox, activeEl);
+                    }
                   }
                 }
               }
             }
+          } else {
+            if (lastRenderedCueId !== -1) {
+              videoSubOverlay.style.display = 'none';
+              lastRenderedCueId = -1;
+            }
           }
-        } else {
-          if (lastRenderedCueId !== -1) {
-            videoSubOverlay.style.display = 'none';
-            lastRenderedCueId = -1;
-          }
-        }
-      });
+        });
 
       video.addEventListener('ended', () => {
         if (playlist.length > 1 && currentPlaylistIndex < playlist.length - 1) {
@@ -4194,81 +4283,134 @@
       }
 
       function parseMarkdownToHtml(mdText) {
-        if (!mdText) return '';
-        let text = mdText.replace(/^```(?:markdown)?\s*\n?|\n?```$/gi, '').trim();
+          if (!mdText) return '';
+          let text = mdText.replace(/^```(?:markdown)?\s*\n?|\n?```$/gi, '').trim();
 
-        function parseInline(str) {
-          if (!str) return '';
-          str = str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-          str = str.replace(/__(.+?)__/g, '<strong>$1</strong>');
-          str = str.replace(/`([^`]+)`/g, '<code>$1</code>');
-          str = str.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
-          str = str.replace(
-            /\[\s*(\d{1,2}:\d{2}(?::\d{2})?)(?:\s*[\-–—~～]+\s*(\d{1,2}:\d{2}(?::\d{2})?))?\s*\]/g,
-            (m, startTs, endTs) => {
-              const startSec = timeToSeconds(startTs.trim());
-              const label = endTs ? `${startTs.trim()} ~ ${endTs.trim()}` : startTs.trim();
-              return `<span class="pill-tag ai-note-tag" data-sec="${startSec}" onclick="jumpToPoint(${startSec})">▶ ${label}</span>`;
-            }
-          );
-          return str;
-        }
-
-        const lines = text.split('\n');
-        const output = [];
-        let inUl = false, inOl = false, inQuote = false;
-
-        function closeListsAndQuotes() {
-          if (inUl) { output.push('</ul>'); inUl = false; }
-          if (inOl) { output.push('</ol>'); inOl = false; }
-          if (inQuote) { output.push('</blockquote>'); inQuote = false; }
-        }
-
-        for (let i = 0; i < lines.length; i++) {
-          const rawLine = lines[i];
-          const line = rawLine.trim();
-
-          if (!line) { closeListsAndQuotes(); continue; }
-          if (/^(?:---|\*\*\*|___)$/.test(line)) {
-            closeListsAndQuotes();
-            output.push('<hr style="border:none;border-top:1px solid var(--border-light);margin:12px 0;">');
-            continue;
+          // 1. 行内元素解析（粗体、斜体、代码、换行、时码胶囊）
+          function parseInline(str) {
+            if (!str) return '';
+            str = str.replace(/<br\s*\/?>/gi, '<br>');
+            str = str.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            str = str.replace(/__(.+?)__/g, '<strong>$1</strong>');
+            str = str.replace(/`([^`]+)`/g, '<code>$1</code>');
+            str = str.replace(/(^|[^\*])\*([^\*]+)\*([^\*]|$)/g, '$1<em>$2</em>$3');
+            // 匹配 [mm:ss] 或 [mm:ss ~ mm:ss] 时码胶囊
+            str = str.replace(
+              /\[\s*(\d{1,2}:\d{2}(?::\d{2})?)(?:\s*[\-–—~～]+\s*(\d{1,2}:\d{2}(?::\d{2})?))?\s*\]/g,
+              (m, startTs, endTs) => {
+                const startSec = timeToSeconds(startTs.trim());
+                const label = endTs ? `${startTs.trim()} ~ ${endTs.trim()}` : startTs.trim();
+                return `<span class="pill-tag ai-note-tag" data-sec="${startSec}" onclick="jumpToPoint(${startSec})">▶ ${label}</span>`;
+              }
+            );
+            return str;
           }
-          if (line.startsWith('#### ')) { closeListsAndQuotes(); output.push(`<h4>${parseInline(line.slice(5))}</h4>`); continue; }
-          if (line.startsWith('### ')) { closeListsAndQuotes(); output.push(`<h3>${parseInline(line.slice(4))}</h3>`); continue; }
-          if (line.startsWith('## ')) { closeListsAndQuotes(); output.push(`<h2>${parseInline(line.slice(3))}</h2>`); continue; }
-          if (line.startsWith('# ')) { closeListsAndQuotes(); output.push(`<h1>${parseInline(line.slice(2))}</h1>`); continue; }
 
-          if (line.startsWith('> ')) {
-            if (inUl || inOl) closeListsAndQuotes();
-            if (!inQuote) {
-              output.push('<blockquote style="margin:6px 0;padding:4px 10px;background:#f8fafc;border-left:3px solid var(--primary-border);color:var(--text-muted);border-radius:0 4px 4px 0;">');
-              inQuote = true;
-            }
-            output.push(`<p style="margin:2px 0;">${parseInline(line.slice(2))}</p>`);
-            continue;
+          function parseTableRowCells(rowStr) {
+            let trimmed = rowStr.trim();
+            if (trimmed.startsWith('|')) trimmed = trimmed.slice(1);
+            if (trimmed.endsWith('|')) trimmed = trimmed.slice(0, -1);
+            return trimmed.split('|').map(c => c.trim());
           }
-          if (/^[-*•]\s+/.test(line)) {
+
+          const lines = text.split('\n');
+          const output = [];
+          let inUl = false, inOl = false, inQuote = false;
+
+          function closeListsAndQuotes() {
+            if (inUl) { output.push('</ul>'); inUl = false; }
             if (inOl) { output.push('</ol>'); inOl = false; }
             if (inQuote) { output.push('</blockquote>'); inQuote = false; }
-            if (!inUl) { output.push('<ul style="padding-left:18px;margin:4px 0 6px;">'); inUl = true; }
-            output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^[-*•]\s+/, ''))}</li>`);
-            continue;
           }
-          if (/^\d+\.\s+/.test(line)) {
-            if (inUl) { output.push('</ul>'); inUl = false; }
-            if (inQuote) { output.push('</blockquote>'); inQuote = false; }
-            if (!inOl) { output.push('<ol style="padding-left:18px;margin:4px 0 6px;">'); inOl = true; }
-            output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^\d+\.\s+/, ''))}</li>`);
-            continue;
-          }
-          closeListsAndQuotes();
-          output.push(`<p style="margin:4px 0;line-height:1.6;">${parseInline(line)}</p>`);
-        }
 
-        closeListsAndQuotes();
-        return output.join('');
-      }
+          for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+
+            if (!line) { closeListsAndQuotes(); continue; }
+
+            // --- 识别分割线 ---
+            if (/^(?:---|\*\*\*|___)$/.test(line)) {
+              closeListsAndQuotes();
+              output.push('<hr>');
+              continue;
+            }
+
+            // --- 识别 Markdown 表格 (Table) ---
+            if (line.includes('|') && i + 1 < lines.length) {
+              const nextLine = lines[i + 1].trim();
+              // 校验下一行是否是表头分隔线 |:---|:---|
+              if (/^\|?(\s*:?-+:?\s*\|)+\s*:?-+:?\s*\|?$/.test(nextLine)) {
+                closeListsAndQuotes();
+                const headers = parseTableRowCells(line);
+                let tableHtml = '<div style="overflow-x:auto;width:100%;"><table class="md-table"><thead><tr>';
+                headers.forEach(h => {
+                  tableHtml += `<th>${parseInline(h)}</th>`;
+                });
+                tableHtml += '</tr></thead><tbody>';
+
+                i++; // 跳过分隔行
+                // 循环收集后续表格数据行
+                while (i + 1 < lines.length) {
+                  const rowLine = lines[i + 1].trim();
+                  if (!rowLine || !rowLine.includes('|')) break;
+                  i++;
+                  const cells = parseTableRowCells(rowLine);
+                  tableHtml += '<tr>';
+                  cells.forEach((c, colIdx) => {
+                    const label = headers[colIdx] ? headers[colIdx].replace(/<[^>]+>/g, '').trim() : '';
+                    tableHtml += `<td data-label="${label}">${parseInline(c)}</td>`;
+                  });
+                  tableHtml += '</tr>';
+                }
+                tableHtml += '</tbody></table></div>';
+                output.push(tableHtml);
+                continue;
+              }
+            }
+
+            // --- 识别标题 ---
+            if (line.startsWith('#### ')) { closeListsAndQuotes(); output.push(`<h4>${parseInline(line.slice(5))}</h4>`); continue; }
+            if (line.startsWith('### ')) { closeListsAndQuotes(); output.push(`<h3>${parseInline(line.slice(4))}</h3>`); continue; }
+            if (line.startsWith('## ')) { closeListsAndQuotes(); output.push(`<h2>${parseInline(line.slice(3))}</h2>`); continue; }
+            if (line.startsWith('# ')) { closeListsAndQuotes(); output.push(`<h1>${parseInline(line.slice(2))}</h1>`); continue; }
+
+            // --- 识别引用块 ---
+            if (line.startsWith('> ')) {
+              if (inUl || inOl) closeListsAndQuotes();
+              if (!inQuote) {
+                output.push('<blockquote>');
+                inQuote = true;
+              }
+              output.push(`<p style="margin:2px 0;">${parseInline(line.slice(2))}</p>`);
+              continue;
+            }
+
+            // --- 识别无序列表 (- * •) ---
+            if (/^[-*•]\s+/.test(line)) {
+              if (inOl) { output.push('</ol>'); inOl = false; }
+              if (inQuote) { output.push('</blockquote>'); inQuote = false; }
+              if (!inUl) { output.push('<ul style="padding-left:18px;margin:4px 0 6px;">'); inUl = true; }
+              output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^[-*•]\s+/, ''))}</li>`);
+              continue;
+            }
+
+            // --- 识别有序列表 (1. 2.) ---
+            if (/^\d+\.\s+/.test(line)) {
+              if (inUl) { output.push('</ul>'); inUl = false; }
+              if (inQuote) { output.push('</blockquote>'); inQuote = false; }
+              if (!inOl) { output.push('<ol style="padding-left:18px;margin:4px 0 6px;">'); inOl = true; }
+              output.push(`<li style="margin:3px 0;">${parseInline(line.replace(/^\d+\.\s+/, ''))}</li>`);
+              continue;
+            }
+
+            // --- 普通段落 ---
+            closeListsAndQuotes();
+            output.push(`<p style="margin:4px 0;line-height:1.6;">${parseInline(line)}</p>`);
+          }
+
+          closeListsAndQuotes();
+          return output.join('');
+        }
 
       function renderNotes(shouldSave = true) {
         let raw = document.getElementById('notesInput').value.trim();
