@@ -204,23 +204,34 @@
         align-items: start;
       }
 
+      /* 【彻底修复】：超长通栏上下两条虚线规范呈现 */
       .card-content-grid>.span-full {
         grid-column: 1 / -1 !important;
         width: 100%;
-        padding: 14px 0 !important;
+        padding: 12px 0 !important;
         border-top: 1px dashed #cbd5e1;
         border-bottom: 1px dashed #cbd5e1;
         margin: 4px 0;
       }
 
+      /* 当通栏在最顶部时，去掉顶虚线 */
       .card-content-grid>.span-full:first-child {
-        border-top: none;
+        border-top: none !important;
         padding-top: 0 !important;
+        margin-top: 0 !important;
       }
 
+      /* 当通栏在最底部时，去掉底虚线 */
       .card-content-grid>.span-full:last-child {
-        border-bottom: none;
+        border-bottom: none !important;
         padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      /* 相邻两个通栏自动合并虚线，防止两条虚线粘在一起变粗 */
+      .card-content-grid>.span-full+.span-full {
+        border-top: none !important;
+        margin-top: -4px;
       }
 
       .card-content-grid>.span-full h3:last-child,
@@ -252,7 +263,7 @@
         font-size: 0.98rem;
         font-weight: 700;
         color: var(--text-heading);
-        margin: 0 0 12px 0;
+        margin: 0 0 10px 0;
         display: flex;
         align-items: center;
         gap: 7px;
@@ -330,7 +341,7 @@
 
       /* 二级列表 */
       .render-canvas ul ul {
-        padding-left: 20px !important;
+        padding-left: 16px !important;
         margin: 4px 0 6px 4px;
         border-left: 1.5px solid #cbd5e1;
       }
@@ -341,7 +352,7 @@
         color: var(--text-body);
         margin-bottom: 4px;
         position: relative;
-        padding-left: 14px;
+        padding-left: 12px;
         line-height: 1.55;
       }
 
@@ -355,7 +366,7 @@
 
       /* 三级列表 */
       .render-canvas ul ul ul {
-        padding-left: 18px !important;
+        padding-left: 14px !important;
         margin: 3px 0 5px 3px;
         border-left: 1px dashed #94a3b8;
       }
@@ -364,7 +375,7 @@
         font-size: 0.82rem;
         font-weight: 400 !important;
         color: var(--text-muted);
-        padding-left: 12px;
+        padding-left: 10px;
         margin-bottom: 3px;
         line-height: 1.5;
       }
@@ -434,8 +445,7 @@
       }
 
       .render-canvas.is-narrow .span-full {
-        border-top: none !important;
-        border-bottom: none !important;
+        border: none !important;
         padding: 0 !important;
         margin: 0 0 6px 0 !important;
       }
@@ -607,16 +617,113 @@
       }
 
       .pane-header {
-        height: 38px;
+        min-height: 40px;
         background: #f8fafc;
         border-bottom: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 16px;
+        padding: 0 12px;
         font-size: 0.78rem;
         color: #64748b;
         font-weight: 600;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* 快捷编辑工具条 */
+      .editor-toolbar {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: #ffffff;
+        padding: 2px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+      }
+
+      .tool-btn {
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+        padding: 3px 6px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        transition: all 0.15s;
+        user-select: none;
+      }
+
+      .tool-btn:hover {
+        background: #f1f5f9;
+        color: #0284c7;
+      }
+
+      .tool-btn:active {
+        background: #e2e8f0;
+      }
+
+      .tool-sep {
+        width: 1px;
+        height: 14px;
+        background: #e2e8f0;
+        margin: 0 2px;
+      }
+
+      /* 标题快捷下拉弹窗 */
+      .heading-menu-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .heading-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 4px 0;
+        z-index: 50;
+        min-width: 160px;
+      }
+
+      .heading-dropdown.active {
+        display: block;
+      }
+
+      .heading-dropdown button {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        color: #334155;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .heading-dropdown button span {
+        font-size: 0.72rem;
+        color: #94a3b8;
+      }
+
+      .heading-dropdown button:hover {
+        background: #f1f5f9;
+        color: #0284c7;
       }
 
       .editor-textarea {
@@ -687,7 +794,7 @@
         gap: 10px;
       }
 
-      /* 写作提示手册 */
+      /* 写作提示手册抽屉 */
       .drawer-overlay {
         display: none;
         position: fixed;
@@ -884,26 +991,6 @@
         line-height: 1.6;
       }
 
-      .preview-box h1 {
-        font-size: 1.3rem;
-        margin-bottom: 0.3rem;
-        font-weight: 700;
-      }
-
-      .preview-box h2 {
-        font-size: 1.1rem;
-        margin-bottom: 0.3rem;
-        font-weight: 600;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 0.2rem;
-      }
-
-      .preview-box h3 {
-        font-size: 0.95rem;
-        margin-bottom: 0.3rem;
-        font-weight: 600;
-      }
-
       .preview-box hr {
         border: 0;
         border-top: 1.5px dashed #cbd5e1;
@@ -1023,14 +1110,43 @@
 
       <section class="editor-pane" id="editorPane">
         <div class="pane-header">
-          <span>MARKDOWN 源码编辑区 (纯净字重与克制美化)</span>
+          <!-- 快捷编辑工具条（带完整快捷键提示） -->
+          <div class="editor-toolbar">
+            <button class="tool-btn" onclick="applyFormat('bold')" title="粗体加粗 (Ctrl+B)"><b>B</b></button>
+            <button class="tool-btn" onclick="applyFormat('stamp')" title="流派印章 (Ctrl+I)"><i>*</i></button>
+
+            <div class="tool-sep"></div>
+
+            <div class="heading-menu-wrapper">
+              <button class="tool-btn" onclick="toggleHeadingMenu(event)" title="标题转换 (Ctrl+2 ~ 5)"><b>H ▾</b></button>
+              <div class="heading-dropdown" id="headingDropdown">
+                <button onclick="applyHeading('## ')">## 大阶段卡片 <span>Ctrl+2</span></button>
+                <button onclick="applyHeading('### ')">### 核心小节 <span>Ctrl+3</span></button>
+                <button onclick="applyHeading('#### ')">#### 内嵌子标题 <span>Ctrl+4</span></button>
+                <button onclick="applyHeading('##### ')">##### 微型标题 (§) <span>Ctrl+5</span></button>
+              </div>
+            </div>
+
+            <button class="tool-btn" onclick="applyFormat('list')" title="快速列表化 (Ctrl+L)">•≡</button>
+
+            <div class="tool-sep"></div>
+
+            <button class="tool-btn" onclick="indentLines(true)" title="层级缩进 (Tab 或 Ctrl+])">⇥</button>
+            <button class="tool-btn" onclick="indentLines(false)" title="减少缩进 (Shift+Tab 或 Ctrl+[)">⇤</button>
+
+            <div class="tool-sep"></div>
+
+            <button class="tool-btn" onclick="applyFormat('quote')" title="专属注解框 (Ctrl+Q)">”</button>
+            <button class="tool-btn" onclick="insertStudentBadge()" title="快速插入学员徽标 (Ctrl+M)" style="font-size:0.75rem;">学员</button>
+          </div>
+
           <span id="charCount">0 字</span>
         </div>
         <textarea class="editor-textarea" id="mdEditor" spellcheck="false" placeholder="在此编辑或直接拖入 Markdown 大纲文件..."></textarea>
       </section>
     </div>
 
-    <!-- 写作提示手册抽屉（完整 12 项速查全部恢复） -->
+    <!-- 写作提示手册抽屉 -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
     <aside class="manual-drawer" id="manualDrawer">
       <div class="drawer-header">
@@ -1176,7 +1292,7 @@
             <span class="badge badge-struct">结构化</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">📌 避坑：列表项在系统内将自动向右缩进呈现，子级列表建议缩进 **4 个空格**以生成层级导轨线！</div>
+            <div class="spec-box">📌 避坑：列表项在系统内将自动向右缩进呈现，子级列表建议逐层缩进 **4 个空格**以生成层级导轨线！使用工具栏的 <code>⇥</code> 与 <code>⇤</code> 可以一键批量缩进。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1281,7 +1397,7 @@ def fetch_user(user_id: int):
             <span class="badge badge-struct">结构化</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成高颜值专属注解框！顶部使用 <code>学员：XX</code> 自动生成学员徽标。</div>
+            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成专属注解框！顶部使用 <code>学员：XX</code> 自动生成学员徽标。连续的 <code>&gt;</code> 会自动合并为一个整体大框。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1304,7 +1420,7 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
-        <!-- 9. 链接与图片 -->
+        <!-- 9. 链接与多媒体 -->
         <div class="card-item" data-keywords="链接 图片 link image media">
           <div class="card-item-header">
             <span>🔗 9. 链接与多媒体 (Links & Images)</span>
@@ -1494,7 +1610,7 @@ def fetch_user(user_id: int):
         renderSyllabus(editor.value);
       });
 
-      /* ================= 1. 防循环双向同步滚动 ================= */
+      /* 滚动同步 */
       let isProgrammaticScroll = false;
       let scrollTimer = null;
 
@@ -1530,7 +1646,7 @@ def fetch_user(user_id: int):
       });
       resizeObserver.observe(previewPane);
 
-      /* ================= 2. 中间滑块拖拽 (带防丢保护) ================= */
+      /* 滑块拖拽 */
       let isDragging = false;
 
       function stopDragging() {
@@ -1566,7 +1682,7 @@ def fetch_user(user_id: int):
       window.addEventListener('mouseup', stopDragging);
       window.addEventListener('blur', stopDragging);
 
-      /* ================= 3. 全局文件拖拽导入 ================= */
+      /* 文件拖拽导入 */
       let dragCounter = 0;
       window.addEventListener('dragenter', (e) => {
         e.preventDefault();
@@ -1604,7 +1720,7 @@ def fetch_user(user_id: int):
         reader.readAsText(file);
       }
 
-      /* ================= 4. 专向美学解析引擎 ================= */
+      /* ================= 核心渲染逻辑 ================= */
       function renderSyllabus(md) {
         charCount.innerText = md.length + ' 字';
         if (!md.trim()) {
@@ -1628,14 +1744,14 @@ def fetch_user(user_id: int):
         for (let rawLine of lines) {
           let line = rawLine.trimEnd();
 
-          // 1. 一级主标题识别
+          // 1. 一级主标题
           if (line.startsWith('#') && !line.startsWith('##')) {
             docTitle = line.replace(/^#\s*/, '').trim();
             hasH1 = true;
             continue;
           }
 
-          // 2. 学员精准识别（仅在进入任何 ## 阶段前识别）
+          // 2. 学员提取（仅在未进入二级阶段前生效）
           if (!currentPart && parts.length === 0) {
             const studentMatch = line.match(/^学员[：:]\s*(.+)/);
             if (studentMatch && studentMatch[1]) {
@@ -1690,7 +1806,7 @@ def fetch_user(user_id: int):
             continue;
           }
 
-          // 5. 容错提取内容
+          // 5. 内容提取
           if (line.trim().length > 0 && currentPart) {
             if (!currentSection) {
               currentSection = { title: '', elements: [] };
@@ -1730,10 +1846,9 @@ def fetch_user(user_id: int):
           let colIndex = 0;
 
           for (let sec of part.sections) {
-            const hasLongTitle = sec.title.trim().length > 18;
-            const hasLongElement = sec.elements.some(l => l.replace(/^[\s\-*#>\d\.]+/, '').trim().length > 20);
-            const hasDeepTree = sec.elements.some(l => l.search(/\S|$/) >= 6);
-            const isSpanFull = hasLongTitle || hasLongElement || hasDeepTree;
+            const hasLongTitle = sec.title.trim().length > 32;
+            const hasVeryLongElement = sec.elements.some(l => l.replace(/^[\s\-*#>\d\.]+/, '').trim().length > 50);
+            const isSpanFull = hasLongTitle || hasVeryLongElement;
 
             let layoutClass = '';
             if (isSpanFull) {
@@ -1767,7 +1882,7 @@ def fetch_user(user_id: int):
         previewArea.innerHTML = html;
       }
 
-      /* 结构化列表与多行引用渲染器 */
+      /* 结构化列表、纯段落与多行引用渲染器 */
       function renderSectionElements(lines) {
         let res = '';
         let listLevel = 0;
@@ -1822,28 +1937,36 @@ def fetch_user(user_id: int):
 
           flushNote();
 
-          const indent = raw.search(/\S|$/);
-          const content = trimmed.replace(/^[-*]\s*/, '');
+          const isBulletList = /^[-*+]\s+/.test(trimmed);
+          const isNumberList = /^\d+\.\s+/.test(trimmed);
 
-          let targetLevel = 1;
-          if (indent >= 6) targetLevel = 3;
-          else if (indent >= 2) targetLevel = 2;
+          if (isBulletList || isNumberList) {
+            const indent = raw.search(/\S|$/);
+            const content = trimmed.replace(/^([-*+]|\d+\.)\s+/, '');
 
-          if (listLevel === 0) {
-            res += '<ul>';
-            listLevel = 1;
+            let targetLevel = 1;
+            if (indent >= 6) targetLevel = 3;
+            else if (indent >= 2) targetLevel = 2;
+
+            if (listLevel === 0) {
+              res += '<ul>';
+              listLevel = 1;
+            }
+
+            while (listLevel < targetLevel) {
+              res += '<ul>';
+              listLevel++;
+            }
+            while (listLevel > targetLevel) {
+              res += '</li></ul>';
+              listLevel--;
+            }
+
+            res += '<li>' + parseInline(content);
+          } else {
+            closeLists();
+            res += '<p style="margin: 4px 0 6px 18px; font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">' + parseInline(trimmed) + '</p>';
           }
-
-          while (listLevel < targetLevel) {
-            res += '<ul>';
-            listLevel++;
-          }
-          while (listLevel > targetLevel) {
-            res += '</li></ul>';
-            listLevel--;
-          }
-
-          res += '<li>' + parseInline(content);
         }
 
         flushNote();
@@ -1851,7 +1974,6 @@ def fetch_user(user_id: int):
         return res;
       }
 
-      /* 词法解析：支持转义与嵌套语法 */
       function parseInline(text) {
         if (!text) return '';
         let str = escapeHtml(text);
@@ -1876,7 +1998,231 @@ def fetch_user(user_id: int):
         return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       }
 
-      /* ================= 5. 长图导出 ================= */
+      /* ================= 撤销栈兼容的文本替换核心 ================= */
+      function safeReplaceText(newText, selectStart, selectEnd) {
+        editor.focus();
+        if (selectStart !== undefined && selectEnd !== undefined) {
+          editor.setSelectionRange(selectStart, selectEnd);
+        }
+        const success = document.execCommand('insertText', false, newText);
+        if (!success) {
+          editor.setRangeText(newText, selectStart, selectEnd, 'end');
+        }
+        renderSyllabus(editor.value);
+      }
+
+      /* 格式修饰：粗体、印章、引用、列表 */
+      function applyFormat(type) {
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const selected = editor.value.substring(start, end);
+
+        if (type === 'bold') {
+          if (selected) {
+            safeReplaceText('**' + selected + '**', start, end);
+            editor.setSelectionRange(start + 2, end + 2);
+          } else {
+            safeReplaceText('****', start, end);
+            editor.setSelectionRange(start + 2, start + 2);
+          }
+          return;
+        }
+
+        if (type === 'stamp') {
+          if (selected) {
+            safeReplaceText('*' + selected + '*', start, end);
+            editor.setSelectionRange(start + 1, end + 1);
+          } else {
+            safeReplaceText('**', start, end);
+            editor.setSelectionRange(start + 1, start + 1);
+          }
+          return;
+        }
+
+        if (type === 'quote') {
+          const fullText = editor.value;
+          const lineStart = fullText.lastIndexOf('\n', start - 1) + 1;
+          let lineEnd = fullText.indexOf('\n', end);
+          if (lineEnd === -1) lineEnd = fullText.length;
+
+          const block = fullText.substring(lineStart, lineEnd);
+          const lines = block.split('\n');
+          const isAllQuoted = lines.every(l => l.trim().startsWith('>'));
+
+          const newLines = lines.map(l => isAllQuoted ? l.replace(/^>\s?/, '') : ('> ' + l));
+          const newBlock = newLines.join('\n');
+
+          safeReplaceText(newBlock, lineStart, lineEnd);
+          editor.setSelectionRange(lineStart, lineStart + newBlock.length);
+          return;
+        }
+
+        if (type === 'list') {
+          const fullText = editor.value;
+          const lineStart = fullText.lastIndexOf('\n', start - 1) + 1;
+          let lineEnd = fullText.indexOf('\n', end);
+          if (lineEnd === -1) lineEnd = fullText.length;
+
+          const block = fullText.substring(lineStart, lineEnd);
+          const lines = block.split('\n');
+          const isAllList = lines.every(l => /^\s*[-*+]\s+/.test(l));
+
+          const newLines = lines.map(l => {
+            if (isAllList) {
+              return l.replace(/^(\s*)[-*+]\s+/, '$1');
+            } else {
+              const indentMatch = l.match(/^(\s*)/);
+              const indent = indentMatch ? indentMatch[1] : '';
+              return indent + '- ' + l.trimStart();
+            }
+          });
+
+          const newBlock = newLines.join('\n');
+          safeReplaceText(newBlock, lineStart, lineEnd);
+          editor.setSelectionRange(lineStart, lineStart + newBlock.length);
+          return;
+        }
+      }
+
+      /* 批量层级缩进与反缩进 (4个空格) */
+      function indentLines(isIndent) {
+        const fullText = editor.value;
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+
+        const lineStart = fullText.lastIndexOf('\n', start - 1) + 1;
+        let lineEnd = fullText.indexOf('\n', end);
+        if (lineEnd === -1) lineEnd = fullText.length;
+
+        const block = fullText.substring(lineStart, lineEnd);
+        const lines = block.split('\n');
+
+        const newLines = lines.map(l => {
+          if (isIndent) {
+            return '    ' + l;
+          } else {
+            return l.replace(/^ {1,4}/, '');
+          }
+        });
+
+        const newBlock = newLines.join('\n');
+        safeReplaceText(newBlock, lineStart, lineEnd);
+        editor.setSelectionRange(lineStart, lineStart + newBlock.length);
+      }
+
+      /* 标题快捷转换 */
+      function toggleHeadingMenu(e) {
+        e.stopPropagation();
+        document.getElementById('headingDropdown').classList.toggle('active');
+      }
+
+      window.addEventListener('click', () => {
+        const d = document.getElementById('headingDropdown');
+        if (d) d.classList.remove('active');
+      });
+
+      function applyHeading(prefix) {
+        const fullText = editor.value;
+        const start = editor.selectionStart;
+        const lineStart = fullText.lastIndexOf('\n', start - 1) + 1;
+        let lineEnd = fullText.indexOf('\n', start);
+        if (lineEnd === -1) lineEnd = fullText.length;
+
+        const line = fullText.substring(lineStart, lineEnd);
+        const cleanLine = line.replace(/^#{1,6}\s*/, '');
+        const newLine = prefix + cleanLine;
+
+        safeReplaceText(newLine, lineStart, lineEnd);
+        editor.setSelectionRange(lineStart + newLine.length, lineStart + newLine.length);
+      }
+
+      function insertStudentBadge() {
+        const start = editor.selectionStart;
+        safeReplaceText('学员：XX\n\n', start, start);
+      }
+
+      /* ================= 全套快捷键监听 ================= */
+      editor.addEventListener('keydown', (e) => {
+        const isCtrl = e.ctrlKey || e.metaKey;
+
+        // 1. Tab / Shift+Tab 缩进与反缩进
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          indentLines(!e.shiftKey);
+          return;
+        }
+
+        // 2. Ctrl+] 缩进，Ctrl+[ 反缩进
+        if (isCtrl && e.key === ']') {
+          e.preventDefault();
+          indentLines(true);
+          return;
+        }
+        if (isCtrl && e.key === '[') {
+          e.preventDefault();
+          indentLines(false);
+          return;
+        }
+
+        // 3. Ctrl+B 加粗
+        if (isCtrl && (e.key === 'b' || e.key === 'B')) {
+          e.preventDefault();
+          applyFormat('bold');
+          return;
+        }
+
+        // 4. Ctrl+I 流派印章
+        if (isCtrl && (e.key === 'i' || e.key === 'I')) {
+          e.preventDefault();
+          applyFormat('stamp');
+          return;
+        }
+
+        // 5. Ctrl+L 快速转列表
+        if (isCtrl && (e.key === 'l' || e.key === 'L')) {
+          e.preventDefault();
+          applyFormat('list');
+          return;
+        }
+
+        // 6. Ctrl+Q 专属注解框 (Quote)
+        if (isCtrl && (e.key === 'q' || e.key === 'Q')) {
+          e.preventDefault();
+          applyFormat('quote');
+          return;
+        }
+
+        // 7. Ctrl+M 插入学员徽标 (Member)
+        if (isCtrl && (e.key === 'm' || e.key === 'M')) {
+          e.preventDefault();
+          insertStudentBadge();
+          return;
+        }
+
+        // 8. Ctrl+2 ~ Ctrl+5 快速设置标题级别
+        if (isCtrl && e.key === '2') {
+          e.preventDefault();
+          applyHeading('## ');
+          return;
+        }
+        if (isCtrl && e.key === '3') {
+          e.preventDefault();
+          applyHeading('### ');
+          return;
+        }
+        if (isCtrl && e.key === '4') {
+          e.preventDefault();
+          applyHeading('#### ');
+          return;
+        }
+        if (isCtrl && e.key === '5') {
+          e.preventDefault();
+          applyHeading('##### ');
+          return;
+        }
+      });
+
+      /* 长图导出 */
       function exportImageNative() {
         const target = document.getElementById('exportArea');
         const btn = document.querySelector('.app-btn.primary');
@@ -1917,7 +2263,7 @@ def fetch_user(user_id: int):
         });
       }
 
-      /* ================= 6. 导出独立宣发 HTML ================= */
+      /* 导出独立宣发 HTML */
       function exportStandaloneHTML() {
         const doc = document.implementation.createHTMLDocument("课程计划");
 
@@ -1984,7 +2330,7 @@ def fetch_user(user_id: int):
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
-      /* ================= 7. 辅助交互 ================= */
+      /* 抽屉辅助交互 */
       function toggleDrawer(open) {
         document.getElementById('manualDrawer').classList.toggle('active', open);
         document.getElementById('drawerOverlay').classList.toggle('active', open);
