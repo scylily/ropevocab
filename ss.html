@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus Studio · 课程大纲设计工作台</title>
+    <!-- 截图引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- 宣发卡片核心样式表 -->
+    <style id="coreStyles">
+      :root {
+        --bg-page: #f8fafc;
+        --text-title: #0f172a;
+        /* 浓墨黑，加粗重点与主标题专属 */
+        --text-heading: #1e293b;
+        /* 小节标题色 */
+        --text-body: #334155;
+        /* 列表常规正文色（标准字重） */
+        --text-muted: #64748b;
+        /* 次要说明灰 */
+        --card-border: #e2e8f0;
+        --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        --card-hover-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
+      }
+
+      .stage-foundation {
+        --theme-color: #0284c7;
+        --theme-bg: #e0f2fe;
+        --theme-border: #7dd3fc;
+        --theme-glow: rgba(2, 132, 199, 0.14);
+      }
+
+      .stage-advanced {
+        --theme-color: #ea580c;
+        --theme-bg: #ffedd5;
+        --theme-border: #fdba74;
+        --theme-glow: rgba(234, 88, 12, 0.14);
+      }
+
+      .stage-mastery {
+        --theme-color: #be123c;
+        --theme-bg: #ffe4e6;
+        --theme-border: #fda4af;
+        --theme-glow: rgba(190, 18, 60, 0.14);
+      }
+
+      .render-canvas {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+        color: var(--text-body);
+        background-color: #f8fafc;
+        background-image:
+          radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 90% 20%, rgba(234, 88, 12, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 45%),
+          radial-gradient(circle at 80% 90%, rgba(249, 115, 22, 0.08) 0%, transparent 45%),
+          radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+        background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+        padding: 36px 20px 48px;
+        border-radius: 16px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-sizing: border-box;
+      }
+
+      .render-canvas header {
+        margin-bottom: 28px;
+        padding-bottom: 18px;
+        border-bottom: 1.5px solid #cbd5e1;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .render-canvas h1 {
+        font-size: clamp(1.8rem, 3.5vw, 2.2rem);
+        font-weight: 800;
+        color: var(--text-title);
+        letter-spacing: -0.02em;
+      }
+
+      .student-pill {
+        display: inline-flex;
+        align-items: center;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 5px 16px;
+        border-radius: 30px;
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      }
+
+      .student-pill strong {
+        color: var(--text-title);
+        margin-left: 4px;
+      }
+
+      .timeline-stream {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .stage-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-top: 4px solid var(--theme-color);
+        border-radius: 12px;
+        padding: 24px 30px 28px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      .stage-card::after {
+        content: "";
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--theme-glow) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .card-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        position: relative;
+        z-index: 1;
+      }
+
+      .header-title-inline {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .capsule-badge {
+        display: inline-flex;
+        align-items: center;
+        background: var(--theme-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--theme-color);
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+
+      .capsule-badge .sep {
+        margin: 0 6px;
+        opacity: 0.5;
+      }
+
+      .stage-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text-title);
+        margin: 0;
+        line-height: 1.3;
+      }
+
+      .card-watermark {
+        font-size: 2.1rem;
+        font-weight: 900;
+        color: var(--theme-color);
+        opacity: 0.35;
+        font-family: -apple-system, sans-serif;
+        line-height: 1;
+        user-select: none;
+        letter-spacing: -1px;
+        flex-shrink: 0;
+      }
+
+      /* 双栏网格排布 */
+      .card-content-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 40px;
+        position: relative;
+        z-index: 1;
+        align-items: start;
+      }
+
+      .card-content-grid>.span-full {
+        grid-column: 1 / -1 !important;
+        width: 100%;
+        padding: 14px 0 !important;
+        border-top: 1px dashed #cbd5e1;
+        border-bottom: 1px dashed #cbd5e1;
+        margin: 4px 0;
+        box-sizing: border-box;
+      }
+
+      .card-content-grid>.span-full:first-child {
+        border-top: none;
+        padding-top: 0 !important;
+      }
+
+      .card-content-grid>.span-full:last-child {
+        border-bottom: none;
+        padding-bottom: 0 !important;
+      }
+
+      .card-content-grid>.span-full h3:last-child,
+      .card-content-grid>.span-full ul:last-child,
+      .card-content-grid>.span-full .note-callout:last-child {
+        margin-bottom: 0 !important;
+      }
+
+      .card-content-grid>.col-left {
+        position: relative;
+      }
+
+      .card-content-grid>.col-left::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        right: -20px;
+        width: 1px;
+        border-right: 1.5px dashed #cbd5e1;
+      }
+
+      .content-block {
+        margin-bottom: 6px;
+      }
+
+      /* 三级标题 ###（核心小节） */
+      .render-canvas h3 {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        line-height: 1.4;
+      }
+
+      .render-canvas h3::before {
+        content: "";
+        width: 5.5px;
+        height: 5.5px;
+        border-radius: 50%;
+        background: var(--theme-color);
+        flex-shrink: 0;
+      }
+
+      /* 四级标题 ####（内嵌导轨子标题） */
+      .render-canvas h4.sub-heading {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #1e293b;
+        background: rgba(241, 245, 249, 0.6);
+        border-left: 2.5px solid #94a3b8;
+        padding: 3px 8px;
+        border-radius: 0 4px 4px 0;
+        margin: 14px 0 8px 18px;
+        display: block;
+        line-height: 1.4;
+      }
+
+      /* 五级标题 ##### */
+      .render-canvas h5.micro-heading {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #64748b;
+        margin: 8px 0 4px 38px;
+        line-height: 1.4;
+      }
+
+      .render-canvas h5.micro-heading::before {
+        content: "§ ";
+        color: var(--theme-color);
+        opacity: 0.7;
+      }
+
+      .render-canvas ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      /*
+           =========================================================
+           【核心修正：彻底回归 Markdown 本质的纯净列表排布】
+           全员回归常规字重（Regular / 400），绝不默认加粗！
+           =========================================================
+        */
+
+      /* 一级列表 (Root Level)：常规字重 + 18px 整体从属缩进 */
+      .content-block>ul {
+        padding-left: 18px !important;
+      }
+
+      .content-block>ul>li {
+        font-size: 0.88rem;
+        font-weight: 400 !important;
+        /* 【核心修正】：回归常规字重，绝不滥用粗体 */
+        color: var(--text-body);
+        position: relative;
+        padding-left: 14px;
+        margin-bottom: 6px;
+        line-height: 1.6;
+      }
+
+      .content-block>ul>li::before {
+        content: "•";
+        position: absolute;
+        left: 2px;
+        top: 0;
+        color: #94a3b8;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      /* 二级列表 (Level 2: 常规字重 + 浅灰实线导轨 + 短横线 –) */
+      .render-canvas ul ul {
+        padding-left: 20px !important;
+        margin: 4px 0 6px 4px;
+        border-left: 1.5px solid #cbd5e1;
+      }
+
+      .render-canvas ul ul li {
+        font-size: 0.85rem;
+        font-weight: 400 !important;
+        /* 【核心修正】：常规字重 */
+        color: var(--text-body);
+        margin-bottom: 4px;
+        position: relative;
+        padding-left: 14px;
+        line-height: 1.55;
+      }
+
+      .render-canvas ul ul li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      /* 三级列表 (Level 3: 常规字重 + 细腻虚线导轨 + 微箭头 ›) */
+      .render-canvas ul ul ul {
+        padding-left: 18px !important;
+        margin: 3px 0 5px 3px;
+        border-left: 1px dashed #94a3b8;
+      }
+
+      .render-canvas ul ul ul li {
+        font-size: 0.82rem;
+        font-weight: 400 !important;
+        /* 【核心修正】：常规字重 */
+        color: var(--text-muted);
+        padding-left: 12px;
+        margin-bottom: 3px;
+        line-height: 1.5;
+      }
+
+      .render-canvas ul ul ul li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        top: -1px;
+        color: #94a3b8;
+        font-size: 0.95rem;
+        font-weight: bold;
+      }
+
+      /*
+           【加粗权重爆发】：
+           只有用户打了 **加粗** 的地方，才享有专属加粗与深黑聚焦！
+        */
+      .render-canvas strong {
+        color: var(--text-title);
+        font-weight: 700 !important;
+      }
+
+      /* 引用注释专属注解框 */
+      .note-callout {
+        background: rgba(241, 245, 249, 0.7);
+        border-left: 3px solid var(--theme-color);
+        padding: 6px 12px;
+        border-radius: 0 6px 6px 0;
+        margin: 6px 0 8px 18px;
+        font-size: 0.82rem;
+        color: #475569;
+        line-height: 1.5;
+        font-weight: 400;
+      }
+
+      /* 日系流派印章 */
+      .render-canvas em {
+        font-style: normal;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        padding: 1px 6px;
+        border-radius: 4px;
+        margin: 0 4px;
+        display: inline-block;
+        vertical-align: 0.5px;
+        line-height: 1.3;
+      }
+
+      /* 窄屏自适应 */
+      .render-canvas.is-narrow .card-header-bar {
+        align-items: flex-start;
+      }
+
+      .render-canvas.is-narrow .header-title-inline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .render-canvas.is-narrow .card-content-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px;
+      }
+
+      .render-canvas.is-narrow .col-left::after {
+        display: none !important;
+      }
+
+      .render-canvas.is-narrow .span-full {
+        border-top: none !important;
+        border-bottom: none !important;
+        padding: 0 !important;
+        margin: 0 0 6px 0 !important;
+      }
+
+      .render-canvas.is-narrow .stage-card {
+        padding: 20px 16px;
+      }
+
+      .render-canvas.is-narrow .stage-title {
+        font-size: 1.25rem;
+      }
+
+      .render-canvas.is-narrow .card-watermark {
+        font-size: 1.8rem;
+      }
+    </style>
+
+    <!-- 工作台界面样式 -->
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .app-header {
+        height: 56px;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        z-index: 20;
+        flex-shrink: 0;
+        gap: 12px;
+      }
+
+      .app-brand {
+        font-size: 1.05rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #0f172a;
+        white-space: nowrap;
+      }
+
+      .app-brand span {
+        color: #0284c7;
+      }
+
+      .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .app-btn {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+
+      .app-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+      }
+
+      .app-btn.primary {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #ffffff;
+      }
+
+      .app-btn.primary:hover {
+        background: #0284c7;
+        border-color: #0284c7;
+      }
+
+      .app-btn.accent {
+        background: #ea580c;
+        border-color: #ea580c;
+        color: #ffffff;
+      }
+
+      .app-btn.accent:hover {
+        background: #c2410c;
+      }
+
+      .app-btn.ghost {
+        background: transparent;
+        border-color: transparent;
+      }
+
+      .app-btn.ghost:hover {
+        background: #f1f5f9;
+      }
+
+      .workspace {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .preview-pane {
+        flex: 1;
+        width: 50%;
+        min-width: 320px;
+        background-color: #e2e8f0;
+        overflow-y: auto;
+        padding: 30px 16px 80px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      /* 【修改后】：中间分隔栏赋予与页面同风格的上下垂直渐变 */
+      .split-resizer {
+        width: 8px;
+        /* 上部天青蓝 -> 中间过渡白灰 -> 下部赤金橙的平滑垂直渐变 */
+        background: linear-gradient(180deg, #bae6fd 0%, #e2e8f0 50%, #fed7aa 100%);
+        cursor: col-resize;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        z-index: 10;
+        flex-shrink: 0;
+        transition: background 0.2s ease;
+        border-left: 1px solid rgba(226, 232, 240, 0.8);
+        border-right: 1px solid rgba(226, 232, 240, 0.8);
+      }
+
+      /* 鼠标悬停或拖拽中：饱和度提升的高级上下渐变 */
+      .split-resizer:hover,
+      .split-resizer.dragging {
+        background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #f97316 100%);
+      }
+
+      .resizer-line {
+        width: 2px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.12);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .editor-pane {
+        flex: 1;
+        width: 50%;
+        min-width: 300px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .pane-header {
+        height: 38px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .editor-textarea {
+        flex: 1;
+        width: 100%;
+        background: #ffffff;
+        color: #1e293b;
+        border: none;
+        padding: 20px;
+        font-family: 'Fira Code', Consolas, Monaco, monospace;
+        font-size: 0.9rem;
+        line-height: 1.65;
+        resize: none;
+        outline: none;
+        white-space: pre;
+        overflow-y: auto;
+      }
+
+      .empty-placeholder {
+        text-align: center;
+        padding: 80px 20px;
+        color: #94a3b8;
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+
+      .empty-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 6px;
+      }
+
+      .empty-sub {
+        font-size: 0.85rem;
+      }
+
+      .global-drop-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 132, 199, 0.12);
+        backdrop-filter: blur(4px);
+        border: 3px dashed #0284c7;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .global-drop-overlay.active {
+        display: flex;
+      }
+
+      .drop-hint-box {
+        background: #ffffff;
+        padding: 24px 36px;
+        border-radius: 14px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0284c7;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* 写作提示手册 */
+      .drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+      }
+
+      .drawer-overlay.active {
+        display: block;
+      }
+
+      .manual-drawer {
+        position: fixed;
+        top: 0;
+        right: -680px;
+        width: 640px;
+        max-width: 95vw;
+        height: 100%;
+        background: #f8fafc;
+        box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15);
+        transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 101;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .manual-drawer.active {
+        right: 0;
+      }
+
+      .drawer-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #ffffff;
+        flex-shrink: 0;
+      }
+
+      .drawer-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+
+      .drawer-search {
+        padding: 12px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        background: #ffffff;
+        flex-shrink: 0;
+      }
+
+      .drawer-search input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      .drawer-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .card-item {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card-item-header {
+        background: #f8fafc;
+        padding: 10px 14px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      .badge {
+        font-size: 0.72rem;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-weight: 600;
+      }
+
+      .badge-core {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .badge-high {
+        background: #e0e7ff;
+        color: #4338ca;
+      }
+
+      .badge-struct {
+        background: #ecfdf5;
+        color: #047857;
+      }
+
+      .badge-advance {
+        background: #fef3c7;
+        color: #b45309;
+      }
+
+      .card-item-body {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .spec-box {
+        background-color: #fffbeb;
+        border-left: 3.5px solid #f59e0b;
+        padding: 8px 12px;
+        border-radius: 0 6px 6px 0;
+        font-size: 0.82rem;
+        color: #92400e;
+        line-height: 1.5;
+      }
+
+      .stack-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .panel-header {
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .source-wrapper {
+        position: relative;
+      }
+
+      .source-wrapper pre {
+        background: #1e1e2e;
+        color: #cdd6f4;
+        padding: 12px 14px;
+        border-radius: 6px;
+        font-family: 'Fira Code', Consolas, Monaco, monospace;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .btn-copy {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-copy:hover {
+        background: rgba(255, 255, 255, 0.35);
+      }
+
+      .preview-box {
+        border: 1px dashed #cbd5e1;
+        background-color: #ffffff;
+        padding: 14px 16px;
+        border-radius: 6px;
+        font-size: 0.86rem;
+        line-height: 1.6;
+      }
+
+      .preview-box h1 {
+        font-size: 1.3rem;
+        margin-bottom: 0.3rem;
+        font-weight: 700;
+      }
+
+      .preview-box h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.2rem;
+      }
+
+      .preview-box h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+
+      .preview-box hr {
+        border: 0;
+        border-top: 1.5px dashed #cbd5e1;
+        margin: 0.6rem 0;
+      }
+
+      .preview-box blockquote {
+        border-left: 3px solid #0284c7;
+        padding-left: 0.7rem;
+        color: #64748b;
+        background: #f8fafc;
+        margin: 0.4rem 0;
+        padding: 0.4rem 0.7rem;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .preview-box table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+
+      .preview-box th,
+      .preview-box td {
+        border: 1px solid #e2e8f0;
+        padding: 0.4rem 0.6rem;
+      }
+
+      .preview-box th {
+        background: #f8fafc;
+        font-weight: 600;
+      }
+
+      .preview-box code.inline-code {
+        background-color: #f1f5f9;
+        color: #be123c;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+
+      .preview-box mark {
+        background: #fef08a;
+        padding: 0.1rem 0.3rem;
+        border-radius: 2px;
+      }
+
+      .rules-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-top: 0.4rem;
+      }
+
+      .rules-table th,
+      .rules-table td {
+        padding: 0.7rem 0.8rem;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+      }
+
+      .rules-table th {
+        background-color: #f8fafc;
+        font-weight: 600;
+      }
+
+      .export-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        z-index: 200;
+        overflow-y: auto;
+        padding: 40px 20px;
+        text-align: center;
+      }
+
+      .export-modal.active {
+        display: block;
+      }
+
+      .modal-box {
+        background: #ffffff;
+        max-width: 560px;
+        margin: 0 auto;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      }
+
+      .modal-box img {
+        width: 100%;
+        height: auto;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        margin: 14px 0;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="global-drop-overlay" id="dropOverlay">
+      <div class="drop-hint-box">
+        <span>📥</span> 释放鼠标立即导入 Markdown 大纲文件
+      </div>
+    </div>
+
+    <header class="app-header">
+      <div class="app-brand">
+        <span>⛩️</span> Syllabus Studio
+      </div>
+
+      <div class="toolbar-group">
+        <input type="file" id="fileInput" accept=".md,.markdown,.txt" style="display: none;" onchange="handleFileSelect(event)">
+        <button class="app-btn" onclick="document.getElementById('fileInput').click()">📂 导入 MD</button>
+        <button class="app-btn" onclick="exportMarkdownFile()">💾 存为 MD</button>
+        <span style="color: #cbd5e1;">|</span>
+        <button class="app-btn primary" onclick="exportImageNative()">📸 导出微信长图</button>
+        <button class="app-btn accent" onclick="exportStandaloneHTML()">🌐 导出宣发网页</button>
+        <button class="app-btn ghost" onclick="window.print()">📄 打印 / PDF</button>
+        <button class="app-btn" onclick="toggleDrawer(true)">💡 写作速查</button>
+      </div>
+    </header>
+
+    <div class="workspace" id="workspaceContainer">
+      <main class="preview-pane" id="previewPane">
+        <div class="render-canvas" id="exportArea">
+          <div class="empty-placeholder">
+            <div class="empty-icon">📝</div>
+            <div class="empty-text">等待编辑或导入大纲内容</div>
+            <div class="empty-sub">在右侧开始键入，或将 .md 文件拖入任意区域</div>
+          </div>
+        </div>
+      </main>
+
+      <div class="split-resizer" id="splitResizer">
+        <div class="resizer-line"></div>
+      </div>
+
+      <section class="editor-pane" id="editorPane">
+        <div class="pane-header">
+          <span>MARKDOWN 源码编辑区 (纯净字重与克制美化)</span>
+          <span id="charCount">0 字</span>
+        </div>
+        <textarea class="editor-textarea" id="mdEditor" spellcheck="false" placeholder="在此编辑或直接拖入 Markdown 大纲文件..."></textarea>
+      </section>
+    </div>
+
+    <!-- 写作提示手册抽屉 -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+    <aside class="manual-drawer" id="manualDrawer">
+      <div class="drawer-header">
+        <div class="drawer-title">🚀 Markdown 写作提示器与标准速查</div>
+        <button class="app-btn ghost" onclick="toggleDrawer(false)" style="font-size:1.1rem; color:#64748b;">✕</button>
+      </div>
+      <div class="drawer-search">
+        <input type="text" id="manualSearch" placeholder="输入关键字搜索规范，如：标题, 列表, 转义, 分割线..." oninput="filterManual()">
+      </div>
+      <div class="drawer-content" id="manualList">
+
+        <div class="card-item" data-keywords="标题 一级标题 二级标题 headings">
+          <div class="card-item-header">
+            <span>📝 1. 标题层级 (Headings)</span>
+            <span class="badge badge-core">核心规范</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇大纲**只保留一个一级主标题**。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre># 课程计划
+## 二级大阶段
+### 三级核心小节
+#### 四级内嵌子标题</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <h1 style="margin:0 0 0.3rem 0;">课程计划</h1>
+                  <h2 style="margin:0 0 0.3rem 0;">二级大阶段</h2>
+                  <h3 style="margin:0 0 0.3rem 0;">三级核心小节</h3>
+                  <h4 class="sub-heading" style="margin-left:0;">四级内嵌子标题</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="粗体 斜体 印章 text bold italic inline code">
+          <div class="card-item-header">
+            <span>✨ 2. 行内文本修饰与印章</span>
+            <span class="badge badge-high">高频使用</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">💡 技巧：列表内字重默认为常规；使用 <code>**重点**</code> 即可实现醒目突出！支持 <code>**双本结（ *奈加流* ）**</code> 嵌套。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>- 常规描述文字
+- **强烈强调的核心重点**
+- *奈加流* 或 *明智流* 印章
+- **双本结（ *奈加流* ）**</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <p style="font-weight:400; color:#334155;">常规描述文字</p>
+                  <p><strong style="font-weight:700; color:#0f172a;">强烈强调的核心重点</strong></p>
+                  <p><em style="font-style:normal; background:#fafaf9; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> 印章</p>
+                  <p><strong>双本结（ <em style="font-style:normal; background:#fafaf9; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> ）</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="分界线 分割线 横线 hr divider">
+          <div class="card-item-header">
+            <span>➖ 3. 分界线与版面划分 (Dividers)</span>
+            <span class="badge badge-core">极易踩坑</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">🚨 <strong>绝对禁忌：</strong>写 <code>---</code> 时，**上方必须留一个完整空行**！若直接紧贴上一行文字，Markdown 会把上一行文字直接渲染成巨大的 <code>&lt;h2&gt;</code> 标题！</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>上一章节结束内容总结。
+
+---
+
+这是跨大板块的新章节内容。</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <p style="color:#64748b;">上一章节结束内容总结。</p>
+                  <hr>
+                  <p style="font-weight:600;">这是跨大板块的新章节内容。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="段落 换行 转义 br spacing newline escape">
+          <div class="card-item-header">
+            <span>↵ 4. 段落、强制换行与转义</span>
+            <span class="badge badge-high">高频规则</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">💡 规则：直接回车并不会生成新段落！要紧凑换行，在行尾敲 **2个半角空格** 或使用 <code>&lt;br&gt;</code>；若要展示 <code>*</code>、<code>#</code> 原字符，在前面加反斜杠 <code>\</code>。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>第一行末尾打两个空格
+紧接着就是第二行（紧凑换行）
+
+或者直接使用&lt;br&gt;强制换行。
+
+\*这不是斜体\*，\# 不是标题</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <p>第一行末尾打两个空格<br>紧接着就是第二行（紧凑换行）</p>
+                  <p style="margin-top:4px;">或者直接使用<br>强制换行。</p>
+                  <p style="margin-top:4px;">*这不是斜体*，# 不是标题</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="列表 任务清单 todo list task 有序 无序 缩进">
+          <div class="card-item-header">
+            <span>📊 5. 复合列表与树状缩进 (Lists)</span>
+            <span class="badge badge-struct">结构化</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">📌 避坑：列表项在系统内将自动向右缩进呈现，子级列表建议缩进 **4 个空格**以生成层级导轨线！</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>- 上肢神经
+    - 桡神经
+    - 正中神经
+    - 尺神经
+1. 第一阶段环境构建
+2. 第二阶段核心部署
+- [x] 完成单元测试
+- [ ] 生产环境部署待审核</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <ul style="padding-left:1.1rem; margin-bottom:4px;">
+                    <li style="font-weight:400;">上肢神经
+                      <ul style="padding-left:1.1rem; border-left:1.5px solid #cbd5e1; margin-left:4px;">
+                        <li style="font-weight:400;">桡神经</li>
+                        <li style="font-weight:400;">正中神经</li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <div style="font-size:0.8rem; margin-top:4px;">
+                    <div>☑️ 完成单元测试</div>
+                    <div>⬜ 生产环境部署待审核</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="脚注 引用 注释 footnote reference">
+          <div class="card-item-header">
+            <span>📌 6. 文档脚注与文末注释 (Footnotes)</span>
+            <span class="badge badge-advance">学术与长文</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">📖 适用场景：正文中引用了术语或出处，不想打断阅读，使用 <code>[^1]</code> 自动排版到底部。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>Markdown 是一种轻量标记语言[^1]。
+它的排版哲学推崇呼吸感[^2]。
+
+[^1]: 2004年由 John Gruber 创建。
+[^2]: 指段落空行适度留白。</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <p>Markdown 是一种轻量标记语言<sup><a href="#" style="color:#0284c7;">[1]</a></sup>。<br>它的排版哲学推崇呼吸感<sup><a href="#" style="color:#0284c7;">[2]</a></sup>。</p>
+                  <div style="border-top:1px solid #e2e8f0; margin-top:6px; padding-top:4px; font-size:0.75rem; color:#64748b;">
+                    <div>[1] 2004年由 John Gruber 创建。</div>
+                    <div>[2] 指段落空行适度留白。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="代码块 代码高亮 code block python">
+          <div class="card-item-header">
+            <span>💻 7. 围栏式代码块 (Code Block)</span>
+            <span class="badge badge-high">工程必备</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">🚀 规范：开头三个反引号后**必须显式注明小写语言别名**（如 python, bash, json），以激活语法高亮。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>```python
+def fetch_user(user_id: int):
+    # 语法高亮
+    return {"status": 200, "id": user_id}
+```</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box" style="background:#1e1e2e; color:#cdd6f4; font-family:monospace; padding:8px;">
+                  <span style="color:#f38ba8;">def</span> <span style="color:#89b4fa;">fetch_user</span>(user_id):<br>&nbsp;&nbsp;<span style="color:#6c7086;"># 语法高亮</span><br>&nbsp;&nbsp;<span style="color:#f38ba8;">return</span> {<span style="color:#a6e3a1;">"status"</span>: <span style="color:#fab387;">200</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="引用 警告 blockquote tips 学员">
+          <div class="card-item-header">
+            <span>💬 8. 引用注释与专项解释 (Blockquote)</span>
+            <span class="badge badge-struct">结构化</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成高颜值专属注解框！顶部使用 <code>学员：影</code> 自动生成学员徽标。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>学员：影
+
+### 片足半吊
+> 单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <div style="display:inline-block; border:1px solid #cbd5e1; padding:2px 10px; border-radius:20px; font-size:0.8rem; margin-bottom:8px;">学员：<strong>影</strong></div>
+                  <h3 style="font-size:0.92rem; margin-bottom:4px; font-weight:700;">片足半吊</h3>
+                  <div style="background:#f1f5f9; border-left:3px solid #0284c7; padding:4px 10px; border-radius:0 4px 4px 0; font-size:0.8rem; color:#475569;">单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="链接 图片 link image media">
+          <div class="card-item-header">
+            <span>🔗 9. 链接与多媒体 (Links & Images)</span>
+            <span class="badge badge-high">高频使用</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">🎯 记忆诀窍：图片语法仅比超链接在最前方**多一个半角感叹号 <code>!</code>**。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>[访问官方指南](https://example.com)
+
+![示意图](https://dummyimage.com/140x35/0284c7/ffffff&text=Banner)</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <a href="#" style="color:#0284c7; text-decoration:none; font-weight:600;">访问官方指南 ↗</a>
+                  <div style="margin-top:6px;">
+                    <img src="https://dummyimage.com/140x35/0284c7/ffffff&text=Banner" alt="示意图" style="border-radius:4px;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="表格 对齐 table align">
+          <div class="card-item-header">
+            <span>📅 10. 数据表格 (Data Tables)</span>
+            <span class="badge badge-advance">精准排版</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">📐 对齐控制：第二行分隔符中冒号位置控制对齐：<code>:---</code> 左对齐，<code>:---:</code> 居中对齐，<code>---:</code> 右对齐。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>| 阶段模块 (左) | 状态 (中) | 时长 (右) |
+| :--- | :---: | ---: |
+| 绳缚基础准备 | 🟢 开启 | 4.0h |
+| 张力控制练习 | 🟡 进行 | 3.5h |</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;">阶段模块</th>
+                        <th style="text-align:center;">状态</th>
+                        <th style="text-align:right;">时长</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="text-align:left;">绳缚基础准备</td>
+                        <td style="text-align:center;">🟢 开启</td>
+                        <td style="text-align:right;">4.0h</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left;">张力控制练习</td>
+                        <td style="text-align:center;">🟡 进行</td>
+                        <td style="text-align:right;">3.5h</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="折叠 高亮 details summary mark html advance">
+          <div class="card-item-header">
+            <span>🧩 11. 折叠与高亮 (Extensions & HTML)</span>
+            <span class="badge badge-advance">进阶排版</span>
+          </div>
+          <div class="card-item-body">
+            <div class="spec-box">💡 扩展特性：使用 <code>&lt;details&gt;</code> 收纳长参数或备忘，让大纲主体更清爽。</div>
+            <div class="stack-grid">
+              <div>
+                <div class="panel-header"><span>💻 源码 (Markdown / HTML)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
+                <div class="source-wrapper">
+                  <pre>这是 &lt;mark&gt;重点强化&lt;/mark&gt; 的技法。
+
+&lt;details&gt;
+&lt;summary&gt;👉 点击展开查看备考参数&lt;/summary&gt;
+- 绳长: 7.5m
+- 材质: 优质精制麻绳
+&lt;/details&gt;</pre>
+                </div>
+              </div>
+              <div>
+                <div class="panel-header">🎨 渲染效果呈现</div>
+                <div class="preview-box">
+                  <p>这是 <mark>重点强化</mark> 的技法。</p>
+                  <details style="border:1px solid #e2e8f0; border-radius:4px; padding:4px 8px; background:#f8fafc; margin-top:4px;">
+                    <summary style="cursor:pointer; font-weight:600; font-size:0.8rem;">👉 点击展开查看备考参数</summary>
+                    <ul style="padding-left:1.2rem; margin-top:4px; font-size:0.75rem; color:#64748b;">
+                      <li>绳长: 7.5m</li>
+                      <li>材质: 优质精制麻绳</li>
+                    </ul>
+                  </details>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-item" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
+          <div class="card-item-header">
+            <span>💡 12. 终极写作呼吸感排版规范</span>
+            <span class="badge badge-core">专业素养</span>
+          </div>
+          <div class="card-item-body">
+            <div style="overflow-x:auto;">
+              <table class="rules-table">
+                <thead>
+                  <tr>
+                    <th style="width:25%;">排版维度</th>
+                    <th style="width:48%;">黄金准则与示例</th>
+                    <th style="width:27%;">设计意图</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>中西文混排空格</strong></td>
+                    <td>汉字与半角英文、数字之间**手动保留一个半角空格**。<br>
+                      ✅ 正确：练习 TK 时保留 2 圈。<br>
+                      ❌ 错误：练习TK时保留2圈。
+                    </td>
+                    <td>避免字符粘连，建立阅读视线节奏，提升整体文本高级感。</td>
+                  </tr>
+                  <tr>
+                    <td><strong>空行阻断机制</strong></td>
+                    <td>段落间、分界线 <code>---</code> 上下、代码块与文字之间，**必须保留且只保留一个空行**。</td>
+                    <td>防止不同平台解析器出现布局重叠与粘连事故。</td>
+                  </tr>
+                  <tr>
+                    <td><strong>全小写文件命名</strong></td>
+                    <td>文档文件名全部小写，禁止使用空格，统一用短横线 <code>-</code>。<br>
+                      ✅ 正确：<code>2024-course-plan.md</code><br>
+                      ❌ 错误：<code>Course Plan (Final).md</code>
+                    </td>
+                    <td>对跨平台服务器最友好，绝不会在网页或图片路径中报 404 死链。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <div class="export-modal" id="exportModal">
+      <div class="modal-box">
+        <h3 style="color:#0f172a; font-size:1.05rem; margin-bottom:4px;">✨ 微信高清长图已就绪</h3>
+        <p style="color:#64748b; font-size:0.82rem; margin-bottom:12px;">已自动触发下载；手机端可长按图片直接发给朋友或存相册</p>
+        <img id="modalPreviewImg" alt="长图预览" />
+        <br>
+        <button class="app-btn" onclick="document.getElementById('exportModal').classList.remove('active')">关闭预览</button>
+      </div>
+    </div>
+
+    <!-- 核心驱动脚本 -->
+    <script>
+      const editor = document.getElementById('mdEditor');
+      const previewArea = document.getElementById('exportArea');
+      const previewPane = document.getElementById('previewPane');
+      const charCount = document.getElementById('charCount');
+      const editorPane = document.getElementById('editorPane');
+      const resizer = document.getElementById('splitResizer');
+      const dropOverlay = document.getElementById('dropOverlay');
+
+      editor.value = '';
+      charCount.innerText = '0 字';
+
+      editor.addEventListener('input', () => {
+        renderSyllabus(editor.value);
+      });
+
+      /* ================= 1. 丝滑双向同步滚动 ================= */
+      let activeScroller = null;
+      let rAF_preview = null;
+      let rAF_editor = null;
+
+      previewPane.addEventListener('mouseenter', () => { activeScroller = 'preview'; });
+      editor.addEventListener('mouseenter', () => { activeScroller = 'editor'; });
+      previewPane.addEventListener('mouseleave', () => { if (activeScroller === 'preview') activeScroller = null; });
+      editor.addEventListener('mouseleave', () => { if (activeScroller === 'editor') activeScroller = null; });
+
+      previewPane.addEventListener('scroll', () => {
+        if (activeScroller !== 'preview') return;
+        if (rAF_preview) cancelAnimationFrame(rAF_preview);
+
+        rAF_preview = requestAnimationFrame(() => {
+          const maxScrollLeft = previewPane.scrollHeight - previewPane.clientHeight;
+          if (maxScrollLeft > 0) {
+            const scrollRatio = previewPane.scrollTop / maxScrollLeft;
+            const maxScrollRight = editor.scrollHeight - editor.clientHeight;
+            editor.scrollTop = scrollRatio * maxScrollRight;
+          }
+        });
+      }, { passive: true });
+
+      editor.addEventListener('scroll', () => {
+        if (activeScroller !== 'editor') return;
+        if (rAF_editor) cancelAnimationFrame(rAF_editor);
+
+        rAF_editor = requestAnimationFrame(() => {
+          const maxScrollRight = editor.scrollHeight - editor.clientHeight;
+          if (maxScrollRight > 0) {
+            const scrollRatio = editor.scrollTop / maxScrollRight;
+            const maxScrollLeft = previewPane.scrollHeight - previewPane.clientHeight;
+            previewPane.scrollTop = scrollRatio * maxScrollLeft;
+          }
+        });
+      }, { passive: true });
+
+      /* 自适应监听 */
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          applyContainerResponsive(entry.contentRect.width);
+        }
+      });
+      resizeObserver.observe(previewPane);
+
+      function applyContainerResponsive(paneWidth) {
+        if (paneWidth < 650) {
+          previewArea.classList.add('is-narrow');
+        } else {
+          previewArea.classList.remove('is-narrow');
+        }
+      }
+
+      /* ================= 4. 中间滑块拖拽 (0 延迟) ================= */
+      let isDragging = false;
+
+      resizer.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        resizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        requestAnimationFrame(() => {
+          const containerRect = document.getElementById('workspaceContainer').getBoundingClientRect();
+          const totalWidth = containerRect.width;
+          const newEditorWidth = containerRect.right - e.clientX;
+
+          if (newEditorWidth >= 280 && newEditorWidth <= (totalWidth - 280)) {
+            editorPane.style.flex = 'none';
+            editorPane.style.width = newEditorWidth + 'px';
+            previewPane.style.flex = '1';
+          }
+        });
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          resizer.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+
+      /* ================= 5. 全局文件拖拽导入 ================= */
+      let dragCounter = 0;
+      window.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        dragCounter++;
+        dropOverlay.classList.add('active');
+      });
+      window.addEventListener('dragover', (e) => { e.preventDefault(); });
+      window.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dragCounter--;
+        if (dragCounter === 0) dropOverlay.classList.remove('active');
+      });
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragCounter = 0;
+        dropOverlay.classList.remove('active');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          readFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      function handleFileSelect(event) {
+        if (event.target.files.length) readFile(event.target.files[0]);
+      }
+
+      function readFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          editor.value = e.target.result;
+          renderSyllabus(editor.value);
+        };
+        reader.readAsText(file);
+      }
+
+      /*
+         ================= 6. 专向美学解析引擎 (全容错架构) =================
+      */
+      function renderSyllabus(md) {
+        charCount.innerText = md.length + ' 字';
+        if (!md.trim()) {
+          previewArea.innerHTML = `
+                <div class="empty-placeholder">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-text">等待编辑或导入大纲内容</div>
+                    <div class="empty-sub">在右侧开始键入，或将 .md 文件拖入任意区域</div>
+                </div>`;
+          return;
+        }
+
+        const lines = md.split('\n');
+        let docTitle = '课程计划';
+        let studentName = '';
+        let parts = [];
+        let currentPart = null;
+        let currentSection = null;
+
+        for (let rawLine of lines) {
+          let line = rawLine.trimEnd();
+
+          if (line.startsWith('# ')) {
+            docTitle = line.replace('# ', '').trim();
+            continue;
+          }
+
+          if (line.includes('学员')) {
+            const cleanLine = line.replace(/[*_>\s]/g, '');
+            const match = cleanLine.match(/学员[：:](.+)/);
+            if (match && match[1]) {
+              studentName = match[1].trim();
+            }
+            continue;
+          }
+          if (line.trim() === '---') continue;
+
+          if (line.startsWith('## ')) {
+            if (currentPart) parts.push(currentPart);
+            const partRaw = line.replace('## ', '').trim();
+
+            let stageClass = 'stage-foundation';
+            let stageBadge = '基础阶段';
+            if (partRaw.includes('提高') || partRaw.includes('进阶')) {
+              stageClass = 'stage-advanced';
+              stageBadge = '提高阶段';
+            } else if (partRaw.includes('熟练') || partRaw.includes('高阶')) {
+              stageClass = 'stage-mastery';
+              stageBadge = '熟练阶段';
+            }
+
+            const partNumMatch = partRaw.match(/Part\.?\s*(\d+)/i);
+            const partNum = partNumMatch ? (partNumMatch[1].padStart(2, '0')) : '01';
+
+            let titleClean = partRaw;
+            if (partRaw.includes('-')) {
+              titleClean = partRaw.split('-')[1].trim();
+            } else {
+              titleClean = partRaw.replace(/^[一二三四五六七八九十\d\.\s]+/, '').replace(/Part\.?\s*\d+/i, '').trim();
+            }
+
+            currentPart = {
+              stageClass: stageClass,
+              stageBadge: stageBadge,
+              partNum: partNum,
+              title: titleClean,
+              sections: []
+            };
+            currentSection = null;
+            continue;
+          }
+
+          if (line.startsWith('### ')) {
+            const secTitle = line.replace('### ', '').trim();
+            currentSection = { title: secTitle, elements: [] };
+            if (currentPart) currentPart.sections.push(currentSection);
+            continue;
+          }
+
+          // 容错：跳过 ### 直接写 #### 或列表
+          if (line.trim().length > 0 && currentPart) {
+            if (!currentSection) {
+              currentSection = { title: '', elements: [] };
+              currentPart.sections.push(currentSection);
+            }
+            currentSection.elements.push(line);
+          }
+        }
+        if (currentPart) parts.push(currentPart);
+
+        let html = '';
+        html += '<header>';
+        html += '  <h1>' + escapeHtml(docTitle) + '</h1>';
+        if (studentName) {
+          html += '  <div class="student-pill"><span>学员：<strong>' + escapeHtml(studentName) + '</strong></span></div>';
+        }
+        html += '</header>';
+        html += '<div class="timeline-stream">';
+
+        for (let part of parts) {
+          html += '<article class="stage-card ' + part.stageClass + '">';
+          html += '  <div class="card-header-bar">';
+          html += '    <div class="header-title-inline">';
+          html += '      <div class="capsule-badge">';
+          html += '        <span>' + part.stageBadge + '</span><span class="sep">/</span><span>PART ' + part.partNum + '</span>';
+          html += '      </div>';
+          html += '      <h2 class="stage-title">' + escapeHtml(part.title) + '</h2>';
+          html += '    </div>';
+          html += '    <span class="card-watermark">' + part.partNum + '</span>';
+          html += '  </div>';
+          html += '  <div class="card-content-grid">';
+
+          let colIndex = 0;
+
+          for (let sec of part.sections) {
+            const hasLongTitle = sec.title.trim().length > 18;
+            const hasLongElement = sec.elements.some(l => l.replace(/^[\s\-*#>\d\.]+/, '').trim().length > 20);
+            const hasDeepTree = sec.elements.some(l => l.search(/\S|$/) >= 6);
+            const isSpanFull = hasLongTitle || hasLongElement || hasDeepTree;
+
+            let layoutClass = '';
+            if (isSpanFull) {
+              layoutClass = 'span-full';
+              colIndex = 0;
+            } else {
+              if (colIndex === 0) {
+                layoutClass = 'col-item col-left';
+                colIndex = 1;
+              } else {
+                layoutClass = 'col-item col-right';
+                colIndex = 0;
+              }
+            }
+
+            html += '<div class="content-block ' + layoutClass + '">';
+            if (sec.title) {
+              html += '  <h3>' + parseInline(sec.title) + '</h3>';
+            }
+            if (sec.elements.length > 0) {
+              html += renderSectionElements(sec.elements);
+            }
+            html += '</div>';
+          }
+
+          html += '  </div>';
+          html += '</article>';
+        }
+
+        html += '</div><div style="height: 30px; clear: both;"></div>';
+        previewArea.innerHTML = html;
+      }
+
+      /* 内部树形元素渲染器 */
+      /*
+   【修正后的内部树形渲染器】：
+   支持 > 连续跨行、跨段落合并在同一个完整注解框内，左侧导轨不断裂
+*/
+      function renderSectionElements(lines) {
+        let res = '';
+        let listStack = [];
+        let noteBuffer = []; // 引用内容缓冲区
+
+        // 辅助函数：闭合当前未完结的列表
+        function closeListsUntil(targetLevel) {
+          while (listStack.length > targetLevel) {
+            res += '</ul>';
+            listStack.pop();
+          }
+        }
+
+        // 辅助函数：将连续积累的 > 引用行一次性合并输出为一个完整的连贯大框
+        function flushNote() {
+          if (noteBuffer.length > 0) {
+            let noteHtml = '';
+            for (let i = 0; i < noteBuffer.length; i++) {
+              const text = noteBuffer[i];
+              if (text === '') {
+                noteHtml += '<br><br>'; // 应对纯空行 > 的跨段落分界
+              } else {
+                if (i > 0 && noteBuffer[i - 1] !== '') {
+                  noteHtml += '<br>'; // 连续引用的平滑换行
+                }
+                noteHtml += parseInline(text);
+              }
+            }
+            res += '<div class="note-callout">' + noteHtml + '</div>';
+            noteBuffer = [];
+          }
+        }
+
+        for (let raw of lines) {
+          let trimmed = raw.trim();
+
+          // 1. 遇到四级标题 ####
+          if (trimmed.startsWith('#### ')) {
+            flushNote();
+            closeListsUntil(0);
+            const h4Text = trimmed.replace('#### ', '').trim();
+            res += '<h4 class="sub-heading">' + parseInline(h4Text) + '</h4>';
+            continue;
+          }
+
+          // 2. 遇到五级标题 #####
+          if (trimmed.startsWith('##### ')) {
+            flushNote();
+            closeListsUntil(0);
+            const h5Text = trimmed.replace('##### ', '').trim();
+            res += '<h5 class="micro-heading">' + parseInline(h5Text) + '</h5>';
+            continue;
+          }
+
+          // 3. 【核心修正】：遇到引用注释 > 时，先放入缓冲区统一合并，不立即闭合！
+          if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
+            closeListsUntil(0);
+            const noteText = trimmed.replace(/^(>|&gt;)\s?/, '');
+            noteBuffer.push(noteText);
+            continue;
+          }
+
+          // 4. 遇到常规列表项前，先清空释放之前可能积攒的引用框
+          flushNote();
+
+          const indent = raw.search(/\S|$/);
+          const content = trimmed.replace(/^[-*]\s*/, '');
+
+          let itemLevel = 1;
+          if (indent >= 6) itemLevel = 3;
+          else if (indent >= 2) itemLevel = 2;
+
+          if (listStack.length < itemLevel) {
+            while (listStack.length < itemLevel) {
+              res += '<ul>';
+              listStack.push(true);
+            }
+          } else if (listStack.length > itemLevel) {
+            closeListsUntil(itemLevel);
+          }
+
+          res += '<li>' + parseInline(content) + '</li>';
+        }
+
+        // 循环结束时，确保剩余的列表与引用全部安全闭合
+        flushNote();
+        closeListsUntil(0);
+        return res;
+      }
+
+      /* 词法解析：严密支持嵌套加粗与印章 */
+      function parseInline(text) {
+        let str = escapeHtml(text);
+
+        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (match, innerText) {
+          const innerFormatted = innerText.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+          return '<strong>' + innerFormatted + '</strong>';
+        });
+
+        str = str.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+
+        return str;
+      }
+
+      function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+
+      /* 长图导出 */
+      function exportImageNative() {
+        const target = document.getElementById('exportArea');
+        const btn = document.querySelector('.app-btn.primary');
+        const oldText = btn.innerHTML;
+        btn.innerHTML = '<span>⏳ 导出中...</span>';
+
+        const opt = {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false,
+          scrollX: 0,
+          scrollY: 0
+        };
+
+        html2canvas(target, opt).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = '课程大纲-' + new Date().toISOString().slice(0, 10) + '.png';
+          link.href = imgData;
+          link.click();
+
+          document.getElementById('modalPreviewImg').src = imgData;
+          document.getElementById('exportModal').classList.add('active');
+          btn.innerHTML = oldText;
+        }).catch(err => {
+          alert('长图生成失败，请使用系统截屏');
+          btn.innerHTML = oldText;
+        });
+      }
+
+      /* 导出独立宣发 HTML */
+      function exportStandaloneHTML() {
+        const doc = document.implementation.createHTMLDocument("课程计划");
+        const style = doc.createElement("style");
+
+        const currentActualWidth = previewArea.offsetWidth;
+        const isNarrow = previewArea.classList.contains('is-narrow');
+        const narrowRule = isNarrow ? "\n.render-canvas { max-width: " + currentActualWidth + "px !important; }\n.card-content-grid { grid-template-columns: 1fr !important; }\n.col-left::after { display: none !important; }\n.span-full { border: none !important; padding: 0 !important; margin: 0 0 6px 0 !important; }" : "";
+
+        style.textContent = document.getElementById("coreStyles").textContent +
+          "\nbody { background-color: #f1f5f9; padding: 36px 16px 80px; }\n.container { max-width: " + currentActualWidth + "px; margin: 0 auto; }" + narrowRule;
+        doc.head.appendChild(style);
+
+        const meta = doc.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, initial-scale=1.0";
+        doc.head.appendChild(meta);
+
+        const container = doc.createElement("div");
+        container.className = "container render-canvas" + (isNarrow ? " is-narrow" : "");
+        container.innerHTML = previewArea.innerHTML;
+        doc.body.appendChild(container);
+
+        const fullHTML = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+        const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
+        const link = document.createElement("a");
+        link.download = "宣发大纲-" + new Date().toISOString().slice(0, 10) + ".html";
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }
+
+      function exportMarkdownFile() {
+        const blob = new Blob([editor.value], { type: 'text/markdown;charset=utf-8' });
+        const link = document.createElement('a');
+        link.download = '课程大纲-' + new Date().toISOString().slice(0, 10) + '.md';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }
+
+      /* 抽屉交互 */
+      function toggleDrawer(open) {
+        document.getElementById('manualDrawer').classList.toggle('active', open);
+        document.getElementById('drawerOverlay').classList.toggle('active', open);
+      }
+
+      function copySource(btn) {
+        const pre = btn.closest('div').nextElementSibling.querySelector('pre');
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          const old = btn.innerText;
+          btn.innerText = '已复制!';
+          btn.style.backgroundColor = '#10b981';
+          setTimeout(() => {
+            btn.innerText = old;
+            btn.style.backgroundColor = '';
+          }, 1500);
+        });
+      }
+
+      function filterManual() {
+        const q = document.getElementById('manualSearch').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('#manualList .card-item');
+        cards.forEach(c => {
+          const key = c.getAttribute('data-keywords') ? c.getAttribute('data-keywords').toLowerCase() : '';
+          const text = c.innerText.toLowerCase();
+          c.style.display = (key.includes(q) || text.includes(q)) ? '' : 'none';
+        });
+      }
+    </script>
+  </body>
+
+</html>
