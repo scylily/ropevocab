@@ -7,20 +7,24 @@
     <title>Syllabus Studio · 课程大纲设计工作台</title>
     <!-- 截图引擎 -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- 宣发卡片核心样式表 -->
     <style id="coreStyles">
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
       :root {
         --bg-page: #f8fafc;
         --text-title: #0f172a;
-        /* 浓墨黑，加粗重点与主标题专属 */
         --text-heading: #1e293b;
-        /* 小节标题色 */
         --text-body: #334155;
-        /* 列表常规正文色（标准字重） */
         --text-muted: #64748b;
-        /* 次要说明灰 */
         --card-border: #e2e8f0;
         --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
         --card-hover-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
@@ -65,7 +69,6 @@
         border-radius: 16px;
         box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
         border: 1px solid rgba(226, 232, 240, 0.8);
-        box-sizing: border-box;
       }
 
       .render-canvas header {
@@ -84,6 +87,8 @@
         font-weight: 800;
         color: var(--text-title);
         letter-spacing: -0.02em;
+        margin: 0;
+        line-height: 1.25;
       }
 
       .student-pill {
@@ -118,7 +123,6 @@
         box-shadow: var(--card-shadow);
         position: relative;
         overflow: hidden;
-        box-sizing: border-box;
       }
 
       .stage-card::after {
@@ -183,7 +187,7 @@
         font-weight: 900;
         color: var(--theme-color);
         opacity: 0.35;
-        font-family: -apple-system, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         line-height: 1;
         user-select: none;
         letter-spacing: -1px;
@@ -207,7 +211,6 @@
         border-top: 1px dashed #cbd5e1;
         border-bottom: 1px dashed #cbd5e1;
         margin: 4px 0;
-        box-sizing: border-box;
       }
 
       .card-content-grid>.span-full:first-child {
@@ -244,12 +247,12 @@
         margin-bottom: 6px;
       }
 
-      /* 三级标题 ###（核心小节） */
+      /* 三级标题 ### */
       .render-canvas h3 {
         font-size: 0.98rem;
         font-weight: 700;
         color: var(--text-heading);
-        margin-bottom: 12px;
+        margin: 0 0 12px 0;
         display: flex;
         align-items: center;
         gap: 7px;
@@ -265,7 +268,7 @@
         flex-shrink: 0;
       }
 
-      /* 四级标题 ####（内嵌导轨子标题） */
+      /* 四级标题 #### */
       .render-canvas h4.sub-heading {
         font-size: 0.88rem;
         font-weight: 600;
@@ -300,14 +303,7 @@
         margin: 0;
       }
 
-      /*
-           =========================================================
-           【核心修正：彻底回归 Markdown 本质的纯净列表排布】
-           全员回归常规字重（Regular / 400），绝不默认加粗！
-           =========================================================
-        */
-
-      /* 一级列表 (Root Level)：常规字重 + 18px 整体从属缩进 */
+      /* 一级列表 */
       .content-block>ul {
         padding-left: 18px !important;
       }
@@ -315,7 +311,6 @@
       .content-block>ul>li {
         font-size: 0.88rem;
         font-weight: 400 !important;
-        /* 【核心修正】：回归常规字重，绝不滥用粗体 */
         color: var(--text-body);
         position: relative;
         padding-left: 14px;
@@ -333,7 +328,7 @@
         line-height: 1.5;
       }
 
-      /* 二级列表 (Level 2: 常规字重 + 浅灰实线导轨 + 短横线 –) */
+      /* 二级列表 */
       .render-canvas ul ul {
         padding-left: 20px !important;
         margin: 4px 0 6px 4px;
@@ -343,7 +338,6 @@
       .render-canvas ul ul li {
         font-size: 0.85rem;
         font-weight: 400 !important;
-        /* 【核心修正】：常规字重 */
         color: var(--text-body);
         margin-bottom: 4px;
         position: relative;
@@ -359,7 +353,7 @@
         font-weight: 600;
       }
 
-      /* 三级列表 (Level 3: 常规字重 + 细腻虚线导轨 + 微箭头 ›) */
+      /* 三级列表 */
       .render-canvas ul ul ul {
         padding-left: 18px !important;
         margin: 3px 0 5px 3px;
@@ -369,7 +363,6 @@
       .render-canvas ul ul ul li {
         font-size: 0.82rem;
         font-weight: 400 !important;
-        /* 【核心修正】：常规字重 */
         color: var(--text-muted);
         padding-left: 12px;
         margin-bottom: 3px;
@@ -386,10 +379,6 @@
         font-weight: bold;
       }
 
-      /*
-           【加粗权重爆发】：
-           只有用户打了 **加粗** 的地方，才享有专属加粗与深黑聚焦！
-        */
       .render-canvas strong {
         color: var(--text-title);
         font-weight: 700 !important;
@@ -399,12 +388,12 @@
       .note-callout {
         background: rgba(241, 245, 249, 0.7);
         border-left: 3px solid var(--theme-color);
-        padding: 6px 12px;
+        padding: 8px 12px;
         border-radius: 0 6px 6px 0;
         margin: 6px 0 8px 18px;
         font-size: 0.82rem;
         color: #475569;
-        line-height: 1.5;
+        line-height: 1.55;
         font-weight: 400;
       }
 
@@ -466,12 +455,6 @@
 
     <!-- 工作台界面样式 -->
     <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
         background-color: #f1f5f9;
@@ -585,10 +568,8 @@
         align-items: flex-start;
       }
 
-      /* 【修改后】：中间分隔栏赋予与页面同风格的上下垂直渐变 */
       .split-resizer {
         width: 8px;
-        /* 上部天青蓝 -> 中间过渡白灰 -> 下部赤金橙的平滑垂直渐变 */
         background: linear-gradient(180deg, #bae6fd 0%, #e2e8f0 50%, #fed7aa 100%);
         cursor: col-resize;
         display: flex;
@@ -602,7 +583,6 @@
         border-right: 1px solid rgba(226, 232, 240, 0.8);
       }
 
-      /* 鼠标悬停或拖拽中：饱和度提升的高级上下渐变 */
       .split-resizer:hover,
       .split-resizer.dragging {
         background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #f97316 100%);
@@ -724,8 +704,8 @@
       .manual-drawer {
         position: fixed;
         top: 0;
-        right: -680px;
-        width: 640px;
+        right: -720px;
+        width: 680px;
         max-width: 95vw;
         height: 100%;
         background: #f8fafc;
@@ -789,7 +769,6 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        box-sizing: border-box;
       }
 
       .card-item-header {
@@ -931,16 +910,6 @@
         margin: 0.6rem 0;
       }
 
-      .preview-box blockquote {
-        border-left: 3px solid #0284c7;
-        padding-left: 0.7rem;
-        color: #64748b;
-        background: #f8fafc;
-        margin: 0.4rem 0;
-        padding: 0.4rem 0.7rem;
-        border-radius: 0 4px 4px 0;
-      }
-
       .preview-box table {
         width: 100%;
         border-collapse: collapse;
@@ -956,20 +925,6 @@
       .preview-box th {
         background: #f8fafc;
         font-weight: 600;
-      }
-
-      .preview-box code.inline-code {
-        background-color: #f1f5f9;
-        color: #be123c;
-        padding: 2px 5px;
-        border-radius: 3px;
-        font-family: monospace;
-      }
-
-      .preview-box mark {
-        background: #fef08a;
-        padding: 0.1rem 0.3rem;
-        border-radius: 2px;
       }
 
       .rules-table {
@@ -1075,7 +1030,7 @@
       </section>
     </div>
 
-    <!-- 写作提示手册抽屉 -->
+    <!-- 写作提示手册抽屉（完整 12 项速查全部恢复） -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
     <aside class="manual-drawer" id="manualDrawer">
       <div class="drawer-header">
@@ -1087,6 +1042,7 @@
       </div>
       <div class="drawer-content" id="manualList">
 
+        <!-- 1. 标题层级 -->
         <div class="card-item" data-keywords="标题 一级标题 二级标题 headings">
           <div class="card-item-header">
             <span>📝 1. 标题层级 (Headings)</span>
@@ -1117,13 +1073,14 @@
           </div>
         </div>
 
-        <div class="card-item" data-keywords="粗体 斜体 印章 text bold italic inline code">
+        <!-- 2. 行内修饰与印章 -->
+        <div class="card-item" data-keywords="粗体 斜体 印章 text bold italic inline code 转义">
           <div class="card-item-header">
             <span>✨ 2. 行内文本修饰与印章</span>
             <span class="badge badge-high">高频使用</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">💡 技巧：列表内字重默认为常规；使用 <code>**重点**</code> 即可实现醒目突出！支持 <code>**双本结（ *奈加流* ）**</code> 嵌套。</div>
+            <div class="spec-box">💡 技巧：列表内字重默认为常规；使用 <code>**重点**</code> 即可实现醒目突出！支持 <code>**双本结（ *奈加流* ）**</code> 嵌套。若需呈现星号本身，打 <code>\*</code>。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1131,7 +1088,8 @@
                   <pre>- 常规描述文字
 - **强烈强调的核心重点**
 - *奈加流* 或 *明智流* 印章
-- **双本结（ *奈加流* ）**</pre>
+- **双本结（ *奈加流* ）**
+- 转义星号：\*不是斜体\*</pre>
                 </div>
               </div>
               <div>
@@ -1139,14 +1097,16 @@
                 <div class="preview-box">
                   <p style="font-weight:400; color:#334155;">常规描述文字</p>
                   <p><strong style="font-weight:700; color:#0f172a;">强烈强调的核心重点</strong></p>
-                  <p><em style="font-style:normal; background:#fafaf9; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> 印章</p>
-                  <p><strong>双本结（ <em style="font-style:normal; background:#fafaf9; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> ）</strong></p>
+                  <p><em style="font-style:normal; background:#f8fafc; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> 印章</p>
+                  <p><strong>双本结（ <em style="font-style:normal; background:#f8fafc; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> ）</strong></p>
+                  <p style="font-size:0.8rem; color:#64748b;">转义星号：*不是斜体*</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- 3. 分界线 -->
         <div class="card-item" data-keywords="分界线 分割线 横线 hr divider">
           <div class="card-item-header">
             <span>➖ 3. 分界线与版面划分 (Dividers)</span>
@@ -1177,6 +1137,7 @@
           </div>
         </div>
 
+        <!-- 4. 段落与强制换行 -->
         <div class="card-item" data-keywords="段落 换行 转义 br spacing newline escape">
           <div class="card-item-header">
             <span>↵ 4. 段落、强制换行与转义</span>
@@ -1208,6 +1169,7 @@
           </div>
         </div>
 
+        <!-- 5. 复合列表与树状缩进 -->
         <div class="card-item" data-keywords="列表 任务清单 todo list task 有序 无序 缩进">
           <div class="card-item-header">
             <span>📊 5. 复合列表与树状缩进 (Lists)</span>
@@ -1250,6 +1212,7 @@
           </div>
         </div>
 
+        <!-- 6. 脚注与注释 -->
         <div class="card-item" data-keywords="脚注 引用 注释 footnote reference">
           <div class="card-item-header">
             <span>📌 6. 文档脚注与文末注释 (Footnotes)</span>
@@ -1271,7 +1234,7 @@
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
                 <div class="preview-box">
-                  <p>Markdown 是一种轻量标记语言<sup><a href="#" style="color:#0284c7;">[1]</a></sup>。<br>它的排版哲学推崇呼吸感<sup><a href="#" style="color:#0284c7;">[2]</a></sup>。</p>
+                  <p>Markdown 是一种轻量标记语言<sup><a href="#" style="color:#0284c7; text-decoration:none;">[1]</a></sup>。<br>它的排版哲学推崇呼吸感<sup><a href="#" style="color:#0284c7; text-decoration:none;">[2]</a></sup>。</p>
                   <div style="border-top:1px solid #e2e8f0; margin-top:6px; padding-top:4px; font-size:0.75rem; color:#64748b;">
                     <div>[1] 2004年由 John Gruber 创建。</div>
                     <div>[2] 指段落空行适度留白。</div>
@@ -1282,6 +1245,7 @@
           </div>
         </div>
 
+        <!-- 7. 代码块 -->
         <div class="card-item" data-keywords="代码块 代码高亮 code block python">
           <div class="card-item-header">
             <span>💻 7. 围栏式代码块 (Code Block)</span>
@@ -1310,18 +1274,19 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
+        <!-- 8. 引用注释与专项解释 -->
         <div class="card-item" data-keywords="引用 警告 blockquote tips 学员">
           <div class="card-item-header">
             <span>💬 8. 引用注释与专项解释 (Blockquote)</span>
             <span class="badge badge-struct">结构化</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成高颜值专属注解框！顶部使用 <code>学员：影</code> 自动生成学员徽标。</div>
+            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成高颜值专属注解框！顶部使用 <code>学员：XX</code> 自动生成学员徽标。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
                 <div class="source-wrapper">
-                  <pre>学员：影
+                  <pre>学员：XX
 
 ### 片足半吊
 > 单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</pre>
@@ -1330,7 +1295,7 @@ def fetch_user(user_id: int):
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
                 <div class="preview-box">
-                  <div style="display:inline-block; border:1px solid #cbd5e1; padding:2px 10px; border-radius:20px; font-size:0.8rem; margin-bottom:8px;">学员：<strong>影</strong></div>
+                  <div style="display:inline-block; border:1px solid #cbd5e1; padding:2px 10px; border-radius:20px; font-size:0.8rem; margin-bottom:8px;">学员：<strong>XX</strong></div>
                   <h3 style="font-size:0.92rem; margin-bottom:4px; font-weight:700;">片足半吊</h3>
                   <div style="background:#f1f5f9; border-left:3px solid #0284c7; padding:4px 10px; border-radius:0 4px 4px 0; font-size:0.8rem; color:#475569;">单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</div>
                 </div>
@@ -1339,6 +1304,7 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
+        <!-- 9. 链接与图片 -->
         <div class="card-item" data-keywords="链接 图片 link image media">
           <div class="card-item-header">
             <span>🔗 9. 链接与多媒体 (Links & Images)</span>
@@ -1360,7 +1326,7 @@ def fetch_user(user_id: int):
                 <div class="preview-box">
                   <a href="#" style="color:#0284c7; text-decoration:none; font-weight:600;">访问官方指南 ↗</a>
                   <div style="margin-top:6px;">
-                    <img src="https://dummyimage.com/140x35/0284c7/ffffff&text=Banner" alt="示意图" style="border-radius:4px;">
+                    <img src="https://dummyimage.com/140x35/0284c7/ffffff&text=Banner" alt="示意图" style="border-radius:4px; max-width: 100%;">
                   </div>
                 </div>
               </div>
@@ -1368,6 +1334,7 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
+        <!-- 10. 数据表格 -->
         <div class="card-item" data-keywords="表格 对齐 table align">
           <div class="card-item-header">
             <span>📅 10. 数据表格 (Data Tables)</span>
@@ -1415,6 +1382,7 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
+        <!-- 11. 折叠与高亮 -->
         <div class="card-item" data-keywords="折叠 高亮 details summary mark html advance">
           <div class="card-item-header">
             <span>🧩 11. 折叠与高亮 (Extensions & HTML)</span>
@@ -1438,7 +1406,7 @@ def fetch_user(user_id: int):
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
                 <div class="preview-box">
-                  <p>这是 <mark>重点强化</mark> 的技法。</p>
+                  <p>这是 <mark style="background:#fef08a; padding:1px 4px; border-radius:2px;">重点强化</mark> 的技法。</p>
                   <details style="border:1px solid #e2e8f0; border-radius:4px; padding:4px 8px; background:#f8fafc; margin-top:4px;">
                     <summary style="cursor:pointer; font-weight:600; font-size:0.8rem;">👉 点击展开查看备考参数</summary>
                     <ul style="padding-left:1.2rem; margin-top:4px; font-size:0.75rem; color:#64748b;">
@@ -1452,6 +1420,7 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
+        <!-- 12. 终极写作呼吸感排版规范 -->
         <div class="card-item" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
           <div class="card-item-header">
             <span>💡 12. 终极写作呼吸感排版规范</span>
@@ -1525,62 +1494,52 @@ def fetch_user(user_id: int):
         renderSyllabus(editor.value);
       });
 
-      /* ================= 1. 丝滑双向同步滚动 ================= */
-      let activeScroller = null;
-      let rAF_preview = null;
-      let rAF_editor = null;
+      /* ================= 1. 防循环双向同步滚动 ================= */
+      let isProgrammaticScroll = false;
+      let scrollTimer = null;
 
-      previewPane.addEventListener('mouseenter', () => { activeScroller = 'preview'; });
-      editor.addEventListener('mouseenter', () => { activeScroller = 'editor'; });
-      previewPane.addEventListener('mouseleave', () => { if (activeScroller === 'preview') activeScroller = null; });
-      editor.addEventListener('mouseleave', () => { if (activeScroller === 'editor') activeScroller = null; });
+      function syncScroll(source, target) {
+        if (isProgrammaticScroll) return;
 
-      previewPane.addEventListener('scroll', () => {
-        if (activeScroller !== 'preview') return;
-        if (rAF_preview) cancelAnimationFrame(rAF_preview);
+        const maxSource = source.scrollHeight - source.clientHeight;
+        const maxTarget = target.scrollHeight - target.clientHeight;
+        if (maxSource <= 0 || maxTarget <= 0) return;
 
-        rAF_preview = requestAnimationFrame(() => {
-          const maxScrollLeft = previewPane.scrollHeight - previewPane.clientHeight;
-          if (maxScrollLeft > 0) {
-            const scrollRatio = previewPane.scrollTop / maxScrollLeft;
-            const maxScrollRight = editor.scrollHeight - editor.clientHeight;
-            editor.scrollTop = scrollRatio * maxScrollRight;
-          }
-        });
-      }, { passive: true });
+        const ratio = source.scrollTop / maxSource;
+        isProgrammaticScroll = true;
+        target.scrollTop = ratio * maxTarget;
 
-      editor.addEventListener('scroll', () => {
-        if (activeScroller !== 'editor') return;
-        if (rAF_editor) cancelAnimationFrame(rAF_editor);
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 50);
+      }
 
-        rAF_editor = requestAnimationFrame(() => {
-          const maxScrollRight = editor.scrollHeight - editor.clientHeight;
-          if (maxScrollRight > 0) {
-            const scrollRatio = editor.scrollTop / maxScrollRight;
-            const maxScrollLeft = previewPane.scrollHeight - previewPane.clientHeight;
-            previewPane.scrollTop = scrollRatio * maxScrollLeft;
-          }
-        });
-      }, { passive: true });
+      previewPane.addEventListener('scroll', () => syncScroll(previewPane, editor), { passive: true });
+      editor.addEventListener('scroll', () => syncScroll(editor, previewPane), { passive: true });
 
-      /* 自适应监听 */
+      /* 容器自适应尺寸监听 */
       const resizeObserver = new ResizeObserver(entries => {
         for (let entry of entries) {
-          applyContainerResponsive(entry.contentRect.width);
+          if (entry.contentRect.width < 650) {
+            previewArea.classList.add('is-narrow');
+          } else {
+            previewArea.classList.remove('is-narrow');
+          }
         }
       });
       resizeObserver.observe(previewPane);
 
-      function applyContainerResponsive(paneWidth) {
-        if (paneWidth < 650) {
-          previewArea.classList.add('is-narrow');
-        } else {
-          previewArea.classList.remove('is-narrow');
-        }
-      }
-
-      /* ================= 4. 中间滑块拖拽 (0 延迟) ================= */
+      /* ================= 2. 中间滑块拖拽 (带防丢保护) ================= */
       let isDragging = false;
+
+      function stopDragging() {
+        if (!isDragging) return;
+        isDragging = false;
+        resizer.classList.remove('dragging');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+      }
 
       resizer.addEventListener('mousedown', (e) => {
         isDragging = true;
@@ -1604,16 +1563,10 @@ def fetch_user(user_id: int):
         });
       });
 
-      window.addEventListener('mouseup', () => {
-        if (isDragging) {
-          isDragging = false;
-          resizer.classList.remove('dragging');
-          document.body.style.cursor = '';
-          document.body.style.userSelect = '';
-        }
-      });
+      window.addEventListener('mouseup', stopDragging);
+      window.addEventListener('blur', stopDragging);
 
-      /* ================= 5. 全局文件拖拽导入 ================= */
+      /* ================= 3. 全局文件拖拽导入 ================= */
       let dragCounter = 0;
       window.addEventListener('dragenter', (e) => {
         e.preventDefault();
@@ -1624,7 +1577,10 @@ def fetch_user(user_id: int):
       window.addEventListener('dragleave', (e) => {
         e.preventDefault();
         dragCounter--;
-        if (dragCounter === 0) dropOverlay.classList.remove('active');
+        if (dragCounter <= 0) {
+          dragCounter = 0;
+          dropOverlay.classList.remove('active');
+        }
       });
       window.addEventListener('drop', (e) => {
         e.preventDefault();
@@ -1648,23 +1604,22 @@ def fetch_user(user_id: int):
         reader.readAsText(file);
       }
 
-      /*
-         ================= 6. 专向美学解析引擎 (全容错架构) =================
-      */
+      /* ================= 4. 专向美学解析引擎 ================= */
       function renderSyllabus(md) {
         charCount.innerText = md.length + ' 字';
         if (!md.trim()) {
           previewArea.innerHTML = `
-                <div class="empty-placeholder">
-                    <div class="empty-icon">📝</div>
-                    <div class="empty-text">等待编辑或导入大纲内容</div>
-                    <div class="empty-sub">在右侧开始键入，或将 .md 文件拖入任意区域</div>
-                </div>`;
+            <div class="empty-placeholder">
+                <div class="empty-icon">📝</div>
+                <div class="empty-text">等待编辑或导入大纲内容</div>
+                <div class="empty-sub">在右侧开始键入，或将 .md 文件拖入任意区域</div>
+            </div>`;
           return;
         }
 
         const lines = md.split('\n');
-        let docTitle = '课程计划';
+        let docTitle = '';
+        let hasH1 = false;
         let studentName = '';
         let parts = [];
         let currentPart = null;
@@ -1673,21 +1628,25 @@ def fetch_user(user_id: int):
         for (let rawLine of lines) {
           let line = rawLine.trimEnd();
 
-          if (line.startsWith('# ')) {
-            docTitle = line.replace('# ', '').trim();
+          // 1. 一级主标题识别
+          if (line.startsWith('#') && !line.startsWith('##')) {
+            docTitle = line.replace(/^#\s*/, '').trim();
+            hasH1 = true;
             continue;
           }
 
-          if (line.includes('学员')) {
-            const cleanLine = line.replace(/[*_>\s]/g, '');
-            const match = cleanLine.match(/学员[：:](.+)/);
-            if (match && match[1]) {
-              studentName = match[1].trim();
+          // 2. 学员精准识别（仅在进入任何 ## 阶段前识别）
+          if (!currentPart && parts.length === 0) {
+            const studentMatch = line.match(/^学员[：:]\s*(.+)/);
+            if (studentMatch && studentMatch[1]) {
+              studentName = studentMatch[1].replace(/[*_`]/g, '').trim();
+              continue;
             }
-            continue;
           }
+
           if (line.trim() === '---') continue;
 
+          // 3. 识别 ## 二级大阶段
           if (line.startsWith('## ')) {
             if (currentPart) parts.push(currentPart);
             const partRaw = line.replace('## ', '').trim();
@@ -1703,7 +1662,7 @@ def fetch_user(user_id: int):
             }
 
             const partNumMatch = partRaw.match(/Part\.?\s*(\d+)/i);
-            const partNum = partNumMatch ? (partNumMatch[1].padStart(2, '0')) : '01';
+            const partNum = partNumMatch ? (partNumMatch[1].padStart(2, '0')) : String(parts.length + 1).padStart(2, '0');
 
             let titleClean = partRaw;
             if (partRaw.includes('-')) {
@@ -1723,6 +1682,7 @@ def fetch_user(user_id: int):
             continue;
           }
 
+          // 4. 识别 ### 三级小节
           if (line.startsWith('### ')) {
             const secTitle = line.replace('### ', '').trim();
             currentSection = { title: secTitle, elements: [] };
@@ -1730,7 +1690,7 @@ def fetch_user(user_id: int):
             continue;
           }
 
-          // 容错：跳过 ### 直接写 #### 或列表
+          // 5. 容错提取内容
           if (line.trim().length > 0 && currentPart) {
             if (!currentSection) {
               currentSection = { title: '', elements: [] };
@@ -1741,13 +1701,17 @@ def fetch_user(user_id: int):
         }
         if (currentPart) parts.push(currentPart);
 
+        // 拼接 HTML
         let html = '';
-        html += '<header>';
-        html += '  <h1>' + escapeHtml(docTitle) + '</h1>';
-        if (studentName) {
-          html += '  <div class="student-pill"><span>学员：<strong>' + escapeHtml(studentName) + '</strong></span></div>';
+        if (hasH1 || studentName) {
+          html += '<header>';
+          html += '  <h1>' + (docTitle ? escapeHtml(docTitle) : '<span style="opacity:0.3;">输入标题...</span>') + '</h1>';
+          if (studentName) {
+            html += '  <div class="student-pill"><span>学员：<strong>' + escapeHtml(studentName) + '</strong></span></div>';
+          }
+          html += '</header>';
         }
-        html += '</header>';
+
         html += '<div class="timeline-stream">';
 
         for (let part of parts) {
@@ -1799,40 +1763,32 @@ def fetch_user(user_id: int):
           html += '</article>';
         }
 
-        html += '</div><div style="height: 30px; clear: both;"></div>';
+        html += '</div>';
         previewArea.innerHTML = html;
       }
 
-      /* 内部树形元素渲染器 */
-      /*
-   【修正后的内部树形渲染器】：
-   支持 > 连续跨行、跨段落合并在同一个完整注解框内，左侧导轨不断裂
-*/
+      /* 结构化列表与多行引用渲染器 */
       function renderSectionElements(lines) {
         let res = '';
-        let listStack = [];
-        let noteBuffer = []; // 引用内容缓冲区
+        let listLevel = 0;
+        let noteBuffer = [];
 
-        // 辅助函数：闭合当前未完结的列表
-        function closeListsUntil(targetLevel) {
-          while (listStack.length > targetLevel) {
-            res += '</ul>';
-            listStack.pop();
+        function closeLists() {
+          while (listLevel > 0) {
+            res += '</li></ul>';
+            listLevel--;
           }
         }
 
-        // 辅助函数：将连续积累的 > 引用行一次性合并输出为一个完整的连贯大框
         function flushNote() {
           if (noteBuffer.length > 0) {
             let noteHtml = '';
             for (let i = 0; i < noteBuffer.length; i++) {
               const text = noteBuffer[i];
               if (text === '') {
-                noteHtml += '<br><br>'; // 应对纯空行 > 的跨段落分界
+                noteHtml += '<br><br>';
               } else {
-                if (i > 0 && noteBuffer[i - 1] !== '') {
-                  noteHtml += '<br>'; // 连续引用的平滑换行
-                }
+                if (i > 0 && noteBuffer[i - 1] !== '') noteHtml += '<br>';
                 noteHtml += parseInline(text);
               }
             }
@@ -1844,70 +1800,74 @@ def fetch_user(user_id: int):
         for (let raw of lines) {
           let trimmed = raw.trim();
 
-          // 1. 遇到四级标题 ####
           if (trimmed.startsWith('#### ')) {
             flushNote();
-            closeListsUntil(0);
-            const h4Text = trimmed.replace('#### ', '').trim();
-            res += '<h4 class="sub-heading">' + parseInline(h4Text) + '</h4>';
+            closeLists();
+            res += '<h4 class="sub-heading">' + parseInline(trimmed.replace('#### ', '').trim()) + '</h4>';
             continue;
           }
 
-          // 2. 遇到五级标题 #####
           if (trimmed.startsWith('##### ')) {
             flushNote();
-            closeListsUntil(0);
-            const h5Text = trimmed.replace('##### ', '').trim();
-            res += '<h5 class="micro-heading">' + parseInline(h5Text) + '</h5>';
+            closeLists();
+            res += '<h5 class="micro-heading">' + parseInline(trimmed.replace('##### ', '').trim()) + '</h5>';
             continue;
           }
 
-          // 3. 【核心修正】：遇到引用注释 > 时，先放入缓冲区统一合并，不立即闭合！
           if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
-            closeListsUntil(0);
-            const noteText = trimmed.replace(/^(>|&gt;)\s?/, '');
-            noteBuffer.push(noteText);
+            closeLists();
+            noteBuffer.push(trimmed.replace(/^(>|&gt;)\s?/, ''));
             continue;
           }
 
-          // 4. 遇到常规列表项前，先清空释放之前可能积攒的引用框
           flushNote();
 
           const indent = raw.search(/\S|$/);
           const content = trimmed.replace(/^[-*]\s*/, '');
 
-          let itemLevel = 1;
-          if (indent >= 6) itemLevel = 3;
-          else if (indent >= 2) itemLevel = 2;
+          let targetLevel = 1;
+          if (indent >= 6) targetLevel = 3;
+          else if (indent >= 2) targetLevel = 2;
 
-          if (listStack.length < itemLevel) {
-            while (listStack.length < itemLevel) {
-              res += '<ul>';
-              listStack.push(true);
-            }
-          } else if (listStack.length > itemLevel) {
-            closeListsUntil(itemLevel);
+          if (listLevel === 0) {
+            res += '<ul>';
+            listLevel = 1;
           }
 
-          res += '<li>' + parseInline(content) + '</li>';
+          while (listLevel < targetLevel) {
+            res += '<ul>';
+            listLevel++;
+          }
+          while (listLevel > targetLevel) {
+            res += '</li></ul>';
+            listLevel--;
+          }
+
+          res += '<li>' + parseInline(content);
         }
 
-        // 循环结束时，确保剩余的列表与引用全部安全闭合
         flushNote();
-        closeListsUntil(0);
+        closeLists();
         return res;
       }
 
-      /* 词法解析：严密支持嵌套加粗与印章 */
+      /* 词法解析：支持转义与嵌套语法 */
       function parseInline(text) {
+        if (!text) return '';
         let str = escapeHtml(text);
 
-        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (match, innerText) {
+        str = str.replace(/\\\*/g, '___ESCAPED_STAR___');
+        str = str.replace(/\\#/g, '___ESCAPED_HASH___');
+
+        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (_, innerText) {
           const innerFormatted = innerText.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
           return '<strong>' + innerFormatted + '</strong>';
         });
 
         str = str.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+
+        str = str.replace(/___ESCAPED_STAR___/g, '*');
+        str = str.replace(/___ESCAPED_HASH___/g, '#');
 
         return str;
       }
@@ -1916,23 +1876,30 @@ def fetch_user(user_id: int):
         return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       }
 
-      /* 长图导出 */
+      /* ================= 5. 长图导出 ================= */
       function exportImageNative() {
         const target = document.getElementById('exportArea');
         const btn = document.querySelector('.app-btn.primary');
         const oldText = btn.innerHTML;
         btn.innerHTML = '<span>⏳ 导出中...</span>';
 
+        const prevScrollTop = previewPane.scrollTop;
+        previewPane.scrollTop = 0;
+
         const opt = {
           scale: 2,
           useCORS: true,
-          backgroundColor: null,
-          logging: false,
+          backgroundColor: '#f8fafc',
           scrollX: 0,
-          scrollY: 0
+          scrollY: 0,
+          width: target.offsetWidth,
+          height: target.offsetHeight,
+          windowWidth: document.documentElement.offsetWidth,
+          windowHeight: document.documentElement.offsetHeight
         };
 
         html2canvas(target, opt).then(canvas => {
+          previewPane.scrollTop = prevScrollTop;
           const imgData = canvas.toDataURL('image/png');
           const link = document.createElement('a');
           link.download = '课程大纲-' + new Date().toISOString().slice(0, 10) + '.png';
@@ -1943,22 +1910,48 @@ def fetch_user(user_id: int):
           document.getElementById('exportModal').classList.add('active');
           btn.innerHTML = oldText;
         }).catch(err => {
-          alert('长图生成失败，请使用系统截屏');
+          previewPane.scrollTop = prevScrollTop;
+          console.error(err);
+          alert('长图生成失败，可尝试使用系统截屏');
           btn.innerHTML = oldText;
         });
       }
 
-      /* 导出独立宣发 HTML */
+      /* ================= 6. 导出独立宣发 HTML ================= */
       function exportStandaloneHTML() {
         const doc = document.implementation.createHTMLDocument("课程计划");
-        const style = doc.createElement("style");
+
+        const fontLink1 = doc.createElement("link");
+        fontLink1.rel = "preconnect";
+        fontLink1.href = "https://fonts.googleapis.com";
+        const fontLink2 = doc.createElement("link");
+        fontLink2.rel = "preconnect";
+        fontLink2.href = "https://fonts.gstatic.com";
+        fontLink2.crossOrigin = "anonymous";
+        const fontLink3 = doc.createElement("link");
+        fontLink3.rel = "stylesheet";
+        fontLink3.href = "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap";
+        doc.head.appendChild(fontLink1);
+        doc.head.appendChild(fontLink2);
+        doc.head.appendChild(fontLink3);
 
         const currentActualWidth = previewArea.offsetWidth;
         const isNarrow = previewArea.classList.contains('is-narrow');
         const narrowRule = isNarrow ? "\n.render-canvas { max-width: " + currentActualWidth + "px !important; }\n.card-content-grid { grid-template-columns: 1fr !important; }\n.col-left::after { display: none !important; }\n.span-full { border: none !important; padding: 0 !important; margin: 0 0 6px 0 !important; }" : "";
 
-        style.textContent = document.getElementById("coreStyles").textContent +
-          "\nbody { background-color: #f1f5f9; padding: 36px 16px 80px; }\n.container { max-width: " + currentActualWidth + "px; margin: 0 auto; }" + narrowRule;
+        const style = doc.createElement("style");
+        style.textContent = `
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+            background-color: #f1f5f9;
+            padding: 36px 16px 80px;
+          }
+          .container {
+            max-width: ${currentActualWidth}px;
+            margin: 0 auto;
+          }
+        ` + document.getElementById("coreStyles").textContent + narrowRule;
         doc.head.appendChild(style);
 
         const meta = doc.createElement("meta");
@@ -1973,21 +1966,25 @@ def fetch_user(user_id: int):
 
         const fullHTML = "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
         const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.download = "宣发大纲-" + new Date().toISOString().slice(0, 10) + ".html";
-        link.href = URL.createObjectURL(blob);
+        link.href = url;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
       function exportMarkdownFile() {
         const blob = new Blob([editor.value], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.download = '课程大纲-' + new Date().toISOString().slice(0, 10) + '.md';
-        link.href = URL.createObjectURL(blob);
+        link.href = url;
         link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
-      /* 抽屉交互 */
+      /* ================= 7. 辅助交互 ================= */
       function toggleDrawer(open) {
         document.getElementById('manualDrawer').classList.toggle('active', open);
         document.getElementById('drawerOverlay').classList.toggle('active', open);
