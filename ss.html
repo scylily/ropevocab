@@ -1091,7 +1091,7 @@
 
       .modal-box {
         background: #ffffff;
-        max-width: 560px;
+        max-width: 680px;
         margin: 0 auto;
         border-radius: 12px;
         padding: 24px;
@@ -1104,6 +1104,86 @@
         border-radius: 6px;
         border: 1px solid #e2e8f0;
         margin: 14px 0;
+      }
+
+      /* ================= 打印 / PDF 导出专用样式（仅呈现宣发页，隐藏编辑面板） ================= */
+      @media print {
+        @page {
+          margin: 10mm 8mm;
+          size: auto;
+        }
+
+        body {
+          background: #ffffff !important;
+          height: auto !important;
+          min-height: auto !important;
+          overflow: visible !important;
+          display: block !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+
+        .app-header,
+        .split-resizer,
+        .editor-pane,
+        .global-drop-overlay,
+        .drawer-overlay,
+        .manual-drawer,
+        .export-modal {
+          display: none !important;
+        }
+
+        .workspace {
+          display: block !important;
+          height: auto !important;
+          overflow: visible !important;
+          position: static !important;
+        }
+
+        .preview-pane {
+          display: block !important;
+          width: 100% !important;
+          min-width: 0 !important;
+          height: auto !important;
+          overflow: visible !important;
+          background: transparent !important;
+          padding: 0 !important;
+          margin: 0 !important;
+        }
+
+        .render-canvas {
+          max-width: 100% !important;
+          width: 100% !important;
+          margin: 0 auto !important;
+          padding: 16px 12px 30px !important;
+          border: none !important;
+          box-shadow: none !important;
+          background-color: #f8fafc !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        .stage-card {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+          box-shadow: none !important;
+          border: 1px solid #cbd5e1 !important;
+          border-top: 4px solid var(--theme-color) !important;
+          margin-bottom: 20px !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        .card-header-bar,
+        .capsule-badge,
+        .note-callout,
+        .student-pill,
+        .render-canvas table,
+        .render-canvas th,
+        .render-canvas td {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
       }
     </style>
   </head>
@@ -1211,7 +1291,6 @@
       </div>
       <div class="drawer-content" id="manualList">
 
-        <!-- 1. 标题层级 -->
         <div class="card-item" data-keywords="标题 一级标题 二级标题 headings">
           <div class="card-item-header">
             <span>📝 1. 标题层级 (Headings)</span>
@@ -1242,7 +1321,6 @@
           </div>
         </div>
 
-        <!-- 2. 行内修饰与印章 -->
         <div class="card-item" data-keywords="粗体 斜体 印章 text bold italic inline code 转义">
           <div class="card-item-header">
             <span>✨ 2. 行内文本修饰与印章</span>
@@ -1275,7 +1353,6 @@
           </div>
         </div>
 
-        <!-- 3. 分界线 -->
         <div class="card-item" data-keywords="分界线 分割线 横线 hr divider">
           <div class="card-item-header">
             <span>➖ 3. 分界线与版面划分 (Dividers)</span>
@@ -1306,7 +1383,6 @@
           </div>
         </div>
 
-        <!-- 4. 数据表格 -->
         <div class="card-item" data-keywords="表格 对齐 table align 居中 左对齐 右对齐">
           <div class="card-item-header">
             <span>📅 4. 数据表格与多维对齐 (Data Tables)</span>
@@ -1354,7 +1430,6 @@
           </div>
         </div>
 
-        <!-- 5. 复合列表与树状缩进 -->
         <div class="card-item" data-keywords="列表 任务清单 todo list task 有序 无序 缩进">
           <div class="card-item-header">
             <span>📊 5. 复合列表与树状缩进 (Lists)</span>
@@ -1391,7 +1466,6 @@
           </div>
         </div>
 
-        <!-- 6. 引用注释与专项解释 -->
         <div class="card-item" data-keywords="引用 警告 blockquote tips 学员">
           <div class="card-item-header">
             <span>💬 6. 引用注释与专项解释 (Blockquote)</span>
@@ -1421,7 +1495,6 @@
           </div>
         </div>
 
-        <!-- 7. 终极写作呼吸感排版规范 -->
         <div class="card-item" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
           <div class="card-item-header">
             <span>💡 7. 终极写作呼吸感排版规范</span>
@@ -1626,14 +1699,12 @@
         for (let rawLine of lines) {
           let line = rawLine.trimEnd();
 
-          // 1. 一级主标题
           if (line.startsWith('#') && !line.startsWith('##')) {
             docTitle = line.replace(/^#\s*/, '').trim();
             hasH1 = true;
             continue;
           }
 
-          // 2. 学员提取（仅在未进入二级阶段前生效）
           if (!currentPart && parts.length === 0) {
             const studentMatch = line.match(/^学员[：:]\s*(.+)/);
             if (studentMatch && studentMatch[1]) {
@@ -1644,7 +1715,6 @@
 
           if (line.trim() === '---') continue;
 
-          // 3. 识别 ## 二级大阶段
           if (line.startsWith('## ')) {
             if (currentPart) parts.push(currentPart);
             const partRaw = line.replace('## ', '').trim();
@@ -1680,7 +1750,6 @@
             continue;
           }
 
-          // 4. 识别 ### 三级小节（独立标签块）
           if (line.startsWith('### ')) {
             const secTitle = line.replace('### ', '').trim();
             currentSection = { title: secTitle, elements: [] };
@@ -1688,7 +1757,6 @@
             continue;
           }
 
-          // 5. 内容提取
           if (line.trim().length > 0 && currentPart) {
             if (!currentSection) {
               currentSection = { title: '', elements: [] };
@@ -1699,7 +1767,6 @@
         }
         if (currentPart) parts.push(currentPart);
 
-        // 拼接 HTML
         let html = '';
         if (hasH1 || studentName) {
           html += '<header>';
@@ -1765,7 +1832,6 @@
         previewArea.innerHTML = html;
       }
 
-      /* 【彻底隔离】：高鲁棒性多表格独立渲染器，遇到新表头或空行立刻结算独立输出 */
       function renderSectionElements(lines) {
         let res = '';
         let listLevel = 0;
@@ -1805,7 +1871,6 @@
         function flushTable() {
           if (tableBuffer.length === 0) return;
 
-          // 标准表格至少需要表头行与对齐分隔线
           if (tableBuffer.length >= 2 && isSeparatorLine(tableBuffer[1].trim())) {
             const headerRaw = tableBuffer[0].trim();
             const alignRaw = tableBuffer[1].trim();
@@ -1849,7 +1914,6 @@
             return;
           }
 
-          // 非标准表格兜底
           for (let badLine of tableBuffer) {
             res += '<p style="margin: 4px 0 6px 18px; font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">' + parseInline(badLine.trim()) + '</p>';
           }
@@ -1859,13 +1923,10 @@
         for (let raw of lines) {
           let trimmed = raw.trim();
 
-          // 1. 判断是否属于表格行
           if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
             flushNote();
             closeLists();
 
-            // 核心自愈机制：如果前面已经有表格数据，而当前这行又是一个新的分割线（例如 |:---:|），
-            // 说明上一张表格结束，紧接着开启了第二张新表格！上一张表立即结算闭合！
             if (tableBuffer.length >= 2 && isSeparatorLine(trimmed)) {
               const prevHeader = tableBuffer.pop();
               flushTable();
@@ -1876,7 +1937,6 @@
             continue;
           }
 
-          // 2. 遇到空行或普通文本行，立即结算输出之前的所有表格
           flushTable();
 
           if (trimmed.startsWith('#### ')) {
@@ -1976,7 +2036,6 @@
         renderSyllabus(editor.value);
       }
 
-      /* 格式修饰：粗体、印章、引用、列表 */
       function applyFormat(type) {
         const start = editor.selectionStart;
         const end = editor.selectionEnd;
@@ -2049,7 +2108,6 @@
         }
       }
 
-      /* 批量层级缩进与反缩进 (4个空格) */
       function indentLines(isIndent) {
         const fullText = editor.value;
         const start = editor.selectionStart;
@@ -2075,14 +2133,12 @@
         editor.setSelectionRange(lineStart, lineStart + newBlock.length);
       }
 
-      /* 标题快捷转换 */
       function toggleHeadingMenu(e) {
         e.stopPropagation();
         closeAllDropdowns();
         document.getElementById('headingDropdown').classList.toggle('active');
       }
 
-      /* 表格菜单开关 */
       function toggleTableMenu(e) {
         e.stopPropagation();
         closeAllDropdowns();
@@ -2111,9 +2167,7 @@
         closeAllDropdowns();
       }
 
-      /* 通用标准空表格骨架插入 */
       function insertEmptyTable(alignType = 'center') {
-        // 根据用户选择的对齐方式，生成分隔符
         let c1 = ':---:';
         let c2 = ':---:';
         let c3 = ':---:';
@@ -2123,10 +2177,9 @@
         } else if (alignType === 'right') {
           c1 = '---:'; c2 = '---:'; c3 = '---:';
         } else if (alignType === 'mixed') {
-          c1 = ':---'; c2 = ':---:'; c3 = '---:'; // 左、中、右
+          c1 = ':---'; c2 = ':---'; c3 = '---:';
         }
 
-        // 通用三列骨架，无任何业务绑定
         const template =
           `
 | 标题 1 | 标题 2 | 标题 3 |
@@ -2151,14 +2204,12 @@
       editor.addEventListener('keydown', (e) => {
         const isCtrl = e.ctrlKey || e.metaKey;
 
-        // 1. Tab / Shift+Tab 缩进与反缩进
         if (e.key === 'Tab') {
           e.preventDefault();
           indentLines(!e.shiftKey);
           return;
         }
 
-        // 2. Ctrl+] 缩进，Ctrl+[ 反缩进
         if (isCtrl && e.key === ']') {
           e.preventDefault();
           indentLines(true);
@@ -2170,49 +2221,42 @@
           return;
         }
 
-        // 3. Ctrl+B 加粗
         if (isCtrl && (e.key === 'b' || e.key === 'B')) {
           e.preventDefault();
           applyFormat('bold');
           return;
         }
 
-        // 4. Ctrl+I 流派印章
         if (isCtrl && (e.key === 'i' || e.key === 'I')) {
           e.preventDefault();
           applyFormat('stamp');
           return;
         }
 
-        // 5. Ctrl+L 快速转列表
         if (isCtrl && (e.key === 'l' || e.key === 'L')) {
           e.preventDefault();
           applyFormat('list');
           return;
         }
 
-        // 6. Ctrl+Shift+T 快速插入居中对齐表格
         if (isCtrl && e.shiftKey && (e.key === 't' || e.key === 'T')) {
           e.preventDefault();
           insertEmptyTable('center');
           return;
         }
 
-        // 7. Ctrl+Q 专属注解框 (Quote)
         if (isCtrl && (e.key === 'q' || e.key === 'Q')) {
           e.preventDefault();
           applyFormat('quote');
           return;
         }
 
-        // 8. Ctrl+M 插入学员徽标 (Member)
         if (isCtrl && (e.key === 'm' || e.key === 'M')) {
           e.preventDefault();
           insertStudentBadge();
           return;
         }
 
-        // 9. Ctrl+2 ~ Ctrl+5 快速设置标题级别
         if (isCtrl && e.key === '2') {
           e.preventDefault();
           applyHeading('## ');
@@ -2235,30 +2279,71 @@
         }
       });
 
-      /* 长图导出 */
+      /* ================= 核心修复：100% 解决长图底部切断与排版失真 ================= */
       function exportImageNative() {
         const target = document.getElementById('exportArea');
         const btn = document.querySelector('.app-btn.primary');
         const oldText = btn.innerHTML;
         btn.innerHTML = '<span>⏳ 导出中...</span>';
 
-        const prevScrollTop = previewPane.scrollTop;
-        previewPane.scrollTop = 0;
+        // 1. 获取宣发页面当前的真实视觉尺寸（不管当前如何拖动自适应宽度，分毫不差）
+        const rect = target.getBoundingClientRect();
+        const isNarrow = target.classList.contains('is-narrow');
+        const renderWidth = Math.round(rect.width || target.offsetWidth);
+
+        // 2. 赋予虚拟离屏环境充足的渲染视口
+        const virtualWidth = Math.max(window.innerWidth, renderWidth + 240, 1200);
 
         const opt = {
-          scale: 2,
+          scale: 2, // 2倍高清视网膜渲染
           useCORS: true,
           backgroundColor: '#f8fafc',
           scrollX: 0,
           scrollY: 0,
-          width: target.offsetWidth,
-          height: target.offsetHeight,
-          windowWidth: document.documentElement.offsetWidth,
-          windowHeight: document.documentElement.offsetHeight
+          x: 0,
+          y: 0,
+          width: renderWidth, // 锁定宣发页实际自适应宽度
+          // 注意：不要传递写死的 height！让 html2canvas 自动测量克隆卡片的完整自适应高度，防止末端被切
+          windowWidth: virtualWidth,
+          windowHeight: 12000, // 赋予超长虚拟高度空间，杜绝底部视口截断
+          onclone: (clonedDoc) => {
+            const clonedTarget = clonedDoc.getElementById('exportArea');
+            if (!clonedTarget) return;
+
+            // 1. 严格锁定宣发卡片的尺寸与排版类名，完美继承当前屏幕视觉宽度
+            clonedTarget.style.width = renderWidth + 'px';
+            clonedTarget.style.maxWidth = renderWidth + 'px';
+            clonedTarget.style.minWidth = renderWidth + 'px';
+            clonedTarget.style.boxSizing = 'border-box';
+            clonedTarget.style.margin = '0 auto';
+            clonedTarget.style.height = 'auto';
+            clonedTarget.style.maxHeight = 'none';
+            clonedTarget.style.overflow = 'visible';
+            clonedTarget.style.position = 'relative';
+            clonedTarget.style.top = '0';
+            clonedTarget.style.left = '0';
+            clonedTarget.style.transform = 'none';
+
+            if (isNarrow) {
+              clonedTarget.classList.add('is-narrow');
+            } else {
+              clonedTarget.classList.remove('is-narrow');
+            }
+
+            // 2. 【核心破局】：在克隆文档中建立绝对纯净的 (0, 0) 坐标系！
+            // 清空 body 并将宣发页作为唯一顶层子元素挂载，彻底清除导航条(56px)及预览外框padding(30px)产生的 86px 错位裁剪
+            clonedDoc.body.innerHTML = '';
+            clonedDoc.body.style.margin = '0';
+            clonedDoc.body.style.padding = '0';
+            clonedDoc.body.style.height = 'auto';
+            clonedDoc.body.style.minHeight = 'auto';
+            clonedDoc.body.style.overflow = 'visible';
+            clonedDoc.body.style.backgroundColor = '#f8fafc';
+            clonedDoc.body.appendChild(clonedTarget);
+          }
         };
 
         html2canvas(target, opt).then(canvas => {
-          previewPane.scrollTop = prevScrollTop;
           const imgData = canvas.toDataURL('image/png');
           const link = document.createElement('a');
           link.download = '课程大纲-' + new Date().toISOString().slice(0, 10) + '.png';
@@ -2269,7 +2354,6 @@
           document.getElementById('exportModal').classList.add('active');
           btn.innerHTML = oldText;
         }).catch(err => {
-          previewPane.scrollTop = prevScrollTop;
           console.error(err);
           alert('长图生成失败，可尝试使用系统截屏');
           btn.innerHTML = oldText;
@@ -2343,7 +2427,6 @@
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
 
-      /* 抽屉辅助交互 */
       function toggleDrawer(open) {
         document.getElementById('manualDrawer').classList.toggle('active', open);
         document.getElementById('drawerOverlay').classList.toggle('active', open);
