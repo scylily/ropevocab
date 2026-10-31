@@ -204,7 +204,7 @@
         align-items: start;
       }
 
-      /* 【彻底修复】：超长通栏上下两条虚线规范呈现 */
+      /* 超长通栏上下两条虚线规范呈现 */
       .card-content-grid>.span-full {
         grid-column: 1 / -1 !important;
         width: 100%;
@@ -214,21 +214,18 @@
         margin: 4px 0;
       }
 
-      /* 当通栏在最顶部时，去掉顶虚线 */
       .card-content-grid>.span-full:first-child {
         border-top: none !important;
         padding-top: 0 !important;
         margin-top: 0 !important;
       }
 
-      /* 当通栏在最底部时，去掉底虚线 */
       .card-content-grid>.span-full:last-child {
         border-bottom: none !important;
         padding-bottom: 0 !important;
         margin-bottom: 0 !important;
       }
 
-      /* 相邻两个通栏自动合并虚线，防止两条虚线粘在一起变粗 */
       .card-content-grid>.span-full+.span-full {
         border-top: none !important;
         margin-top: -4px;
@@ -236,6 +233,7 @@
 
       .card-content-grid>.span-full h3:last-child,
       .card-content-grid>.span-full ul:last-child,
+      .card-content-grid>.span-full .table-wrapper:last-child,
       .card-content-grid>.span-full .note-callout:last-child {
         margin-bottom: 0 !important;
       }
@@ -422,6 +420,47 @@
         display: inline-block;
         vertical-align: 0.5px;
         line-height: 1.3;
+      }
+
+      /* ================= 核心表格精美排版 ================= */
+      .render-canvas .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        margin: 12px 0 14px 0;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+      }
+
+      .render-canvas table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        line-height: 1.55;
+      }
+
+      .render-canvas th {
+        background: #f8fafc;
+        color: #1e293b;
+        font-weight: 700;
+        padding: 10px 14px;
+        border-bottom: 2px solid #e2e8f0;
+        white-space: nowrap;
+      }
+
+      .render-canvas td {
+        padding: 9px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+      }
+
+      .render-canvas tr:last-child td {
+        border-bottom: none;
+      }
+
+      .render-canvas tbody tr:hover td {
+        background-color: #f8fafc;
       }
 
       /* 窄屏自适应 */
@@ -677,13 +716,13 @@
         margin: 0 2px;
       }
 
-      /* 标题快捷下拉弹窗 */
-      .heading-menu-wrapper {
+      /* 下拉弹窗公用类 */
+      .dropdown-wrapper {
         position: relative;
         display: inline-block;
       }
 
-      .heading-dropdown {
+      .editor-dropdown {
         display: none;
         position: absolute;
         top: 100%;
@@ -692,22 +731,22 @@
         background: #ffffff;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
         padding: 4px 0;
         z-index: 50;
-        min-width: 160px;
+        min-width: 185px;
       }
 
-      .heading-dropdown.active {
+      .editor-dropdown.active {
         display: block;
       }
 
-      .heading-dropdown button {
+      .editor-dropdown button {
         width: 100%;
         text-align: left;
         background: none;
         border: none;
-        padding: 6px 12px;
+        padding: 7px 12px;
         font-size: 0.8rem;
         color: #334155;
         cursor: pointer;
@@ -716,12 +755,13 @@
         align-items: center;
       }
 
-      .heading-dropdown button span {
+      .editor-dropdown button span {
         font-size: 0.72rem;
         color: #94a3b8;
+        font-family: monospace;
       }
 
-      .heading-dropdown button:hover {
+      .editor-dropdown button:hover {
         background: #f1f5f9;
         color: #0284c7;
       }
@@ -1110,16 +1150,17 @@
 
       <section class="editor-pane" id="editorPane">
         <div class="pane-header">
-          <!-- 快捷编辑工具条（带完整快捷键提示） -->
+          <!-- 快捷编辑工具条 -->
           <div class="editor-toolbar">
             <button class="tool-btn" onclick="applyFormat('bold')" title="粗体加粗 (Ctrl+B)"><b>B</b></button>
             <button class="tool-btn" onclick="applyFormat('stamp')" title="流派印章 (Ctrl+I)"><i>*</i></button>
 
             <div class="tool-sep"></div>
 
-            <div class="heading-menu-wrapper">
+            <!-- 标题下拉 -->
+            <div class="dropdown-wrapper">
               <button class="tool-btn" onclick="toggleHeadingMenu(event)" title="标题转换 (Ctrl+2 ~ 5)"><b>H ▾</b></button>
-              <div class="heading-dropdown" id="headingDropdown">
+              <div class="editor-dropdown" id="headingDropdown">
                 <button onclick="applyHeading('## ')">## 大阶段卡片 <span>Ctrl+2</span></button>
                 <button onclick="applyHeading('### ')">### 核心小节 <span>Ctrl+3</span></button>
                 <button onclick="applyHeading('#### ')">#### 内嵌子标题 <span>Ctrl+4</span></button>
@@ -1127,7 +1168,19 @@
               </div>
             </div>
 
+            <!-- 快速列表 -->
             <button class="tool-btn" onclick="applyFormat('list')" title="快速列表化 (Ctrl+L)">•≡</button>
+
+            <!-- 纯净插入表格骨架下拉 -->
+            <div class="dropdown-wrapper">
+              <button class="tool-btn" onclick="toggleTableMenu(event)" title="新建表格 (Ctrl+Shift+T)"><b>⊞ 表格 ▾</b></button>
+              <div class="editor-dropdown" id="tableDropdown">
+                <button onclick="insertEmptyTable('center')"><b>＋ 新建居中表格</b> <span>:---:</span></button>
+                <button onclick="insertEmptyTable('left')">⬅️ 新建居左表格 <span>:---</span></button>
+                <button onclick="insertEmptyTable('right')">➡️ 新建居右表格 <span>---:</span></button>
+                <button onclick="insertEmptyTable('mixed')">📊 新建混合对齐表格</button>
+              </div>
+            </div>
 
             <div class="tool-sep"></div>
 
@@ -1154,7 +1207,7 @@
         <button class="app-btn ghost" onclick="toggleDrawer(false)" style="font-size:1.1rem; color:#64748b;">✕</button>
       </div>
       <div class="drawer-search">
-        <input type="text" id="manualSearch" placeholder="输入关键字搜索规范，如：标题, 列表, 转义, 分割线..." oninput="filterManual()">
+        <input type="text" id="manualSearch" placeholder="输入关键字搜索规范，如：标题, 列表, 表格, 转义, 分割线..." oninput="filterManual()">
       </div>
       <div class="drawer-content" id="manualList">
 
@@ -1165,7 +1218,7 @@
             <span class="badge badge-core">核心规范</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇大纲**只保留一个一级主标题**。</div>
+            <div class="spec-box">⚠️ 必须规范：<code>#</code> 后面**必须保留一个半角空格**！同一篇大纲**只保留一个一级主标题**。每个独立模块请用 <code>### 标题</code> 分隔。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1253,32 +1306,48 @@
           </div>
         </div>
 
-        <!-- 4. 段落与强制换行 -->
-        <div class="card-item" data-keywords="段落 换行 转义 br spacing newline escape">
+        <!-- 4. 数据表格 -->
+        <div class="card-item" data-keywords="表格 对齐 table align 居中 左对齐 右对齐">
           <div class="card-item-header">
-            <span>↵ 4. 段落、强制换行与转义</span>
-            <span class="badge badge-high">高频规则</span>
+            <span>📅 4. 数据表格与多维对齐 (Data Tables)</span>
+            <span class="badge badge-high">已全面支持</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">💡 规则：直接回车并不会生成新段落！要紧凑换行，在行尾敲 **2个半角空格** 或使用 <code>&lt;br&gt;</code>；若要展示 <code>*</code>、<code>#</code> 原字符，在前面加反斜杠 <code>\</code>。</div>
+            <div class="spec-box">📐 规则：表格之间只要**空一行**，系统就会自动分割成两个独立表格！如果希望表格分别放在不同小节卡片内，只需在上方各打一个 <code>### 标题</code>。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
                 <div class="source-wrapper">
-                  <pre>第一行末尾打两个空格
-紧接着就是第二行（紧凑换行）
-
-或者直接使用&lt;br&gt;强制换行。
-
-\*这不是斜体\*，\# 不是标题</pre>
+                  <pre>| 阶段章节 (左) | 课时 (中) | 单价 (右) |
+| :--- | :---: | ---: |
+| 基础阶段绳缚准备 | 2小时 | 600元 |
+| 提高阶段张力练习 | 3小时 | 900元 |</pre>
                 </div>
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
                 <div class="preview-box">
-                  <p>第一行末尾打两个空格<br>紧接着就是第二行（紧凑换行）</p>
-                  <p style="margin-top:4px;">或者直接使用<br>强制换行。</p>
-                  <p style="margin-top:4px;">*这不是斜体*，# 不是标题</p>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style="text-align:left;">阶段章节</th>
+                        <th style="text-align:center;">课时</th>
+                        <th style="text-align:right;">单价</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="text-align:left;">基础阶段绳缚准备</td>
+                        <td style="text-align:center;">2小时</td>
+                        <td style="text-align:right;">600元</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left;">提高阶段张力练习</td>
+                        <td style="text-align:center;">3小时</td>
+                        <td style="text-align:right;">900元</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -1302,9 +1371,7 @@
     - 正中神经
     - 尺神经
 1. 第一阶段环境构建
-2. 第二阶段核心部署
-- [x] 完成单元测试
-- [ ] 生产环境部署待审核</pre>
+2. 第二阶段核心部署</pre>
                 </div>
               </div>
               <div>
@@ -1318,82 +1385,16 @@
                       </ul>
                     </li>
                   </ul>
-                  <div style="font-size:0.8rem; margin-top:4px;">
-                    <div>☑️ 完成单元测试</div>
-                    <div>⬜ 生产环境部署待审核</div>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 6. 脚注与注释 -->
-        <div class="card-item" data-keywords="脚注 引用 注释 footnote reference">
-          <div class="card-item-header">
-            <span>📌 6. 文档脚注与文末注释 (Footnotes)</span>
-            <span class="badge badge-advance">学术与长文</span>
-          </div>
-          <div class="card-item-body">
-            <div class="spec-box">📖 适用场景：正文中引用了术语或出处，不想打断阅读，使用 <code>[^1]</code> 自动排版到底部。</div>
-            <div class="stack-grid">
-              <div>
-                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
-                <div class="source-wrapper">
-                  <pre>Markdown 是一种轻量标记语言[^1]。
-它的排版哲学推崇呼吸感[^2]。
-
-[^1]: 2004年由 John Gruber 创建。
-[^2]: 指段落空行适度留白。</pre>
-                </div>
-              </div>
-              <div>
-                <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <p>Markdown 是一种轻量标记语言<sup><a href="#" style="color:#0284c7; text-decoration:none;">[1]</a></sup>。<br>它的排版哲学推崇呼吸感<sup><a href="#" style="color:#0284c7; text-decoration:none;">[2]</a></sup>。</p>
-                  <div style="border-top:1px solid #e2e8f0; margin-top:6px; padding-top:4px; font-size:0.75rem; color:#64748b;">
-                    <div>[1] 2004年由 John Gruber 创建。</div>
-                    <div>[2] 指段落空行适度留白。</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 7. 代码块 -->
-        <div class="card-item" data-keywords="代码块 代码高亮 code block python">
-          <div class="card-item-header">
-            <span>💻 7. 围栏式代码块 (Code Block)</span>
-            <span class="badge badge-high">工程必备</span>
-          </div>
-          <div class="card-item-body">
-            <div class="spec-box">🚀 规范：开头三个反引号后**必须显式注明小写语言别名**（如 python, bash, json），以激活语法高亮。</div>
-            <div class="stack-grid">
-              <div>
-                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
-                <div class="source-wrapper">
-                  <pre>```python
-def fetch_user(user_id: int):
-    # 语法高亮
-    return {"status": 200, "id": user_id}
-```</pre>
-                </div>
-              </div>
-              <div>
-                <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box" style="background:#1e1e2e; color:#cdd6f4; font-family:monospace; padding:8px;">
-                  <span style="color:#f38ba8;">def</span> <span style="color:#89b4fa;">fetch_user</span>(user_id):<br>&nbsp;&nbsp;<span style="color:#6c7086;"># 语法高亮</span><br>&nbsp;&nbsp;<span style="color:#f38ba8;">return</span> {<span style="color:#a6e3a1;">"status"</span>: <span style="color:#fab387;">200</span>}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 8. 引用注释与专项解释 -->
+        <!-- 6. 引用注释与专项解释 -->
         <div class="card-item" data-keywords="引用 警告 blockquote tips 学员">
           <div class="card-item-header">
-            <span>💬 8. 引用注释与专项解释 (Blockquote)</span>
+            <span>💬 6. 引用注释与专项解释 (Blockquote)</span>
             <span class="badge badge-struct">结构化</span>
           </div>
           <div class="card-item-body">
@@ -1420,126 +1421,10 @@ def fetch_user(user_id: int):
           </div>
         </div>
 
-        <!-- 9. 链接与多媒体 -->
-        <div class="card-item" data-keywords="链接 图片 link image media">
-          <div class="card-item-header">
-            <span>🔗 9. 链接与多媒体 (Links & Images)</span>
-            <span class="badge badge-high">高频使用</span>
-          </div>
-          <div class="card-item-body">
-            <div class="spec-box">🎯 记忆诀窍：图片语法仅比超链接在最前方**多一个半角感叹号 <code>!</code>**。</div>
-            <div class="stack-grid">
-              <div>
-                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
-                <div class="source-wrapper">
-                  <pre>[访问官方指南](https://example.com)
-
-![示意图](https://dummyimage.com/140x35/0284c7/ffffff&text=Banner)</pre>
-                </div>
-              </div>
-              <div>
-                <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <a href="#" style="color:#0284c7; text-decoration:none; font-weight:600;">访问官方指南 ↗</a>
-                  <div style="margin-top:6px;">
-                    <img src="https://dummyimage.com/140x35/0284c7/ffffff&text=Banner" alt="示意图" style="border-radius:4px; max-width: 100%;">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 10. 数据表格 -->
-        <div class="card-item" data-keywords="表格 对齐 table align">
-          <div class="card-item-header">
-            <span>📅 10. 数据表格 (Data Tables)</span>
-            <span class="badge badge-advance">精准排版</span>
-          </div>
-          <div class="card-item-body">
-            <div class="spec-box">📐 对齐控制：第二行分隔符中冒号位置控制对齐：<code>:---</code> 左对齐，<code>:---:</code> 居中对齐，<code>---:</code> 右对齐。</div>
-            <div class="stack-grid">
-              <div>
-                <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
-                <div class="source-wrapper">
-                  <pre>| 阶段模块 (左) | 状态 (中) | 时长 (右) |
-| :--- | :---: | ---: |
-| 绳缚基础准备 | 🟢 开启 | 4.0h |
-| 张力控制练习 | 🟡 进行 | 3.5h |</pre>
-                </div>
-              </div>
-              <div>
-                <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;">阶段模块</th>
-                        <th style="text-align:center;">状态</th>
-                        <th style="text-align:right;">时长</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td style="text-align:left;">绳缚基础准备</td>
-                        <td style="text-align:center;">🟢 开启</td>
-                        <td style="text-align:right;">4.0h</td>
-                      </tr>
-                      <tr>
-                        <td style="text-align:left;">张力控制练习</td>
-                        <td style="text-align:center;">🟡 进行</td>
-                        <td style="text-align:right;">3.5h</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 11. 折叠与高亮 -->
-        <div class="card-item" data-keywords="折叠 高亮 details summary mark html advance">
-          <div class="card-item-header">
-            <span>🧩 11. 折叠与高亮 (Extensions & HTML)</span>
-            <span class="badge badge-advance">进阶排版</span>
-          </div>
-          <div class="card-item-body">
-            <div class="spec-box">💡 扩展特性：使用 <code>&lt;details&gt;</code> 收纳长参数或备忘，让大纲主体更清爽。</div>
-            <div class="stack-grid">
-              <div>
-                <div class="panel-header"><span>💻 源码 (Markdown / HTML)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
-                <div class="source-wrapper">
-                  <pre>这是 &lt;mark&gt;重点强化&lt;/mark&gt; 的技法。
-
-&lt;details&gt;
-&lt;summary&gt;👉 点击展开查看备考参数&lt;/summary&gt;
-- 绳长: 7.5m
-- 材质: 优质精制麻绳
-&lt;/details&gt;</pre>
-                </div>
-              </div>
-              <div>
-                <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <p>这是 <mark style="background:#fef08a; padding:1px 4px; border-radius:2px;">重点强化</mark> 的技法。</p>
-                  <details style="border:1px solid #e2e8f0; border-radius:4px; padding:4px 8px; background:#f8fafc; margin-top:4px;">
-                    <summary style="cursor:pointer; font-weight:600; font-size:0.8rem;">👉 点击展开查看备考参数</summary>
-                    <ul style="padding-left:1.2rem; margin-top:4px; font-size:0.75rem; color:#64748b;">
-                      <li>绳长: 7.5m</li>
-                      <li>材质: 优质精制麻绳</li>
-                    </ul>
-                  </details>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 12. 终极写作呼吸感排版规范 -->
+        <!-- 7. 终极写作呼吸感排版规范 -->
         <div class="card-item" data-keywords="规范 呼吸感 空格 空行 命名 principles rules">
           <div class="card-item-header">
-            <span>💡 12. 终极写作呼吸感排版规范</span>
+            <span>💡 7. 终极写作呼吸感排版规范</span>
             <span class="badge badge-core">专业素养</span>
           </div>
           <div class="card-item-body">
@@ -1563,16 +1448,13 @@ def fetch_user(user_id: int):
                   </tr>
                   <tr>
                     <td><strong>空行阻断机制</strong></td>
-                    <td>段落间、分界线 <code>---</code> 上下、代码块与文字之间，**必须保留且只保留一个空行**。</td>
+                    <td>段落间、分界线 <code>---</code> 上下、表格前后，**必须保留且只保留一个空行**。</td>
                     <td>防止不同平台解析器出现布局重叠与粘连事故。</td>
                   </tr>
                   <tr>
-                    <td><strong>全小写文件命名</strong></td>
-                    <td>文档文件名全部小写，禁止使用空格，统一用短横线 <code>-</code>。<br>
-                      ✅ 正确：<code>2024-course-plan.md</code><br>
-                      ❌ 错误：<code>Course Plan (Final).md</code>
-                    </td>
-                    <td>对跨平台服务器最友好，绝不会在网页或图片路径中报 404 死链。</td>
+                    <td><strong>表格前后留空</strong></td>
+                    <td>表格的前一行和后一行保持为空行，使表格解析更加平稳。</td>
+                    <td>标准 Markdown 规范，防止表格粘附列表项。</td>
                   </tr>
                 </tbody>
               </table>
@@ -1720,7 +1602,7 @@ def fetch_user(user_id: int):
         reader.readAsText(file);
       }
 
-      /* ================= 核心渲染逻辑 ================= */
+      /* ================= 核心大纲拆解与分级渲染 ================= */
       function renderSyllabus(md) {
         charCount.innerText = md.length + ' 字';
         if (!md.trim()) {
@@ -1798,7 +1680,7 @@ def fetch_user(user_id: int):
             continue;
           }
 
-          // 4. 识别 ### 三级小节
+          // 4. 识别 ### 三级小节（独立标签块）
           if (line.startsWith('### ')) {
             const secTitle = line.replace('### ', '').trim();
             currentSection = { title: secTitle, elements: [] };
@@ -1848,7 +1730,8 @@ def fetch_user(user_id: int):
           for (let sec of part.sections) {
             const hasLongTitle = sec.title.trim().length > 32;
             const hasVeryLongElement = sec.elements.some(l => l.replace(/^[\s\-*#>\d\.]+/, '').trim().length > 50);
-            const isSpanFull = hasLongTitle || hasVeryLongElement;
+            const hasTable = sec.elements.some(l => l.trim().startsWith('|') && l.trim().endsWith('|'));
+            const isSpanFull = hasLongTitle || hasVeryLongElement || hasTable;
 
             let layoutClass = '';
             if (isSpanFull) {
@@ -1882,11 +1765,12 @@ def fetch_user(user_id: int):
         previewArea.innerHTML = html;
       }
 
-      /* 结构化列表、纯段落与多行引用渲染器 */
+      /* 【彻底隔离】：高鲁棒性多表格独立渲染器，遇到新表头或空行立刻结算独立输出 */
       function renderSectionElements(lines) {
         let res = '';
         let listLevel = 0;
         let noteBuffer = [];
+        let tableBuffer = [];
 
         function closeLists() {
           while (listLevel > 0) {
@@ -1912,8 +1796,88 @@ def fetch_user(user_id: int):
           }
         }
 
+        function isSeparatorLine(str) {
+          const inner = str.replace(/^\|/, '').replace(/\|$/, '');
+          const parts = inner.split('|');
+          return parts.length > 0 && parts.every(p => /^[\s:-]+$/.test(p) && p.includes('-'));
+        }
+
+        function flushTable() {
+          if (tableBuffer.length === 0) return;
+
+          // 标准表格至少需要表头行与对齐分隔线
+          if (tableBuffer.length >= 2 && isSeparatorLine(tableBuffer[1].trim())) {
+            const headerRaw = tableBuffer[0].trim();
+            const alignRaw = tableBuffer[1].trim();
+
+            const alignParts = alignRaw.replace(/^\|/, '').replace(/\|$/, '').split('|');
+            const colAligns = alignParts.map(p => {
+              const s = p.trim();
+              const left = s.startsWith(':');
+              const right = s.endsWith(':');
+              if (left && right) return 'center';
+              if (right) return 'right';
+              if (left) return 'left';
+              return 'left';
+            });
+
+            const headerCells = headerRaw.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+
+            let tblHtml = '<div class="table-wrapper"><table><thead><tr>';
+            headerCells.forEach((c, idx) => {
+              const align = colAligns[idx] || 'left';
+              tblHtml += `<th style="text-align:${align};">${parseInline(c)}</th>`;
+            });
+            tblHtml += '</tr></thead><tbody>';
+
+            for (let r = 2; r < tableBuffer.length; r++) {
+              const row = tableBuffer[r].trim();
+              if (!row) continue;
+              const cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+              tblHtml += '<tr>';
+              for (let cIdx = 0; cIdx < headerCells.length; cIdx++) {
+                const align = colAligns[cIdx] || 'left';
+                const cellText = cells[cIdx] !== undefined ? cells[cIdx] : '';
+                tblHtml += `<td style="text-align:${align};">${parseInline(cellText)}</td>`;
+              }
+              tblHtml += '</tr>';
+            }
+
+            tblHtml += '</tbody></table></div>';
+            res += tblHtml;
+            tableBuffer = [];
+            return;
+          }
+
+          // 非标准表格兜底
+          for (let badLine of tableBuffer) {
+            res += '<p style="margin: 4px 0 6px 18px; font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">' + parseInline(badLine.trim()) + '</p>';
+          }
+          tableBuffer = [];
+        }
+
         for (let raw of lines) {
           let trimmed = raw.trim();
+
+          // 1. 判断是否属于表格行
+          if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+            flushNote();
+            closeLists();
+
+            // 核心自愈机制：如果前面已经有表格数据，而当前这行又是一个新的分割线（例如 |:---:|），
+            // 说明上一张表格结束，紧接着开启了第二张新表格！上一张表立即结算闭合！
+            if (tableBuffer.length >= 2 && isSeparatorLine(trimmed)) {
+              const prevHeader = tableBuffer.pop();
+              flushTable();
+              tableBuffer.push(prevHeader);
+            }
+
+            tableBuffer.push(trimmed);
+            continue;
+          }
+
+          // 2. 遇到空行或普通文本行，立即结算输出之前的所有表格
+          flushTable();
 
           if (trimmed.startsWith('#### ')) {
             flushNote();
@@ -1969,6 +1933,7 @@ def fetch_user(user_id: int):
           }
         }
 
+        flushTable();
         flushNote();
         closeLists();
         return res;
@@ -2113,13 +2078,22 @@ def fetch_user(user_id: int):
       /* 标题快捷转换 */
       function toggleHeadingMenu(e) {
         e.stopPropagation();
+        closeAllDropdowns();
         document.getElementById('headingDropdown').classList.toggle('active');
       }
 
-      window.addEventListener('click', () => {
-        const d = document.getElementById('headingDropdown');
-        if (d) d.classList.remove('active');
-      });
+      /* 表格菜单开关 */
+      function toggleTableMenu(e) {
+        e.stopPropagation();
+        closeAllDropdowns();
+        document.getElementById('tableDropdown').classList.toggle('active');
+      }
+
+      function closeAllDropdowns() {
+        document.querySelectorAll('.editor-dropdown').forEach(d => d.classList.remove('active'));
+      }
+
+      window.addEventListener('click', closeAllDropdowns);
 
       function applyHeading(prefix) {
         const fullText = editor.value;
@@ -2134,6 +2108,38 @@ def fetch_user(user_id: int):
 
         safeReplaceText(newLine, lineStart, lineEnd);
         editor.setSelectionRange(lineStart + newLine.length, lineStart + newLine.length);
+        closeAllDropdowns();
+      }
+
+      /* 通用标准空表格骨架插入 */
+      function insertEmptyTable(alignType = 'center') {
+        // 根据用户选择的对齐方式，生成分隔符
+        let c1 = ':---:';
+        let c2 = ':---:';
+        let c3 = ':---:';
+
+        if (alignType === 'left') {
+          c1 = ':---'; c2 = ':---'; c3 = ':---';
+        } else if (alignType === 'right') {
+          c1 = '---:'; c2 = '---:'; c3 = '---:';
+        } else if (alignType === 'mixed') {
+          c1 = ':---'; c2 = ':---:'; c3 = '---:'; // 左、中、右
+        }
+
+        // 通用三列骨架，无任何业务绑定
+        const template =
+          `
+| 标题 1 | 标题 2 | 标题 3 |
+| ${c1} | ${c2} | ${c3} |
+| 单元格 | 单元格 | 单元格 |
+| 单元格 | 单元格 | 单元格 |
+
+`;
+
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        safeReplaceText(template, start, end);
+        closeAllDropdowns();
       }
 
       function insertStudentBadge() {
@@ -2185,21 +2191,28 @@ def fetch_user(user_id: int):
           return;
         }
 
-        // 6. Ctrl+Q 专属注解框 (Quote)
+        // 6. Ctrl+Shift+T 快速插入居中对齐表格
+        if (isCtrl && e.shiftKey && (e.key === 't' || e.key === 'T')) {
+          e.preventDefault();
+          insertEmptyTable('center');
+          return;
+        }
+
+        // 7. Ctrl+Q 专属注解框 (Quote)
         if (isCtrl && (e.key === 'q' || e.key === 'Q')) {
           e.preventDefault();
           applyFormat('quote');
           return;
         }
 
-        // 7. Ctrl+M 插入学员徽标 (Member)
+        // 8. Ctrl+M 插入学员徽标 (Member)
         if (isCtrl && (e.key === 'm' || e.key === 'M')) {
           e.preventDefault();
           insertStudentBadge();
           return;
         }
 
-        // 8. Ctrl+2 ~ Ctrl+5 快速设置标题级别
+        // 9. Ctrl+2 ~ Ctrl+5 快速设置标题级别
         if (isCtrl && e.key === '2') {
           e.preventDefault();
           applyHeading('## ');
