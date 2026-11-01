@@ -709,6 +709,12 @@
         background: #e2e8f0;
       }
 
+      .tool-btn.active {
+        background: #e0f2fe;
+        color: #0284c7;
+        font-weight: 700;
+      }
+
       .tool-sep {
         width: 1px;
         height: 14px;
@@ -778,7 +784,8 @@
         line-height: 1.65;
         resize: none;
         outline: none;
-        white-space: pre;
+        white-space: pre-wrap;
+        word-break: break-word;
         overflow-y: auto;
       }
 
@@ -1232,6 +1239,11 @@
         <div class="pane-header">
           <!-- 快捷编辑工具条 -->
           <div class="editor-toolbar">
+            <!-- 自动换行切换按键 (默认高亮激活) -->
+            <button class="tool-btn active" id="wrapToggleBtn" onclick="toggleWordWrap()" title="切换自动换行 (Alt+Z)">↩ 换行</button>
+
+            <div class="tool-sep"></div>
+
             <button class="tool-btn" onclick="applyFormat('bold')" title="粗体加粗 (Ctrl+B)"><b>B</b></button>
             <button class="tool-btn" onclick="applyFormat('stamp')" title="流派印章 (Ctrl+I)"><i>*</i></button>
 
@@ -2036,6 +2048,23 @@
         renderSyllabus(editor.value);
       }
 
+      /* 自动换行切换逻辑（默认开启） */
+      let isWordWrap = true;
+
+      function toggleWordWrap() {
+        isWordWrap = !isWordWrap;
+        const wrapBtn = document.getElementById('wrapToggleBtn');
+        if (isWordWrap) {
+          editor.style.whiteSpace = 'pre-wrap';
+          editor.style.wordBreak = 'break-word';
+          if (wrapBtn) wrapBtn.classList.add('active');
+        } else {
+          editor.style.whiteSpace = 'pre';
+          editor.style.wordBreak = 'normal';
+          if (wrapBtn) wrapBtn.classList.remove('active');
+        }
+      }
+
       function applyFormat(type) {
         const start = editor.selectionStart;
         const end = editor.selectionEnd;
@@ -2203,6 +2232,13 @@
       /* ================= 全套快捷键监听 ================= */
       editor.addEventListener('keydown', (e) => {
         const isCtrl = e.ctrlKey || e.metaKey;
+
+        // Alt + Z 快速切换自动换行
+        if (e.altKey && (e.key === 'z' || e.key === 'Z')) {
+          e.preventDefault();
+          toggleWordWrap();
+          return;
+        }
 
         if (e.key === 'Tab') {
           e.preventDefault();
