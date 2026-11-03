@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Syllabus Studio · 学员与教务管理系统</title>
+
+    <!-- Supabase 官方 SDK & 截图引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :root {
+        --bg-page: #f8fafc;
+        --text-title: #0f172a;
+        --text-heading: #1e293b;
+        --text-body: #334155;
+        --text-muted: #64748b;
+        --card-border: #e2e8f0;
+        --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+        --font-mono: 'Fira Code', Consolas, Monaco, monospace;
+        --safe-pad: clamp(10px, 2.5vw, 24px);
+      }
+
+      .stage-foundation {
+        --theme-color: #0284c7;
+        --theme-bg: #e0f2fe;
+        --theme-border: #7dd3fc;
+        --theme-glow: rgba(2, 132, 199, 0.12);
+      }
+
+      .stage-advanced {
+        --theme-color: #ea580c;
+        --theme-bg: #ffedd5;
+        --theme-border: #fdba74;
+        --theme-glow: rgba(234, 88, 12, 0.12);
+      }
+
+      .stage-mastery {
+        --theme-color: #be123c;
+        --theme-bg: #ffe4e6;
+        --theme-border: #fda4af;
+        --theme-glow: rgba(190, 18, 60, 0.12);
+      }
+
+      body {
+        font-family: var(--font-base);
+        background-color: #f1f5f9;
+        color: var(--text-body);
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      .canvas-bg {
+        background-color: #f8fafc;
+        background-image:
+          radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 90% 20%, rgba(234, 88, 12, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 45%),
+          radial-gradient(circle at 80% 90%, rgba(249, 115, 22, 0.08) 0%, transparent 45%),
+          radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+        background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+      }
+
+      /* 登录门禁 */
+      .login-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .login-box {
+        background: #ffffff;
+        width: 100%;
+        max-width: min(92vw, 400px);
+        border-radius: 16px;
+        padding: clamp(24px, 5vw, 36px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--card-border);
+        text-align: center;
+      }
+
+      .login-brand {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: var(--text-title);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .login-sub {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+      }
+
+      /* 顶部导航 */
+      .app-header {
+        height: clamp(52px, 6dvh, 62px);
+        background: #ffffff;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--safe-pad);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+
+      .brand-title {
+        font-size: clamp(0.95rem, 0.85rem + 0.4vw, 1.15rem);
+        font-weight: 700;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: clamp(6px, 1.2vw, 12px);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: clamp(6px, 1.2vw, 9px) clamp(10px, 2vw, 16px);
+        font-size: clamp(0.78rem, 0.7rem + 0.3vw, 0.88rem);
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid var(--card-border);
+        background: #ffffff;
+        color: var(--text-body);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+        min-height: 38px;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      .btn-primary {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+      }
+
+      .btn-accent {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #0284c7;
+      }
+
+      .btn-danger {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #fecaca;
+      }
+
+      .app-layout {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(240px, 280px) 1fr;
+        min-height: calc(100dvh - 60px);
+        position: relative;
+      }
+
+      /* 侧栏 */
+      .students-sidebar {
+        background: #ffffff;
+        border-right: 1px solid var(--card-border);
+        display: flex;
+        flex-direction: column;
+        height: calc(100dvh - 60px);
+        position: sticky;
+        top: 60px;
+        z-index: 40;
+      }
+
+      .sidebar-header {
+        padding: 14px;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .student-search-box {
+        padding: 10px 14px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--card-border);
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      .student-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .student-card {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .student-card:hover {
+        background: #f8fafc;
+      }
+
+      .student-card.active {
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+      }
+
+      .student-card .s-name {
+        font-weight: 700;
+        color: var(--text-title);
+        font-size: 0.95rem;
+      }
+
+      .student-card .s-tag {
+        font-size: 0.72rem;
+        padding: 2px 7px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        color: var(--text-muted);
+      }
+
+      /* 主视区 */
+      .main-viewport {
+        padding: clamp(12px, 3vw, 36px) var(--safe-pad) 80px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .content-container {
+        width: 100%;
+        max-width: min(94vw, 860px);
+      }
+
+      /* 备课雷达 */
+      .radar-alert-card {
+        background: #fffbeb;
+        border: 1.5px solid #fde68a;
+        border-left: 4px solid #f59e0b;
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+      }
+
+      .radar-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+        line-height: 1.4;
+      }
+
+      .radar-body h4 {
+        font-size: 0.9rem;
+        color: #92400e;
+        margin-bottom: 3px;
+        font-weight: 700;
+      }
+
+      .radar-body p {
+        font-size: 0.85rem;
+        color: #b45309;
+        line-height: 1.5;
+      }
+
+      /* 纯净大纲头部条 */
+      .syllabus-header-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1.5px solid #cbd5e1;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .header-title-group {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .header-title-group h1 {
+        font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.85rem);
+        font-weight: 800;
+        color: var(--text-title);
+      }
+
+      .course-type-pill {
+        font-size: 0.78rem;
+        color: #64748b;
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        padding: 2px 8px;
+        border-radius: 14px;
+      }
+
+      .student-trigger-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .student-badge-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 6px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      .student-badge-btn:hover {
+        background: #f8fafc;
+        border-color: #0284c7;
+      }
+
+      .student-badge-btn strong {
+        color: var(--text-title);
+        font-size: 0.95rem;
+      }
+
+      .student-badge-btn span.edit-hint {
+        font-size: 0.78rem;
+        color: #0284c7;
+        font-weight: 600;
+      }
+
+      /* =================== 私课专属样式 (.private-scope) =================== */
+      .private-scope .private-stage-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-top: 4px solid var(--theme-color);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 22px;
+      }
+
+      .private-scope .private-stage-card.is-completed {
+        border-left: 4px solid #059669;
+        background: #fafdfc;
+      }
+
+      .private-scope .card-header-bar {
+        padding: clamp(16px, 2.5vw, 24px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        gap: 12px;
+        border-bottom: 1px solid #f1f5f9;
+        position: relative;
+        z-index: 2;
+      }
+
+      .private-scope .header-title-inline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1;
+      }
+
+      .private-scope .capsule-badge {
+        display: inline-flex;
+        align-items: center;
+        background: var(--theme-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--theme-color);
+        flex-shrink: 0;
+      }
+
+      .private-scope .capsule-badge .sep {
+        margin: 0 5px;
+        opacity: 0.5;
+      }
+
+      .private-scope .stage-title {
+        font-size: clamp(1.1rem, 1rem + 0.4vw, 1.35rem);
+        font-weight: 700;
+        color: var(--text-title);
+      }
+
+      .private-scope .card-watermark {
+        font-size: clamp(1.8rem, 1.4rem + 0.8vw, 2.2rem);
+        font-weight: 900;
+        color: var(--theme-color);
+        opacity: 0.35;
+        line-height: 1;
+        user-select: none;
+      }
+
+      .private-scope .collapse-arrow {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        transition: transform 0.25s ease;
+      }
+
+      .private-scope .private-stage-card.is-collapsed .collapse-arrow {
+        transform: rotate(-90deg);
+      }
+
+      .private-scope .private-stage-card.is-collapsed .card-expandable-content {
+        display: none;
+      }
+
+      .private-scope .card-expandable-content {
+        padding: clamp(16px, 2.5vw, 26px);
+      }
+
+      .private-scope .card-content-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 40px;
+        position: relative;
+        align-items: start;
+      }
+
+      .private-scope .card-content-grid>.col-left {
+        position: relative;
+      }
+
+      .private-scope .card-content-grid>.col-left::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        right: -20px;
+        width: 1px;
+        border-right: 1.5px dashed #cbd5e1;
+      }
+
+      .private-scope .card-content-grid>.span-full {
+        grid-column: 1 / -1 !important;
+        width: 100%;
+        padding: 12px 0 !important;
+        border-top: 1px dashed #cbd5e1;
+        border-bottom: 1px dashed #cbd5e1;
+        margin: 4px 0;
+      }
+
+      .private-scope .content-block {
+        margin-bottom: 8px;
+      }
+
+      .private-scope .section-title-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+
+      .private-scope .section-title-row input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+        accent-color: var(--theme-color);
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .private-scope h3 {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        line-height: 1.4;
+      }
+
+      .private-scope ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      .private-scope .content-block>ul {
+        padding-left: 26px !important;
+      }
+
+      .private-scope .content-block>ul>li {
+        font-size: 0.88rem;
+        color: var(--text-body);
+        position: relative;
+        padding-left: 14px;
+        margin-bottom: 6px;
+        line-height: 1.6;
+      }
+
+      .private-scope .content-block>ul>li::before {
+        content: "•";
+        position: absolute;
+        left: 2px;
+        top: 0;
+        color: #94a3b8;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      .private-scope ul ul {
+        padding-left: 16px !important;
+        margin: 4px 0 6px 4px;
+        border-left: 1.5px solid #cbd5e1;
+      }
+
+      .private-scope ul ul li {
+        font-size: 0.85rem;
+        color: var(--text-body);
+        margin-bottom: 4px;
+        position: relative;
+        padding-left: 12px;
+        line-height: 1.55;
+      }
+
+      .private-scope ul ul li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .private-scope ul ul ul {
+        padding-left: 14px !important;
+        margin: 3px 0 5px 3px;
+        border-left: 1px dashed #94a3b8;
+      }
+
+      .private-scope ul ul ul li {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        padding-left: 10px;
+        margin-bottom: 3px;
+      }
+
+      .private-scope ul ul ul li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        top: -1px;
+        color: #94a3b8;
+        font-size: 0.95rem;
+      }
+
+      .private-scope em {
+        font-style: normal;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        padding: 1px 6px;
+        border-radius: 4px;
+        margin: 0 4px;
+        display: inline-block;
+      }
+
+      .private-scope strong {
+        color: var(--text-title);
+        font-weight: 700;
+      }
+
+      .private-scope .note-callout {
+        background: rgba(241, 245, 249, 0.7);
+        border-left: 3px solid var(--theme-color);
+        padding: 8px 12px;
+        border-radius: 0 6px 6px 0;
+        margin: 6px 0 8px 26px;
+        font-size: 0.82rem;
+        color: #475569;
+        line-height: 1.55;
+      }
+
+      /* =================== 大课专属样式 (.general-scope) =================== */
+      .general-scope .general-stage-divider {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-left: 5px solid var(--theme-color);
+        padding: 12px 18px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      }
+
+      .general-scope .general-divider-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: var(--text-title);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .general-scope .general-item-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-top: 3.5px solid var(--theme-color);
+        border-radius: 10px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+
+      .general-scope .general-item-card.is-completed {
+        border-left: 4px solid #059669;
+        background: #fafdfc;
+      }
+
+      .general-scope .general-card-header {
+        padding: 14px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        gap: 10px;
+      }
+
+      .general-scope .general-title-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .general-scope .general-code-tag {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--theme-color);
+        background: var(--theme-bg);
+        border: 1px solid var(--theme-border);
+        padding: 2px 8px;
+        border-radius: 6px;
+      }
+
+      .general-scope .general-item-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: var(--text-title);
+      }
+
+      .general-scope .general-card-content {
+        padding: 0 18px 18px 18px;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      .general-scope .general-checklist {
+        padding-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .general-scope .general-check-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.86rem;
+        color: var(--text-body);
+        line-height: 1.5;
+        cursor: pointer;
+      }
+
+      .general-scope .general-check-row input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        margin-top: 1px;
+        accent-color: #0284c7;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .general-scope .general-item-card.is-collapsed .general-card-content {
+        display: none;
+      }
+
+      .general-scope .general-item-card.is-collapsed .collapse-arrow {
+        transform: rotate(-90deg);
+      }
+
+      .complete-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #047857;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 9px;
+        border-radius: 20px;
+      }
+
+      .btn-toggle-complete {
+        font-size: 0.74rem;
+        padding: 4px 9px;
+        min-height: 28px;
+        border-radius: 6px;
+      }
+
+      .btn-toggle-complete.done {
+        background: #ecfdf5;
+        color: #059669;
+        border-color: #a7f3d0;
+      }
+
+      .log-recorder-panel {
+        margin-top: 16px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .log-textarea {
+        width: 100%;
+        height: 56px;
+        padding: 8px 10px;
+        font-size: 0.84rem;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        outline: none;
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      .next-prep-input {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+        border-radius: 6px;
+        border: 1px solid #fde68a;
+        background: #fffbeb;
+        color: #92400e;
+        outline: none;
+      }
+
+      /* 弹窗核心规范 */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-box {
+        background: #ffffff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: min(94vw, 620px);
+        padding: clamp(18px, 3.5vw, 28px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        max-height: 90dvh;
+        overflow-y: auto;
+      }
+
+      .modal-box h3 {
+        font-size: 1.2rem;
+        color: var(--text-title);
+      }
+
+      .form-section-title {
+        font-size: 0.82rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #0284c7;
+        margin: 14px 0 8px 0;
+        padding-bottom: 4px;
+        border-bottom: 1px dashed #cbd5e1;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .form-section-title:first-of-type {
+        margin-top: 4px;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        margin-bottom: 3px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.88rem;
+        outline: none;
+      }
+
+      /* =================== 🌟 只读卡片视图专属高级样式 =================== */
+      .read-view-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 12px 14px;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 12px;
+      }
+
+      .read-view-item {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .read-label {
+        font-size: 0.74rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .read-value {
+        font-size: 0.92rem;
+        color: var(--text-heading);
+        font-weight: 700;
+      }
+
+      .read-card-block {
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 10px;
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
+      .read-card-block.model {
+        background: #fffaf5;
+        border-left: 3.5px solid #ea580c;
+        color: #7c2d12;
+      }
+
+      .read-card-block.habit {
+        background: #f0f9ff;
+        border-left: 3.5px solid #0284c7;
+        color: #075985;
+      }
+
+      .read-card-block.notes {
+        background: #f8fafc;
+        border-left: 3.5px solid #94a3b8;
+        color: #334155;
+      }
+
+      .read-card-title {
+        font-size: 0.76rem;
+        font-weight: 800;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .read-tuition-bar {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.2fr;
+        gap: 10px;
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+      }
+
+      .radio-card-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .radio-label-card {
+        border: 1.5px solid #cbd5e1;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .radio-label-card input {
+        margin-right: 4px;
+      }
+
+      .radio-label-card.selected {
+        border-color: #0284c7;
+        background: #f0f9ff;
+      }
+
+      .mobile-menu-btn {
+        display: none;
+        background: transparent;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-title);
+        padding: 4px;
+      }
+
+      @media (max-width: 768px) {
+        .mobile-menu-btn {
+          display: inline-flex;
+        }
+
+        .app-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .students-sidebar {
+          position: fixed;
+          left: -100%;
+          top: 0;
+          bottom: 0;
+          width: 80vw;
+          max-width: 320px;
+          height: 100dvh;
+          box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+          transition: left 0.25s ease;
+          z-index: 1000;
+        }
+
+        .students-sidebar.open {
+          left: 0;
+        }
+
+        .sidebar-backdrop {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.5);
+          z-index: 999;
+        }
+
+        .sidebar-backdrop.active {
+          display: block;
+        }
+
+        .main-viewport {
+          padding: 12px 10px 80px;
+        }
+
+        .read-view-grid,
+        .read-tuition-bar {
+          grid-template-columns: 1fr !important;
+        }
+
+        .private-scope .card-content-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        .private-scope .card-content-grid>.col-left::after {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="canvas-bg">
+
+    <!-- 登录锁 -->
+    <div class="login-overlay" id="loginOverlay">
+      <div class="login-box">
+        <div class="login-brand"><span>⛩️</span> Syllabus Studio</div>
+        <div class="login-sub">绳缚研修与学员教务系统 · 管理人登录</div>
+
+        <div class="form-group">
+          <label>管理人账号</label>
+          <input type="text" class="form-control" id="loginUsername" placeholder="请输入账号名 (默认: admin)" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label>登录密码</label>
+          <input type="password" class="form-control" id="loginPassword" placeholder="请输入密码 (初始: 123456)" autocomplete="current-password">
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <label style="font-size: 0.8rem; color: #64748b; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="checkbox" id="rememberMe" checked> 保持登录状态
+          </label>
+          <span style="font-size: 0.78rem; color: #0284c7; cursor: pointer;" onclick="alert('初始账号: admin\n初始密码: 123456')">忘记密码？</span>
+        </div>
+
+        <button class="btn btn-primary" id="btnLoginSubmit" style="width: 100%; padding: 10px;" onclick="doAdminLogin()">验证并登入工作台</button>
+        <div id="loginErrorMsg" style="color: #dc2626; font-size: 0.8rem; margin-top: 10px; display: none;"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
+    <header class="app-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="mobile-menu-btn" onclick="toggleSidebar(true)">☰</button>
+        <div class="brand-title"><span>⛩️</span> Syllabus Studio</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openImportModal()">📂 导入课表</button>
+        <button class="btn" onclick="exportStudentCardNative()" title="导出微信长图">📸 导出长图</button>
+        <button class="btn btn-danger" onclick="doLogout()" title="安全退出">🔒 退出</button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <!-- 学员列表 -->
+      <aside class="students-sidebar" id="studentsSidebar">
+        <div class="sidebar-header">
+          <span style="font-weight: 700; font-size: 0.95rem;">👥 学员列表</span>
+          <button class="btn btn-accent" style="padding: 3px 8px; min-height: 30px;" onclick="openNewStudentModal()">+ 新建</button>
+        </div>
+        <div class="student-search-box">
+          <input type="text" class="search-input" id="searchStudentInput" placeholder="搜索学员姓名..." oninput="filterStudents()">
+        </div>
+        <div class="student-list" id="studentListContainer"></div>
+      </aside>
+
+      <!-- 右侧主看板 -->
+      <main class="main-viewport">
+        <div class="content-container" id="printableArea">
+
+          <!-- 下次备课贴士雷达 -->
+          <div class="radar-alert-card" id="prepRadarCard" style="display: none;">
+            <div class="radar-icon">💡</div>
+            <div class="radar-body">
+              <h4>上次授课遗留 · 下次备课准备贴士</h4>
+              <p id="prepRadarText">暂无特别备忘</p>
+            </div>
+          </div>
+
+          <!-- 纯净大纲头部条 -->
+          <div class="syllabus-header-strip">
+            <div class="header-title-group">
+              <h1 id="currentCourseTitle">请选择左侧学员</h1>
+              <span class="course-type-pill" id="currentCourseTypeLabel">未加载</span>
+            </div>
+
+            <div class="student-trigger-bar">
+              <div class="student-badge-btn" onclick="openStudentModal()" title="点击查看学员档案">
+                <span>学员：<strong id="currentStudentName">未选择</strong></span>
+                <span class="edit-hint">👤 查阅档案</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 课程流容器 -->
+          <div id="courseScopeContainer">
+            <div style="text-align: center; padding: 60px 20px; color: #94a3b8;">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">📝</div>
+              <div style="font-weight: 600;">请在左侧选择学员，或点击顶部“导入课表”</div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- 🌟 核心弹窗：学员详细档案管理 (双模切换：默认只读卡片 ↔ 编辑表单) -->
+    <div class="modal-overlay" id="studentModal">
+      <div class="modal-box">
+
+        <!-- ================= 模式 1: 默认精美只读查阅态 ================= -->
+        <div id="studentReadView">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <h3 id="viewStdName">学员档案</h3>
+              <span class="capsule-badge" id="viewStdStageBadge">基础阶段</span>
+            </div>
+            <button class="btn btn-accent" style="min-height:30px; padding:4px 12px; font-size:0.78rem;" onclick="switchModalToEdit()">✏️ 编辑档案</button>
+          </div>
+
+          <!-- 基础信息四宫格 -->
+          <div class="read-view-grid">
+            <div class="read-view-item">
+              <span class="read-label">📞 联系方式</span>
+              <span class="read-value" id="viewStdContact">未登记</span>
+            </div>
+            <div class="read-view-item">
+              <span class="read-label">📚 报读课程</span>
+              <span class="read-value" id="viewStdCourse">定制私课</span>
+            </div>
+            <div class="read-view-item" style="grid-column: 1 / -1;">
+              <span class="read-label">🎯 掌握程度 / 阶段评估</span>
+              <span class="read-value" id="viewStdLevel" style="font-size:0.88rem; font-weight:600;">日常练习中</span>
+            </div>
+          </div>
+
+          <!-- 模特与习惯 -->
+          <div class="read-card-block model">
+            <div class="read-card-title">👤 常用模特信息档案</div>
+            <div id="viewStdModel">暂无模特备忘</div>
+          </div>
+
+          <div class="read-card-block habit">
+            <div class="read-card-title">✨ 学员习惯与身体伤病注意点</div>
+            <div id="viewStdHabits">暂无身体或特殊偏好记录</div>
+          </div>
+
+          <!-- 计费明细规则条 -->
+          <div class="read-tuition-bar">
+            <div>
+              <div class="read-label">标准原价</div>
+              <div style="font-weight:700; color:#334155; font-size:0.92rem;" id="viewStdTuitionOrig">未记录</div>
+            </div>
+            <div>
+              <div class="read-label">优惠折扣</div>
+              <div style="font-weight:700; color:#0284c7; font-size:0.92rem;" id="viewStdTuitionDisc">无折扣</div>
+            </div>
+            <div>
+              <div class="read-label">最终实收定价</div>
+              <div style="font-weight:800; color:#ea580c; font-size:1.05rem;" id="viewStdTuitionFinal">未核定</div>
+            </div>
+          </div>
+
+          <!-- 综合备注 -->
+          <div class="read-card-block notes">
+            <div class="read-card-title">📝 其他综合备注</div>
+            <div id="viewStdNotes" style="font-size:0.84rem;">暂无其他补充</div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-top:14px;">
+            <button class="btn" onclick="closeModal('studentModal')">关闭窗口</button>
+          </div>
+        </div>
+
+        <!-- ================= 模式 2: 编辑输入表单态 ================= -->
+        <div id="studentEditView" style="display: none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3>✏️ 编辑学员档案</h3>
+            <span class="capsule-badge" id="modalStudentStageBadge">基础阶段</span>
+          </div>
+
+          <div class="form-section-title">📌 基本信息与教学阶段</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label>学员姓名 / 昵称 *</label>
+              <input type="text" class="form-control" id="editStdName">
+            </div>
+            <div class="form-group">
+              <label>联系方式 (微信 / 电话)</label>
+              <input type="text" class="form-control" id="editStdContact" placeholder="微信/手机号">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label>报读课程名称</label>
+              <input type="text" class="form-control" id="editStdCourse" placeholder="如: 1对1高级定制私课 / 体系大课">
+            </div>
+            <div class="form-group">
+              <label>当前所处阶段</label>
+              <select class="form-control" id="editStdStage">
+                <option value="foundation">基础阶段</option>
+                <option value="advanced">提高阶段</option>
+                <option value="mastery">熟练阶段</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>目前学员掌握程度 / 阶段评估</label>
+            <input type="text" class="form-control" id="editStdLevel" placeholder="如: 2TK基本成型、下肢关节柔韧度良好、张力感知尚可">
+          </div>
+
+          <div class="form-section-title">🎎 教学辅助档案</div>
+          <div class="form-group">
+            <label>常用模特信息 (由您记录，如身形特征、耐受度等)</label>
+            <input type="text" class="form-control" id="editStdModel" placeholder="如: 模特小A，身形偏瘦，右肩耐受一般，自带模特">
+          </div>
+
+          <div class="form-group">
+            <label>学员独特习惯 / 风格偏好 / 身体伤病注意点</label>
+            <textarea class="form-control" id="editStdHabits" placeholder="如: 喜欢日式传统手法，左侧手腕有旧伤，动作节奏习惯偏慢等..." style="height: 52px;"></textarea>
+          </div>
+
+          <div class="form-section-title">💰 费用与计费规则明确记录</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label>标准原价 / 初始报价</label>
+              <input type="text" class="form-control" id="editStdTuitionOriginal" placeholder="如: 9600">
+            </div>
+            <div class="form-group">
+              <label>优惠折扣说明</label>
+              <input type="text" class="form-control" id="editStdTuitionDiscount" placeholder="如: 75折抹零">
+            </div>
+            <div class="form-group">
+              <label>最终定价 / 结算金额 *</label>
+              <input type="text" class="form-control" id="editStdTuitionFinal" placeholder="如: 7000" style="font-weight:700; color:#ea580c;">
+            </div>
+          </div>
+
+          <div class="form-section-title">📝 其他综合备注</div>
+          <div class="form-group">
+            <textarea class="form-control" id="editStdGeneralNotes" placeholder="记录其他任意补充备忘，如：朋友推荐介绍、课时消耗约定、特殊上课时间约定等..." style="height: 54px;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 10px; border-top: 1px solid #f1f5f9;">
+            <button class="btn btn-danger" onclick="deleteCurrentStudent()">🗑️ 删除学员</button>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn" onclick="switchModalToRead()">取消返回</button>
+              <button class="btn btn-accent" onclick="saveEditedStudent()">💾 保存档案</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 弹窗 2：新建学员 -->
+    <div class="modal-overlay" id="newStudentModal">
+      <div class="modal-box">
+        <h3>👥 新建学员档案</h3>
+        <div class="form-group">
+          <label>学员姓名 / 昵称 *</label>
+          <input type="text" class="form-control" id="newStdName" placeholder="如: 影">
+        </div>
+        <div class="form-group">
+          <label>联系方式 (微信 / 手机)</label>
+          <input type="text" class="form-control" id="newStdContact" placeholder="微信/电话">
+        </div>
+        <div class="form-group">
+          <label>报读课程名称</label>
+          <input type="text" class="form-control" id="newStdCourse" placeholder="如: 定制私教课">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" onclick="closeModal('newStudentModal')">取消</button>
+          <button class="btn btn-accent" onclick="saveNewStudent()">保存档案</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 弹窗 3：导入 Markdown -->
+    <div class="modal-overlay" id="importModal">
+      <div class="modal-box">
+        <h3>📂 导入 Markdown 教学大纲</h3>
+        <div class="form-group">
+          <label>1. 选择教学模式</label>
+          <div class="radio-card-group">
+            <label class="radio-label-card selected" id="optPrivateLabel">
+              <input type="radio" name="courseMode" value="private" checked onchange="updateModeSelection()">
+              <span style="font-weight: 700; font-size: 0.86rem;">【定制私课模式】</span>
+              <span style="font-size: 0.74rem; color: #64748b;">## 为单次课，### 为课内模块</span>
+            </label>
+            <label class="radio-label-card" id="optGeneralLabel">
+              <input type="radio" name="courseMode" value="general" onchange="updateModeSelection()">
+              <span style="font-weight: 700; font-size: 0.86rem;">【通用大课体系】</span>
+              <span style="font-size: 0.74rem; color: #64748b;">### 为独立单课，列表为考核项</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>2. 关联学员姓名</label>
+          <input type="text" class="form-control" id="importStudentName" placeholder="输入学员姓名 (如: 影)，若已有则自动关联">
+        </div>
+
+        <div class="form-group">
+          <label>3. 选择或粘贴 Markdown 文件</label>
+          <input type="file" id="mdFileInput" accept=".md,.markdown,.txt" class="form-control" onchange="handleFileLoad(event)" style="margin-bottom: 8px;">
+          <textarea id="importMdText" class="form-control" style="height: 120px; font-family: var(--font-mono); font-size: 0.8rem;" placeholder="粘贴 Markdown 大纲代码..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" onclick="closeModal('importModal')">取消</button>
+          <button class="btn btn-accent" id="btnDoImport" onclick="processAndSaveImport()">分析并同步至 Supabase</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const DEFAULT_SUPABASE_URL = "https://cxzteidagtuvqaqdllig.supabase.co";
+      const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_DVPmndYiAXJw5nnNtJ_7fQ_el_KwDlM";
+
+      let sbClient = null;
+      let students = [];
+      let currentStudent = null;
+      let currentCourse = null;
+      let currentSections = [];
+      let currentLessonLogs = {};
+      let collapsedCardMap = {};
+
+      window.addEventListener('DOMContentLoaded', () => {
+        sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+        checkAutoLogin();
+      });
+
+      async function checkAutoLogin() {
+        const savedUser = localStorage.getItem('ss_logged_user');
+        if (savedUser && sbClient) {
+          document.getElementById('loginOverlay').style.display = 'none';
+          loadStudents();
+        } else {
+          document.getElementById('loginOverlay').style.display = 'flex';
+        }
+      }
+
+      async function doAdminLogin() {
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+        const errBox = document.getElementById('loginErrorMsg');
+        const btn = document.getElementById('btnLoginSubmit');
+
+        if (!u || !p) {
+          errBox.innerText = '请输入管理人账号与密码！';
+          errBox.style.display = 'block';
+          return;
+        }
+
+        btn.innerText = '正在验证...';
+        btn.disabled = true;
+
+        try {
+          const { data, error } = await sbClient
+            .from('ss_admins')
+            .select('*')
+            .eq('username', u)
+            .eq('password_hash', p)
+            .single();
+
+          if (error || !data) {
+            errBox.innerText = '账号名或密码错误！';
+            errBox.style.display = 'block';
+          } else {
+            errBox.style.display = 'none';
+            if (document.getElementById('rememberMe').checked) {
+              localStorage.setItem('ss_logged_user', u);
+            }
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadStudents();
+          }
+        } catch (err) {
+          errBox.innerText = '登录失败: ' + err.message;
+          errBox.style.display = 'block';
+        } finally {
+          btn.innerText = '验证并登入工作台';
+          btn.disabled = false;
+        }
+      }
+
+      function doLogout() {
+        if (confirm('确定要退出当前管理账号吗？')) {
+          localStorage.removeItem('ss_logged_user');
+          document.getElementById('loginOverlay').style.display = 'flex';
+          document.getElementById('loginPassword').value = '';
+        }
+      }
+
+      function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+      function toggleSidebar(open) {
+        document.getElementById('studentsSidebar').classList.toggle('open', open);
+        document.getElementById('sidebarBackdrop').classList.toggle('active', open);
+      }
+
+      /* 学员列表读取 */
+      async function loadStudents() {
+        if (!sbClient) return;
+        const { data, error } = await sbClient.from('ss_students').select('*').order('created_at', { ascending: false });
+        if (error) return console.error(error);
+        students = data || [];
+        renderStudentList();
+        if (students.length > 0 && !currentStudent) selectStudent(students[0].id);
+      }
+
+      function renderStudentList() {
+        const container = document.getElementById('studentListContainer');
+        const q = document.getElementById('searchStudentInput').value.toLowerCase().trim();
+        container.innerHTML = '';
+        students.filter(s => s.name.toLowerCase().includes(q)).forEach(s => {
+          const div = document.createElement('div');
+          div.className = `student-card ${currentStudent && currentStudent.id === s.id ? 'active' : ''}`;
+          div.onclick = () => { selectStudent(s.id); toggleSidebar(false); };
+          div.innerHTML = `
+          <div>
+            <div class="s-name">${escapeHtml(s.name)}</div>
+            <div style="font-size: 0.74rem; color: #64748b; margin-top:2px;">${s.contact ? escapeHtml(s.contact) : '暂无联系方式'}</div>
+          </div>
+          <span class="s-tag">${s.stage === 'foundation' ? '基础' : (s.stage === 'advanced' ? '提高' : '熟练')}</span>
+        `;
+          container.appendChild(div);
+        });
+      }
+
+      function filterStudents() { renderStudentList(); }
+
+      function openNewStudentModal() {
+        document.getElementById('newStdName').value = '';
+        document.getElementById('newStdContact').value = '';
+        document.getElementById('newStdCourse').value = '';
+        document.getElementById('newStudentModal').classList.add('active');
+      }
+
+      async function saveNewStudent() {
+        const name = document.getElementById('newStdName').value.trim();
+        if (!name) return alert('学员姓名不能为空！');
+        const contact = document.getElementById('newStdContact').value.trim();
+        const course = document.getElementById('newStdCourse').value.trim();
+
+        const { data, error } = await sbClient.from('ss_students').insert([{
+          name, contact, course_enrolled: course
+        }]).select();
+
+        if (error) return alert('创建失败: ' + error.message);
+        closeModal('newStudentModal');
+        await loadStudents();
+        if (data && data[0]) selectStudent(data[0].id);
+      }
+
+      /* ================= 🌟 双模弹窗切换：查看态 vs 编辑态 ================= */
+      function openStudentModal() {
+        if (!currentStudent) return alert('请先选择学员！');
+        populateStudentReadView();
+        switchModalToRead();
+        document.getElementById('studentModal').classList.add('active');
+      }
+
+      function populateStudentReadView() {
+        document.getElementById('viewStdName').innerText = currentStudent.name;
+        document.getElementById('viewStdStageBadge').innerText =
+          currentStudent.stage === 'foundation' ? '基础阶段' : (currentStudent.stage === 'advanced' ? '提高阶段' : '熟练阶段');
+        document.getElementById('viewStdContact').innerText = currentStudent.contact || '未登记联系方式';
+        document.getElementById('viewStdCourse').innerText = currentStudent.course_enrolled || '定制私教课程';
+        document.getElementById('viewStdLevel').innerText = currentStudent.learning_level || '日常稳步练习中';
+        document.getElementById('viewStdModel').innerText = currentStudent.model_info || '暂无常用模特信息记录';
+        document.getElementById('viewStdHabits').innerText = currentStudent.unique_habits || currentStudent.physical_notes || '暂无特殊伤病或身体偏好记录';
+
+        document.getElementById('viewStdTuitionOrig').innerText = currentStudent.tuition_original || '未记录';
+        document.getElementById('viewStdTuitionDisc').innerText = currentStudent.tuition_discount || '无折扣';
+        document.getElementById('viewStdTuitionFinal').innerText = currentStudent.tuition_final || currentStudent.tuition_quote || '未核定';
+
+        document.getElementById('viewStdNotes').innerText = currentStudent.general_notes || '暂无其他补充记录';
+      }
+
+      function switchModalToEdit() {
+        document.getElementById('studentReadView').style.display = 'none';
+        document.getElementById('studentEditView').style.display = 'block';
+
+        // 回填编辑表单
+        document.getElementById('editStdName').value = currentStudent.name || '';
+        document.getElementById('editStdContact').value = currentStudent.contact || '';
+        document.getElementById('editStdCourse').value = currentStudent.course_enrolled || '';
+        document.getElementById('editStdStage').value = currentStudent.stage || 'foundation';
+        document.getElementById('editStdLevel').value = currentStudent.learning_level || '';
+        document.getElementById('editStdModel').value = currentStudent.model_info || '';
+        document.getElementById('editStdHabits').value = currentStudent.unique_habits || currentStudent.physical_notes || '';
+
+        document.getElementById('editStdTuitionOriginal').value = currentStudent.tuition_original || '';
+        document.getElementById('editStdTuitionDiscount').value = currentStudent.tuition_discount || '';
+        document.getElementById('editStdTuitionFinal').value = currentStudent.tuition_final || currentStudent.tuition_quote || '';
+
+        document.getElementById('editStdGeneralNotes').value = currentStudent.general_notes || '';
+        document.getElementById('modalStudentStageBadge').innerText =
+          currentStudent.stage === 'foundation' ? '基础阶段' : (currentStudent.stage === 'advanced' ? '提高阶段' : '熟练阶段');
+      }
+
+      function switchModalToRead() {
+        document.getElementById('studentEditView').style.display = 'none';
+        document.getElementById('studentReadView').style.display = 'block';
+      }
+
+      /* 保存修改学员档案 */
+      async function saveEditedStudent() {
+        if (!currentStudent) return;
+        const name = document.getElementById('editStdName').value.trim();
+        if (!name) return alert('学员姓名不能为空！');
+
+        const tuitionFinal = document.getElementById('editStdTuitionFinal').value.trim();
+
+        const updatePayload = {
+          name,
+          contact: document.getElementById('editStdContact').value.trim(),
+          course_enrolled: document.getElementById('editStdCourse').value.trim(),
+          stage: document.getElementById('editStdStage').value,
+          learning_level: document.getElementById('editStdLevel').value.trim(),
+          model_info: document.getElementById('editStdModel').value.trim(),
+          unique_habits: document.getElementById('editStdHabits').value.trim(),
+          physical_notes: document.getElementById('editStdHabits').value.trim(),
+          tuition_original: document.getElementById('editStdTuitionOriginal').value.trim(),
+          tuition_discount: document.getElementById('editStdTuitionDiscount').value.trim(),
+          tuition_final: tuitionFinal,
+          tuition_quote: tuitionFinal,
+          general_notes: document.getElementById('editStdGeneralNotes').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        const { error } = await sbClient.from('ss_students').update(updatePayload).eq('id', currentStudent.id);
+
+        if (error) return alert('保存修改失败: ' + error.message);
+        await loadStudents();
+        selectStudent(currentStudent.id);
+
+        // 更新并平滑切回查阅态
+        populateStudentReadView();
+        switchModalToRead();
+      }
+
+      async function deleteCurrentStudent() {
+        if (!currentStudent) return;
+        if (!confirm(`⚠️ 确定要彻底删除学员【${currentStudent.name}】及其所有学习档案吗？此操作不可逆！`)) return;
+        const { error } = await sbClient.from('ss_students').delete().eq('id', currentStudent.id);
+        if (error) return alert('删除失败: ' + error.message);
+        closeModal('studentModal');
+        currentStudent = null;
+        await loadStudents();
+      }
+
+      /* 选中某个学员 */
+      async function selectStudent(studentId) {
+        currentStudent = students.find(s => s.id === studentId);
+        renderStudentList();
+        document.getElementById('currentStudentName').innerText = currentStudent.name;
+
+        let { data: courses } = await sbClient.from('ss_courses').select('*').eq('student_id', studentId).order('created_at', { ascending: false });
+        if (!courses || courses.length === 0) {
+          let { data: genCourses } = await sbClient.from('ss_courses').select('*').eq('type', 'general').order('created_at', { ascending: false }).limit(1);
+          courses = genCourses;
+        }
+
+        if (!courses || courses.length === 0) {
+          document.getElementById('currentCourseTitle').innerText = '暂无课程大纲';
+          document.getElementById('currentCourseTypeLabel').innerText = '未关联';
+          document.getElementById('prepRadarCard').style.display = 'none';
+          document.getElementById('courseScopeContainer').innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #64748b;">
+            该学员尚未关联课程大纲。请点击顶部 <strong>“📂 导入课表”</strong> 导入 Markdown 文件。
+          </div>`;
+          return;
+        }
+
+        currentCourse = courses[0];
+        document.getElementById('currentCourseTitle').innerText = currentCourse.title;
+        document.getElementById('currentCourseTypeLabel').innerText = currentCourse.type === 'private' ? '一对一定制私课' : '通用体系研修大课';
+
+        const { data: sections } = await sbClient.from('ss_course_sections')
+          .select('*, ss_course_items(*)')
+          .eq('course_id', currentCourse.id)
+          .order('sort_order', { ascending: true });
+
+        sections.forEach(sec => sec.ss_course_items.sort((a, b) => a.sort_order - b.sort_order));
+        currentSections = sections || [];
+
+        const { data: logs } = await sbClient.from('ss_lesson_logs').select('*').eq('student_id', currentStudent.id);
+        currentLessonLogs = {};
+        let latestPrepTip = '';
+
+        if (logs) {
+          logs.forEach(l => {
+            const key = l.item_id ? `item_${l.item_id}` : `sec_${l.section_id}`;
+            currentLessonLogs[key] = l;
+            if (l.next_prep_tips && l.next_prep_tips.trim()) latestPrepTip = l.next_prep_tips.trim();
+          });
+        }
+
+        const radar = document.getElementById('prepRadarCard');
+        if (latestPrepTip) {
+          document.getElementById('prepRadarText').innerText = latestPrepTip;
+          radar.style.display = 'flex';
+        } else {
+          radar.style.display = 'none';
+        }
+
+        renderScopedCourseStream();
+      }
+
+      function renderScopedCourseStream() {
+        const container = document.getElementById('courseScopeContainer');
+        container.innerHTML = '';
+        const isPrivate = currentCourse.type === 'private';
+
+        if (isPrivate) {
+          container.className = 'private-scope';
+          renderPrivateStream(container);
+        } else {
+          container.className = 'general-scope';
+          renderGeneralStream(container);
+        }
+      }
+
+      /* 私课渲染 */
+      function renderPrivateStream(container) {
+        currentSections.forEach(sec => {
+          const cardId = `sec_card_${sec.id}`;
+          const logKey = `sec_${sec.id}`;
+          const log = currentLessonLogs[logKey] || null;
+          const isCompleted = log && log.status === 'completed';
+
+          if (collapsedCardMap[cardId] === undefined) {
+            collapsedCardMap[cardId] = isCompleted;
+          }
+          const isCollapsed = collapsedCardMap[cardId];
+
+          const card = document.createElement('article');
+          card.className = `private-stage-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
+          card.id = cardId;
+
+          let gridHtml = '<div class="card-content-grid">';
+          let colIndex = 0;
+
+          sec.ss_course_items.forEach(item => {
+            const subLogKey = `item_${item.id}`;
+            const subLog = currentLessonLogs[subLogKey] || null;
+            const isItemDone = subLog && subLog.status === 'completed';
+
+            const rawContent = item.content_markdown || '';
+            const isLong = item.title.length > 28 || rawContent.length > 180;
+
+            let layoutClass = '';
+            if (isLong) {
+              layoutClass = 'span-full';
+              colIndex = 0;
+            } else {
+              if (colIndex === 0) {
+                layoutClass = 'col-left';
+                colIndex = 1;
+              } else {
+                layoutClass = 'col-right';
+                colIndex = 0;
+              }
+            }
+
+            gridHtml += `
+            <div class="content-block ${layoutClass}">
+              <div class="section-title-row" onclick="toggleSubItemCheck('${item.id}', '${sec.id}')">
+                <input type="checkbox" ${isItemDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleSubItemCheck('${item.id}', '${sec.id}')">
+                <h3>${parseInline(item.title)}</h3>
+              </div>
+              ${renderPrivateMultiLevelList(rawContent)}
+            </div>
+          `;
+          });
+          gridHtml += '</div>';
+
+          card.innerHTML = `
+          <div class="card-header-bar" onclick="toggleCardCollapse('${cardId}')">
+            <div class="header-title-inline">
+              <span class="collapse-arrow">▼</span>
+              <div class="capsule-badge">
+                <span>${escapeHtml(sec.stage_badge)}</span>
+                <span class="sep">/</span>
+                <span>PART ${escapeHtml(sec.part_num)}</span>
+              </div>
+              <h2 class="stage-title">${escapeHtml(sec.title)}</h2>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;" onclick="event.stopPropagation()">
+              ${isCompleted ? '<span class="complete-badge">✅ 已结课</span>' : ''}
+              <button class="btn btn-toggle-complete ${isCompleted ? 'done' : ''}" onclick="toggleCompleteStatus(null, '${sec.id}', 'sec')">
+                ${isCompleted ? '标记为未上' : '标记已上完'}
+              </button>
+              <span class="card-watermark">${escapeHtml(sec.part_num)}</span>
+            </div>
+          </div>
+
+          <div class="card-expandable-content">
+            ${gridHtml}
+
+            <div class="log-recorder-panel">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                <span style="font-size:0.8rem; font-weight:700; color:#475569;">📝 本次课授课观察与下次备课备忘</span>
+                <button class="btn btn-primary" style="min-height:28px; padding:3px 10px; font-size:0.75rem;" onclick="saveLessonFeedback(null, '${sec.id}', 'sec')">💾 保存备忘</button>
+              </div>
+              <textarea class="log-textarea" id="note_sec_${sec.id}" placeholder="记录本次学员手感、身体受压反应或手法盲区...">${log ? escapeHtml(log.teacher_notes || '') : ''}</textarea>
+              <input type="text" class="next-prep-input" id="prep_sec_${sec.id}" placeholder="⭐ 下次备课准备提醒 (如: 提前备好竹竿、开场复查单柱缚...)" value="${log ? escapeHtml(log.next_prep_tips || '') : ''}">
+            </div>
+          </div>
+        `;
+          container.appendChild(card);
+        });
+      }
+
+      function renderPrivateMultiLevelList(text) {
+        if (!text) return '';
+        const lines = text.split('\n');
+        let res = '';
+        let listLevel = 0;
+
+        function closeLists() {
+          while (listLevel > 0) {
+            res += '</li></ul>';
+            listLevel--;
+          }
+        }
+
+        for (let raw of lines) {
+          let trimmed = raw.trim();
+          if (!trimmed) continue;
+
+          if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
+            closeLists();
+            res += `<div class="note-callout">${parseInline(trimmed.replace(/^(>|&gt;)\s?/, ''))}</div>`;
+            continue;
+          }
+
+          if (/^[-*+]\s+/.test(trimmed)) {
+            const indent = raw.search(/\S|$/);
+            const content = trimmed.replace(/^[-*+]\s+/, '');
+
+            let targetLevel = 1;
+            if (indent >= 6) targetLevel = 3;
+            else if (indent >= 2) targetLevel = 2;
+
+            if (listLevel === 0) {
+              res += '<ul>';
+              listLevel = 1;
+            }
+
+            while (listLevel < targetLevel) {
+              res += '<ul>';
+              listLevel++;
+            }
+            while (listLevel > targetLevel) {
+              res += '</li></ul>';
+              listLevel--;
+            }
+
+            res += '<li>' + parseInline(content);
+          } else {
+            closeLists();
+            res += `<p style="margin: 4px 0 6px 26px; font-size: 0.86rem; color: var(--text-body);">${parseInline(trimmed)}</p>`;
+          }
+        }
+        closeLists();
+        return res;
+      }
+
+      /* 大课渲染 */
+      function renderGeneralStream(container) {
+        currentSections.forEach(sec => {
+          const divider = document.createElement('div');
+          divider.className = `general-stage-divider stage-${sec.stage_type || 'foundation'}`;
+          divider.innerHTML = `
+          <div class="general-divider-title">
+            <span>${sec.stage_type === 'foundation' ? '🟢' : (sec.stage_type === 'advanced' ? '🟡' : '🔴')}</span>
+            <span>${escapeHtml(sec.title)}</span>
+          </div>
+          <span class="capsule-badge" style="font-size:0.75rem;">${escapeHtml(sec.stage_badge)} / PART ${escapeHtml(sec.part_num)}</span>
+        `;
+          container.appendChild(divider);
+
+          sec.ss_course_items.forEach(item => {
+            const cardId = `item_card_${item.id}`;
+            const logKey = `item_${item.id}`;
+            const log = currentLessonLogs[logKey] || null;
+            const isCompleted = log && log.status === 'completed';
+
+            if (collapsedCardMap[cardId] === undefined) {
+              collapsedCardMap[cardId] = isCompleted;
+            }
+            const isCollapsed = collapsedCardMap[cardId];
+
+            const card = document.createElement('article');
+            card.className = `general-item-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
+            card.id = cardId;
+
+            card.innerHTML = `
+            <div class="general-card-header" onclick="toggleCardCollapse('${cardId}')">
+              <div class="general-title-inline">
+                <span class="collapse-arrow">▼</span>
+                ${item.item_code ? `<span class="general-code-tag">${escapeHtml(item.item_code)}</span>` : ''}
+                <span class="general-item-title">${escapeHtml(item.title)}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;" onclick="event.stopPropagation()">
+                ${isCompleted ? '<span class="complete-badge">✅ 已结课</span>' : ''}
+                <button class="btn btn-toggle-complete ${isCompleted ? 'done' : ''}" onclick="toggleCompleteStatus('${item.id}', '${sec.id}', 'item')">
+                  ${isCompleted ? '标记为未上' : '标记已上完'}
+                </button>
+              </div>
+            </div>
+
+            <div class="general-card-content">
+              <div class="general-checklist">
+                ${renderGeneralCheckList(item.content_markdown || '', item.id)}
+              </div>
+
+              <div class="log-recorder-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                  <span style="font-size:0.8rem; font-weight:700; color:#475569;">📝 本节教学手记与备课提醒</span>
+                  <button class="btn btn-primary" style="min-height:28px; padding:3px 10px; font-size:0.75rem;" onclick="saveLessonFeedback('${item.id}', '${sec.id}', 'item')">💾 保存记录</button>
+                </div>
+                <textarea class="log-textarea" id="note_item_${item.id}" placeholder="记录本课学员手法、耐受度或表现...">${log ? escapeHtml(log.teacher_notes || '') : ''}</textarea>
+                <input type="text" class="next-prep-input" id="prep_item_${item.id}" placeholder="⭐ 下次备课准备提醒 (如: 提前备好竹竿、复查单柱缚...)" value="${log ? escapeHtml(log.next_prep_tips || '') : ''}">
+              </div>
+            </div>
+          `;
+            container.appendChild(card);
+          });
+        });
+      }
+
+      function renderGeneralCheckList(contentMd, parentItemId) {
+        if (!contentMd) return '';
+        const lines = contentMd.split('\n');
+        let html = '';
+
+        lines.forEach((line, idx) => {
+          let t = line.trim();
+          if (!t) return;
+          if (t.startsWith('>') || t.startsWith('&gt;')) t = t.replace(/^(>|&gt;)\s?/, '').trim();
+
+          if (/^[-*+]\s+/.test(t)) {
+            const cleanText = t.replace(/^[-*+]\s+/, '');
+            const checkKey = `subchk_${parentItemId}_${idx}`;
+            const isChecked = localStorage.getItem(checkKey) === 'true';
+
+            html += `
+            <label class="general-check-row">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="localStorage.setItem('${checkKey}', this.checked)">
+              <span>${parseInline(cleanText)}</span>
+            </label>
+          `;
+          } else {
+            html += `<div style="background:#f8fafc; border-left:3px solid #0284c7; padding:6px 10px; border-radius:0 6px 6px 0; font-size:0.82rem; color:#475569; margin:4px 0;">${parseInline(t)}</div>`;
+          }
+        });
+
+        return html;
+      }
+
+      /* 折叠交互 */
+      function toggleCardCollapse(cardId) {
+        collapsedCardMap[cardId] = !collapsedCardMap[cardId];
+        const card = document.getElementById(cardId);
+        if (card) card.classList.toggle('is-collapsed', collapsedCardMap[cardId]);
+      }
+
+      /* 结课打标 */
+      async function toggleCompleteStatus(itemId, secId, targetType) {
+        if (!currentStudent || !currentCourse) return;
+        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const existing = currentLessonLogs[logKey];
+        const newStatus = (existing && existing.status === 'completed') ? 'in_progress' : 'completed';
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({
+            status: newStatus, taught_at: new Date().toISOString().slice(0, 10)
+          }).eq('id', existing.id);
+          existing.status = newStatus;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([{
+            student_id: currentStudent.id,
+            course_id: currentCourse.id,
+            section_id: secId,
+            item_id: itemId || null,
+            status: newStatus,
+            taught_at: new Date().toISOString().slice(0, 10)
+          }]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+
+        const cardId = targetType === 'item' ? `item_card_${itemId}` : `sec_card_${secId}`;
+        if (newStatus === 'completed') collapsedCardMap[cardId] = true;
+        renderScopedCourseStream();
+      }
+
+      /* 私课子项打勾 */
+      async function toggleSubItemCheck(itemId, secId) {
+        if (!currentStudent || !currentCourse) return;
+        const logKey = `item_${itemId}`;
+        const existing = currentLessonLogs[logKey];
+        const newStatus = (existing && existing.status === 'completed') ? 'in_progress' : 'completed';
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({ status: newStatus }).eq('id', existing.id);
+          existing.status = newStatus;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([{
+            student_id: currentStudent.id,
+            course_id: currentCourse.id,
+            section_id: secId,
+            item_id: itemId,
+            status: newStatus,
+            taught_at: new Date().toISOString().slice(0, 10)
+          }]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+        renderScopedCourseStream();
+      }
+
+      /* 保存授课记录 */
+      async function saveLessonFeedback(itemId, secId, targetType) {
+        if (!currentStudent || !currentCourse) return;
+        const prefix = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const notes = document.getElementById(`note_${prefix}`).value.trim();
+        const prepTips = document.getElementById(`prep_${prefix}`).value.trim();
+        if (!notes && !prepTips) return alert('请输入观察手记或备课提醒！');
+
+        const logKey = prefix;
+        const existing = currentLessonLogs[logKey];
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({
+            teacher_notes: notes, next_prep_tips: prepTips
+          }).eq('id', existing.id);
+          existing.teacher_notes = notes;
+          existing.next_prep_tips = prepTips;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([{
+            student_id: currentStudent.id,
+            course_id: currentCourse.id,
+            section_id: secId,
+            item_id: itemId || null,
+            status: 'completed',
+            teacher_notes: notes,
+            next_prep_tips: prepTips,
+            taught_at: new Date().toISOString().slice(0, 10)
+          }]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+
+        alert('✅ 已保存教学手记与下次备课贴士！');
+        if (prepTips) {
+          document.getElementById('prepRadarText').innerText = prepTips;
+          document.getElementById('prepRadarCard').style.display = 'flex';
+        }
+      }
+
+      /* 导入 Markdown 逻辑 */
+      function openImportModal() {
+        if (currentStudent) document.getElementById('importStudentName').value = currentStudent.name;
+        document.getElementById('importModal').classList.add('active');
+      }
+      function updateModeSelection() {
+        const mode = document.querySelector('input[name="courseMode"]:checked').value;
+        document.getElementById('optPrivateLabel').classList.toggle('selected', mode === 'private');
+        document.getElementById('optGeneralLabel').classList.toggle('selected', mode === 'general');
+      }
+      function handleFileLoad(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => document.getElementById('importMdText').value = evt.target.result;
+        reader.readAsText(file);
+      }
+
+      async function processAndSaveImport() {
+        const md = document.getElementById('importMdText').value;
+        if (!md.trim()) return alert('Markdown 内容不能为空！');
+
+        const mode = document.querySelector('input[name="courseMode"]:checked').value;
+        const inputStdName = document.getElementById('importStudentName').value.trim();
+        const btn = document.getElementById('btnDoImport');
+        btn.innerText = '正在解析并同步入库...';
+        btn.disabled = true;
+
+        try {
+          let targetStudentId = null;
+          if (inputStdName) {
+            let s = students.find(item => item.name === inputStdName);
+            if (!s) {
+              const { data: newS } = await sbClient.from('ss_students').insert([{ name: inputStdName }]).select();
+              if (newS && newS[0]) s = newS[0];
+            }
+            if (s) targetStudentId = s.id;
+          }
+
+          const parsed = parseMarkdownDoc(md, mode);
+          const { data: cData, error: cErr } = await sbClient.from('ss_courses').insert([{
+            title: parsed.title,
+            type: mode,
+            student_id: targetStudentId,
+            raw_markdown: md
+          }]).select();
+
+          if (cErr) throw cErr;
+          const newCourse = cData[0];
+
+          for (let sIdx = 0; sIdx < parsed.sections.length; sIdx++) {
+            const sec = parsed.sections[sIdx];
+            const { data: sData, error: sErr } = await sbClient.from('ss_course_sections').insert([{
+              course_id: newCourse.id,
+              stage_type: sec.stageClass.replace('stage-', ''),
+              part_num: sec.partNum,
+              stage_badge: sec.stageBadge,
+              title: sec.title,
+              sort_order: sIdx
+            }]).select();
+
+            if (sErr) throw sErr;
+            const sectionId = sData[0].id;
+
+            const itemsToInsert = sec.items.map((it, iIdx) => ({
+              section_id: sectionId,
+              item_code: it.code || null,
+              title: it.title,
+              content_markdown: it.content,
+              sort_order: iIdx
+            }));
+
+            if (itemsToInsert.length > 0) {
+              const { error: iErr } = await sbClient.from('ss_course_items').insert(itemsToInsert);
+              if (iErr) throw iErr;
+            }
+          }
+
+          alert('✨ 课程大纲已成功同步写入 Supabase！');
+          closeModal('importModal');
+          await loadStudents();
+          if (targetStudentId) selectStudent(targetStudentId);
+        } catch (err) {
+          alert('导入失败: ' + err.message);
+        } finally {
+          btn.innerText = '分析并同步至 Supabase';
+          btn.disabled = false;
+        }
+      }
+
+      function parseMarkdownDoc(md, mode) {
+        const lines = md.split('\n');
+        let docTitle = '未命名课程计划';
+        let sections = [];
+        let currentSec = null;
+        let currentItem = null;
+
+        for (let rawLine of lines) {
+          let line = rawLine.trimEnd();
+          if (line.startsWith('# ') && !line.startsWith('## ')) {
+            docTitle = line.replace('# ', '').trim();
+            continue;
+          }
+          if (line.trim() === '---') continue;
+
+          if (line.startsWith('## ')) {
+            if (currentSec) sections.push(currentSec);
+            const rawSec = line.replace('## ', '').trim();
+            let stageClass = 'stage-foundation';
+            let stageBadge = '基础阶段';
+            if (rawSec.includes('提高') || rawSec.includes('进阶') || rawSec.includes('🟡')) {
+              stageClass = 'stage-advanced';
+              stageBadge = '提高阶段';
+            } else if (rawSec.includes('熟练') || rawSec.includes('高阶') || rawSec.includes('🔴')) {
+              stageClass = 'stage-mastery';
+              stageBadge = '熟练阶段';
+            }
+
+            const partNumMatch = rawSec.match(/Part\.?\s*(\d+)/i);
+            const partNum = partNumMatch ? (partNumMatch[1].padStart(2, '0')) : String(sections.length + 1).padStart(2, '0');
+            let cleanTitle = rawSec.replace(/[🟢🟡🔴]/g, '').trim();
+            if (cleanTitle.includes('-')) cleanTitle = cleanTitle.split('-')[1].trim();
+
+            currentSec = { stageClass, stageBadge, partNum, title: cleanTitle, items: [] };
+            currentItem = null;
+            continue;
+          }
+
+          if (line.startsWith('### ')) {
+            const rawItem = line.replace('### ', '').trim();
+            let itemCode = '';
+            let itemTitle = rawItem;
+            const codeMatch = rawItem.match(/^(L\d+-\d+)\.\s*(.+)/);
+            if (codeMatch) {
+              itemCode = codeMatch[1];
+              itemTitle = codeMatch[2];
+            }
+            currentItem = { code: itemCode, title: itemTitle, contentLines: [] };
+            if (currentSec) currentSec.items.push(currentItem);
+            continue;
+          }
+
+          if (currentItem && line.trim().length > 0) currentItem.contentLines.push(line);
+        }
+        if (currentSec) sections.push(currentSec);
+
+        sections.forEach(s => {
+          s.items.forEach(it => {
+            it.content = it.contentLines.join('\n');
+            delete it.contentLines;
+          });
+        });
+        return { title: docTitle, sections };
+      }
+
+      function parseInline(str) {
+        if (!str) return '';
+        let s = escapeHtml(str);
+        s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        s = s.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+        return s;
+      }
+      function escapeHtml(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+      function exportStudentCardNative() {
+        const target = document.getElementById('printableArea');
+        html2canvas(target, { scale: 2, useCORS: true, backgroundColor: '#f8fafc', windowWidth: 1200 })
+          .then(canvas => {
+            const link = document.createElement('a');
+            link.download = `学员档案-${currentStudent ? currentStudent.name : '导出'}-${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+          });
+      }
+    </script>
+  </body>
+
+</html>
