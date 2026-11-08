@@ -1,0 +1,3244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Syllabus Studio Pro · 学员教务中心</title>
+
+    <!-- Supabase 官方 SDK & 截图引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- ================= 核心排版与宣发卡片样式 ================= -->
+    <style id="coreStyles">
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :root {
+        --bg-page: #f8fafc;
+        --text-title: #0f172a;
+        --text-heading: #1e293b;
+        --text-body: #334155;
+        --text-muted: #64748b;
+        --card-border: #e2e8f0;
+        --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+        --card-hover-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
+        --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+        --font-mono: 'Fira Code', Consolas, Monaco, monospace;
+      }
+
+      .stage-foundation {
+        --theme-color: #0284c7;
+        --theme-bg: #e0f2fe;
+        --theme-border: #7dd3fc;
+        --theme-glow: rgba(2, 132, 199, 0.14);
+      }
+
+      .stage-advanced {
+        --theme-color: #ea580c;
+        --theme-bg: #ffedd5;
+        --theme-border: #fdba74;
+        --theme-glow: rgba(234, 88, 12, 0.14);
+      }
+
+      .stage-mastery {
+        --theme-color: #be123c;
+        --theme-bg: #ffe4e6;
+        --theme-border: #fda4af;
+        --theme-glow: rgba(190, 18, 60, 0.14);
+      }
+
+      .render-canvas {
+        width: 100%;
+        max-width: 820px;
+        margin: 0 auto;
+        color: var(--text-body);
+        background-color: #f8fafc;
+        background-image:
+          radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 90% 20%, rgba(234, 88, 12, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 45%),
+          radial-gradient(circle at 80% 90%, rgba(249, 115, 22, 0.08) 0%, transparent 45%),
+          radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+        background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat;
+        padding: clamp(20px, 4vw, 36px) clamp(14px, 3vw, 24px) clamp(30px, 5vw, 48px);
+        border-radius: 16px;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+
+      .render-canvas header {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1.5px solid #cbd5e1;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .render-canvas h1 {
+        font-size: clamp(1.4rem, 3.2vw, 2.1rem);
+        font-weight: 800;
+        color: var(--text-title);
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        word-break: break-word;
+      }
+
+      .student-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.84rem;
+        color: var(--text-muted);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      }
+
+      .student-pill strong {
+        color: var(--text-title);
+      }
+
+      .timeline-stream {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* 定制私课阶段大卡片 */
+      .stage-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-top: 4px solid var(--theme-color);
+        border-radius: 12px;
+        padding: clamp(16px, 3vw, 24px) clamp(16px, 3.5vw, 28px);
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      .stage-card::after {
+        content: "";
+        position: absolute;
+        top: -30px;
+        right: -30px;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--theme-glow) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .stage-card.is-collapsed {
+        padding-bottom: clamp(16px, 3vw, 24px);
+      }
+
+      .stage-card.is-collapsed .card-header-bar {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+
+      .stage-card.is-collapsed .card-expandable-content {
+        display: none !important;
+      }
+
+      .card-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+        position: relative;
+        z-index: 1;
+        gap: 8px;
+        user-select: none;
+      }
+
+      .header-title-inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .capsule-badge {
+        display: inline-flex;
+        align-items: center;
+        background: var(--theme-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 0.74rem;
+        font-weight: 700;
+        color: var(--theme-color);
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+
+      .capsule-badge .sep {
+        margin: 0 4px;
+        opacity: 0.5;
+      }
+
+      .stage-title {
+        font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+        font-weight: 700;
+        color: var(--text-title);
+        margin: 0;
+        line-height: 1.3;
+        word-break: break-word;
+      }
+
+      .card-watermark {
+        font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+        font-weight: 900;
+        color: var(--theme-color);
+        opacity: 0.35;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1;
+        user-select: none;
+        letter-spacing: -1px;
+        flex-shrink: 0;
+      }
+
+      .card-content-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 36px;
+        position: relative;
+        z-index: 1;
+        align-items: start;
+      }
+
+      .card-content-grid>.span-full {
+        grid-column: 1 / -1 !important;
+        width: 100%;
+        padding: 10px 0 !important;
+        border-top: 1px dashed #cbd5e1;
+        border-bottom: 1px dashed #cbd5e1;
+        margin: 4px 0;
+      }
+
+      .card-content-grid>.span-full:first-child {
+        border-top: none !important;
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+      }
+
+      .card-content-grid>.span-full:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      .card-content-grid>.span-full+.span-full {
+        border-top: none !important;
+        margin-top: -4px;
+      }
+
+      .card-content-grid>.col-left {
+        position: relative;
+      }
+
+      .card-content-grid>.col-left::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        right: -18px;
+        width: 1px;
+        border-right: 1.5px dashed #cbd5e1;
+      }
+
+      .content-block {
+        margin-bottom: 6px;
+        min-width: 0;
+      }
+
+      .render-canvas h3,
+      .stage-card h3 {
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        margin: 0 0 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 1.4;
+        word-break: break-word;
+      }
+
+      .render-canvas h3::before,
+      .stage-card h3::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--theme-color);
+        flex-shrink: 0;
+      }
+
+      /* 多级列表排版引擎 */
+      .render-canvas ul,
+      .stage-card ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      .content-block>ul {
+        padding-left: 14px !important;
+      }
+
+      .content-block>ul>li {
+        font-size: 0.86rem;
+        font-weight: 400 !important;
+        color: var(--text-body);
+        position: relative;
+        padding-left: 12px;
+        margin-bottom: 5px;
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .content-block>ul>li::before {
+        content: "•";
+        position: absolute;
+        left: 1px;
+        top: 0;
+        color: #94a3b8;
+        font-size: 0.95rem;
+      }
+
+      .render-canvas ul ul,
+      .stage-card ul ul {
+        padding-left: 14px !important;
+        margin: 3px 0 5px 3px;
+        border-left: 1.5px solid #cbd5e1;
+      }
+
+      .render-canvas ul ul li,
+      .stage-card ul ul li {
+        font-size: 0.83rem;
+        font-weight: 400 !important;
+        color: var(--text-body);
+        margin-bottom: 4px;
+        position: relative;
+        padding-left: 10px;
+        line-height: 1.55;
+      }
+
+      .render-canvas ul ul li::before,
+      .stage-card ul ul li::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+
+      .render-canvas ul ul ul,
+      .stage-card ul ul ul {
+        padding-left: 12px !important;
+        margin: 2px 0 4px 2px;
+        border-left: 1px dashed #94a3b8;
+      }
+
+      .render-canvas ul ul ul li,
+      .stage-card ul ul ul li {
+        font-size: 0.8rem;
+        font-weight: 400 !important;
+        color: var(--text-muted);
+        padding-left: 8px;
+        margin-bottom: 3px;
+        line-height: 1.5;
+      }
+
+      .render-canvas ul ul ul li::before,
+      .stage-card ul ul ul li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        font-weight: bold;
+      }
+
+      .render-canvas strong,
+      .stage-card strong {
+        color: var(--text-title);
+        font-weight: 700 !important;
+      }
+
+      .note-callout {
+        background: rgba(241, 245, 249, 0.7);
+        border-left: 3px solid var(--theme-color);
+        padding: 6px 10px;
+        border-radius: 0 6px 6px 0;
+        margin: 5px 0 7px 14px;
+        font-size: 0.8rem;
+        color: #475569;
+        line-height: 1.5;
+        font-weight: 400;
+        word-break: break-word;
+      }
+
+      .render-canvas em,
+      .stage-card em {
+        font-style: normal;
+        font-size: 0.76rem;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+        padding: 1px 5px;
+        border-radius: 4px;
+        margin: 0 3px;
+        display: inline-block;
+        vertical-align: 0.5px;
+      }
+    </style>
+
+    <!-- ================= CMS、工作台与双轨课程模式样式 ================= -->
+    <style id="cmsStyles">
+      body {
+        font-family: var(--font-base);
+        background-color: #f1f5f9;
+        color: var(--text-body);
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      input::placeholder,
+      textarea::placeholder,
+      .form-control::placeholder {
+        color: #94a3b8 !important;
+        opacity: 0.42 !important;
+        font-weight: 400 !important;
+      }
+
+      .svg-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        vertical-align: middle;
+      }
+
+      .svg-icon-sm {
+        width: 15px;
+        height: 15px;
+      }
+
+      .app-header {
+        height: 52px;
+        background: #ffffff;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 12px;
+        z-index: 50;
+        flex-shrink: 0;
+        gap: 8px;
+      }
+
+      .app-brand {
+        font-size: 0.98rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #0f172a;
+        white-space: nowrap;
+      }
+
+      .app-brand .brand-icon-box {
+        color: #0284c7;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .header-nav-switch {
+        display: inline-flex;
+        background: #f1f5f9;
+        padding: 2px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        gap: 2px;
+      }
+
+      .nav-tab-btn {
+        background: transparent;
+        border: none;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+
+      .nav-tab-btn.active {
+        background: #ffffff;
+        color: #0f172a;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+
+      .app-btn {
+        background: #ffffff;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: all 0.15s;
+        white-space: nowrap;
+        min-height: 32px;
+      }
+
+      .app-btn:hover {
+        background: #f8fafc;
+        border-color: #94a3b8;
+      }
+
+      .app-btn.primary {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #ffffff;
+      }
+
+      .app-btn.primary:hover {
+        background: #0284c7;
+        border-color: #0284c7;
+      }
+
+      .app-btn.accent {
+        background: #0284c7;
+        border-color: #0284c7;
+        color: #ffffff;
+      }
+
+      .app-btn.accent:hover {
+        background: #0369a1;
+      }
+
+      .app-btn.danger {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #dc2626;
+      }
+
+      .app-btn.btn-stage-done {
+        background: #ecfdf5 !important;
+        border-color: #a7f3d0 !important;
+        color: #047857 !important;
+        font-weight: 700 !important;
+      }
+
+      .app-btn.btn-stage-done:hover {
+        background: #d1fae5 !important;
+        border-color: #6ee7b7 !important;
+      }
+
+      .login-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.2rem;
+      }
+
+      .login-box {
+        background: #ffffff;
+        width: 100%;
+        max-width: 24rem;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--card-border);
+        text-align: center;
+      }
+
+      .app-body {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .view-cms {
+        flex: 1;
+        display: grid;
+        grid-template-columns: minmax(15rem, 18rem) 1fr;
+        height: 100%;
+        position: relative;
+        transition: grid-template-columns 0.25s ease;
+      }
+
+      .view-cms.sidebar-collapsed {
+        grid-template-columns: 0px 1fr;
+      }
+
+      .students-sidebar {
+        background: #ffffff;
+        border-right: 1px solid var(--card-border);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .sidebar-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .student-search-box {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 0.45rem 0.7rem;
+        border-radius: 6px;
+        border: 1px solid var(--card-border);
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      .student-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .student-card {
+        padding: 0.65rem 0.8rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .student-card:hover {
+        background: #f8fafc;
+      }
+
+      .student-card.active {
+        background: #e0f2fe;
+        border-color: #7dd3fc;
+      }
+
+      /* 学员档案操作小按钮 */
+      .s-profile-btn {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 20px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.74rem;
+        color: #0284c7;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: all 0.15s;
+      }
+
+      .s-profile-btn:hover {
+        background: #f0f9ff;
+        border-color: #7dd3fc;
+      }
+
+      .main-viewport {
+        padding: clamp(14px, 3vw, 24px) clamp(10px, 2.5vw, 20px) 4rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f8fafc;
+        background-image:
+          radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 90% 20%, rgba(234, 88, 12, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 30% 70%, rgba(14, 165, 233, 0.08) 0%, transparent 45%),
+          radial-gradient(circle at 80% 90%, rgba(249, 115, 22, 0.08) 0%, transparent 45%),
+          radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+      }
+
+      .content-container {
+        width: 100%;
+        max-width: 54rem;
+      }
+
+      .syllabus-header-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 1.5px solid #cbd5e1;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+      }
+
+      .header-title-group {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .header-title-group h1 {
+        font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+        font-weight: 800;
+        color: var(--text-title);
+      }
+
+      /* 补回私课卡片之间的垂直留白（中间的空） */
+      .private-scope .stage-card {
+        margin-bottom: 0.1rem !important;
+      }
+
+      /* ================= 通用大课专属样式 (.general-scope) ================= */
+      .general-scope .general-stage-divider {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-left: 5px solid var(--theme-color);
+        padding: 0.75rem 1.1rem;
+        border-radius: 8px;
+        margin: 1.4rem 0 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      }
+
+      .general-scope .general-stage-divider:first-child {
+        margin-top: 0.2rem;
+      }
+
+      .general-scope .general-item-card {
+        background: #ffffff;
+        border: 1px solid var(--card-border);
+        border-top: 3.5px solid var(--theme-color);
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 0.8rem;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+
+      .general-scope .general-item-card.is-completed {
+        border-left: 4px solid #059669;
+        background: #fafdfc;
+      }
+
+      .general-scope .general-card-header {
+        padding: 0.85rem 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        gap: 0.6rem;
+      }
+
+      .general-scope .general-card-content {
+        padding: 0.6rem 1.1rem 1rem;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      .general-scope .general-item-card.is-collapsed .general-card-content {
+        display: none !important;
+      }
+
+      .general-checklist-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        padding-top: 0.4rem;
+      }
+
+      .general-check-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.55rem;
+        font-size: 0.86rem;
+        line-height: 1.55;
+        color: var(--text-body);
+        cursor: pointer;
+        padding: 3px 6px;
+        border-radius: 4px;
+        transition: background 0.15s;
+      }
+
+      .general-check-item:hover {
+        background: #f8fafc;
+      }
+
+      .general-check-item input[type="checkbox"] {
+        width: 1.05rem;
+        height: 1.05rem;
+        margin-top: 0.15rem;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .collapse-arrow {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        transition: transform 0.25s ease;
+        display: inline-block;
+      }
+
+      .is-collapsed .collapse-arrow {
+        transform: rotate(-90deg);
+      }
+
+      /* 设计工坊界面样式 */
+      .view-studio {
+        flex: 1;
+        display: none;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .preview-pane {
+        flex: 1;
+        width: 50%;
+        min-width: 320px;
+        background-color: #e2e8f0;
+        overflow-y: auto;
+        padding: 24px 14px 80px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .split-resizer {
+        width: 8px;
+        background: linear-gradient(180deg, #bae6fd 0%, #e2e8f0 50%, #fed7aa 100%);
+        cursor: col-resize;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        z-index: 10;
+        flex-shrink: 0;
+        transition: background 0.2s ease;
+        border-left: 1px solid rgba(226, 232, 240, 0.8);
+        border-right: 1px solid rgba(226, 232, 240, 0.8);
+      }
+
+      .split-resizer:hover,
+      .split-resizer.dragging {
+        background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #f97316 100%);
+      }
+
+      .resizer-line {
+        width: 2px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 2px;
+        pointer-events: none;
+      }
+
+      .editor-pane {
+        flex: 1;
+        width: 50%;
+        min-width: 300px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .pane-header {
+        min-height: 42px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px;
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+        gap: 6px;
+      }
+
+      .editor-toolbar {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        background: #ffffff;
+        padding: 2px 4px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+
+      .tool-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        padding: 3px 6px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 24px;
+        white-space: nowrap;
+      }
+
+      .tool-btn:hover {
+        background: #f1f5f9;
+        color: #0284c7;
+      }
+
+      .tool-btn.active {
+        background: #e0f2fe;
+        color: #0284c7;
+        font-weight: 700;
+      }
+
+      .tool-sep {
+        width: 1px;
+        height: 14px;
+        background: #e2e8f0;
+        margin: 0 2px;
+        flex-shrink: 0;
+      }
+
+      .dropdown-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .editor-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 4px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        padding: 4px 0;
+        z-index: 50;
+        min-width: 185px;
+      }
+
+      .editor-dropdown.active {
+        display: block;
+      }
+
+      .editor-dropdown button {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 7px 12px;
+        font-size: 0.8rem;
+        color: #334155;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .editor-dropdown button:hover {
+        background: #f1f5f9;
+        color: #0284c7;
+      }
+
+      .editor-textarea {
+        flex: 1;
+        width: 100%;
+        background: #ffffff;
+        color: #1e293b;
+        border: none;
+        padding: 16px;
+        font-family: var(--font-mono);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        resize: none;
+        outline: none;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-y: auto;
+      }
+
+      /* 弹窗通用样式 */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 0.8rem;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-box {
+        background: #ffffff;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 48rem;
+        padding: 1.4rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        max-height: 94dvh;
+        overflow-y: auto;
+      }
+
+      .form-group {
+        margin-bottom: 0.55rem;
+        text-align: left;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--text-heading);
+        margin-bottom: 0.2rem;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.45rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        font-size: 0.84rem;
+        color: #0f172a;
+        outline: none;
+      }
+
+      .form-control:focus {
+        border-color: #0284c7;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+      }
+
+      /* 结课确认单长图容器 */
+      .completion-certificate-card {
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-top: 5px solid var(--theme-color, #0284c7);
+        border-radius: 14px;
+        padding: 28px 32px;
+        color: #1e293b;
+        text-align: left;
+        position: relative;
+        background-color: #f8fafc;
+        background-image:
+          radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.08) 0%, transparent 40%),
+          radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 100% 100%, 24px 24px;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+      }
+
+      .cert-header {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        position: relative;
+      }
+
+      .cert-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 4px 0 8px 0;
+        letter-spacing: -0.01em;
+      }
+
+      .cert-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .cert-date-tag {
+        background: #ecfdf5;
+        border: 1px solid #6ee7b7;
+        color: #047857;
+        font-weight: 800;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .cert-watermark-lg {
+        font-size: 3.2rem;
+        font-weight: 900;
+        color: var(--theme-color, #0284c7);
+        opacity: 0.22;
+        line-height: 1;
+        user-select: none;
+        flex-shrink: 0;
+      }
+
+      .cert-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-left: 3.5px solid var(--theme-color, #0284c7);
+        border-radius: 8px;
+        padding: 14px 18px 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+      }
+
+      .cert-item-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #f1f5f9;
+        gap: 10px;
+      }
+
+      .cert-item-title-text {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+      }
+
+      .cert-stamp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 1.5px solid #059669;
+        color: #059669;
+        background: #f0fdf4;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transform: rotate(-1.5deg);
+        user-select: none;
+        flex-shrink: 0;
+      }
+
+      .cert-stamp-badge::before {
+        content: "●";
+        font-size: 0.55rem;
+      }
+
+      .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        z-index: 999;
+      }
+
+      .sidebar-backdrop.active {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .btn-text {
+          display: none !important;
+        }
+
+        .app-btn {
+          padding: 6px 8px !important;
+          min-width: 34px;
+        }
+
+        .app-header {
+          padding: 0 8px;
+        }
+
+        .view-cms {
+          grid-template-columns: 1fr !important;
+        }
+
+        .students-sidebar {
+          position: fixed;
+          left: -100%;
+          top: 0;
+          bottom: 0;
+          width: min(84vw, 20rem);
+          height: 100dvh;
+          box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+          z-index: 1000;
+          transition: left 0.25s ease;
+        }
+
+        .students-sidebar.open {
+          left: 0;
+        }
+
+        .card-content-grid {
+          grid-template-columns: 100% !important;
+          gap: 12px;
+        }
+
+        .card-content-grid>.col-left::after {
+          display: none !important;
+        }
+
+        .view-studio {
+          flex-direction: column !important;
+        }
+
+        .preview-pane,
+        .editor-pane {
+          width: 100% !important;
+          flex: none !important;
+        }
+
+        .preview-pane {
+          height: 52%;
+          padding: 16px 8px 30px;
+        }
+
+        .editor-pane {
+          height: 48%;
+          border-top: 2px solid #cbd5e1;
+        }
+
+        .split-resizer {
+          display: none !important;
+        }
+
+        .modal-box {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ================= 登录门禁 ================= -->
+    <div class="login-overlay" id="loginOverlay">
+      <div class="login-box">
+        <div style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 0.3rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+          <svg class="svg-icon" style="color:#0284c7; width:22px; height:22px;" viewBox="0 0 24 24">
+            <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-8a3 3 0 0 1 6 0v8" />
+          </svg>
+          Syllabus Studio Pro
+        </div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.4rem;">绳缚学员教务中心</div>
+
+        <div class="form-group">
+          <label>管理人账号</label>
+          <input type="text" class="form-control" id="loginUsername" placeholder="请输入账号名" value="">
+        </div>
+        <div class="form-group">
+          <label>登录密码</label>
+          <input type="password" class="form-control" id="loginPassword" placeholder="请输入密码" value="">
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem;">
+          <label style="font-size: 0.8rem; color: #64748b; cursor: pointer; display:flex; align-items:center; gap:4px;">
+            <input type="checkbox" id="rememberMe" checked> 保持登录状态
+          </label>
+          <span style="font-size: 0.78rem; color: #0284c7; cursor: pointer;" onclick="alert('初始账号: admin\n初始密码: 123456')">初始密码</span>
+        </div>
+        <button class="app-btn primary" style="width: 100%; padding: 0.6rem; justify-content: center;" onclick="doAdminLogin()">
+          <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
+          </svg>
+          验证并登入工作台
+        </button>
+        <div id="loginErrorMsg" style="color: #dc2626; font-size: 0.8rem; margin-top: 0.6rem; display: none;"></div>
+      </div>
+    </div>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebarMobile()"></div>
+
+    <!-- ================= 顶部全局导航条 ================= -->
+    <header class="app-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button class="app-btn" onclick="toggleSidebarMaster()" title="展开/收起学员列表侧栏" style="padding: 4px 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M9 3v18" />
+          </svg>
+        </button>
+
+        <div class="app-brand">
+          <span class="brand-icon-box">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-8a3 3 0 0 1 6 0v8" />
+            </svg>
+          </span>
+          <span class="btn-text">Syllabus Studio Pro</span>
+        </div>
+
+        <div class="header-nav-switch">
+          <button class="nav-tab-btn active" id="tabBtnCms" onclick="switchMainView('cms')">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span class="btn-text">学员教务看板</span>
+          </button>
+          <button class="nav-tab-btn" id="tabBtnStudio" onclick="switchMainView('studio')">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            <span class="btn-text">教案设计工坊</span>
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 5px;">
+        <div id="actionsForCms" style="display: flex; align-items: center; gap: 5px;">
+          <button class="app-btn" onclick="openImportModal()" title="导入 Markdown 课表">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M12 3v12" />
+              <path d="m8 11 4 4 4-4" />
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span class="btn-text">导入课表</span>
+          </button>
+          <button class="app-btn primary" onclick="exportImageNative()" title="导出微信长图">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M12 15V3" />
+              <path d="m8 7 4-4 4 4" />
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span class="btn-text">导出长图</span>
+          </button>
+        </div>
+
+        <div id="actionsForStudio" style="display: none; align-items: center; gap: 5px;">
+          <button class="app-btn" onclick="exportMarkdownFile()" title="存为 .md 文件">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            <span class="btn-text">存为 MD</span>
+          </button>
+          <button class="app-btn primary" onclick="exportImageNative()" title="导出微信长图">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M12 15V3" />
+              <path d="m8 7 4-4 4 4" />
+              <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+            </svg>
+            <span class="btn-text">导出长图</span>
+          </button>
+          <button class="app-btn accent" onclick="exportStandaloneHTML()" title="导出独立宣发 HTML 网页">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <span class="btn-text">宣发网页</span>
+          </button>
+          <button class="app-btn" onclick="window.print()" title="打印或保存为 PDF">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect width="12" height="8" x="6" y="14" />
+            </svg>
+            <span class="btn-text">打印/PDF</span>
+          </button>
+        </div>
+
+        <button class="app-btn danger" onclick="doLogout()" title="安全退出">
+          <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          <span class="btn-text">退出</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= 主工作区 ================= -->
+    <div class="app-body">
+      <!-- 视图 A: 学员教务看板 -->
+      <div class="view-cms" id="viewCms">
+        <aside class="students-sidebar" id="studentsSidebar">
+          <div class="sidebar-header">
+            <span style="font-weight: 700; font-size: 0.92rem; display:flex; align-items:center; gap:5px;">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+              学员档案库
+            </span>
+            <button class="app-btn accent" style="padding: 0.2rem 0.5rem; min-height: 1.8rem;" onclick="openNewStudentModal()">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              新建学员
+            </button>
+          </div>
+          <div class="student-search-box">
+            <input type="text" class="search-input" id="searchStudentInput" placeholder="搜索学员姓名..." oninput="filterStudents()">
+          </div>
+          <div class="student-list" id="studentListContainer"></div>
+        </aside>
+
+        <main class="main-viewport">
+          <div class="content-container" id="printableArea">
+            <!-- 🌟 初始默认隐藏顶栏，只有手动点击学员后才显示 -->
+            <div class="syllabus-header-strip" id="syllabusHeaderStrip" style="display: none;">
+              <div class="header-title-group">
+                <h1 id="currentCourseTitle">未加载</h1>
+                <span class="capsule-badge" id="currentCourseTypeLabel" style="font-size: 0.74rem;">私课</span>
+                <div class="student-pill">
+                  <span>学员：<strong id="headerStudentName">未选择</strong></span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button class="app-btn accent" onclick="jumpToStudioToEdit()">
+                  <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                  在设计台微调此大纲
+                </button>
+                <!-- 动态自适应智能折叠按钮 -->
+                <button class="app-btn" id="toggleAllFoldBtn" onclick="toggleAllCardsDynamic()">
+                  ▴ 全部折叠
+                </button>
+              </div>
+            </div>
+
+            <!-- 🌟 初始纯净空白欢迎状态区（与 SSCMS 原版完全一致） -->
+            <div id="courseScopeContainer">
+              <div style="text-align: center; padding: clamp(3rem, 10vw, 5rem) 1rem; color: #94a3b8;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.6rem;">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-8a3 3 0 0 1 6 0v8" />
+                </svg>
+              </div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem;">欢迎使用 Syllabus Studio 教务工作台</div>
+                <div style="font-size: 0.82rem; color: #94a3b8;">请在左侧学员列表中选择一位学员，或点击「+ 新建学员」开启教学跟进</div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- 视图 B: 教案设计工坊 -->
+      <div class="view-studio" id="viewStudio">
+        <main class="preview-pane" id="previewPane">
+          <div class="render-canvas" id="exportArea"></div>
+        </main>
+
+        <div class="split-resizer" id="splitResizer">
+          <div class="resizer-line"></div>
+        </div>
+
+        <section class="editor-pane" id="editorPane">
+          <div class="pane-header">
+            <div class="editor-toolbar">
+              <button class="tool-btn active" id="wrapToggleBtn" onclick="toggleWordWrap()" title="切换自动换行 (Alt+Z)">↩ 换行</button>
+              <div class="tool-sep"></div>
+              <button class="tool-btn" onclick="applyFormat('bold')" title="粗体加粗 (Ctrl+B)"><b>B</b></button>
+              <button class="tool-btn" onclick="applyFormat('stamp')" title="流派印章 (Ctrl+I)"><i>*</i></button>
+              <div class="tool-sep"></div>
+              <div class="dropdown-wrapper">
+                <button class="tool-btn" onclick="toggleHeadingMenu(event)"><b>H ▾</b></button>
+                <div class="editor-dropdown" id="headingDropdown">
+                  <button onclick="applyHeading('## ')">## 大阶段卡片 <span>Ctrl+2</span></button>
+                  <button onclick="applyHeading('### ')">### 核心小节 <span>Ctrl+3</span></button>
+                  <button onclick="applyHeading('#### ')">#### 内嵌子标题 <span>Ctrl+4</span></button>
+                  <button onclick="applyHeading('##### ')">##### 微型标题 (§) <span>Ctrl+5</span></button>
+                </div>
+              </div>
+              <button class="tool-btn" onclick="applyFormat('list')" title="快速列表化 (Ctrl+L)">•≡</button>
+              <div class="tool-sep"></div>
+              <button class="tool-btn" onclick="indentLines(true)" title="层级缩进 (Tab)">⇥</button>
+              <button class="tool-btn" onclick="indentLines(false)" title="减少缩进 (Shift+Tab)">⇤</button>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button class="app-btn accent" id="btnSyncToStudent" style="min-height:26px; padding:3px 8px; font-size:0.76rem;" onclick="saveStudioChangesToStudent()">
+                <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                </svg>
+                保存回学员
+              </button>
+              <span id="charCount" style="font-size:0.74rem; color:#94a3b8;">0 字</span>
+            </div>
+          </div>
+
+          <textarea class="editor-textarea" id="mdEditor" spellcheck="false" placeholder="在此编辑或微调大纲 Markdown..."></textarea>
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= 模态弹窗系统 ================= -->
+
+    <!-- 1. 学员详细档案弹窗 (查阅态 / 编辑态) -->
+    <div class="modal-overlay" id="studentModal">
+      <div class="modal-box">
+        <div id="studentReadView">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; border-bottom:1px solid #f1f5f9; padding-bottom:0.5rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <h3 id="viewStdName" style="font-size:1.2rem; margin:0;">学员档案</h3>
+              <span class="capsule-badge" id="viewStdStageBadge">基础阶段</span>
+            </div>
+            <button class="app-btn accent" style="min-height:1.9rem; padding:0.25rem 0.75rem; font-size:0.78rem;" onclick="switchModalToEdit()">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+              </svg>
+              编辑档案
+            </button>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; padding:0.6rem; background:#f8fafc; border-radius:6px; margin-bottom:0.6rem;">
+            <div><span style="font-size:0.72rem; color:#64748b;">联系方式</span>
+              <div style="font-weight:700; font-size:0.9rem;" id="viewStdContact">未登记</div>
+            </div>
+            <div><span style="font-size:0.72rem; color:#64748b;">报读课程</span>
+              <div style="font-weight:700; font-size:0.9rem;" id="viewStdCourse">定制私课</div>
+            </div>
+            <div style="grid-column: 1 / -1;"><span style="font-size:0.72rem; color:#64748b;">掌握程度评估</span>
+              <div style="font-weight:600; font-size:0.86rem;" id="viewStdLevel">日常稳步练习中</div>
+            </div>
+          </div>
+
+          <div style="background:#f0f9ff; border-left:3.5px solid #0284c7; padding:0.5rem 0.75rem; border-radius:4px; margin-bottom:0.6rem; font-size:0.84rem;">
+            <div style="font-weight:800; font-size:0.74rem; color:#0369a1; margin-bottom:0.2rem;">学员习惯与身体伤病注意点</div>
+            <div id="viewStdHabits">暂无记录</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap:0.6rem; background:#fffbeb; border:1px solid #fde68a; padding:0.6rem 0.8rem; border-radius:6px; margin-bottom:0.6rem;">
+            <div>
+              <div style="font-size:0.72rem; color:#64748b;">初始报价</div>
+              <div style="font-weight:700; font-size:0.9rem;" id="viewStdTuitionOrig">-</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem; color:#64748b;">优惠折扣</div>
+              <div style="font-weight:700; color:#0284c7; font-size:0.9rem;" id="viewStdTuitionDisc">-</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem; color:#64748b;">最终实收定价</div>
+              <div style="display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap;">
+                <span style="font-weight:800; color:#ea580c; font-size:1rem;" id="viewStdTuitionFinal">-</span>
+                <span class="pay-status-pill pay-unpaid" id="viewStdPayStatus">未支付</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc; border-left:3.5px solid #94a3b8; padding:0.5rem 0.75rem; border-radius:4px; font-size:0.82rem; margin-bottom:0.8rem;">
+            <div style="font-weight:800; font-size:0.74rem; color:#475569; margin-bottom:0.2rem;">其他综合备注</div>
+            <div id="viewStdNotes">暂无补充</div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="app-btn" onclick="closeModal('studentModal')">关闭</button>
+          </div>
+        </div>
+
+        <div id="studentEditView" style="display: none;">
+          <h3 style="margin-bottom:0.6rem; font-size:1.15rem;">编辑学员详细档案</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+            <div class="form-group"><label>学员姓名 *</label><input type="text" class="form-control" id="editStdName"></div>
+            <div class="form-group"><label>联系方式</label><input type="text" class="form-control" id="editStdContact"></div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.6rem;">
+            <div class="form-group"><label>报读课程</label><input type="text" class="form-control" id="editStdCourse"></div>
+            <div class="form-group"><label>教学阶段</label><select class="form-control" id="editStdStage">
+                <option value="foundation">基础阶段</option>
+                <option value="advanced">提高阶段</option>
+                <option value="mastery">熟练阶段</option>
+              </select></div>
+          </div>
+          <div class="form-group"><label>掌握程度评估</label><input type="text" class="form-control" id="editStdLevel"></div>
+          <div class="form-group"><label>学员习惯与伤病注意点</label><textarea class="form-control" id="editStdHabits" style="height: 3.2rem;"></textarea></div>
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr 1.2fr; gap: 0.6rem;">
+            <div class="form-group"><label>初始报价</label><input type="text" class="form-control" id="editStdTuitionOriginal"></div>
+            <div class="form-group"><label>优惠折扣</label><input type="text" class="form-control" id="editStdTuitionDiscount"></div>
+            <div class="form-group"><label>最终实收定价 *</label><input type="text" class="form-control" id="editStdTuitionFinal" style="font-weight:700; color:#ea580c;"></div>
+          </div>
+          <div class="form-group"><label>学费支付状态</label><select class="form-control" id="editStdPayStatus">
+              <option value="unpaid">未支付</option>
+              <option value="partial">已付定金</option>
+              <option value="paid">已付全款</option>
+            </select></div>
+          <div class="form-group"><label>其他综合备注</label><textarea class="form-control" id="editStdGeneralNotes" style="height: 3.2rem;"></textarea></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.8rem; padding-top:0.6rem; border-top:1px solid #f1f5f9;">
+            <button class="app-btn danger" onclick="deleteCurrentStudent()">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+              删除学员
+            </button>
+            <div style="display:flex; gap:0.4rem;">
+              <button class="app-btn" onclick="switchModalToRead()">取消</button>
+              <button class="app-btn accent" onclick="saveEditedStudent()">保存档案</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 结课日期手动录入确认弹窗 -->
+    <div class="modal-overlay" id="markCompleteModal">
+      <div class="modal-box" style="max-width: 25rem;">
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 0.6rem; display:flex; align-items:center; gap:6px;">
+          <svg class="svg-icon" style="color:#059669; width:20px; height:20px;" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          登记结课日期
+        </h3>
+        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;" id="markCompleteSubTitle">课表目标</p>
+
+        <input type="hidden" id="targetCompleteSecId" value="">
+        <input type="hidden" id="targetCompleteItemId" value="">
+        <input type="hidden" id="targetCompleteType" value="">
+
+        <div class="form-group">
+          <label>学员实际结课时间 *</label>
+          <input type="date" class="form-control" id="manualCompleteDate" style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.2rem;">
+          <button class="app-btn" onclick="closeModal('markCompleteModal')">取消</button>
+          <button class="app-btn primary" onclick="confirmStageComplete(false)">确认结课</button>
+          <button class="app-btn accent" onclick="confirmStageComplete(true)">确认并输出结课单</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 已结课卡片快捷操作坞 -->
+    <div class="modal-overlay" id="completedActionModal">
+      <div class="modal-box" style="max-width: 24rem; text-align: center;">
+        <div style="font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-bottom: 0.3rem;" id="completedActionTitle">已结课管理</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.2rem;" id="completedActionDate">结课时间：未记录</div>
+        <input type="hidden" id="actionSecId" value="">
+        <input type="hidden" id="actionItemId" value="">
+        <input type="hidden" id="actionType" value="">
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="app-btn primary" style="padding: 0.6rem; justify-content: center; font-size: 0.88rem;" onclick="openStudentCompletionCardFromAction()">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            输出学员结课总结页面
+          </button>
+          <button class="app-btn danger" style="padding: 0.6rem; justify-content: center; font-size: 0.86rem;" onclick="revertStageToIncomplete()">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            标记为未结课 (撤销状态)
+          </button>
+          <button class="app-btn" style="margin-top: 4px;" onclick="closeModal('completedActionModal')">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 学员专属结课单长图预览与导出弹窗 -->
+    <div class="modal-overlay" id="studentCompletionModal">
+      <div class="modal-box" style="max-width: 44rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <strong style="font-size:1rem; color:#0f172a;">学员阶段结课证明</strong>
+          <div style="display:flex; gap:6px;">
+            <button class="app-btn primary" onclick="exportCompletionCardNative()">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M12 15V3" />
+                <path d="m8 7 4-4 4 4" />
+                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              </svg>
+              导出结课长图
+            </button>
+            <button class="app-btn" onclick="closeModal('studentCompletionModal')">关闭</button>
+          </div>
+        </div>
+
+        <div id="studentCompletionCardArea"></div>
+      </div>
+    </div>
+
+    <!-- 5. 新建学员弹窗 -->
+    <div class="modal-overlay" id="newStudentModal">
+      <div class="modal-box" style="max-width: min(94vw, 30rem);">
+        <h3 style="margin-bottom:0.8rem; font-size:1.15rem;">新建学员档案</h3>
+        <div class="form-group"><label>学员姓名 / 昵称 *</label><input type="text" class="form-control" id="newStdName" placeholder="如: 影"></div>
+        <div class="form-group"><label>联系方式 (微信 / 手机)</label><input type="text" class="form-control" id="newStdContact" placeholder="微信/电话"></div>
+        <div class="form-group">
+          <label>选课模式</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.25rem;">
+            <label class="app-btn" style="justify-content:flex-start; cursor:pointer;"><input type="radio" name="newStudentCourseType" value="private" checked> <span>1对1定制私课</span></label>
+            <label class="app-btn" style="justify-content:flex-start; cursor:pointer;"><input type="radio" name="newStudentCourseType" value="general"> <span>通用体系大课</span></label>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+          <button class="app-btn" onclick="closeModal('newStudentModal')">取消</button>
+          <button class="app-btn accent" onclick="saveNewStudent()">确认建档</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 导入外部 Markdown 弹窗 -->
+    <div class="modal-overlay" id="importModal">
+      <div class="modal-box" style="max-width: min(94vw, 32rem);">
+        <h3 style="margin-bottom:0.8rem; font-size:1.15rem;">导入 Markdown 教学大纲</h3>
+        <div class="form-group">
+          <label>1. 教学体系模式</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+            <label class="app-btn" style="justify-content:flex-start; cursor:pointer;"><input type="radio" name="courseMode" value="private" checked> <span>定制私课模式</span></label>
+            <label class="app-btn" style="justify-content:flex-start; cursor:pointer;"><input type="radio" name="courseMode" value="general"> <span>通用大课体系</span></label>
+          </div>
+        </div>
+        <div class="form-group"><label>2. 关联学员姓名</label><input type="text" class="form-control" id="importStudentName" placeholder="输入学员姓名 (如: 影)"></div>
+        <div class="form-group">
+          <label>3. 选择或粘贴 Markdown 文件</label>
+          <input type="file" id="mdFileInput" accept=".md,.markdown,.txt" class="form-control" onchange="handleFileLoad(event)" style="margin-bottom: 0.4rem;">
+          <textarea id="importMdText" class="form-control" style="height: 6rem; font-family: var(--font-mono); font-size: 0.8rem;" placeholder="粘贴 Markdown 大纲代码..."></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.8rem;">
+          <button class="app-btn" onclick="closeModal('importModal')">取消</button>
+          <button class="app-btn accent" id="btnDoImport" onclick="processAndSaveImport()">分析并同步写入</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 微信长图预览与保存浮窗 -->
+    <div class="modal-overlay" id="exportModal">
+      <div class="modal-box" style="max-width: 680px; text-align: center;">
+        <h3 style="color:#0f172a; font-size:1.05rem; margin-bottom:4px;">高清长图已就绪</h3>
+        <p style="color:#64748b; font-size:0.82rem; margin-bottom:10px;">已自动触发下载；手机端可长按图片直接发给学员或存相册</p>
+        <img id="modalPreviewImg" alt="长图预览" style="width:100%; height:auto; border-radius:6px; border:1px solid #e2e8f0; margin:10px 0;" />
+        <br>
+        <button class="app-btn" onclick="closeModal('exportModal')">关闭预览</button>
+      </div>
+    </div>
+
+    <!-- ================= 全局核心驱动脚本 ================= -->
+    <script>
+      const DEFAULT_SUPABASE_URL = "https://cxzteidagtuvqaqdllig.supabase.co";
+      const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_DVPmndYiAXJw5nnNtJ_7fQ_el_KwDlM";
+
+      let sbClient = null;
+      let students = [];
+      let currentStudent = null;
+      let currentCourse = null;
+      let currentSections = [];
+      let currentLessonLogs = {};
+      let collapsedCardMap = {};
+
+      window.addEventListener('DOMContentLoaded', () => {
+        sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+        checkAutoLogin();
+        initStudioResizer();
+        initStudioSyncScroll();
+        initEditorKeyShortcuts();
+      });
+
+      /* 登录与鉴权 */
+      async function checkAutoLogin() {
+        const savedUser = localStorage.getItem('ss_logged_user');
+        if (savedUser && sbClient) {
+          document.getElementById('loginOverlay').style.display = 'none';
+          await loadStudents();
+        } else {
+          document.getElementById('loginOverlay').style.display = 'flex';
+        }
+      }
+
+      async function doAdminLogin() {
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+        const errBox = document.getElementById('loginErrorMsg');
+
+        if (!u || !p) {
+          errBox.innerText = '请输入账号名与密码！';
+          errBox.style.display = 'block';
+          return;
+        }
+
+        try {
+          const { data, error } = await sbClient.from('ss_admins').select('*').eq('username', u).eq('password_hash', p).single();
+          if (error || !data) {
+            if (u === 'admin' && p === '123456') { enterWorkbench(u); return; }
+            errBox.innerText = '账号名或密码错误！';
+            errBox.style.display = 'block';
+          } else {
+            enterWorkbench(u);
+          }
+        } catch (err) {
+          if (u === 'admin' && p === '123456') { enterWorkbench(u); return; }
+          errBox.innerText = '登录失败: ' + err.message;
+          errBox.style.display = 'block';
+        }
+      }
+
+      function enterWorkbench(user) {
+        if (document.getElementById('rememberMe').checked) localStorage.setItem('ss_logged_user', user);
+        document.getElementById('loginOverlay').style.display = 'none';
+        loadStudents();
+      }
+
+      function doLogout() {
+        if (confirm('确定要退出当前管理账号吗？')) {
+          localStorage.removeItem('ss_logged_user');
+          document.getElementById('loginOverlay').style.display = 'flex';
+        }
+      }
+
+      /* 🌟 学员数据加载（切断自动选中首个学员代码，保持默认纯净欢迎态） */
+      async function loadStudents() {
+        const { data, error } = await sbClient.from('ss_students').select('*').order('created_at', { ascending: false });
+        if (error) return console.error(error);
+        students = data || [];
+        renderStudentList();
+      }
+
+      function renderStudentList() {
+        const container = document.getElementById('studentListContainer');
+        const q = document.getElementById('searchStudentInput').value.toLowerCase().trim();
+        container.innerHTML = '';
+        students.filter(s => s.name.toLowerCase().includes(q)).forEach(s => {
+          const isCurrent = currentStudent && currentStudent.id === s.id;
+          const div = document.createElement('div');
+          div.className = `student-card ${isCurrent ? 'active' : ''}`;
+          div.onclick = () => { selectStudent(s.id); closeSidebarMobile(); };
+          div.innerHTML = `
+          <div style="flex:1; overflow:hidden;">
+            <div style="font-weight:700; font-size:0.92rem; color:#0f172a; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${escapeHtml(s.name)}</div>
+            <div style="font-size:0.72rem; color:#64748b; margin-top:2px;">${escapeHtml(s.course_enrolled || '定制私课')}</div>
+          </div>
+          <button class="s-profile-btn" onclick="event.stopPropagation(); openStudentModalDirect('${s.id}')">
+            <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>档案</span>
+          </button>
+        `;
+          container.appendChild(div);
+        });
+      }
+
+      function filterStudents() { renderStudentList(); }
+
+      /* ================= 选中学员加载数据（点击学员时显现顶栏） ================= */
+      async function selectStudent(studentId) {
+        currentStudent = students.find(s => s.id === studentId);
+        renderStudentList();
+
+        // 🌟 手动点击学员后，将顶部教务控制条从隐藏唤醒为可见
+        document.getElementById('syllabusHeaderStrip').style.display = 'flex';
+
+        document.getElementById('headerStudentName').innerText = currentStudent.name;
+        document.getElementById('btnSyncToStudent').innerText = `保存回学员【${currentStudent.name}】`;
+
+        let { data: courses } = await sbClient.from('ss_courses').select('*').eq('student_id', studentId).order('created_at', { ascending: false });
+        if (!courses || courses.length === 0) {
+          let { data: genCourses } = await sbClient.from('ss_courses').select('*').eq('type', 'general').order('created_at', { ascending: false }).limit(1);
+          courses = genCourses;
+        }
+
+        if (!courses || courses.length === 0) {
+          document.getElementById('currentCourseTitle').innerText = '未关联课表';
+          document.getElementById('courseScopeContainer').innerHTML = `
+          <div style="text-align: center; padding: 4rem 1rem; color: #64748b;">
+            学员【${escapeHtml(currentStudent.name)}】尚未定制大纲。可点击顶部 <strong>“在设计台微调此大纲”</strong> 制作！
+          </div>`;
+          return;
+        }
+
+        currentCourse = courses[0];
+        document.getElementById('currentCourseTitle').innerText = currentCourse.title;
+        document.getElementById('currentCourseTypeLabel').innerText = currentCourse.type === 'private' ? '定制私课' : '通用体系课';
+
+        const { data: logs } = await sbClient.from('ss_lesson_logs').select('*').eq('student_id', currentStudent.id);
+        currentLessonLogs = {};
+        const loggedSectionIds = new Set();
+        if (logs) {
+          logs.forEach(l => {
+            const key = l.item_id ? `item_${l.item_id}` : `sec_${l.section_id}`;
+            currentLessonLogs[key] = l;
+            if (l.section_id) loggedSectionIds.add(l.section_id);
+          });
+        }
+
+        const { data: rawSections } = await sbClient.from('ss_course_sections')
+          .select('*, ss_course_items(*)')
+          .eq('course_id', currentCourse.id)
+          .order('sort_order', { ascending: true });
+
+        const uniqueSectionsMap = new Map();
+        const duplicateOrphanSectionIds = [];
+
+        (rawSections || []).forEach(sec => {
+          sec.ss_course_items = sec.ss_course_items || [];
+          sec.ss_course_items.sort((a, b) => a.sort_order - b.sort_order);
+
+          const partKey = String(sec.part_num).trim();
+
+          if (!uniqueSectionsMap.has(partKey)) {
+            uniqueSectionsMap.set(partKey, sec);
+          } else {
+            const existing = uniqueSectionsMap.get(partKey);
+            const existingHasLogs = loggedSectionIds.has(existing.id);
+            const currentHasLogs = loggedSectionIds.has(sec.id);
+
+            if (!existingHasLogs && currentHasLogs) {
+              duplicateOrphanSectionIds.push(existing.id);
+              uniqueSectionsMap.set(partKey, sec);
+            } else {
+              duplicateOrphanSectionIds.push(sec.id);
+            }
+          }
+        });
+
+        currentSections = Array.from(uniqueSectionsMap.values());
+        currentSections.sort((a, b) => a.sort_order - b.sort_order);
+
+        if (duplicateOrphanSectionIds.length > 0) {
+          (async () => {
+            try {
+              await sbClient.from('ss_course_items').delete().in('section_id', duplicateOrphanSectionIds);
+              await sbClient.from('ss_course_sections').delete().in('id', duplicateOrphanSectionIds);
+            } catch (err) { }
+          })();
+        }
+
+        if (currentCourse.raw_markdown) {
+          document.getElementById('mdEditor').value = currentCourse.raw_markdown;
+          renderSyllabus(currentCourse.raw_markdown);
+        }
+
+        // 默认标记为全部折叠
+        collapsedCardMap = { __defaultCollapsed: true };
+        renderCourseScopeView();
+        updateFoldButtonState();
+      }
+
+      /* ================= 智能动态折叠状态侦测机 ================= */
+        function updateFoldButtonState() {
+          const foldBtn = document.getElementById('toggleAllFoldBtn');
+          if (!foldBtn) return;
+          // 🌟 修复：只检索教务主看板(#courseScopeContainer)内的卡片，排除工坊预览区
+          const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
+          if (allCards.length === 0) return;
+
+          const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
+
+          if (hasAnyOpen) {
+            foldBtn.innerText = '▴ 全部折叠';
+          } else {
+            foldBtn.innerText = '▾ 全部展开';
+          }
+        }
+
+        function toggleAllCardsDynamic() {
+          // 🌟 修复：同样限制范围，避免误影响后台工坊卡片
+          const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
+          const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
+
+          if (hasAnyOpen) {
+            allCards.forEach(c => {
+              c.classList.add('is-collapsed');
+              collapsedCardMap[c.id] = true;
+            });
+          } else {
+            allCards.forEach(c => {
+              c.classList.remove('is-collapsed');
+              collapsedCardMap[c.id] = false;
+            });
+          }
+          updateFoldButtonState();
+        }
+
+      function toggleCardCollapse(id) {
+        const card = document.getElementById(id);
+        if (!card) return;
+        card.classList.toggle('is-collapsed');
+        collapsedCardMap[id] = card.classList.contains('is-collapsed');
+        updateFoldButtonState();
+      }
+
+      /* ================= 课程分流总控 ================= */
+      function renderCourseScopeView() {
+        const container = document.getElementById('courseScopeContainer');
+        container.innerHTML = '';
+        const isPrivate = currentCourse.type === 'private';
+
+        if (isPrivate) {
+          container.className = 'private-scope timeline-stream';
+          renderPrivateCourseStream(container);
+        } else {
+          container.className = 'general-scope';
+          renderGeneralCourseStream(container);
+        }
+        updateFoldButtonState();
+      }
+
+      /* ================= 模式 1：定制私课流水线 (大卡片 · 双栏网格) ================= */
+      function renderPrivateCourseStream(container) {
+        currentSections.forEach(sec => {
+          const cardId = `sec_card_${sec.id}`;
+          const logKey = `sec_${sec.id}`;
+          const log = currentLessonLogs[logKey] || null;
+          const isCompleted = log && log.status === 'completed';
+          // 如果记录过就用记录的状态，没记录过默认折叠（true）
+          const isCollapsed = (collapsedCardMap[cardId] !== undefined) ? collapsedCardMap[cardId] : true;
+
+          const card = document.createElement('article');
+          card.className = `stage-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
+          card.id = cardId;
+
+          let gridHtml = '<div class="card-content-grid">';
+          let colIndex = 0;
+
+          sec.ss_course_items.forEach(item => {
+            const subLogKey = `item_${item.id}`;
+            const subLog = currentLessonLogs[subLogKey] || null;
+            const isItemDone = subLog && subLog.status === 'completed';
+
+            const rawContent = item.content_markdown || '';
+            const isLong = item.title.length > 28 || rawContent.length > 180;
+            let layoutClass = isLong ? 'span-full' : (colIndex === 0 ? 'col-left' : 'col-right');
+            if (!isLong) colIndex = 1 - colIndex;
+
+            gridHtml += `
+            <div class="content-block ${layoutClass}">
+              <div style="display:flex; align-items:center; gap:0.45rem; margin-bottom:0.4rem; cursor:pointer;" onclick="toggleItemCheckDirect('${item.id}', '${sec.id}')">
+                <input type="checkbox" style="width:1.05rem; height:1.05rem;" ${isItemDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleItemCheckDirect('${item.id}', '${sec.id}')">
+                <h3 style="margin:0; font-size:0.94rem; font-weight:700;">${parseInline(item.title)}</h3>
+              </div>
+              ${renderMultiLevelList(rawContent)}
+            </div>
+          `;
+          });
+          gridHtml += '</div>';
+
+          let actionButtonHtml = '';
+          if (isCompleted) {
+            actionButtonHtml = `
+            <button class="app-btn btn-stage-done" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openCompletedActions('${sec.id}', null, 'sec')">
+              <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24" style="stroke:#047857; width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
+              已结课 ▾
+            </button>`;
+          } else {
+            actionButtonHtml = `
+            <button class="app-btn" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openMarkCompleteModal('${sec.id}', null, 'sec')">
+              标记已结课
+            </button>`;
+          }
+
+          card.innerHTML = `
+          <div class="card-header-bar" onclick="toggleCardCollapse('${cardId}')">
+            <div class="header-title-inline">
+              <span class="collapse-arrow">▼</span>
+              <div class="capsule-badge">
+                <span>${escapeHtml(sec.stage_badge)}</span>
+                <span class="sep">/</span>
+                <span>PART ${escapeHtml(sec.part_num)}</span>
+              </div>
+              <h2 class="stage-title">${escapeHtml(sec.title)}</h2>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:0.6rem;" onclick="event.stopPropagation()">
+              ${actionButtonHtml}
+              <span class="card-watermark">${escapeHtml(sec.part_num)}</span>
+            </div>
+          </div>
+
+          <div class="card-expandable-content">
+            ${gridHtml}
+
+            <!-- 授课备忘区：仅在后台展示模特及手记 -->
+            <div style="margin-top:1.2rem; padding:0.8rem; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:0.45rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.78rem; font-weight:700; color:#475569;">授课观察手记与备忘 (仅教务后台可见)</span>
+                <button class="app-btn primary" style="min-height:1.65rem; padding:0.15rem 0.5rem; font-size:0.72rem;" onclick="saveLessonLogData('${sec.id}', null, 'sec')">
+                  <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                  保存手记
+                </button>
+              </div>
+
+              <input type="text" class="form-control" id="model_sec_${sec.id}" placeholder="当堂搭档模特 (如: 模特小A / 身形参数 / 耐受与配合习惯...)" value="${log ? escapeHtml(log.model_info || '') : ''}" style="background:#fffaf5; border-color:#fed7aa; color:#9a3412; font-size:0.82rem;">
+              <textarea class="form-control" id="notes_sec_${sec.id}" placeholder="记录本次学员手感、失误或手法盲区..." style="height:2.6rem; font-size:0.82rem;">${log ? escapeHtml(log.teacher_notes || '') : ''}</textarea>
+              <input type="text" class="form-control" id="prep_sec_${sec.id}" placeholder="下次备课准备提醒..." value="${log ? escapeHtml(log.next_prep_tips || '') : ''}" style="background:#fffbeb; color:#92400e; font-size:0.82rem;">
+            </div>
+          </div>
+        `;
+          container.appendChild(card);
+        });
+      }
+
+      /* ================= 模式 2：通用大课流水线 (阶段分割条 + 逐课独立卡片) ================= */
+      function renderGeneralCourseStream(container) {
+        currentSections.forEach(sec => {
+          const divider = document.createElement('div');
+          divider.className = `general-stage-divider stage-${sec.stage_type || 'foundation'}`;
+          divider.innerHTML = `
+          <div style="font-size:1.02rem; font-weight:800; display:flex; align-items:center; gap:0.45rem; color:#0f172a;">
+            <span>${sec.stage_type === 'foundation' ? '🟢' : (sec.stage_type === 'advanced' ? '🟡' : '🔴')}</span>
+            <span>${escapeHtml(sec.title)}</span>
+          </div>
+          <span class="capsule-badge" style="font-size:0.74rem;">${escapeHtml(sec.stage_badge)} / PART ${escapeHtml(sec.part_num)}</span>
+        `;
+          container.appendChild(divider);
+
+          sec.ss_course_items.forEach(item => {
+            const cardId = `item_card_${item.id}`;
+            const logKey = `item_${item.id}`;
+            const log = currentLessonLogs[logKey] || null;
+            const isCompleted = log && log.status === 'completed';
+            const isCollapsed = (collapsedCardMap[cardId] !== undefined) ? collapsedCardMap[cardId] : true;
+
+            const card = document.createElement('article');
+            card.className = `general-item-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
+            card.id = cardId;
+
+            let actionButtonHtml = '';
+            if (isCompleted) {
+              actionButtonHtml = `
+              <button class="app-btn btn-stage-done" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openCompletedActions('${sec.id}', '${item.id}', 'item')">
+                <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24" style="stroke:#047857; width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
+                已结课 ▾
+              </button>`;
+            } else {
+              actionButtonHtml = `
+              <button class="app-btn" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openMarkCompleteModal('${sec.id}', '${item.id}', 'item')">
+                标记已结课
+              </button>`;
+            }
+
+            card.innerHTML = `
+            <div class="general-card-header" onclick="toggleCardCollapse('${cardId}')">
+              <div style="display:flex; align-items:center; gap:0.45rem; flex:1; min-width:0;">
+                <span class="collapse-arrow">▼</span>
+                ${item.item_code ? `<span class="capsule-badge" style="font-family:var(--font-mono); font-size:0.72rem; padding:1px 6px;">${escapeHtml(item.item_code)}</span>` : ''}
+                <span style="font-weight:700; font-size:0.95rem; color:#0f172a; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${parseInline(item.title)}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:0.5rem;" onclick="event.stopPropagation()">
+                ${actionButtonHtml}
+              </div>
+            </div>
+
+            <div class="general-card-content">
+              <div class="general-checklist-group">
+                ${renderGeneralCheckList(item.content_markdown || '', item.id)}
+              </div>
+
+              <div style="margin-top:0.9rem; padding:0.75rem; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:0.45rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:0.76rem; font-weight:700; color:#475569;">📝 本课时授课手记与备课记录</span>
+                  <button class="app-btn primary" style="min-height:1.65rem; padding:0.15rem 0.5rem; font-size:0.72rem;" onclick="saveLessonLogData('${sec.id}', '${item.id}', 'item')">
+                    <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                    保存手记
+                  </button>
+                </div>
+
+                <input type="text" class="form-control" id="model_item_${item.id}" placeholder="👤 本课时搭档模特 (如: 模特小B / 身形 / 配合耐受度等...)" value="${log ? escapeHtml(log.model_info || '') : ''}" style="background:#fffaf5; border-color:#fed7aa; color:#9a3412; font-size:0.82rem;">
+                <textarea class="form-control" id="notes_item_${item.id}" placeholder="记录本课时学员手法要领、掌握进度或表现..." style="height:2.6rem; font-size:0.82rem;">${log ? escapeHtml(log.teacher_notes || '') : ''}</textarea>
+                <input type="text" class="form-control" id="prep_item_${item.id}" placeholder="⭐ 下次备课准备提醒..." value="${log ? escapeHtml(log.next_prep_tips || '') : ''}" style="background:#fffbeb; color:#92400e; font-size:0.82rem;">
+              </div>
+            </div>
+          `;
+            container.appendChild(card);
+          });
+        });
+      }
+
+      /* 大课知识点渲染引擎 (支持 --- 虚线分割线解析) */
+      function renderGeneralCheckList(contentMd, parentItemId) {
+        if (!contentMd) return '';
+        const lines = contentMd.split('\n');
+        let html = '';
+
+        lines.forEach((line, idx) => {
+          let t = line.trim();
+          if (!t) return;
+
+          if (/^---+$/.test(t) || /^(>|&gt;)\s*---+$/.test(t)) {
+            html += `<hr style="border: 0; border-top: 1.5px dashed #cbd5e1; margin: 8px 0;">`;
+            return;
+          }
+
+          if (t.startsWith('>') || t.startsWith('&gt;')) {
+            html += `<div class="note-callout" style="margin:0.25rem 0 0.4rem 0;">${parseInline(t.replace(/^(>|&gt;)\s?/, ''))}</div>`;
+            return;
+          }
+
+          if (/^[-*+]\s+/.test(t)) {
+            const cleanText = t.replace(/^[-*+]\s+/, '');
+            const checkKey = `chk_${parentItemId}_${idx}`;
+            const isChecked = localStorage.getItem(checkKey) === 'true';
+
+            html += `
+            <label class="general-check-item">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="localStorage.setItem('${checkKey}', this.checked)">
+              <span>${parseInline(cleanText)}</span>
+            </label>
+          `;
+          } else {
+            html += `<div style="font-size:0.82rem; color:#64748b; padding:2px 0 2px 4px;">${parseInline(t)}</div>`;
+          }
+        });
+
+        return html;
+      }
+
+      /* ================= 结课状态操作坞 ================= */
+      function openMarkCompleteModal(secId, itemId, targetType) {
+        const sec = currentSections.find(s => s.id === secId);
+        if (!sec) return;
+
+        document.getElementById('targetCompleteSecId').value = secId;
+        document.getElementById('targetCompleteItemId').value = itemId || '';
+        document.getElementById('targetCompleteType').value = targetType;
+
+        let displayTitle = '';
+        if (targetType === 'item') {
+          const it = sec.ss_course_items.find(i => i.id === itemId);
+          displayTitle = `${it ? (it.item_code ? it.item_code + ' ' : '') + it.title : '课时'}`;
+        } else {
+          displayTitle = `${sec.stage_badge} · PART ${sec.part_num} ${sec.title}`;
+        }
+        document.getElementById('markCompleteSubTitle').innerText = displayTitle;
+
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const log = currentLessonLogs[logKey];
+        // 默认永远填入点击结课时的当前日期，若已有历史日期则作为 placeholder 提示
+        document.getElementById('manualCompleteDate').value = today;
+
+        document.getElementById('markCompleteModal').classList.add('active');
+      }
+
+      async function confirmStageComplete(openSummaryAfter = false) {
+        if (!currentStudent || !currentCourse) return;
+        const secId = document.getElementById('targetCompleteSecId').value;
+        const itemId = document.getElementById('targetCompleteItemId').value || null;
+        const targetType = document.getElementById('targetCompleteType').value;
+        const manualDate = document.getElementById('manualCompleteDate').value || new Date().toISOString().slice(0, 10);
+
+        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const existing = currentLessonLogs[logKey];
+
+        const payload = {
+          student_id: currentStudent.id,
+          course_id: currentCourse.id,
+          section_id: secId,
+          item_id: itemId,
+          status: 'completed',
+          taught_at: manualDate
+        };
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({
+            status: 'completed',
+            taught_at: manualDate
+          }).eq('id', existing.id);
+          existing.status = 'completed';
+          existing.taught_at = manualDate;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([payload]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+
+        closeModal('markCompleteModal');
+        renderCourseScopeView();
+
+        if (openSummaryAfter) {
+          openStudentCompletionCard(secId, itemId, targetType);
+        }
+      }
+
+      function openCompletedActions(secId, itemId, targetType) {
+        const sec = currentSections.find(s => s.id === secId);
+        if (!sec) return;
+
+        document.getElementById('actionSecId').value = secId;
+        document.getElementById('actionItemId').value = itemId || '';
+        document.getElementById('actionType').value = targetType;
+
+        let title = '';
+        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const log = currentLessonLogs[logKey];
+
+        if (targetType === 'item') {
+          const it = sec.ss_course_items.find(i => i.id === itemId);
+          title = `${it ? (it.item_code ? it.item_code + ' ' : '') + it.title : '课时'}`;
+        } else {
+          title = `PART ${sec.part_num} · ${sec.title}`;
+        }
+
+        document.getElementById('completedActionTitle').innerText = title;
+        document.getElementById('completedActionDate').innerText = `已记录结课时间：${(log && log.taught_at) ? log.taught_at : '未填'}`;
+
+        document.getElementById('completedActionModal').classList.add('active');
+      }
+
+      function openStudentCompletionCardFromAction() {
+        const secId = document.getElementById('actionSecId').value;
+        const itemId = document.getElementById('actionItemId').value;
+        const targetType = document.getElementById('actionType').value;
+        closeModal('completedActionModal');
+        openStudentCompletionCard(secId, itemId, targetType);
+      }
+
+      async function revertStageToIncomplete() {
+        const secId = document.getElementById('actionSecId').value;
+        const itemId = document.getElementById('actionItemId').value;
+        const targetType = document.getElementById('actionType').value;
+        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const existing = currentLessonLogs[logKey];
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({ status: 'in_progress' }).eq('id', existing.id);
+          existing.status = 'in_progress';
+        }
+
+        closeModal('completedActionModal');
+        renderCourseScopeView();
+      }
+
+      /* ================= 结课页面渲染 (纯净学员交付单) ================= */
+      function openStudentCompletionCard(secId, itemId, targetType) {
+        const sec = currentSections.find(s => s.id === secId);
+        if (!sec || !currentStudent) return;
+
+        const isItemLevel = (targetType === 'item' && itemId);
+        const logKey = isItemLevel ? `item_${itemId}` : `sec_${secId}`;
+        const log = currentLessonLogs[logKey];
+        const completionDate = (log && log.taught_at) ? log.taught_at : new Date().toISOString().slice(0, 10);
+
+        let itemsHtml = '';
+        let displayHeaderTitle = '';
+        let displayMetaBadge = '';
+
+        if (isItemLevel) {
+          const targetItem = sec.ss_course_items.find(i => i.id === itemId);
+          displayHeaderTitle = targetItem ? targetItem.title : '课时完成确认';
+          displayMetaBadge = `${sec.stage_badge} / ${targetItem.item_code || '课时'}`;
+
+          itemsHtml = `
+          <div class="cert-item-card content-block">
+            <div class="cert-item-header-bar">
+              <div class="cert-item-title-text">${targetItem.item_code ? targetItem.item_code + ' ' : ''}${parseInline(targetItem.title)}</div>
+              <div class="cert-stamp-badge">PASSED · 已结课</div>
+            </div>
+            ${targetItem.content_markdown ? renderMultiLevelList(targetItem.content_markdown) : ''}
+          </div>`;
+        } else {
+          displayHeaderTitle = sec.title;
+          displayMetaBadge = `${sec.stage_badge} / PART ${sec.part_num}`;
+
+          sec.ss_course_items.forEach((item) => {
+            itemsHtml += `
+            <div class="cert-item-card content-block">
+              <div class="cert-item-header-bar">
+                <div class="cert-item-title-text">${parseInline(item.title)}</div>
+                <div class="cert-stamp-badge">PASSED · 已结课</div>
+              </div>
+              ${item.content_markdown ? renderMultiLevelList(item.content_markdown) : ''}
+            </div>`;
+          });
+        }
+
+        const cardArea = document.getElementById('studentCompletionCardArea');
+        cardArea.className = `completion-certificate-card render-canvas stage-${sec.stage_type || 'foundation'}`;
+        cardArea.innerHTML = `
+        <div class="cert-header">
+          <div>
+            <div style="font-size:0.75rem; font-weight:800; color:var(--theme-color); letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">
+              学员结课确认单
+            </div>
+            <h2 class="cert-title">${escapeHtml(displayHeaderTitle)}</h2>
+            <div class="cert-meta-row">
+              <span>学员姓名：<strong>${escapeHtml(currentStudent.name)}</strong></span>
+              <span>•</span>
+              <span class="capsule-badge" style="font-size:0.72rem; padding:1px 8px;">${escapeHtml(displayMetaBadge)}</span>
+              <span>•</span>
+              <span class="cert-date-tag">
+                <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24" style="width:13px; height:13px; stroke:#047857;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                结课日期：${escapeHtml(completionDate)}
+              </span>
+            </div>
+          </div>
+          <span class="cert-watermark-lg">${escapeHtml(sec.part_num)}</span>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <div style="font-size:0.86rem; font-weight:800; color:#1e293b; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+            <span>🎯</span> 学员已学习完成项目清单：
+          </div>
+          ${itemsHtml}
+        </div>
+
+        <div style="border-top:1.5px dashed #cbd5e1; padding-top:14px; margin-top:20px; display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; color:#64748b;">
+          <span>✅ 对应教学大纲内容已完成学习安排</span>
+          <span style="font-weight:800; color:#0f172a; letter-spacing:0.02em;">确认签发</span>
+        </div>
+      `;
+
+        document.getElementById('studentCompletionModal').classList.add('active');
+      }
+
+      function exportCompletionCardNative() {
+        const target = document.getElementById('studentCompletionCardArea');
+        html2canvas(target, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = `结课单-${currentStudent ? currentStudent.name : '学员'}-${new Date().toISOString().slice(0, 10)}.png`;
+          link.href = imgData;
+          link.click();
+
+          document.getElementById('modalPreviewImg').src = imgData;
+          document.getElementById('exportModal').classList.add('active');
+        });
+      }
+
+      /* 通用多级列表排版引擎 (支持 --- 虚线分割线解析) */
+      function renderMultiLevelList(text) {
+        if (!text) return '';
+        const lines = text.split('\n');
+        let res = '';
+        let listLevel = 0;
+        function closeLists() { while (listLevel > 0) { res += '</li></ul>'; listLevel--; } }
+
+        for (let raw of lines) {
+          let trimmed = raw.trim();
+          if (!trimmed) continue;
+
+          if (/^---+$/.test(trimmed) || /^(>|&gt;)\s*---+$/.test(trimmed)) {
+            closeLists();
+            res += `<hr style="border: 0; border-top: 1.5px dashed #cbd5e1; margin: 8px 0;">`;
+            continue;
+          }
+
+          if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
+            closeLists();
+            res += `<div class="note-callout">${parseInline(trimmed.replace(/^(>|&gt;)\s?/, ''))}</div>`;
+            continue;
+          }
+
+          if (/^[-*+]\s+/.test(trimmed)) {
+            const indent = raw.search(/\S|$/);
+            const content = trimmed.replace(/^[-*+]\s+/, '');
+            let targetLevel = 1;
+            if (indent >= 6) targetLevel = 3;
+            else if (indent >= 2) targetLevel = 2;
+
+            if (listLevel === 0) { res += '<ul>'; listLevel = 1; }
+            while (listLevel < targetLevel) { res += '<ul>'; listLevel++; }
+            while (listLevel > targetLevel) { res += '</li></ul>'; listLevel--; }
+            res += `<li>${parseInline(content)}`;
+          } else {
+            closeLists();
+            res += `<p style="margin: 4px 0 6px 14px; font-size: 0.85rem; line-height: 1.55; color: var(--text-body);">${parseInline(trimmed)}</p>`;
+          }
+        }
+        closeLists();
+        return res;
+      }
+
+      async function toggleItemCheckDirect(itemId, secId) {
+        if (!currentStudent || !currentCourse) return;
+        const logKey = `item_${itemId}`;
+        const existing = currentLessonLogs[logKey];
+        const newStatus = (existing && existing.status === 'completed') ? 'in_progress' : 'completed';
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update({ status: newStatus }).eq('id', existing.id);
+          existing.status = newStatus;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([{
+            student_id: currentStudent.id, course_id: currentCourse.id, section_id: secId, item_id: itemId, status: newStatus
+          }]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+        renderCourseScopeView();
+      }
+
+      async function saveLessonLogData(secId, itemId, targetType) {
+        if (!currentStudent || !currentCourse) return;
+        const prefix = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
+        const logKey = prefix;
+        const existing = currentLessonLogs[logKey];
+        const modelInfo = document.getElementById(`model_${prefix}`).value.trim();
+        const notes = document.getElementById(`notes_${prefix}`).value.trim();
+        const prep = document.getElementById(`prep_${prefix}`).value.trim();
+
+        const payload = {
+          student_id: currentStudent.id,
+          course_id: currentCourse.id,
+          section_id: secId,
+          item_id: itemId || null,
+          model_info: modelInfo,
+          teacher_notes: notes,
+          next_prep_tips: prep
+        };
+
+        if (existing) {
+          await sbClient.from('ss_lesson_logs').update(payload).eq('id', existing.id);
+          existing.model_info = modelInfo;
+          existing.teacher_notes = notes;
+          existing.next_prep_tips = prep;
+        } else {
+          const { data } = await sbClient.from('ss_lesson_logs').insert([{
+            ...payload, status: 'in_progress'
+          }]).select();
+          if (data && data[0]) currentLessonLogs[logKey] = data[0];
+        }
+        alert('授课手记与模特信息已成功保存！');
+      }
+
+      /* 视图切换 */
+      function switchMainView(viewKey) {
+        document.getElementById('tabBtnCms').classList.toggle('active', viewKey === 'cms');
+        document.getElementById('tabBtnStudio').classList.toggle('active', viewKey === 'studio');
+        document.getElementById('viewCms').style.display = (viewKey === 'cms') ? 'grid' : 'none';
+        document.getElementById('viewStudio').style.display = (viewKey === 'studio') ? 'flex' : 'none';
+
+        document.getElementById('actionsForCms').style.display = (viewKey === 'cms') ? 'flex' : 'none';
+        document.getElementById('actionsForStudio').style.display = (viewKey === 'studio') ? 'flex' : 'none';
+
+        if (viewKey === 'studio') renderSyllabus(document.getElementById('mdEditor').value);
+      }
+
+      function jumpToStudioToEdit() {
+        switchMainView('studio');
+        document.getElementById('mdEditor').focus();
+      }
+
+      /* 学员档案操作 */
+      function openStudentModalDirect(sId) {
+        currentStudent = students.find(s => s.id === sId);
+        if (!currentStudent) return;
+        document.getElementById('viewStdName').innerText = currentStudent.name;
+        document.getElementById('viewStdStageBadge').innerText =
+          currentStudent.stage === 'foundation' ? '基础阶段' : (currentStudent.stage === 'advanced' ? '提高阶段' : '熟练阶段');
+        document.getElementById('viewStdContact').innerText = currentStudent.contact || '未登记';
+        document.getElementById('viewStdCourse').innerText = currentStudent.course_enrolled || '定制私教课程';
+        document.getElementById('viewStdLevel').innerText = currentStudent.learning_level || '日常稳步练习中';
+        document.getElementById('viewStdHabits').innerText = currentStudent.unique_habits || currentStudent.physical_notes || '暂无特殊伤病或身体偏好记录';
+
+        document.getElementById('viewStdTuitionOrig').innerText = currentStudent.tuition_original || '-';
+        document.getElementById('viewStdTuitionDisc').innerText = currentStudent.tuition_discount || '-';
+        document.getElementById('viewStdTuitionFinal').innerText = currentStudent.tuition_final || currentStudent.tuition_quote || '-';
+
+        const status = currentStudent.tuition_status || 'unpaid';
+        const pill = document.getElementById('viewStdPayStatus');
+        if (status === 'paid') { pill.className = 'pay-status-pill pay-paid'; pill.innerText = '已付全款'; }
+        else if (status === 'partial') { pill.className = 'pay-status-pill pay-partial'; pill.innerText = '已付定金'; }
+        else { pill.className = 'pay-status-pill pay-unpaid'; pill.innerText = '未支付'; }
+
+        document.getElementById('viewStdNotes').innerText = currentStudent.general_notes || '暂无补充记录';
+
+        switchModalToRead();
+        document.getElementById('studentModal').classList.add('active');
+      }
+
+      function switchModalToEdit() {
+        document.getElementById('studentReadView').style.display = 'none';
+        document.getElementById('studentEditView').style.display = 'block';
+
+        document.getElementById('editStdName').value = currentStudent.name || '';
+        document.getElementById('editStdContact').value = currentStudent.contact || '';
+        document.getElementById('editStdCourse').value = currentStudent.course_enrolled || '';
+        document.getElementById('editStdStage').value = currentStudent.stage || 'foundation';
+        document.getElementById('editStdLevel').value = currentStudent.learning_level || '';
+        document.getElementById('editStdHabits').value = currentStudent.unique_habits || currentStudent.physical_notes || '';
+
+        document.getElementById('editStdTuitionOriginal').value = currentStudent.tuition_original || '';
+        document.getElementById('editStdTuitionDiscount').value = currentStudent.tuition_discount || '';
+        document.getElementById('editStdTuitionFinal').value = currentStudent.tuition_final || currentStudent.tuition_quote || '';
+        document.getElementById('editStdPayStatus').value = currentStudent.tuition_status || 'unpaid';
+        document.getElementById('editStdGeneralNotes').value = currentStudent.general_notes || '';
+      }
+
+      function switchModalToRead() {
+        document.getElementById('studentEditView').style.display = 'none';
+        document.getElementById('studentReadView').style.display = 'block';
+      }
+
+      async function saveEditedStudent() {
+        const name = document.getElementById('editStdName').value.trim();
+        if (!name) return alert('学员姓名不能为空！');
+
+        const tuitionFinal = document.getElementById('editStdTuitionFinal').value.trim();
+        const payload = {
+          name,
+          contact: document.getElementById('editStdContact').value.trim(),
+          course_enrolled: document.getElementById('editStdCourse').value.trim(),
+          stage: document.getElementById('editStdStage').value,
+          learning_level: document.getElementById('editStdLevel').value.trim(),
+          unique_habits: document.getElementById('editStdHabits').value.trim(),
+          physical_notes: document.getElementById('editStdHabits').value.trim(),
+          tuition_original: document.getElementById('editStdTuitionOriginal').value.trim(),
+          tuition_discount: document.getElementById('editStdTuitionDiscount').value.trim(),
+          tuition_final: tuitionFinal,
+          tuition_quote: tuitionFinal,
+          tuition_status: document.getElementById('editStdPayStatus').value,
+          general_notes: document.getElementById('editStdGeneralNotes').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        await sbClient.from('ss_students').update(payload).eq('id', currentStudent.id);
+        await loadStudents();
+        openStudentModalDirect(currentStudent.id);
+      }
+
+      async function deleteCurrentStudent() {
+        if (!confirm(`确定要彻底删除学员【${currentStudent.name}】吗？`)) return;
+        await sbClient.from('ss_students').delete().eq('id', currentStudent.id);
+        closeModal('studentModal');
+        await loadStudents();
+      }
+
+      /* 智能合并保存 */
+      async function saveStudioChangesToStudent() {
+        if (!currentStudent) return alert('请先选择一位学员！');
+        const md = document.getElementById('mdEditor').value;
+        if (!md.trim()) return alert('大纲内容不能为空！');
+
+        const btn = document.getElementById('btnSyncToStudent');
+        btn.innerText = '正在智能合并...';
+        btn.disabled = true;
+
+        try {
+          const parsed = parseMarkdownDoc(md);
+          let courseId = currentCourse ? currentCourse.id : null;
+
+          if (!courseId) {
+            const { data: newC, error: cErr } = await sbClient.from('ss_courses').insert([{
+              title: parsed.title, type: currentStudent.course_enrolled?.includes('通用') ? 'general' : 'private', student_id: currentStudent.id, raw_markdown: md
+            }]).select();
+            if (cErr) throw cErr;
+            courseId = newC[0].id;
+          } else {
+            await sbClient.from('ss_courses').update({
+              title: parsed.title,
+              raw_markdown: md
+            }).eq('id', courseId);
+          }
+
+          const { data: rawSections } = await sbClient
+            .from('ss_course_sections')
+            .select('*, ss_course_items(*)')
+            .eq('course_id', courseId)
+            .order('sort_order', { ascending: true });
+
+          const existingByPart = new Map();
+          const surplusSecIds = [];
+
+          (rawSections || []).forEach(es => {
+            const pKey = String(es.part_num).trim();
+            if (!existingByPart.has(pKey)) existingByPart.set(pKey, es);
+            else surplusSecIds.push(es.id);
+          });
+
+          if (surplusSecIds.length > 0) {
+            await sbClient.from('ss_course_items').delete().in('section_id', surplusSecIds);
+            await sbClient.from('ss_course_sections').delete().in('id', surplusSecIds);
+          }
+
+          const keptSecIds = new Set();
+
+          for (let sIdx = 0; sIdx < parsed.sections.length; sIdx++) {
+            const newSec = parsed.sections[sIdx];
+            const pKey = String(newSec.partNum).trim();
+            const matchSec = existingByPart.get(pKey);
+
+            let targetSectionId = null;
+            let existingItems = [];
+
+            if (matchSec) {
+              targetSectionId = matchSec.id;
+              existingItems = matchSec.ss_course_items || [];
+              await sbClient.from('ss_course_sections').update({
+                stage_type: newSec.stageClass.replace('stage-', ''),
+                part_num: newSec.partNum,
+                stage_badge: newSec.stageBadge,
+                title: newSec.title,
+                sort_order: sIdx
+              }).eq('id', targetSectionId);
+            } else {
+              const { data: insSec } = await sbClient.from('ss_course_sections').insert([{
+                course_id: courseId,
+                stage_type: newSec.stageClass.replace('stage-', ''),
+                part_num: newSec.partNum,
+                stage_badge: newSec.stageBadge,
+                title: newSec.title,
+                sort_order: sIdx
+              }]).select();
+              targetSectionId = insSec[0].id;
+            }
+
+            keptSecIds.add(targetSectionId);
+
+            const matchedItemIds = new Set();
+            for (let iIdx = 0; iIdx < newSec.items.length; iIdx++) {
+              const newItem = newSec.items[iIdx];
+              const matchItem = existingItems.find(ei =>
+                !matchedItemIds.has(ei.id) && (ei.title.trim() === newItem.title.trim() || (ei.item_code && ei.item_code === newItem.code))
+              );
+
+              if (matchItem) {
+                matchedItemIds.add(matchItem.id);
+                await sbClient.from('ss_course_items').update({
+                  item_code: newItem.code || null,
+                  title: newItem.title,
+                  content_markdown: newItem.content,
+                  sort_order: iIdx
+                }).eq('id', matchItem.id);
+              } else {
+                await sbClient.from('ss_course_items').insert([{
+                  section_id: targetSectionId,
+                  item_code: newItem.code || null,
+                  title: newItem.title,
+                  content_markdown: newItem.content,
+                  sort_order: iIdx
+                }]);
+              }
+            }
+
+            for (const ei of existingItems) {
+              if (!matchedItemIds.has(ei.id)) {
+                await sbClient.from('ss_course_items').delete().eq('id', ei.id);
+              }
+            }
+          }
+
+          for (const [pKey, es] of existingByPart.entries()) {
+            if (!keptSecIds.has(es.id)) {
+              await sbClient.from('ss_course_items').delete().eq('section_id', es.id);
+              await sbClient.from('ss_course_sections').delete().eq('id', es.id);
+            }
+          }
+
+          alert(`✨ 智能合并完成！已成功保留学员【${currentStudent.name}】的历史结课状态与模特手记。`);
+          await selectStudent(currentStudent.id);
+          switchMainView('cms');
+        } catch (err) {
+          alert('合并保存失败: ' + err.message);
+        } finally {
+          btn.innerText = `保存回学员【${currentStudent.name}】`;
+          btn.disabled = false;
+        }
+      }
+
+      /* Markdown 解析器 (支持课时代码解析如 L1-1) */
+      function parseMarkdownDoc(md) {
+        const lines = md.split('\n');
+        let docTitle = '未命名课程大纲';
+        let sections = [];
+        let currentSec = null;
+        let currentItem = null;
+
+        for (let rawLine of lines) {
+          let line = rawLine.trimEnd();
+          if (line.startsWith('# ') && !line.startsWith('## ')) {
+            docTitle = line.replace('# ', '').trim();
+            continue;
+          }
+          if (line.startsWith('## ')) {
+            if (currentSec) sections.push(currentSec);
+            const rawSec = line.replace('## ', '').trim();
+            let stageClass = 'stage-foundation';
+            let stageBadge = '基础阶段';
+            if (rawSec.includes('提高') || rawSec.includes('进阶') || rawSec.includes('中级') || rawSec.includes('🟡')) {
+              stageClass = 'stage-advanced'; stageBadge = '提高阶段';
+            } else if (rawSec.includes('熟练') || rawSec.includes('高阶') || rawSec.includes('高级') || rawSec.includes('🔴')) {
+              stageClass = 'stage-mastery'; stageBadge = '熟练阶段';
+            }
+
+            const partNumMatch = rawSec.match(/Part\.?\s*(\d+)/i);
+            const partNum = partNumMatch ? partNumMatch[1].padStart(2, '0') : String(sections.length + 1).padStart(2, '0');
+            let cleanTitle = rawSec.replace(/[🟢🟡🔴]/g, '').trim();
+            if (cleanTitle.includes('-')) cleanTitle = cleanTitle.split('-')[1].trim();
+
+            currentSec = { stageClass, stageBadge, partNum, title: cleanTitle, items: [] };
+            currentItem = null;
+            continue;
+          }
+          if (line.startsWith('### ')) {
+            const rawItem = line.replace('### ', '').trim();
+            let itemCode = '';
+            let itemTitle = rawItem;
+
+            const codeMatch = rawItem.match(/^([A-Za-z0-9]+(?:-[A-Za-z0-9]+)?)\.?\s*(.+)/);
+            if (codeMatch) {
+              itemCode = codeMatch[1];
+              itemTitle = codeMatch[2];
+            }
+
+            currentItem = { code: itemCode, title: itemTitle, contentLines: [] };
+            if (currentSec) currentSec.items.push(currentItem);
+            continue;
+          }
+          if (currentItem && line.trim().length > 0) currentItem.contentLines.push(line);
+        }
+        if (currentSec) sections.push(currentSec);
+
+        sections.forEach(s => {
+          s.items.forEach(it => { it.content = it.contentLines.join('\n'); delete it.contentLines; });
+        });
+        return { title: docTitle, sections };
+      }
+
+      function renderSyllabus(md) {
+        document.getElementById('charCount').innerText = md.length + ' 字';
+        const previewArea = document.getElementById('exportArea');
+        const parsed = parseMarkdownDoc(md);
+
+        let html = `<header><h1>${escapeHtml(parsed.title)}</h1><div class="student-pill"><span>学员：<strong>${escapeHtml(currentStudent ? currentStudent.name : '未指定')}</strong></span></div></header><div class="timeline-stream">`;
+
+        for (let sec of parsed.sections) {
+          html += `<article class="stage-card ${sec.stageClass}"><div class="card-header-bar"><div class="header-title-inline"><div class="capsule-badge"><span>${sec.stageBadge}</span><span class="sep">/</span><span>PART ${sec.partNum}</span></div><h2 class="stage-title">${escapeHtml(sec.title)}</h2></div><span class="card-watermark">${sec.partNum}</span></div><div class="card-content-grid">`;
+          let colIndex = 0;
+          for (let it of sec.items) {
+            const isSpanFull = it.title.length > 28 || (it.content && it.content.length > 180);
+            let layoutClass = isSpanFull ? 'span-full' : (colIndex === 0 ? 'col-left' : 'col-right');
+            if (!isSpanFull) colIndex = 1 - colIndex;
+
+            html += `<div class="content-block ${layoutClass}"><h3>${it.code ? `<span class="capsule-badge" style="font-size:0.72rem; padding:1px 6px;">${escapeHtml(it.code)}</span> ` : ''}${parseInline(it.title)}</h3>${renderMultiLevelList(it.content)}</div>`;
+          }
+          html += `</div></article>`;
+        }
+        html += `</div>`;
+        previewArea.innerHTML = html;
+      }
+
+      function parseInline(text) {
+        if (!text) return '';
+        let str = escapeHtml(text);
+        str = str.replace(/\\\*/g, '___ESCAPED_STAR___');
+        str = str.replace(/\\#/g, '___ESCAPED_HASH___');
+
+        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (_, innerText) {
+          const innerFormatted = innerText.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+          return '<strong>' + innerFormatted + '</strong>';
+        });
+
+        str = str.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+        str = str.replace(/___ESCAPED_STAR___/g, '*');
+        str = str.replace(/___ESCAPED_HASH___/g, '#');
+        return str;
+      }
+
+      function escapeHtml(t) { return String(t || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+      /* 拖拽与编辑器工具 */
+      let isProgrammaticScroll = false;
+      let scrollTimer = null;
+
+      function syncScroll(source, target) {
+        if (isProgrammaticScroll) return;
+        const maxSource = source.scrollHeight - source.clientHeight;
+        const maxTarget = target.scrollHeight - target.clientHeight;
+        if (maxSource <= 0 || maxTarget <= 0) return;
+
+        const ratio = source.scrollTop / maxSource;
+        isProgrammaticScroll = true;
+        target.scrollTop = ratio * maxTarget;
+
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => { isProgrammaticScroll = false; }, 50);
+      }
+
+      function initStudioSyncScroll() {
+        const previewPane = document.getElementById('previewPane');
+        const editor = document.getElementById('mdEditor');
+        previewPane.addEventListener('scroll', () => syncScroll(previewPane, editor), { passive: true });
+        editor.addEventListener('scroll', () => syncScroll(editor, previewPane), { passive: true });
+      }
+
+      function initStudioResizer() {
+        const resizer = document.getElementById('splitResizer');
+        const editorPane = document.getElementById('editorPane');
+        const previewPane = document.getElementById('previewPane');
+        let isDragging = false;
+
+        resizer.addEventListener('mousedown', () => { isDragging = true; resizer.classList.add('dragging'); document.body.style.cursor = 'col-resize'; });
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          const rect = document.getElementById('viewStudio').getBoundingClientRect();
+          const newWidth = rect.right - e.clientX;
+          if (newWidth >= 280 && newWidth <= (rect.width - 280)) {
+            editorPane.style.flex = 'none';
+            editorPane.style.width = newWidth + 'px';
+            previewPane.style.flex = '1';
+          }
+        });
+        window.addEventListener('mouseup', () => { isDragging = false; resizer.classList.remove('dragging'); document.body.style.cursor = ''; });
+        document.getElementById('mdEditor').addEventListener('input', (e) => renderSyllabus(e.target.value));
+      }
+
+      let isWordWrap = true;
+      function toggleWordWrap() {
+        isWordWrap = !isWordWrap;
+        const editor = document.getElementById('mdEditor');
+        editor.style.whiteSpace = isWordWrap ? 'pre-wrap' : 'pre';
+        document.getElementById('wrapToggleBtn').classList.toggle('active', isWordWrap);
+      }
+
+      function applyFormat(type) {
+        const editor = document.getElementById('mdEditor');
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        const sel = editor.value.substring(start, end);
+
+        if (type === 'bold') insertTextAtCursor(sel ? `**${sel}**` : '****', sel ? 0 : 2);
+        else if (type === 'stamp') insertTextAtCursor(sel ? `*${sel}*` : '**', sel ? 0 : 1);
+        else if (type === 'list') insertTextAtCursor(`- ${sel || '列表项目'}`);
+      }
+
+      function insertTextAtCursor(text, offsetBack = 0) {
+        const editor = document.getElementById('mdEditor');
+        editor.focus();
+        document.execCommand('insertText', false, text);
+        if (offsetBack > 0) {
+          const cur = editor.selectionStart;
+          editor.setSelectionRange(cur - offsetBack, cur - offsetBack);
+        }
+        renderSyllabus(editor.value);
+      }
+
+      function applyHeading(prefix) {
+        const editor = document.getElementById('mdEditor');
+        const start = editor.selectionStart;
+        const fullText = editor.value;
+        const lineStart = fullText.lastIndexOf('\n', start - 1) + 1;
+        let lineEnd = fullText.indexOf('\n', start);
+        if (lineEnd === -1) lineEnd = fullText.length;
+
+        const cleanLine = fullText.substring(lineStart, lineEnd).replace(/^#{1,6}\s*/, '');
+        const newLine = prefix + cleanLine;
+
+        editor.setSelectionRange(lineStart, lineEnd);
+        document.execCommand('insertText', false, newLine);
+        closeAllDropdowns();
+        renderSyllabus(editor.value);
+      }
+
+      function indentLines(isIndent) {
+        const editor = document.getElementById('mdEditor');
+        editor.focus();
+        document.execCommand('insertText', false, isIndent ? '    ' : '');
+        renderSyllabus(editor.value);
+      }
+
+      function toggleHeadingMenu(e) { e.stopPropagation(); closeAllDropdowns(); document.getElementById('headingDropdown').classList.toggle('active'); }
+      function closeAllDropdowns() { document.querySelectorAll('.editor-dropdown').forEach(d => d.classList.remove('active')); }
+      window.addEventListener('click', closeAllDropdowns);
+
+      function initEditorKeyShortcuts() {
+        const editor = document.getElementById('mdEditor');
+        editor.addEventListener('keydown', (e) => {
+          const isCtrl = e.ctrlKey || e.metaKey;
+          if (e.altKey && (e.key === 'z' || e.key === 'Z')) { e.preventDefault(); toggleWordWrap(); }
+          if (isCtrl && (e.key === 'b' || e.key === 'B')) { e.preventDefault(); applyFormat('bold'); }
+          if (isCtrl && (e.key === 'i' || e.key === 'I')) { e.preventDefault(); applyFormat('stamp'); }
+          if (isCtrl && (e.key === 'l' || e.key === 'L')) { e.preventDefault(); applyFormat('list'); }
+          if (isCtrl && e.key === '2') { e.preventDefault(); applyHeading('## '); }
+          if (isCtrl && e.key === '3') { e.preventDefault(); applyHeading('### '); }
+          if (isCtrl && e.key === '4') { e.preventDefault(); applyHeading('#### '); }
+          if (isCtrl && e.key === '5') { e.preventDefault(); applyHeading('##### '); }
+          if (e.key === 'Tab') { e.preventDefault(); indentLines(!e.shiftKey); }
+        });
+      }
+
+      function toggleSidebarMaster() {
+        if (window.innerWidth <= 768) {
+          const sb = document.getElementById('studentsSidebar');
+          const isOpen = sb.classList.contains('open');
+          sb.classList.toggle('open', !isOpen);
+          document.getElementById('sidebarBackdrop').classList.toggle('active', !isOpen);
+        } else {
+          document.getElementById('viewCms').classList.toggle('sidebar-collapsed');
+        }
+      }
+      function closeSidebarMobile() {
+        document.getElementById('studentsSidebar').classList.remove('open');
+        document.getElementById('sidebarBackdrop').classList.remove('active');
+      }
+
+      function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+      /* 新建学员 */
+      function openNewStudentModal() {
+        document.getElementById('newStdName').value = '';
+        document.getElementById('newStdContact').value = '';
+        document.getElementById('newStudentModal').classList.add('active');
+      }
+
+      async function saveNewStudent() {
+        const name = document.getElementById('newStdName').value.trim();
+        if (!name) return alert('学员姓名不能为空！');
+        const contact = document.getElementById('newStdContact').value.trim();
+        const mode = document.querySelector('input[name="newStudentCourseType"]:checked').value;
+
+        const { data, error } = await sbClient.from('ss_students').insert([{
+          name, contact, course_enrolled: mode === 'general' ? '通用体系大课' : '1对1定制私课'
+        }]).select();
+
+        if (error) return alert('创建失败: ' + error.message);
+        closeModal('newStudentModal');
+        await loadStudents();
+        if (data && data[0]) selectStudent(data[0].id);
+      }
+
+      /* 导入 Markdown */
+      function openImportModal() {
+        if (currentStudent) document.getElementById('importStudentName').value = currentStudent.name;
+        document.getElementById('importModal').classList.add('active');
+      }
+      function handleFileLoad(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => document.getElementById('importMdText').value = evt.target.result;
+        reader.readAsText(file);
+      }
+
+      async function processAndSaveImport() {
+        const md = document.getElementById('importMdText').value;
+        if (!md.trim()) return alert('Markdown 内容不能为空！');
+        const mode = document.querySelector('input[name="courseMode"]:checked').value;
+        const inputStdName = document.getElementById('importStudentName').value.trim();
+
+        const btn = document.getElementById('btnDoImport');
+        btn.innerText = '正在解析同步...';
+        btn.disabled = true;
+
+        try {
+          let targetStudentId = null;
+          if (inputStdName) {
+            let s = students.find(item => item.name === inputStdName);
+            if (!s) {
+              const { data: newS } = await sbClient.from('ss_students').insert([{ name: inputStdName, course_enrolled: mode === 'general' ? '通用体系大课' : '定制私课' }]).select();
+              if (newS && newS[0]) s = newS[0];
+            }
+            if (s) targetStudentId = s.id;
+          }
+
+          const parsed = parseMarkdownDoc(md);
+
+          let targetCourseId = null;
+          if (targetStudentId) {
+            const { data: existCourses } = await sbClient.from('ss_courses').select('id').eq('student_id', targetStudentId).limit(1);
+            if (existCourses && existCourses.length > 0) {
+              targetCourseId = existCourses[0].id;
+              await sbClient.from('ss_courses').update({
+                title: parsed.title,
+                type: mode,
+                raw_markdown: md
+              }).eq('id', targetCourseId);
+            }
+          }
+
+          if (!targetCourseId) {
+            const { data: cData, error: cErr } = await sbClient.from('ss_courses').insert([{
+              title: parsed.title, type: mode, student_id: targetStudentId, raw_markdown: md
+            }]).select();
+            if (cErr) throw cErr;
+            targetCourseId = cData[0].id;
+          }
+
+          await sbClient.from('ss_course_items').delete().in(
+            'section_id',
+            (await sbClient.from('ss_course_sections').select('id').eq('course_id', targetCourseId)).data?.map(i => i.id) || []
+          );
+          await sbClient.from('ss_course_sections').delete().eq('course_id', targetCourseId);
+
+          for (let sIdx = 0; sIdx < parsed.sections.length; sIdx++) {
+            const sec = parsed.sections[sIdx];
+            const { data: sData } = await sbClient.from('ss_course_sections').insert([{
+              course_id: targetCourseId, stage_type: sec.stageClass.replace('stage-', ''),
+              part_num: sec.partNum, stage_badge: sec.stageBadge, title: sec.title, sort_order: sIdx
+            }]).select();
+
+            const sectionId = sData[0].id;
+            const itemsPayload = sec.items.map((it, iIdx) => ({
+              section_id: sectionId, item_code: it.code || null, title: it.title, content_markdown: it.content, sort_order: iIdx
+            }));
+            if (itemsPayload.length > 0) await sbClient.from('ss_course_items').insert(itemsPayload);
+          }
+
+          alert('外部大纲已成功同步写入！');
+          closeModal('importModal');
+          await loadStudents();
+          if (targetStudentId) selectStudent(targetStudentId);
+        } catch (err) {
+          alert('导入失败: ' + err.message);
+        } finally {
+          btn.innerText = '分析并同步写入';
+          btn.disabled = false;
+        }
+      }
+
+      /* 导出微信长图 */
+      function exportImageNative() {
+        const target = (document.getElementById('viewStudio').style.display === 'flex')
+          ? document.getElementById('exportArea')
+          : document.getElementById('printableArea');
+
+        const renderWidth = Math.round(target.getBoundingClientRect().width || 820);
+
+        html2canvas(target, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#f8fafc',
+          width: renderWidth,
+          windowWidth: 1200,
+          windowHeight: 12000,
+          onclone: (clonedDoc) => {
+            const el = clonedDoc.getElementById(target.id);
+            if (!el) return;
+            el.style.width = renderWidth + 'px';
+            el.style.maxWidth = renderWidth + 'px';
+            el.style.margin = '0 auto';
+            clonedDoc.body.innerHTML = '';
+            clonedDoc.body.style.backgroundColor = '#f8fafc';
+            clonedDoc.body.appendChild(el);
+          }
+        }).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = `大纲-${currentStudent ? currentStudent.name : '学员'}-${new Date().toISOString().slice(0, 10)}.png`;
+          link.href = imgData;
+          link.click();
+
+          document.getElementById('modalPreviewImg').src = imgData;
+          document.getElementById('exportModal').classList.add('active');
+        });
+      }
+
+      function exportMarkdownFile() {
+        const blob = new Blob([document.getElementById('mdEditor').value], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `课程大纲-${currentStudent ? currentStudent.name : '学员'}.md`;
+        link.href = url;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function exportStandaloneHTML() {
+        const previewArea = document.getElementById('exportArea');
+        const doc = document.implementation.createHTMLDocument("课程计划");
+        const currentActualWidth = previewArea.offsetWidth;
+
+        const style = doc.createElement("style");
+        style.textContent = `
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f1f5f9; padding: 36px 16px 80px; }
+        .container { max-width: ${currentActualWidth}px; margin: 0 auto; }
+      ` + document.getElementById("coreStyles").textContent;
+        doc.head.appendChild(style);
+
+        const container = doc.createElement("div");
+        container.className = "container render-canvas";
+        container.innerHTML = previewArea.innerHTML;
+        doc.body.appendChild(container);
+
+        const blob = new Blob(["<!DOCTYPE html>\n" + doc.documentElement.outerHTML], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = `宣发大纲-${currentStudent ? currentStudent.name : '学员'}.html`;
+        link.href = url;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    </script>
+  </body>
+
+</html>
