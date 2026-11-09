@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Syllabus Studio · 课程大纲设计工作台</title>
-    <!-- 截图引擎 -->
+    <!-- 截图引擎与国际标准 Markdown 渲染引擎 Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -28,6 +29,8 @@
         --card-border: #e2e8f0;
         --card-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
         --card-hover-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.12);
+        --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+        --font-mono: 'Fira Code', Consolas, Monaco, monospace;
       }
 
       .stage-foundation {
@@ -231,13 +234,6 @@
         margin-top: -4px;
       }
 
-      .card-content-grid>.span-full h3:last-child,
-      .card-content-grid>.span-full ul:last-child,
-      .card-content-grid>.span-full .table-wrapper:last-child,
-      .card-content-grid>.span-full .note-callout:last-child {
-        margin-bottom: 0 !important;
-      }
-
       .card-content-grid>.col-left {
         position: relative;
       }
@@ -277,137 +273,97 @@
         flex-shrink: 0;
       }
 
-      /* 四级标题 #### */
-      .render-canvas h4.sub-heading {
+      /* ================= 工业级标准 Markdown 排版规范 (.markdown-body) ================= */
+      .markdown-body {
+        font-family: var(--font-base);
         font-size: 0.88rem;
-        font-weight: 600;
-        color: #1e293b;
-        background: rgba(241, 245, 249, 0.6);
-        border-left: 2.5px solid #94a3b8;
-        padding: 3px 8px;
-        border-radius: 0 4px 4px 0;
-        margin: 14px 0 8px 18px;
-        display: block;
-        line-height: 1.4;
-      }
-
-      /* 五级标题 ##### */
-      .render-canvas h5.micro-heading {
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: #64748b;
-        margin: 8px 0 4px 38px;
-        line-height: 1.4;
-      }
-
-      .render-canvas h5.micro-heading::before {
-        content: "§ ";
-        color: var(--theme-color);
-        opacity: 0.7;
-      }
-
-      .render-canvas ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-
-      /* 一级列表 */
-      .content-block>ul {
-        padding-left: 18px !important;
-      }
-
-      .content-block>ul>li {
-        font-size: 0.88rem;
-        font-weight: 400 !important;
+        line-height: 1.62;
         color: var(--text-body);
-        position: relative;
-        padding-left: 14px;
-        margin-bottom: 6px;
-        line-height: 1.6;
+        word-break: break-word;
+        background: transparent !important;
       }
 
-      .content-block>ul>li::before {
-        content: "•";
-        position: absolute;
-        left: 2px;
-        top: 0;
-        color: #94a3b8;
-        font-size: 1rem;
-        line-height: 1.5;
+      .markdown-body p {
+        margin: 0.25rem 0 0.45rem 0;
       }
 
-      /* 二级列表 */
-      .render-canvas ul ul {
-        padding-left: 16px !important;
-        margin: 4px 0 6px 4px;
-        border-left: 1.5px solid #cbd5e1;
+      .markdown-body p:last-child {
+        margin-bottom: 0;
       }
 
-      .render-canvas ul ul li {
-        font-size: 0.85rem;
+      /* 标准多级无序列表 (按照标准层级递进符号) */
+      .markdown-body ul {
+        list-style-type: disc !important;
+        padding-left: 1.35rem !important;
+        margin: 0.2rem 0 0.45rem 0 !important;
+      }
+
+      .markdown-body ul ul {
+        list-style-type: circle !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ul ul ul {
+        list-style-type: square !important;
+        padding-left: 1.2rem !important;
+        margin: 0.12rem 0 0.2rem 0 !important;
+      }
+
+      /* 标准多级有序列表 (完美修复 1. 2. 3. 及其嵌套) */
+      .markdown-body ol {
+        list-style-type: decimal !important;
+        padding-left: 1.35rem !important;
+        margin: 0.25rem 0 0.45rem 0 !important;
+      }
+
+      .markdown-body ol ol {
+        list-style-type: lower-alpha !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ol ol ol {
+        list-style-type: lower-roman !important;
+        padding-left: 1.2rem !important;
+        margin: 0.12rem 0 0.2rem 0 !important;
+      }
+
+      /* 有序与无序互嵌标准适配 */
+      .markdown-body ol ul {
+        list-style-type: square !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ul ol {
+        list-style-type: decimal !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body li {
+        font-size: 0.88rem !important;
         font-weight: 400 !important;
-        color: var(--text-body);
-        margin-bottom: 4px;
-        position: relative;
-        padding-left: 12px;
-        line-height: 1.55;
+        color: var(--text-body) !important;
+        line-height: 1.6 !important;
+        margin: 0.18rem 0 !important;
+        padding-left: 0.15rem !important;
       }
 
-      .render-canvas ul ul li::before {
-        content: "–";
-        position: absolute;
-        left: 0;
-        color: #94a3b8;
-        font-weight: 600;
+      /* 清除旧版手写伪类产生的强制符号干扰 */
+      .markdown-body li::before {
+        display: none !important;
+        content: none !important;
       }
 
-      /* 三级列表 */
-      .render-canvas ul ul ul {
-        padding-left: 14px !important;
-        margin: 3px 0 5px 3px;
-        border-left: 1px dashed #94a3b8;
-      }
-
-      .render-canvas ul ul ul li {
-        font-size: 0.82rem;
-        font-weight: 400 !important;
-        color: var(--text-muted);
-        padding-left: 10px;
-        margin-bottom: 3px;
-        line-height: 1.5;
-      }
-
-      .render-canvas ul ul ul li::before {
-        content: "›";
-        position: absolute;
-        left: 0;
-        top: -1px;
-        color: #94a3b8;
-        font-size: 0.95rem;
-        font-weight: bold;
-      }
-
-      .render-canvas strong {
+      .markdown-body strong {
         color: var(--text-title);
         font-weight: 700 !important;
       }
 
-      /* 引用注释专属注解框 */
-      .note-callout {
-        background: rgba(241, 245, 249, 0.7);
-        border-left: 3px solid var(--theme-color);
-        padding: 8px 12px;
-        border-radius: 0 6px 6px 0;
-        margin: 6px 0 8px 18px;
-        font-size: 0.82rem;
-        color: #475569;
-        line-height: 1.55;
-        font-weight: 400;
-      }
-
-      /* 日系流派印章 */
-      .render-canvas em {
+      /* 针对印章 em 的个性化保持，同时不破坏标准斜体感 */
+      .markdown-body em {
         font-style: normal;
         font-size: 0.78rem;
         font-weight: 600;
@@ -422,25 +378,110 @@
         line-height: 1.3;
       }
 
-      /* ================= 核心表格精美排版 ================= */
-      .render-canvas .table-wrapper {
-        width: 100%;
+      /* 四级子标题 #### 样式标准映射 */
+      .markdown-body h4 {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #1e293b;
+        background: rgba(241, 245, 249, 0.6);
+        border-left: 2.5px solid #94a3b8;
+        padding: 3px 8px;
+        border-radius: 0 4px 4px 0;
+        margin: 14px 0 8px 0;
+        display: block;
+        line-height: 1.4;
+      }
+
+      /* 五级微型标题 ##### 样式标准映射 */
+      .markdown-body h5 {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #64748b;
+        margin: 8px 0 4px 14px;
+        line-height: 1.4;
+      }
+
+      .markdown-body h5::before {
+        content: "§ ";
+        color: var(--theme-color);
+        opacity: 0.7;
+      }
+
+      /* 引用块标准渲染 (自动适配主题色高亮) */
+      .markdown-body blockquote {
+        margin: 0.4rem 0 0.6rem 0 !important;
+        padding: 8px 12px !important;
+        color: #475569 !important;
+        background: rgba(241, 245, 249, 0.7) !important;
+        border-left: 3px solid var(--theme-color, #0284c7) !important;
+        border-radius: 0 6px 6px 0 !important;
+        font-size: 0.82rem !important;
+        line-height: 1.55 !important;
+      }
+
+      .markdown-body blockquote p {
+        margin: 0 !important;
+      }
+
+      /* ================= 核心修复：分割线标准渲染 与 双分界线自适应消除 ================= */
+      .markdown-body hr {
+        border: 0 !important;
+        border-top: 1.5px dashed #cbd5e1 !important;
+        margin: 10px 0 !important;
+      }
+
+      /* 🌟 自适应消除重影：如果 hr 位于小节的最开头或最末尾，自动隐藏，避免与卡片外框双重叠加 */
+      .markdown-body>hr:first-child,
+      .markdown-body>hr:last-child {
+        display: none !important;
+      }
+
+      .content-block hr:last-of-type:is(:last-child, :nth-last-child(2)) {
+        display: none !important;
+      }
+
+      /* 行内代码与代码块 */
+      .markdown-body code {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 1px 4px;
+        border-radius: 4px;
+        color: #0f172a;
+      }
+
+      .markdown-body pre {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 10px 12px;
+        border-radius: 6px;
         overflow-x: auto;
+        margin: 0.5rem 0;
+      }
+
+      .markdown-body pre code {
+        background: transparent;
+        border: none;
+        color: inherit;
+        padding: 0;
+      }
+
+      /* 表格通用美化 */
+      .markdown-body table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        line-height: 1.55;
         margin: 12px 0 14px 0;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
         background: #ffffff;
         box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+        overflow: hidden;
       }
 
-      .render-canvas table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
-        line-height: 1.55;
-      }
-
-      .render-canvas th {
+      .markdown-body th {
         background: #f8fafc;
         color: #1e293b;
         font-weight: 700;
@@ -449,17 +490,22 @@
         white-space: nowrap;
       }
 
-      .render-canvas td {
+      .markdown-body td {
         padding: 9px 14px;
         border-bottom: 1px solid #f1f5f9;
+        border-right: 1px solid #f1f5f9;
         color: #334155;
       }
 
-      .render-canvas tr:last-child td {
+      .markdown-body tr:last-child td {
         border-bottom: none;
       }
 
-      .render-canvas tbody tr:hover td {
+      .markdown-body td:last-child {
+        border-right: none;
+      }
+
+      .markdown-body tbody tr:hover td {
         background-color: #f8fafc;
       }
 
@@ -1113,7 +1159,7 @@
         margin: 14px 0;
       }
 
-      /* ================= 打印 / PDF 导出专用样式（仅呈现宣发页，隐藏编辑面板） ================= */
+      /* ================= 打印 / PDF 导出专用样式 ================= */
       @media print {
         @page {
           margin: 10mm 8mm;
@@ -1183,11 +1229,10 @@
 
         .card-header-bar,
         .capsule-badge,
-        .note-callout,
         .student-pill,
-        .render-canvas table,
-        .render-canvas th,
-        .render-canvas td {
+        .markdown-body table,
+        .markdown-body th,
+        .markdown-body td {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
@@ -1239,14 +1284,10 @@
         <div class="pane-header">
           <!-- 快捷编辑工具条 -->
           <div class="editor-toolbar">
-            <!-- 自动换行切换按键 (默认高亮激活) -->
             <button class="tool-btn active" id="wrapToggleBtn" onclick="toggleWordWrap()" title="切换自动换行 (Alt+Z)">↩ 换行</button>
-
             <div class="tool-sep"></div>
-
             <button class="tool-btn" onclick="applyFormat('bold')" title="粗体加粗 (Ctrl+B)"><b>B</b></button>
             <button class="tool-btn" onclick="applyFormat('stamp')" title="流派印章 (Ctrl+I)"><i>*</i></button>
-
             <div class="tool-sep"></div>
 
             <!-- 标题下拉 -->
@@ -1263,7 +1304,7 @@
             <!-- 快速列表 -->
             <button class="tool-btn" onclick="applyFormat('list')" title="快速列表化 (Ctrl+L)">•≡</button>
 
-            <!-- 纯净插入表格骨架下拉 -->
+            <!-- 插入表格下拉 -->
             <div class="dropdown-wrapper">
               <button class="tool-btn" onclick="toggleTableMenu(event)" title="新建表格 (Ctrl+Shift+T)"><b>⊞ 表格 ▾</b></button>
               <div class="editor-dropdown" id="tableDropdown">
@@ -1323,10 +1364,12 @@
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
                 <div class="preview-box">
-                  <h1 style="margin:0 0 0.3rem 0;">课程计划</h1>
-                  <h2 style="margin:0 0 0.3rem 0;">二级大阶段</h2>
-                  <h3 style="margin:0 0 0.3rem 0;">三级核心小节</h3>
-                  <h4 class="sub-heading" style="margin-left:0;">四级内嵌子标题</h4>
+                  <h1 style="margin:0 0 0.3rem 0; font-size:1.4rem;">课程计划</h1>
+                  <h2 style="margin:0 0 0.3rem 0; font-size:1.2rem;">二级大阶段</h2>
+                  <h3 style="margin:0 0 0.3rem 0; font-size:1rem;">三级核心小节</h3>
+                  <div class="markdown-body">
+                    <h4>四级内嵌子标题</h4>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1353,11 +1396,11 @@
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <p style="font-weight:400; color:#334155;">常规描述文字</p>
-                  <p><strong style="font-weight:700; color:#0f172a;">强烈强调的核心重点</strong></p>
-                  <p><em style="font-style:normal; background:#f8fafc; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> 印章</p>
-                  <p><strong>双本结（ <em style="font-style:normal; background:#f8fafc; border:1px solid #cbd5e1; padding:1px 6px; border-radius:4px; font-size:0.75rem;">奈加流</em> ）</strong></p>
+                <div class="preview-box markdown-body">
+                  <p>常规描述文字</p>
+                  <p><strong>强烈强调的核心重点</strong></p>
+                  <p><em>奈加流</em> 印章</p>
+                  <p><strong>双本结（ <em>奈加流</em> ）</strong></p>
                   <p style="font-size:0.8rem; color:#64748b;">转义星号：*不是斜体*</p>
                 </div>
               </div>
@@ -1368,10 +1411,10 @@
         <div class="card-item" data-keywords="分界线 分割线 横线 hr divider">
           <div class="card-item-header">
             <span>➖ 3. 分界线与版面划分 (Dividers)</span>
-            <span class="badge badge-core">极易踩坑</span>
+            <span class="badge badge-core">自适应已优化</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">🚨 <strong>绝对禁忌：</strong>写 <code>---</code> 时，**上方必须留一个完整空行**！若直接紧贴上一行文字，Markdown 会把上一行文字直接渲染成巨大的 <code>&lt;h2&gt;</code> 标题！</div>
+            <div class="spec-box">💡 系统已自动集成智能去重！小节首尾书写的 <code>---</code> 会自动与卡片外框融合，绝不产生两条重复虚线；在正文内部使用则保留美观分割。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1385,7 +1428,7 @@
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
+                <div class="preview-box markdown-body">
                   <p style="color:#64748b;">上一章节结束内容总结。</p>
                   <hr>
                   <p style="font-weight:600;">这是跨大板块的新章节内容。</p>
@@ -1398,10 +1441,10 @@
         <div class="card-item" data-keywords="表格 对齐 table align 居中 左对齐 右对齐">
           <div class="card-item-header">
             <span>📅 4. 数据表格与多维对齐 (Data Tables)</span>
-            <span class="badge badge-high">已全面支持</span>
+            <span class="badge badge-high">标准 Marked 引擎</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">📐 规则：表格之间只要**空一行**，系统就会自动分割成两个独立表格！如果希望表格分别放在不同小节卡片内，只需在上方各打一个 <code>### 标题</code>。</div>
+            <div class="spec-box">📐 规则：标准 GFM 表格排版，系统检测到表格时会自动分配通栏卡片宽度，确保数据舒展大气呈现。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1414,7 +1457,7 @@
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
+                <div class="preview-box markdown-body">
                   <table>
                     <thead>
                       <tr>
@@ -1445,32 +1488,31 @@
         <div class="card-item" data-keywords="列表 任务清单 todo list task 有序 无序 缩进">
           <div class="card-item-header">
             <span>📊 5. 复合列表与树状缩进 (Lists)</span>
-            <span class="badge badge-struct">结构化</span>
+            <span class="badge badge-struct">多级混排</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">📌 避坑：列表项在系统内将自动向右缩进呈现，子级列表建议逐层缩进 **4 个空格**以生成层级导轨线！使用工具栏的 <code>⇥</code> 与 <code>⇤</code> 可以一键批量缩进。</div>
+            <div class="spec-box">📌 避坑：已完美支持有序列表 <code>1. 2. 3.</code> 与无序列表 <code>-</code> 任意嵌套，自动切换标准圆点/方块符号。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
                 <div class="source-wrapper">
-                  <pre>- 上肢神经
-    - 桡神经
-    - 正中神经
-    - 尺神经
-1. 第一阶段环境构建
-2. 第二阶段核心部署</pre>
+                  <pre>- 上肢神经触诊定位:
+    1. 桡神经: 螺旋下行
+    2. 尺神经: 内上髁沟
+- 下肢神经避让路径</pre>
                 </div>
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
-                  <ul style="padding-left:1.1rem; margin-bottom:4px;">
-                    <li style="font-weight:400;">上肢神经
-                      <ul style="padding-left:1.1rem; border-left:1.5px solid #cbd5e1; margin-left:4px;">
-                        <li style="font-weight:400;">桡神经</li>
-                        <li style="font-weight:400;">正中神经</li>
-                      </ul>
+                <div class="preview-box markdown-body">
+                  <ul>
+                    <li>上肢神经触诊定位:
+                      <ol>
+                        <li>桡神经: 螺旋下行</li>
+                        <li>尺神经: 内上髁沟</li>
+                      </ol>
                     </li>
+                    <li>下肢神经避让路径</li>
                   </ul>
                 </div>
               </div>
@@ -1484,7 +1526,7 @@
             <span class="badge badge-struct">结构化</span>
           </div>
           <div class="card-item-body">
-            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成专属注解框！顶部使用 <code>学员：XX</code> 自动生成学员徽标。连续的 <code>&gt;</code> 会自动合并为一个整体大框。</div>
+            <div class="spec-box">💬 技巧：使用 <code>&gt; 解释说明</code> 可在任何技法或小节下生成专属注解框！顶部使用 <code>学员：XX</code> 自动生成学员徽标。</div>
             <div class="stack-grid">
               <div>
                 <div class="panel-header"><span>💻 源码 (Markdown)</span><button class="btn-copy" onclick="copySource(this)">复制</button></div>
@@ -1497,10 +1539,10 @@
               </div>
               <div>
                 <div class="panel-header">🎨 渲染效果呈现</div>
-                <div class="preview-box">
+                <div class="preview-box markdown-body">
                   <div style="display:inline-block; border:1px solid #cbd5e1; padding:2px 10px; border-radius:20px; font-size:0.8rem; margin-bottom:8px;">学员：<strong>XX</strong></div>
                   <h3 style="font-size:0.92rem; margin-bottom:4px; font-weight:700;">片足半吊</h3>
-                  <div style="background:#f1f5f9; border-left:3px solid #0284c7; padding:4px 10px; border-radius:0 4px 4px 0; font-size:0.8rem; color:#475569;">单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</div>
+                  <blockquote>单脚悬挂时需时刻监控脚踝血液流通，单次不宜超过 8 分钟。</blockquote>
                 </div>
               </div>
             </div>
@@ -1533,13 +1575,8 @@
                   </tr>
                   <tr>
                     <td><strong>空行阻断机制</strong></td>
-                    <td>段落间、分界线 <code>---</code> 上下、表格前后，**必须保留且只保留一个空行**。</td>
+                    <td>段落间、分界线 <code>---</code> 上下、表格前后，**保留一个空行**。</td>
                     <td>防止不同平台解析器出现布局重叠与粘连事故。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>表格前后留空</strong></td>
-                    <td>表格的前一行和后一行保持为空行，使表格解析更加平稳。</td>
-                    <td>标准 Markdown 规范，防止表格粘附列表项。</td>
                   </tr>
                 </tbody>
               </table>
@@ -1572,6 +1609,15 @@
 
       editor.value = '';
       charCount.innerText = '0 字';
+
+      // 初始化 Marked.js 工业标准配置
+      if (typeof marked !== 'undefined') {
+        marked.setOptions({
+          gfm: true,
+          breaks: true,
+          pedantic: false
+        });
+      }
 
       editor.addEventListener('input', () => {
         renderSyllabus(editor.value);
@@ -1687,7 +1733,43 @@
         reader.readAsText(file);
       }
 
-      /* ================= 核心大纲拆解与分级渲染 ================= */
+      /* ================= 方案 A 核心：智能成对探测预读引擎 ================= */
+      function computeCardLayoutClasses(sections) {
+        if (!sections || sections.length === 0) return [];
+        const n = sections.length;
+
+        const isShortList = sections.map(sec => {
+          const title = sec.title || '';
+          const rawContent = (sec.elements || []).join('\n');
+          const hasTable = (sec.elements || []).some(l => l.trim().startsWith('|') && l.trim().endsWith('|'));
+          // 表格因横向跨度大必须全宽；普通内容根据字数与标题长度综合裁定
+          if (hasTable) return false;
+          return !(title.trim().length > 28 || rawContent.length > 180);
+        });
+
+        const layoutClasses = new Array(n).fill('span-full');
+        let i = 0;
+        while (i < n) {
+          if (isShortList[i]) {
+            // 只有当紧邻的下一项也是短模块时，才成对生成左右双栏
+            if (i + 1 < n && isShortList[i + 1]) {
+              layoutClasses[i] = 'col-item col-left';
+              layoutClasses[i + 1] = 'col-item col-right';
+              i += 2; // 成对跳过
+            } else {
+              // 孤立单项自动全宽铺满，彻底杜绝单边留白缺陷！
+              layoutClasses[i] = 'span-full';
+              i += 1;
+            }
+          } else {
+            layoutClasses[i] = 'span-full';
+            i += 1;
+          }
+        }
+        return layoutClasses;
+      }
+
+      /* ================= 核心大纲拆解与分级渲染 (Marked.js 全面接管) ================= */
       function renderSyllabus(md) {
         charCount.innerText = md.length + ' 字';
         if (!md.trim()) {
@@ -1725,18 +1807,16 @@
             }
           }
 
-          if (line.trim() === '---') continue;
-
           if (line.startsWith('## ')) {
             if (currentPart) parts.push(currentPart);
             const partRaw = line.replace('## ', '').trim();
 
             let stageClass = 'stage-foundation';
             let stageBadge = '基础阶段';
-            if (partRaw.includes('提高') || partRaw.includes('进阶')) {
+            if (partRaw.includes('提高') || partRaw.includes('进阶') || partRaw.includes('中级') || partRaw.includes('🟡')) {
               stageClass = 'stage-advanced';
               stageBadge = '提高阶段';
-            } else if (partRaw.includes('熟练') || partRaw.includes('高阶')) {
+            } else if (partRaw.includes('熟练') || partRaw.includes('高阶') || partRaw.includes('高级') || partRaw.includes('🔴')) {
               stageClass = 'stage-mastery';
               stageBadge = '熟练阶段';
             }
@@ -1748,7 +1828,7 @@
             if (partRaw.includes('-')) {
               titleClean = partRaw.split('-')[1].trim();
             } else {
-              titleClean = partRaw.replace(/^[一二三四五六七八九十\d\.\s]+/, '').replace(/Part\.?\s*\d+/i, '').trim();
+              titleClean = partRaw.replace(/[🟢🟡🔴]/g, '').replace(/^[一二三四五六七八九十\d\.\s]+/, '').replace(/Part\.?\s*\d+/i, '').trim();
             }
 
             currentPart = {
@@ -1804,34 +1884,20 @@
           html += '  </div>';
           html += '  <div class="card-content-grid">';
 
-          let colIndex = 0;
+          // 核心方案 A 布局决策器
+          const layoutClasses = computeCardLayoutClasses(part.sections);
 
-          for (let sec of part.sections) {
-            const hasLongTitle = sec.title.trim().length > 32;
-            const hasVeryLongElement = sec.elements.some(l => l.replace(/^[\s\-*#>\d\.]+/, '').trim().length > 50);
-            const hasTable = sec.elements.some(l => l.trim().startsWith('|') && l.trim().endsWith('|'));
-            const isSpanFull = hasLongTitle || hasVeryLongElement || hasTable;
-
-            let layoutClass = '';
-            if (isSpanFull) {
-              layoutClass = 'span-full';
-              colIndex = 0;
-            } else {
-              if (colIndex === 0) {
-                layoutClass = 'col-item col-left';
-                colIndex = 1;
-              } else {
-                layoutClass = 'col-item col-right';
-                colIndex = 0;
-              }
-            }
+          for (let idx = 0; idx < part.sections.length; idx++) {
+            const sec = part.sections[idx];
+            const layoutClass = layoutClasses[idx];
+            const rawContent = sec.elements.join('\n');
 
             html += '<div class="content-block ' + layoutClass + '">';
             if (sec.title) {
               html += '  <h3>' + parseInline(sec.title) + '</h3>';
             }
-            if (sec.elements.length > 0) {
-              html += renderSectionElements(sec.elements);
+            if (rawContent.trim()) {
+              html += '  <div class="markdown-body">' + renderMultiLevelList(rawContent) + '</div>';
             }
             html += '</div>';
           }
@@ -1844,195 +1910,27 @@
         previewArea.innerHTML = html;
       }
 
-      function renderSectionElements(lines) {
-        let res = '';
-        let listLevel = 0;
-        let noteBuffer = [];
-        let tableBuffer = [];
-
-        function closeLists() {
-          while (listLevel > 0) {
-            res += '</li></ul>';
-            listLevel--;
-          }
+      /* 统一桥接：标准 Marked.js 解析 */
+      function renderMultiLevelList(text) {
+        if (!text) return '';
+        try {
+          return marked.parse(text);
+        } catch (e) {
+          return `<p>${escapeHtml(text)}</p>`;
         }
-
-        function flushNote() {
-          if (noteBuffer.length > 0) {
-            let noteHtml = '';
-            for (let i = 0; i < noteBuffer.length; i++) {
-              const text = noteBuffer[i];
-              if (text === '') {
-                noteHtml += '<br><br>';
-              } else {
-                if (i > 0 && noteBuffer[i - 1] !== '') noteHtml += '<br>';
-                noteHtml += parseInline(text);
-              }
-            }
-            res += '<div class="note-callout">' + noteHtml + '</div>';
-            noteBuffer = [];
-          }
-        }
-
-        function isSeparatorLine(str) {
-          const inner = str.replace(/^\|/, '').replace(/\|$/, '');
-          const parts = inner.split('|');
-          return parts.length > 0 && parts.every(p => /^[\s:-]+$/.test(p) && p.includes('-'));
-        }
-
-        function flushTable() {
-          if (tableBuffer.length === 0) return;
-
-          if (tableBuffer.length >= 2 && isSeparatorLine(tableBuffer[1].trim())) {
-            const headerRaw = tableBuffer[0].trim();
-            const alignRaw = tableBuffer[1].trim();
-
-            const alignParts = alignRaw.replace(/^\|/, '').replace(/\|$/, '').split('|');
-            const colAligns = alignParts.map(p => {
-              const s = p.trim();
-              const left = s.startsWith(':');
-              const right = s.endsWith(':');
-              if (left && right) return 'center';
-              if (right) return 'right';
-              if (left) return 'left';
-              return 'left';
-            });
-
-            const headerCells = headerRaw.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
-
-            let tblHtml = '<div class="table-wrapper"><table><thead><tr>';
-            headerCells.forEach((c, idx) => {
-              const align = colAligns[idx] || 'left';
-              tblHtml += `<th style="text-align:${align};">${parseInline(c)}</th>`;
-            });
-            tblHtml += '</tr></thead><tbody>';
-
-            for (let r = 2; r < tableBuffer.length; r++) {
-              const row = tableBuffer[r].trim();
-              if (!row) continue;
-              const cells = row.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
-              tblHtml += '<tr>';
-              for (let cIdx = 0; cIdx < headerCells.length; cIdx++) {
-                const align = colAligns[cIdx] || 'left';
-                const cellText = cells[cIdx] !== undefined ? cells[cIdx] : '';
-                tblHtml += `<td style="text-align:${align};">${parseInline(cellText)}</td>`;
-              }
-              tblHtml += '</tr>';
-            }
-
-            tblHtml += '</tbody></table></div>';
-            res += tblHtml;
-            tableBuffer = [];
-            return;
-          }
-
-          for (let badLine of tableBuffer) {
-            res += '<p style="margin: 4px 0 6px 18px; font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">' + parseInline(badLine.trim()) + '</p>';
-          }
-          tableBuffer = [];
-        }
-
-        for (let raw of lines) {
-          let trimmed = raw.trim();
-
-          if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-            flushNote();
-            closeLists();
-
-            if (tableBuffer.length >= 2 && isSeparatorLine(trimmed)) {
-              const prevHeader = tableBuffer.pop();
-              flushTable();
-              tableBuffer.push(prevHeader);
-            }
-
-            tableBuffer.push(trimmed);
-            continue;
-          }
-
-          flushTable();
-
-          if (trimmed.startsWith('#### ')) {
-            flushNote();
-            closeLists();
-            res += '<h4 class="sub-heading">' + parseInline(trimmed.replace('#### ', '').trim()) + '</h4>';
-            continue;
-          }
-
-          if (trimmed.startsWith('##### ')) {
-            flushNote();
-            closeLists();
-            res += '<h5 class="micro-heading">' + parseInline(trimmed.replace('##### ', '').trim()) + '</h5>';
-            continue;
-          }
-
-          if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
-            closeLists();
-            noteBuffer.push(trimmed.replace(/^(>|&gt;)\s?/, ''));
-            continue;
-          }
-
-          flushNote();
-
-          const isBulletList = /^[-*+]\s+/.test(trimmed);
-          const isNumberList = /^\d+\.\s+/.test(trimmed);
-
-          if (isBulletList || isNumberList) {
-            const indent = raw.search(/\S|$/);
-            const content = trimmed.replace(/^([-*+]|\d+\.)\s+/, '');
-
-            let targetLevel = 1;
-            if (indent >= 6) targetLevel = 3;
-            else if (indent >= 2) targetLevel = 2;
-
-            if (listLevel === 0) {
-              res += '<ul>';
-              listLevel = 1;
-            }
-
-            while (listLevel < targetLevel) {
-              res += '<ul>';
-              listLevel++;
-            }
-            while (listLevel > targetLevel) {
-              res += '</li></ul>';
-              listLevel--;
-            }
-
-            res += '<li>' + parseInline(content);
-          } else {
-            closeLists();
-            res += '<p style="margin: 4px 0 6px 18px; font-size: 0.88rem; line-height: 1.6; color: var(--text-body);">' + parseInline(trimmed) + '</p>';
-          }
-        }
-
-        flushTable();
-        flushNote();
-        closeLists();
-        return res;
       }
 
       function parseInline(text) {
         if (!text) return '';
-        let str = escapeHtml(text);
-
-        str = str.replace(/\\\*/g, '___ESCAPED_STAR___');
-        str = str.replace(/\\#/g, '___ESCAPED_HASH___');
-
-        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (_, innerText) {
-          const innerFormatted = innerText.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
-          return '<strong>' + innerFormatted + '</strong>';
-        });
-
-        str = str.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
-
-        str = str.replace(/___ESCAPED_STAR___/g, '*');
-        str = str.replace(/___ESCAPED_HASH___/g, '#');
-
-        return str;
+        try {
+          return marked.parseInline(text);
+        } catch (e) {
+          return escapeHtml(text);
+        }
       }
 
       function escapeHtml(text) {
-        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return String(text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
       }
 
       /* ================= 撤销栈兼容的文本替换核心 ================= */
@@ -2048,7 +1946,7 @@
         renderSyllabus(editor.value);
       }
 
-      /* 自动换行切换逻辑（默认开启） */
+      /* 自动换行切换逻辑 */
       let isWordWrap = true;
 
       function toggleWordWrap() {
@@ -2229,11 +2127,10 @@
         safeReplaceText('学员：XX\n\n', start, start);
       }
 
-      /* ================= 全套快捷键监听 ================= */
+      /* 全套快捷键监听 */
       editor.addEventListener('keydown', (e) => {
         const isCtrl = e.ctrlKey || e.metaKey;
 
-        // Alt + Z 快速切换自动换行
         if (e.altKey && (e.key === 'z' || e.key === 'Z')) {
           e.preventDefault();
           toggleWordWrap();
@@ -2315,38 +2212,33 @@
         }
       });
 
-      /* ================= 核心修复：100% 解决长图底部切断与排版失真 ================= */
+      /* 核心长图导出 (保持 100% 尺寸与防裁切优化) */
       function exportImageNative() {
         const target = document.getElementById('exportArea');
         const btn = document.querySelector('.app-btn.primary');
         const oldText = btn.innerHTML;
         btn.innerHTML = '<span>⏳ 导出中...</span>';
 
-        // 1. 获取宣发页面当前的真实视觉尺寸（不管当前如何拖动自适应宽度，分毫不差）
         const rect = target.getBoundingClientRect();
         const isNarrow = target.classList.contains('is-narrow');
         const renderWidth = Math.round(rect.width || target.offsetWidth);
-
-        // 2. 赋予虚拟离屏环境充足的渲染视口
         const virtualWidth = Math.max(window.innerWidth, renderWidth + 240, 1200);
 
         const opt = {
-          scale: 2, // 2倍高清视网膜渲染
+          scale: 2,
           useCORS: true,
           backgroundColor: '#f8fafc',
           scrollX: 0,
           scrollY: 0,
           x: 0,
           y: 0,
-          width: renderWidth, // 锁定宣发页实际自适应宽度
-          // 注意：不要传递写死的 height！让 html2canvas 自动测量克隆卡片的完整自适应高度，防止末端被切
+          width: renderWidth,
           windowWidth: virtualWidth,
-          windowHeight: 12000, // 赋予超长虚拟高度空间，杜绝底部视口截断
+          windowHeight: 12000,
           onclone: (clonedDoc) => {
             const clonedTarget = clonedDoc.getElementById('exportArea');
             if (!clonedTarget) return;
 
-            // 1. 严格锁定宣发卡片的尺寸与排版类名，完美继承当前屏幕视觉宽度
             clonedTarget.style.width = renderWidth + 'px';
             clonedTarget.style.maxWidth = renderWidth + 'px';
             clonedTarget.style.minWidth = renderWidth + 'px';
@@ -2366,8 +2258,6 @@
               clonedTarget.classList.remove('is-narrow');
             }
 
-            // 2. 【核心破局】：在克隆文档中建立绝对纯净的 (0, 0) 坐标系！
-            // 清空 body 并将宣发页作为唯一顶层子元素挂载，彻底清除导航条(56px)及预览外框padding(30px)产生的 86px 错位裁剪
             clonedDoc.body.innerHTML = '';
             clonedDoc.body.style.margin = '0';
             clonedDoc.body.style.padding = '0';
