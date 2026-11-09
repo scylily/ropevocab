@@ -6,9 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Syllabus Studio Pro · 学员教务中心</title>
 
-    <!-- Supabase 官方 SDK & 截图引擎 -->
+    <!-- Supabase 官方 SDK、截图引擎 与 国际标准 Markdown 渲染引擎 Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -300,124 +301,162 @@
         flex-shrink: 0;
       }
 
-      /* 多级列表排版引擎 */
-      .render-canvas ul,
-      .stage-card ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-
-      .content-block>ul {
-        padding-left: 14px !important;
-      }
-
-      .content-block>ul>li {
+      /* ================= 工业级标准 Markdown 排版规范 (.markdown-body) ================= */
+      .markdown-body {
+        font-family: var(--font-base);
         font-size: 0.86rem;
-        font-weight: 400 !important;
+        line-height: 1.62;
         color: var(--text-body);
-        position: relative;
-        padding-left: 12px;
-        margin-bottom: 5px;
-        line-height: 1.6;
         word-break: break-word;
+        background: transparent !important;
       }
 
-      .content-block>ul>li::before {
-        content: "•";
-        position: absolute;
-        left: 1px;
-        top: 0;
-        color: #94a3b8;
-        font-size: 0.95rem;
+      .markdown-body p {
+        margin: 0.25rem 0 0.45rem 0;
       }
 
-      .render-canvas ul ul,
-      .stage-card ul ul {
-        padding-left: 14px !important;
-        margin: 3px 0 5px 3px;
-        border-left: 1.5px solid #cbd5e1;
+      .markdown-body p:last-child {
+        margin-bottom: 0;
       }
 
-      .render-canvas ul ul li,
-      .stage-card ul ul li {
-        font-size: 0.83rem;
+      .markdown-body ul {
+        list-style-type: disc !important;
+        padding-left: 1.35rem !important;
+        margin: 0.2rem 0 0.45rem 0 !important;
+      }
+
+      .markdown-body ul ul {
+        list-style-type: circle !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ul ul ul {
+        list-style-type: square !important;
+        padding-left: 1.2rem !important;
+        margin: 0.12rem 0 0.2rem 0 !important;
+      }
+
+      .markdown-body ol {
+        list-style-type: decimal !important;
+        padding-left: 1.35rem !important;
+        margin: 0.25rem 0 0.45rem 0 !important;
+      }
+
+      .markdown-body ol ol {
+        list-style-type: lower-alpha !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ol ol ol {
+        list-style-type: lower-roman !important;
+        padding-left: 1.2rem !important;
+        margin: 0.12rem 0 0.2rem 0 !important;
+      }
+
+      .markdown-body ol ul {
+        list-style-type: square !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body ul ol {
+        list-style-type: decimal !important;
+        padding-left: 1.25rem !important;
+        margin: 0.15rem 0 0.25rem 0 !important;
+      }
+
+      .markdown-body li {
+        font-size: 0.86rem !important;
         font-weight: 400 !important;
-        color: var(--text-body);
-        margin-bottom: 4px;
-        position: relative;
-        padding-left: 10px;
-        line-height: 1.55;
+        color: var(--text-body) !important;
+        line-height: 1.6 !important;
+        margin: 0.18rem 0 !important;
+        padding-left: 0.15rem !important;
       }
 
-      .render-canvas ul ul li::before,
-      .stage-card ul ul li::before {
-        content: "–";
-        position: absolute;
-        left: 0;
-        color: #94a3b8;
-        font-weight: 600;
+      .markdown-body li::before {
+        display: none !important;
+        content: none !important;
       }
 
-      .render-canvas ul ul ul,
-      .stage-card ul ul ul {
-        padding-left: 12px !important;
-        margin: 2px 0 4px 2px;
-        border-left: 1px dashed #94a3b8;
-      }
-
-      .render-canvas ul ul ul li,
-      .stage-card ul ul ul li {
-        font-size: 0.8rem;
-        font-weight: 400 !important;
-        color: var(--text-muted);
-        padding-left: 8px;
-        margin-bottom: 3px;
-        line-height: 1.5;
-      }
-
-      .render-canvas ul ul ul li::before,
-      .stage-card ul ul ul li::before {
-        content: "›";
-        position: absolute;
-        left: 0;
-        color: #94a3b8;
-        font-size: 0.9rem;
-        font-weight: bold;
-      }
-
-      .render-canvas strong,
-      .stage-card strong {
+      .markdown-body strong {
         color: var(--text-title);
         font-weight: 700 !important;
       }
 
-      .note-callout {
-        background: rgba(241, 245, 249, 0.7);
-        border-left: 3px solid var(--theme-color);
-        padding: 6px 10px;
-        border-radius: 0 6px 6px 0;
-        margin: 5px 0 7px 14px;
-        font-size: 0.8rem;
-        color: #475569;
-        line-height: 1.5;
-        font-weight: 400;
-        word-break: break-word;
-      }
-
-      .render-canvas em,
-      .stage-card em {
+      .markdown-body em {
         font-style: normal;
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         font-weight: 600;
         background: #f8fafc;
-        color: #64748b;
+        color: #475569;
         border: 1px solid #cbd5e1;
         padding: 1px 5px;
         border-radius: 4px;
-        margin: 0 3px;
+        margin: 0 2px;
         display: inline-block;
         vertical-align: 0.5px;
+      }
+
+      .markdown-body blockquote {
+        margin: 0.4rem 0 0.6rem 0 !important;
+        padding: 6px 12px !important;
+        color: #475569 !important;
+        background: rgba(241, 245, 249, 0.75) !important;
+        border-left: 3px solid var(--theme-color, #0284c7) !important;
+        border-radius: 0 6px 6px 0 !important;
+        font-size: 0.82rem !important;
+        line-height: 1.55 !important;
+      }
+
+      .markdown-body blockquote p {
+        margin: 0 !important;
+      }
+
+      /* 1. 标准分割线 */
+      .markdown-body hr {
+        border: 0 !important;
+        border-top: 1.5px dashed #cbd5e1 !important;
+        margin: 10px 0 !important;
+      }
+
+      /* 🌟 2. 自适应消除重影：如果 hr 位于小节的最开头或最末尾，自动隐藏，避免与卡片外框双重叠加 */
+      .markdown-body>hr:first-child,
+      .markdown-body>hr:last-child {
+        display: none !important;
+      }
+
+      /* 兼容处理：有时 hr 前后会附带空段落，用 has / adjacent 彻底兜底 */
+      .content-block hr:last-of-type:is(:last-child, :nth-last-child(2)) {
+        display: none !important;
+      }
+
+      .markdown-body code {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 1px 4px;
+        border-radius: 4px;
+        color: #0f172a;
+      }
+
+      .markdown-body pre {
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 10px 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 0.5rem 0;
+      }
+
+      .markdown-body pre code {
+        background: transparent;
+        border: none;
+        color: inherit;
+        padding: 0;
       }
     </style>
 
@@ -684,7 +723,6 @@
         border-color: #7dd3fc;
       }
 
-      /* 学员档案操作小按钮 */
       .s-profile-btn {
         background: #ffffff;
         border: 1px solid #cbd5e1;
@@ -751,7 +789,6 @@
         color: var(--text-title);
       }
 
-      /* 补回私课卡片之间的垂直留白（中间的空） */
       .private-scope .stage-card {
         margin-bottom: 0.1rem !important;
       }
@@ -1467,7 +1504,6 @@
 
         <main class="main-viewport">
           <div class="content-container" id="printableArea">
-            <!-- 🌟 初始默认隐藏顶栏，只有手动点击学员后才显示 -->
             <div class="syllabus-header-strip" id="syllabusHeaderStrip" style="display: none;">
               <div class="header-title-group">
                 <h1 id="currentCourseTitle">未加载</h1>
@@ -1485,21 +1521,19 @@
                   </svg>
                   在设计台微调此大纲
                 </button>
-                <!-- 动态自适应智能折叠按钮 -->
                 <button class="app-btn" id="toggleAllFoldBtn" onclick="toggleAllCardsDynamic()">
                   ▴ 全部折叠
                 </button>
               </div>
             </div>
 
-            <!-- 🌟 初始纯净空白欢迎状态区（与 SSCMS 原版完全一致） -->
             <div id="courseScopeContainer">
               <div style="text-align: center; padding: clamp(3rem, 10vw, 5rem) 1rem; color: #94a3b8;">
                 <div style="font-size: 2.5rem; margin-bottom: 0.6rem;">
                   <svg class="svg-icon" viewBox="0 0 24 24">
-                  <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-8a3 3 0 0 1 6 0v8" />
-                </svg>
-              </div>
+                    <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-8a3 3 0 0 1 6 0v8" />
+                  </svg>
+                </div>
                 <div style="font-size: 1.05rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem;">欢迎使用 Syllabus Studio 教务工作台</div>
                 <div style="font-size: 0.82rem; color: #94a3b8;">请在左侧学员列表中选择一位学员，或点击「+ 新建学员」开启教学跟进</div>
               </div>
@@ -1560,7 +1594,7 @@
 
     <!-- ================= 模态弹窗系统 ================= -->
 
-    <!-- 1. 学员详细档案弹窗 (查阅态 / 编辑态) -->
+    <!-- 1. 学员详细档案弹窗 -->
     <div class="modal-overlay" id="studentModal">
       <div class="modal-box">
         <div id="studentReadView">
@@ -1815,12 +1849,54 @@
       let collapsedCardMap = {};
 
       window.addEventListener('DOMContentLoaded', () => {
+        if (typeof marked !== 'undefined') {
+          marked.setOptions({
+            gfm: true,
+            breaks: true,
+            pedantic: false
+          });
+        }
+
         sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
         checkAutoLogin();
         initStudioResizer();
         initStudioSyncScroll();
         initEditorKeyShortcuts();
       });
+
+      /* ================= 方案 A 核心：智能成对探测预读引擎 ================= */
+      function computeCardLayoutClasses(items) {
+        if (!items || items.length === 0) return [];
+        const n = items.length;
+
+        // 判定项是否属于“短内容”
+        const isShortList = items.map(it => {
+          const rawContent = it.content || it.content_markdown || '';
+          const title = it.title || '';
+          return !(title.length > 28 || rawContent.length > 180);
+        });
+
+        const layoutClasses = new Array(n).fill('span-full');
+        let i = 0;
+        while (i < n) {
+          if (isShortList[i]) {
+            // 只有当紧接着的下一项也是短项时，才成对生成左右双栏
+            if (i + 1 < n && isShortList[i + 1]) {
+              layoutClasses[i] = 'col-left';
+              layoutClasses[i + 1] = 'col-right';
+              i += 2; // 成对跳过
+            } else {
+              // 孤单单项，前后都是长模块，自动通栏铺开，彻底杜绝单边留白！
+              layoutClasses[i] = 'span-full';
+              i += 1;
+            }
+          } else {
+            layoutClasses[i] = 'span-full';
+            i += 1;
+          }
+        }
+        return layoutClasses;
+      }
 
       /* 登录与鉴权 */
       async function checkAutoLogin() {
@@ -1873,7 +1949,7 @@
         }
       }
 
-      /* 🌟 学员数据加载（切断自动选中首个学员代码，保持默认纯净欢迎态） */
+      /* 学员数据加载 */
       async function loadStudents() {
         const { data, error } = await sbClient.from('ss_students').select('*').order('created_at', { ascending: false });
         if (error) return console.error(error);
@@ -1906,14 +1982,12 @@
 
       function filterStudents() { renderStudentList(); }
 
-      /* ================= 选中学员加载数据（点击学员时显现顶栏） ================= */
+      /* 选中学员加载数据 */
       async function selectStudent(studentId) {
         currentStudent = students.find(s => s.id === studentId);
         renderStudentList();
 
-        // 🌟 手动点击学员后，将顶部教务控制条从隐藏唤醒为可见
         document.getElementById('syllabusHeaderStrip').style.display = 'flex';
-
         document.getElementById('headerStudentName').innerText = currentStudent.name;
         document.getElementById('btnSyncToStudent').innerText = `保存回学员【${currentStudent.name}】`;
 
@@ -1994,47 +2068,39 @@
           renderSyllabus(currentCourse.raw_markdown);
         }
 
-        // 默认标记为全部折叠
         collapsedCardMap = { __defaultCollapsed: true };
         renderCourseScopeView();
         updateFoldButtonState();
       }
 
-      /* ================= 智能动态折叠状态侦测机 ================= */
-        function updateFoldButtonState() {
-          const foldBtn = document.getElementById('toggleAllFoldBtn');
-          if (!foldBtn) return;
-          // 🌟 修复：只检索教务主看板(#courseScopeContainer)内的卡片，排除工坊预览区
-          const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
-          if (allCards.length === 0) return;
+      /* 智能折叠探测 */
+      function updateFoldButtonState() {
+        const foldBtn = document.getElementById('toggleAllFoldBtn');
+        if (!foldBtn) return;
+        const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
+        if (allCards.length === 0) return;
 
-          const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
+        const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
+        foldBtn.innerText = hasAnyOpen ? '▴ 全部折叠' : '▾ 全部展开';
+      }
 
-          if (hasAnyOpen) {
-            foldBtn.innerText = '▴ 全部折叠';
-          } else {
-            foldBtn.innerText = '▾ 全部展开';
-          }
+      function toggleAllCardsDynamic() {
+        const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
+        const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
+
+        if (hasAnyOpen) {
+          allCards.forEach(c => {
+            c.classList.add('is-collapsed');
+            collapsedCardMap[c.id] = true;
+          });
+        } else {
+          allCards.forEach(c => {
+            c.classList.remove('is-collapsed');
+            collapsedCardMap[c.id] = false;
+          });
         }
-
-        function toggleAllCardsDynamic() {
-          // 🌟 修复：同样限制范围，避免误影响后台工坊卡片
-          const allCards = document.querySelectorAll('#courseScopeContainer .stage-card, #courseScopeContainer .general-item-card');
-          const hasAnyOpen = Array.from(allCards).some(c => !c.classList.contains('is-collapsed'));
-
-          if (hasAnyOpen) {
-            allCards.forEach(c => {
-              c.classList.add('is-collapsed');
-              collapsedCardMap[c.id] = true;
-            });
-          } else {
-            allCards.forEach(c => {
-              c.classList.remove('is-collapsed');
-              collapsedCardMap[c.id] = false;
-            });
-          }
-          updateFoldButtonState();
-        }
+        updateFoldButtonState();
+      }
 
       function toggleCardCollapse(id) {
         const card = document.getElementById(id);
@@ -2044,7 +2110,7 @@
         updateFoldButtonState();
       }
 
-      /* ================= 课程分流总控 ================= */
+      /* 课程分流总控 */
       function renderCourseScopeView() {
         const container = document.getElementById('courseScopeContainer');
         container.innerHTML = '';
@@ -2060,32 +2126,30 @@
         updateFoldButtonState();
       }
 
-      /* ================= 模式 1：定制私课流水线 (大卡片 · 双栏网格) ================= */
+      /* 模式 1：定制私课流水线 (接入成对预读引擎) */
       function renderPrivateCourseStream(container) {
         currentSections.forEach(sec => {
           const cardId = `sec_card_${sec.id}`;
           const logKey = `sec_${sec.id}`;
           const log = currentLessonLogs[logKey] || null;
           const isCompleted = log && log.status === 'completed';
-          // 如果记录过就用记录的状态，没记录过默认折叠（true）
           const isCollapsed = (collapsedCardMap[cardId] !== undefined) ? collapsedCardMap[cardId] : true;
 
           const card = document.createElement('article');
           card.className = `stage-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
           card.id = cardId;
 
+          // 核心更新：使用预读算法直接算出每一个小节的最佳布局 class
+          const layoutClasses = computeCardLayoutClasses(sec.ss_course_items);
           let gridHtml = '<div class="card-content-grid">';
-          let colIndex = 0;
 
-          sec.ss_course_items.forEach(item => {
+          sec.ss_course_items.forEach((item, itemIdx) => {
             const subLogKey = `item_${item.id}`;
             const subLog = currentLessonLogs[subLogKey] || null;
             const isItemDone = subLog && subLog.status === 'completed';
 
             const rawContent = item.content_markdown || '';
-            const isLong = item.title.length > 28 || rawContent.length > 180;
-            let layoutClass = isLong ? 'span-full' : (colIndex === 0 ? 'col-left' : 'col-right');
-            if (!isLong) colIndex = 1 - colIndex;
+            const layoutClass = layoutClasses[itemIdx];
 
             gridHtml += `
             <div class="content-block ${layoutClass}">
@@ -2093,25 +2157,22 @@
                 <input type="checkbox" style="width:1.05rem; height:1.05rem;" ${isItemDone ? 'checked' : ''} onclick="event.stopPropagation(); toggleItemCheckDirect('${item.id}', '${sec.id}')">
                 <h3 style="margin:0; font-size:0.94rem; font-weight:700;">${parseInline(item.title)}</h3>
               </div>
-              ${renderMultiLevelList(rawContent)}
+              <div class="markdown-body">
+                ${renderMultiLevelList(rawContent)}
+              </div>
             </div>
           `;
           });
           gridHtml += '</div>';
 
-          let actionButtonHtml = '';
-          if (isCompleted) {
-            actionButtonHtml = `
+          let actionButtonHtml = isCompleted ? `
             <button class="app-btn btn-stage-done" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openCompletedActions('${sec.id}', null, 'sec')">
               <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24" style="stroke:#047857; width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
               已结课 ▾
-            </button>`;
-          } else {
-            actionButtonHtml = `
+            </button>` : `
             <button class="app-btn" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openMarkCompleteModal('${sec.id}', null, 'sec')">
               标记已结课
             </button>`;
-          }
 
           card.innerHTML = `
           <div class="card-header-bar" onclick="toggleCardCollapse('${cardId}')">
@@ -2134,7 +2195,7 @@
           <div class="card-expandable-content">
             ${gridHtml}
 
-            <!-- 授课备忘区：仅在后台展示模特及手记 -->
+            <!-- 授课备忘区 -->
             <div style="margin-top:1.2rem; padding:0.8rem; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:0.45rem;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.78rem; font-weight:700; color:#475569;">授课观察手记与备忘 (仅教务后台可见)</span>
@@ -2154,7 +2215,7 @@
         });
       }
 
-      /* ================= 模式 2：通用大课流水线 (阶段分割条 + 逐课独立卡片) ================= */
+      /* 模式 2：通用大课流水线 */
       function renderGeneralCourseStream(container) {
         currentSections.forEach(sec => {
           const divider = document.createElement('div');
@@ -2179,19 +2240,14 @@
             card.className = `general-item-card stage-${sec.stage_type || 'foundation'} ${isCompleted ? 'is-completed' : ''} ${isCollapsed ? 'is-collapsed' : ''}`;
             card.id = cardId;
 
-            let actionButtonHtml = '';
-            if (isCompleted) {
-              actionButtonHtml = `
+            let actionButtonHtml = isCompleted ? `
               <button class="app-btn btn-stage-done" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openCompletedActions('${sec.id}', '${item.id}', 'item')">
                 <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24" style="stroke:#047857; width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>
                 已结课 ▾
-              </button>`;
-            } else {
-              actionButtonHtml = `
+              </button>` : `
               <button class="app-btn" style="min-height:1.75rem; padding:0.2rem 0.65rem; font-size:0.75rem;" onclick="openMarkCompleteModal('${sec.id}', '${item.id}', 'item')">
                 标记已结课
               </button>`;
-            }
 
             card.innerHTML = `
             <div class="general-card-header" onclick="toggleCardCollapse('${cardId}')">
@@ -2230,7 +2286,7 @@
         });
       }
 
-      /* 大课知识点渲染引擎 (支持 --- 虚线分割线解析) */
+      /* 通用大课专属检查表逻辑 */
       function renderGeneralCheckList(contentMd, parentItemId) {
         if (!contentMd) return '';
         const lines = contentMd.split('\n');
@@ -2246,7 +2302,7 @@
           }
 
           if (t.startsWith('>') || t.startsWith('&gt;')) {
-            html += `<div class="note-callout" style="margin:0.25rem 0 0.4rem 0;">${parseInline(t.replace(/^(>|&gt;)\s?/, ''))}</div>`;
+            html += `<blockquote style="margin:0.25rem 0 0.4rem 0; padding:6px 12px; border-left:3px solid var(--theme-color); background:rgba(241,245,249,0.7); border-radius:0 6px 6px 0; font-size:0.82rem; color:#475569;">${parseInline(t.replace(/^(>|&gt;)\s?/, ''))}</blockquote>`;
             return;
           }
 
@@ -2262,14 +2318,14 @@
             </label>
           `;
           } else {
-            html += `<div style="font-size:0.82rem; color:#64748b; padding:2px 0 2px 4px;">${parseInline(t)}</div>`;
+            html += `<div style="font-size:0.84rem; color:#64748b; padding:2px 0 2px 4px;">${parseInline(t)}</div>`;
           }
         });
 
         return html;
       }
 
-      /* ================= 结课状态操作坞 ================= */
+      /* 结课状态操作坞 */
       function openMarkCompleteModal(secId, itemId, targetType) {
         const sec = currentSections.find(s => s.id === secId);
         if (!sec) return;
@@ -2289,9 +2345,6 @@
 
         const now = new Date();
         const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-        const logKey = targetType === 'item' ? `item_${itemId}` : `sec_${secId}`;
-        const log = currentLessonLogs[logKey];
-        // 默认永远填入点击结课时的当前日期，若已有历史日期则作为 placeholder 提示
         document.getElementById('manualCompleteDate').value = today;
 
         document.getElementById('markCompleteModal').classList.add('active');
@@ -2385,7 +2438,7 @@
         renderCourseScopeView();
       }
 
-      /* ================= 结课页面渲染 (纯净学员交付单) ================= */
+      /* 结课页面渲染 (学员交付单) */
       function openStudentCompletionCard(secId, itemId, targetType) {
         const sec = currentSections.find(s => s.id === secId);
         if (!sec || !currentStudent) return;
@@ -2410,7 +2463,9 @@
               <div class="cert-item-title-text">${targetItem.item_code ? targetItem.item_code + ' ' : ''}${parseInline(targetItem.title)}</div>
               <div class="cert-stamp-badge">PASSED · 已结课</div>
             </div>
-            ${targetItem.content_markdown ? renderMultiLevelList(targetItem.content_markdown) : ''}
+            <div class="markdown-body">
+              ${targetItem.content_markdown ? renderMultiLevelList(targetItem.content_markdown) : ''}
+            </div>
           </div>`;
         } else {
           displayHeaderTitle = sec.title;
@@ -2423,7 +2478,9 @@
                 <div class="cert-item-title-text">${parseInline(item.title)}</div>
                 <div class="cert-stamp-badge">PASSED · 已结课</div>
               </div>
-              ${item.content_markdown ? renderMultiLevelList(item.content_markdown) : ''}
+              <div class="markdown-body">
+                ${item.content_markdown ? renderMultiLevelList(item.content_markdown) : ''}
+              </div>
             </div>`;
           });
         }
@@ -2485,48 +2542,24 @@
         });
       }
 
-      /* 通用多级列表排版引擎 (支持 --- 虚线分割线解析) */
+      /* 核心替换：全面接管为标准 Markdown 渲染引擎 */
       function renderMultiLevelList(text) {
         if (!text) return '';
-        const lines = text.split('\n');
-        let res = '';
-        let listLevel = 0;
-        function closeLists() { while (listLevel > 0) { res += '</li></ul>'; listLevel--; } }
-
-        for (let raw of lines) {
-          let trimmed = raw.trim();
-          if (!trimmed) continue;
-
-          if (/^---+$/.test(trimmed) || /^(>|&gt;)\s*---+$/.test(trimmed)) {
-            closeLists();
-            res += `<hr style="border: 0; border-top: 1.5px dashed #cbd5e1; margin: 8px 0;">`;
-            continue;
-          }
-
-          if (trimmed.startsWith('>') || trimmed.startsWith('&gt;')) {
-            closeLists();
-            res += `<div class="note-callout">${parseInline(trimmed.replace(/^(>|&gt;)\s?/, ''))}</div>`;
-            continue;
-          }
-
-          if (/^[-*+]\s+/.test(trimmed)) {
-            const indent = raw.search(/\S|$/);
-            const content = trimmed.replace(/^[-*+]\s+/, '');
-            let targetLevel = 1;
-            if (indent >= 6) targetLevel = 3;
-            else if (indent >= 2) targetLevel = 2;
-
-            if (listLevel === 0) { res += '<ul>'; listLevel = 1; }
-            while (listLevel < targetLevel) { res += '<ul>'; listLevel++; }
-            while (listLevel > targetLevel) { res += '</li></ul>'; listLevel--; }
-            res += `<li>${parseInline(content)}`;
-          } else {
-            closeLists();
-            res += `<p style="margin: 4px 0 6px 14px; font-size: 0.85rem; line-height: 1.55; color: var(--text-body);">${parseInline(trimmed)}</p>`;
-          }
+        try {
+          return marked.parse(text);
+        } catch (e) {
+          console.warn('Marked parse error, fallback to plaintext:', e);
+          return `<p>${escapeHtml(text)}</p>`;
         }
-        closeLists();
-        return res;
+      }
+
+      function parseInline(text) {
+        if (!text) return '';
+        try {
+          return marked.parseInline(text);
+        } catch (e) {
+          return escapeHtml(text);
+        }
       }
 
       async function toggleItemCheckDirect(itemId, secId) {
@@ -2815,7 +2848,7 @@
         }
       }
 
-      /* Markdown 解析器 (支持课时代码解析如 L1-1) */
+      /* Markdown 文档解析拆分器 */
       function parseMarkdownDoc(md) {
         const lines = md.split('\n');
         let docTitle = '未命名课程大纲';
@@ -2874,6 +2907,7 @@
         return { title: docTitle, sections };
       }
 
+      /* 教案设计工坊实时预览 (接入成对预读引擎) */
       function renderSyllabus(md) {
         document.getElementById('charCount').innerText = md.length + ' 字';
         const previewArea = document.getElementById('exportArea');
@@ -2883,13 +2917,14 @@
 
         for (let sec of parsed.sections) {
           html += `<article class="stage-card ${sec.stageClass}"><div class="card-header-bar"><div class="header-title-inline"><div class="capsule-badge"><span>${sec.stageBadge}</span><span class="sep">/</span><span>PART ${sec.partNum}</span></div><h2 class="stage-title">${escapeHtml(sec.title)}</h2></div><span class="card-watermark">${sec.partNum}</span></div><div class="card-content-grid">`;
-          let colIndex = 0;
-          for (let it of sec.items) {
-            const isSpanFull = it.title.length > 28 || (it.content && it.content.length > 180);
-            let layoutClass = isSpanFull ? 'span-full' : (colIndex === 0 ? 'col-left' : 'col-right');
-            if (!isSpanFull) colIndex = 1 - colIndex;
 
-            html += `<div class="content-block ${layoutClass}"><h3>${it.code ? `<span class="capsule-badge" style="font-size:0.72rem; padding:1px 6px;">${escapeHtml(it.code)}</span> ` : ''}${parseInline(it.title)}</h3>${renderMultiLevelList(it.content)}</div>`;
+          // 核心更新：工坊预览区与主看板共用同一个预读排版决策器
+          const layoutClasses = computeCardLayoutClasses(sec.items);
+          for (let idx = 0; idx < sec.items.length; idx++) {
+            const it = sec.items[idx];
+            const layoutClass = layoutClasses[idx];
+
+            html += `<div class="content-block ${layoutClass}"><h3>${it.code ? `<span class="capsule-badge" style="font-size:0.72rem; padding:1px 6px;">${escapeHtml(it.code)}</span> ` : ''}${parseInline(it.title)}</h3><div class="markdown-body">${renderMultiLevelList(it.content)}</div></div>`;
           }
           html += `</div></article>`;
         }
@@ -2897,26 +2932,9 @@
         previewArea.innerHTML = html;
       }
 
-      function parseInline(text) {
-        if (!text) return '';
-        let str = escapeHtml(text);
-        str = str.replace(/\\\*/g, '___ESCAPED_STAR___');
-        str = str.replace(/\\#/g, '___ESCAPED_HASH___');
-
-        str = str.replace(/\*\*((?:(?!\*\*)[^\n])+?)\*\*/g, function (_, innerText) {
-          const innerFormatted = innerText.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
-          return '<strong>' + innerFormatted + '</strong>';
-        });
-
-        str = str.replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
-        str = str.replace(/___ESCAPED_STAR___/g, '*');
-        str = str.replace(/___ESCAPED_HASH___/g, '#');
-        return str;
-      }
-
       function escapeHtml(t) { return String(t || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-      /* 拖拽与编辑器工具 */
+      /* 拖拽分栏与编辑器辅助工具 */
       let isProgrammaticScroll = false;
       let scrollTimer = null;
 
@@ -3076,7 +3094,7 @@
         if (data && data[0]) selectStudent(data[0].id);
       }
 
-      /* 导入 Markdown */
+      /* 导入外部 Markdown */
       function openImportModal() {
         if (currentStudent) document.getElementById('importStudentName').value = currentStudent.name;
         document.getElementById('importModal').classList.add('active');
