@@ -944,7 +944,7 @@
     <!-- ================= 顶栏控制台 (4 功能平铺) ================= -->
     <header>
       <div class="nav-wrap">
-        <div class="brand-box">
+        <div class="brand-box" onclick="resetToHomeState()" style="cursor: pointer;" title="点击回到初始主页">
           <div class="brand-logo">∞</div>
           <div class="brand-name">绳缚教学教案系统</div>
         </div>
@@ -2181,6 +2181,31 @@
         var d = new Date();
         return "" + d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
       }
+
+      // 🌟 点击左上角 Logo：彻底重置为未选学员、未选教案的初始空主页
+        function resetToHomeState() {
+          // 如果正在提词或编辑，先退出
+          if (isStageModeOn) switchStageMode();
+          if (isRawEditorOn) forceExitRawEditor();
+
+          // 1. 重置学员为未选状态
+          currentStudent = null;
+          localStorage.removeItem("kinbaku_current_student");
+          updateStudentUI();
+
+          // 2. 清空教案内容与 ID 绑定
+          currentLectureText = "";
+          currentLoadedPlanId = null;
+          currentLoadedPlanTopic = "";
+          localStorage.removeItem("kinbaku_doc_cache");
+
+          var rawBox = document.getElementById("sourceEditorBox");
+          if (rawBox) rawBox.value = "";
+
+          // 3. 恢复主屏到空状态大卡片
+          renderMarkdownToScreen("");
+          document.getElementById("labelStatus").innerText = "教案待导入";
+        }
     </script>
   </body>
 
