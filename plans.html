@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>绳缚专业教学教案阅览系统</title>
+
+    <!-- Supabase 官方 SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- KaTeX 公式与流程图排版核心 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <!-- Marked.js Markdown 渲染引擎 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked-katex-extension@5.0.2/lib/index.umd.js"></script>
+
+    <style>
+      /* ================= 1. 全局设计变量与排版基底 ================= */
+      :root {
+        font-size: 100%;
+        --bg: #f8fafc;
+        --paper: #ffffff;
+        --card: #f1f5f9;
+        --card-subtle: rgba(0, 0, 0, 0.04);
+        --border: #cbd5e1;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #991b1b;
+        --accent-hover: #b91c1c;
+        --accent-soft: rgba(153, 27, 27, 0.08);
+        --success: #059669;
+        --success-soft: rgba(5, 150, 105, 0.1);
+        --shadow: 0 0.25rem 0.5rem -0.0625rem rgba(0, 0, 0, 0.06);
+        --modal-mask: rgba(15, 23, 42, 0.65);
+        --border-thin: 0.0625rem;
+        --radius-btn: 0.5rem;
+      }
+
+      [data-theme="dark"] {
+        --bg: #0b0f19;
+        --paper: #131b2e;
+        --card: #1e293b;
+        --card-subtle: rgba(255, 255, 255, 0.08);
+        --border: #334155;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #f87171;
+        --accent-hover: #fca5a5;
+        --accent-soft: rgba(248, 113, 113, 0.16);
+        --success: #34d399;
+        --success-soft: rgba(52, 211, 153, 0.18);
+        --shadow: 0 0.25rem 0.5rem -0.0625rem rgba(0, 0, 0, 0.5);
+        --modal-mask: rgba(0, 0, 0, 0.85);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.6;
+      }
+
+      .svg-icon {
+        width: 1.15em;
+        height: 1.15em;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+        display: block;
+      }
+
+      /* ================= 2. 顶栏导航控制台 ================= */
+      header {
+        background: var(--paper);
+        border-bottom: var(--border-thin) solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        padding: 0.625rem clamp(0.75rem, 2vw, 1.5rem);
+        box-shadow: var(--shadow);
+      }
+
+      .nav-wrap {
+        width: min(100%, 56rem);
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .brand-box {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        flex-shrink: 0;
+      }
+
+      .brand-logo {
+        width: 2.1rem;
+        height: 2.1rem;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+        border-radius: var(--radius-btn);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        line-height: 1;
+      }
+
+      .brand-name {
+        font-size: 0.95rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+        line-height: 1;
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+      }
+
+      .pill-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.65rem;
+        min-height: 2.35rem;
+        border-radius: var(--radius-btn);
+        border: var(--border-thin) solid var(--border);
+        background: var(--paper);
+        color: var(--text);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+      }
+
+      .pill-btn:hover {
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        background: var(--accent-soft) !important;
+        box-shadow: 0 0.15rem 0.5rem rgba(153, 27, 27, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .dot-indicator {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 50%;
+        background: #f59e0b;
+        flex-shrink: 0;
+        display: inline-block;
+        transition: all 0.25s ease;
+      }
+
+      .dot-indicator.ready {
+        background: var(--success);
+        box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+      }
+
+      .icon-only-btn {
+        background: transparent;
+        border: none;
+        width: 2.2rem;
+        height: 2.2rem;
+        min-height: 2.2rem;
+        border-radius: var(--radius-btn);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text);
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+
+      .icon-only-btn:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+        transform: translateY(-1px);
+      }
+
+      /* ================= 3. 教案主舞台与阅读渲染 ================= */
+      main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        padding: clamp(0.75rem, 2vw, 1.5rem);
+        padding-bottom: 6.5rem;
+        overflow-y: auto;
+      }
+
+      .stage-container {
+        width: min(100%, 56rem);
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .paper-card {
+        background: var(--paper);
+        border: var(--border-thin) solid var(--border);
+        border-radius: 0.875rem;
+        padding: clamp(1rem, 3.5vw, 2.5rem);
+        box-shadow: var(--shadow);
+        min-height: 72vh;
+        min-height: 72dvh;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        position: relative;
+      }
+
+      .card-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: var(--border-thin) solid var(--border);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .card-status-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        min-width: 0;
+        flex: 1;
+      }
+
+      #labelStatus {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .badge-dot {
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 50%;
+        background: var(--muted);
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      .badge-dot.active {
+        background: var(--success);
+      }
+
+      .card-topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      #sourceEditorBox {
+        width: 100%;
+        height: 65vh;
+        height: 65dvh;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        background: var(--card);
+        color: var(--text);
+        border: var(--border-thin) solid var(--border);
+        border-radius: var(--radius-btn);
+        padding: 1rem;
+        outline: none;
+        resize: none;
+        display: none;
+      }
+
+      .article-body {
+        width: 100%;
+        min-width: 0;
+        word-wrap: break-word;
+      }
+
+      .article-body h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        font-weight: 800;
+        border-bottom: 0.15rem solid var(--accent);
+        padding-bottom: 0.65rem;
+        margin: 1.5rem 0 1.25rem;
+      }
+
+      .article-body h2 {
+        font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+        font-weight: 700;
+        border-left: 0.35rem solid var(--accent);
+        background: var(--accent-soft);
+        padding: 0.5rem 0.85rem;
+        border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+        margin: 1.85rem 0 0.95rem;
+      }
+
+      [data-theme="dark"] .article-body h2 {
+        color: #ffffff;
+        background: rgba(248, 113, 113, 0.18);
+        border-left-color: #f87171;
+      }
+
+      .article-body h3 {
+        font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+        font-weight: 600;
+        margin: 1.25rem 0 0.5rem;
+        color: var(--accent);
+      }
+
+      [data-theme="dark"] .article-body h3 {
+        color: #fca5a5;
+      }
+
+      .article-body p {
+        line-height: 1.8;
+        margin-bottom: 0.85rem;
+        font-size: clamp(0.875rem, 1.8vw, 0.95rem);
+      }
+
+      .article-body blockquote {
+        border-left: 0.3rem solid var(--accent);
+        background: var(--card);
+        padding: 0.85rem 1.15rem;
+        border-radius: 0 0.65rem 0.65rem 0;
+        margin: 1.2rem 0;
+        font-size: 0.875rem;
+      }
+
+      [data-theme="dark"] .article-body blockquote {
+        background: rgba(248, 113, 113, 0.09);
+        border-left-color: #f87171;
+        color: #fecdd3;
+      }
+
+      .article-body ul,
+      .article-body ol {
+        padding-left: 1.35rem;
+        margin-bottom: 1rem;
+      }
+
+      .article-body li {
+        margin-bottom: 0.4rem;
+        font-size: 0.875rem;
+        line-height: 1.75;
+      }
+
+      .check-line-item {
+        list-style: none !important;
+        display: flex !important;
+        align-items: center;
+        gap: 0.55rem;
+        margin-left: -1.2rem;
+        margin-bottom: 0.45rem;
+        padding: 0.35rem 0.65rem;
+        background: var(--card);
+        border-radius: 0.4rem;
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+
+      .check-line-item input[type="checkbox"] {
+        width: 1.15em;
+        height: 1.15em;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .chain-flow-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem 0.85rem;
+        background: var(--card);
+        border: var(--border-thin) solid var(--border);
+        border-radius: var(--radius-btn);
+        padding: 0.75rem 1rem;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+      }
+
+      .chain-node {
+        background: var(--paper);
+        border: var(--border-thin) solid var(--border);
+        padding: 0.4rem 0.85rem;
+        border-radius: 0.45rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .chain-arrow {
+        color: var(--accent);
+        font-size: 1.15rem;
+        font-weight: 900;
+      }
+
+      .empty-wrapper {
+        margin: auto 0;
+        text-align: center;
+        padding: 4rem 1rem;
+      }
+
+      .empty-head {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .empty-sub {
+        font-size: 0.85rem;
+        color: var(--muted);
+        max-width: 28rem;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* ================= 4. 底栏核心控制坞 ================= */
+      .mobile-bottom-dock {
+        position: fixed;
+        bottom: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(94%, 38rem);
+        background: var(--paper);
+        border: var(--border-thin) solid var(--border);
+        border-radius: 0.85rem;
+        padding: 0.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.18);
+        z-index: 60;
+        backdrop-filter: blur(0.75rem);
+        -webkit-backdrop-filter: blur(0.75rem);
+      }
+
+      .dock-btn-item {
+        flex: 1;
+        min-width: 0;
+        height: 2.6rem;
+        border-radius: var(--radius-btn);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: var(--border-thin) solid var(--border);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        white-space: nowrap;
+        background: var(--card);
+        color: var(--text);
+      }
+
+      .dock-btn-item:hover {
+        background: var(--accent-soft) !important;
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+        box-shadow: 0 0.2rem 0.6rem rgba(153, 27, 27, 0.12);
+        transform: translateY(-1.5px);
+      }
+
+      [data-theme="dark"] .dock-btn-item:hover {
+        box-shadow: 0 0.2rem 0.8rem rgba(248, 113, 113, 0.2);
+      }
+
+      .dock-btn-item.active {
+        background: var(--accent) !important;
+        color: #fff !important;
+        border-color: var(--accent) !important;
+      }
+
+      .dropdown-container {
+        position: relative;
+        flex: 1;
+      }
+
+      .dropdown-panel {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        margin-bottom: 0.5rem;
+        background: var(--paper);
+        border: var(--border-thin) solid var(--border);
+        border-radius: var(--radius-btn);
+        box-shadow: var(--shadow);
+        min-width: 12.5rem;
+        z-index: 90;
+        padding: 0.35rem 0;
+        font-size: 0.76rem;
+        flex-direction: column;
+      }
+
+      .dropdown-panel.show {
+        display: flex;
+      }
+
+      .dropdown-opt {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.65rem 0.95rem;
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .dropdown-opt:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      /* ================= 5. 授课提词模式与悬浮条 ================= */
+      .stage-mode .article-body h1 {
+        font-size: clamp(1.8rem, 4.5vw, 2.25rem);
+      }
+
+      .stage-mode .article-body h2 {
+        font-size: clamp(1.4rem, 3.5vw, 1.7rem);
+      }
+
+      .stage-mode .article-body p,
+      .stage-mode .article-body li {
+        font-size: clamp(1.15rem, 2.6vw, 1.35rem);
+        line-height: 2.1;
+      }
+
+      .teleprompter-bar {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0f172a;
+        color: #fff;
+        border: var(--border-thin) solid #334155;
+        padding: 0.65rem 1.4rem;
+        border-radius: var(--radius-btn);
+        display: none;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 0.8rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.5);
+        z-index: 70;
+        white-space: nowrap;
+      }
+
+      .pulse-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #ef4444;
+        animation: pulseAni 1.5s infinite;
+      }
+
+      @keyframes pulseAni {
+
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 0.4;
+          transform: scale(1.3);
+        }
+      }
+
+      /* ================= 6. 模态框与列表样式 ================= */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: var(--modal-mask);
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+      }
+
+      .modal-card {
+        background: var(--paper);
+        border: var(--border-thin) solid var(--border);
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: min(92vw, 42rem);
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 1.25rem 1.5rem -0.3rem rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-top {
+        padding: 0.85rem 1.15rem;
+        border-bottom: var(--border-thin) solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+
+      .modal-caption {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .modal-x {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-x:hover {
+        color: var(--accent);
+      }
+
+      .tab-content {
+        padding: 1rem 1.15rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        flex: 1;
+      }
+
+      .modal-bottom {
+        padding: 0.75rem 1.15rem;
+        border-top: var(--border-thin) solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        background: var(--card);
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.85rem;
+        min-height: 2.2rem;
+        border-radius: var(--radius-btn);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: var(--border-thin) solid transparent;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn-red {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .btn-red:hover {
+        background: var(--accent-hover);
+        box-shadow: 0 0.15rem 0.5rem rgba(153, 27, 27, 0.25);
+        transform: translateY(-1px);
+      }
+
+      .btn-gray {
+        background: var(--card);
+        color: var(--text);
+        border-color: var(--border);
+      }
+
+      .btn-gray:hover {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .btn-danger-outline {
+        background: transparent;
+        color: #ef4444;
+        border-color: rgba(239, 68, 68, 0.4);
+      }
+
+      .btn-danger-outline:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+      }
+
+      .field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
+      .field-wrap label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .field-input {
+        width: 100%;
+        padding: 0.55rem 0.75rem;
+        border-radius: var(--radius-btn);
+        border: var(--border-thin) solid var(--border);
+        background: var(--bg);
+        color: var(--text);
+        font-size: 0.8125rem;
+        outline: none;
+      }
+
+      .field-input:focus {
+        border-color: var(--accent);
+      }
+
+      /* 卡片与拖拽列表 */
+      .list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        overflow-y: auto;
+      }
+
+      .plan-drag-card {
+        background: var(--card);
+        border: var(--border-thin) solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+      }
+
+      .plan-drag-card:hover {
+        border-color: var(--accent);
+        box-shadow: var(--shadow);
+      }
+
+      .plan-drag-card.dragging {
+        opacity: 0.4;
+        border-style: dashed;
+        background: var(--paper);
+      }
+
+      .drag-handle {
+        cursor: grab;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .drag-handle:active {
+        cursor: grabbing;
+      }
+
+      .plan-info-box {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .plan-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .plan-title-text {
+        font-size: 0.84rem;
+        font-weight: 700;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .plan-title-text.completed {
+        text-decoration: line-through;
+        opacity: 0.65;
+      }
+
+      .plan-date-badge {
+        font-size: 0.68rem;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .status-tag-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.15rem 0.45rem;
+        border-radius: 0.25rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: var(--border-thin) solid var(--border);
+        background: var(--paper);
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+
+      .status-tag-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .status-tag-toggle.done {
+        background: var(--success-soft);
+        color: var(--success);
+        border-color: rgba(5, 150, 105, 0.4);
+      }
+
+      .student-card-item {
+        background: var(--card);
+        border: var(--border-thin) solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.85rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .student-card-item:hover {
+        border-color: var(--accent);
+        box-shadow: var(--shadow);
+      }
+
+      .student-card-item.active {
+        border-left: 0.3rem solid var(--accent);
+        background: var(--accent-soft);
+      }
+
+      /* 分页栏控制器 */
+      .pagination-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem 0.25rem 0;
+        border-top: var(--border-thin) solid var(--border);
+        font-size: 0.74rem;
+        color: var(--muted);
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .page-btn {
+        padding: 0.2rem 0.55rem;
+        border-radius: var(--radius-btn);
+        border: var(--border-thin) solid var(--border);
+        background: var(--paper);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.15s;
+      }
+
+      .page-btn:hover:not(:disabled) {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .page-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      @media print {
+
+        header,
+        .card-topbar,
+        .mobile-bottom-dock,
+        .teleprompter-bar,
+        .modal-backdrop {
+          display: none !important;
+        }
+
+        body,
+        main {
+          background: #fff !important;
+          color: #000 !important;
+          padding: 0 !important;
+        }
+
+        .paper-card {
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ================= 顶栏控制台 (4 功能平铺) ================= -->
+    <header>
+      <div class="nav-wrap">
+        <div class="brand-box">
+          <div class="brand-logo">∞</div>
+          <div class="brand-name">绳缚教学教案系统</div>
+        </div>
+
+        <div class="nav-actions">
+          <!-- ① 学员档案 -->
+          <button class="pill-btn" onclick="openStudentModal()" id="btnStudentHub" title="管理与切换学员">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span id="labelCurrentStudent">选择学员</span>
+          </button>
+
+          <!-- ② 历史教案 -->
+          <button class="pill-btn" onclick="openHistoryPlansModal()" id="btnHistoryPlans" title="查看该学员的历史教案与进度">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span>历史教案</span>
+          </button>
+
+          <!-- ③ 讲师登录/认证 -->
+          <button class="pill-btn" onclick="openAuthModal()" id="btnAuthPill" title="讲师云端登录">
+            <span class="dot-indicator" id="authIndicator"></span>
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <span id="authStatusText">讲师登录</span>
+          </button>
+
+          <!-- ④ 明暗模式切换 (纯单线 SVG 图标) -->
+          <button class="icon-only-btn" onclick="switchTheme()" title="切换明暗主题">
+            <svg class="svg-icon" id="themeSvg" viewBox="0 0 24 24">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= 教案主舞台 ================= -->
+    <main>
+      <div class="stage-container">
+        <article class="paper-card" id="articlePaper">
+
+          <!-- 卡片顶栏 -->
+          <div class="card-topbar">
+            <div class="card-status-box">
+              <span class="badge-dot" id="cardStatusBadge"></span>
+              <span id="labelStatus">教案就绪状态</span>
+            </div>
+            <div class="card-topbar-actions">
+              <!-- 仅在【编辑模式】下动态浮现清空按钮 -->
+              <button class="btn btn-danger-outline" id="btnTopClearPlan" style="display: none;" onclick="clearCurrentPlan()" title="彻底清空当前教案">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                </svg>
+                <span>清空教案</span>
+              </button>
+
+              <button class="btn btn-gray" onclick="copyLectureContent()" title="复制 Markdown 文本">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>复制全文</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 源码编辑文本区 -->
+          <textarea id="sourceEditorBox" oninput="onRawEditorChange()" placeholder="在此直接编写或粘贴 Markdown 格式教案..."></textarea>
+
+          <!-- 空引导视图 -->
+          <div class="empty-wrapper" id="emptyPlaceholder">
+            <div class="empty-head">当前暂无载入的课程教案</div>
+            <div class="empty-sub">
+              点击下方【导入教案】选取本地 Markdown 文件，或点击顶栏【历史教案】调阅该学员名下的已存教案。
+            </div>
+          </div>
+
+          <!-- 正文排版渲染区 -->
+          <div class="article-body" id="renderedDocTarget" style="display: none;"></div>
+
+        </article>
+      </div>
+    </main>
+
+    <!-- ================= 底栏核心控制坞 (4 按钮等宽) ================= -->
+    <div class="mobile-bottom-dock" id="bottomActionDock">
+      <input type="file" id="mdFileInput" accept=".md,.txt" style="display: none;" onchange="handleFileImport(event)">
+
+      <!-- ① 导入教案：箭头朝下 (流入意象) -->
+      <button class="dock-btn-item" onclick="document.getElementById('mdFileInput').click()" title="从本地载入 Markdown/TXT 文件">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <path d="M12 3v12" />
+          <path d="m8 11 4 4 4-4" />
+          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+        </svg>
+        <span>导入教案</span>
+      </button>
+
+      <!-- ② 编辑教案 -->
+      <button class="dock-btn-item" id="btnDockToggleEdit" onclick="switchRawEditor()" title="切换编辑/预览状态">
+        <svg class="svg-icon" id="dockEditSvg" viewBox="0 0 24 24">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+        </svg>
+        <span id="dockEditText">编辑教案</span>
+      </button>
+
+      <!-- ③ 提词模式 -->
+      <button class="dock-btn-item" id="btnStage" onclick="switchStageMode()" title="进入授课现场提词模式">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="6" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+        <span>提词</span>
+      </button>
+
+      <!-- ④ 导出教案：箭头朝上 (流出意象) -->
+      <div class="dropdown-container">
+        <button class="dock-btn-item" style="width: 100%;" onclick="toggleDropdown(event, 'exportMenuPanel')">
+          <svg class="svg-icon" viewBox="0 0 24 24">
+            <path d="M12 15V3" />
+            <path d="m8 7 4-4 4 4" />
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+          </svg>
+          <span>导出教案</span>
+        </button>
+        <div class="dropdown-panel" id="exportMenuPanel">
+          <div class="dropdown-opt" onclick="saveCurrentPlanToSupabase()">
+            <svg class="svg-icon" style="color: var(--accent);" viewBox="0 0 24 24">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            <span>保存至云端</span>
+          </div>
+          <div class="dropdown-opt" onclick="saveAsMarkdown()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            <span>导出 Markdown</span>
+          </div>
+          <div class="dropdown-opt" onclick="saveAsWord()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+            <span>导出 Word 文档</span>
+          </div>
+          <div class="dropdown-opt" onclick="window.print()">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            <span>打印 / 存为 PDF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 提词器浮动条 ================= -->
+    <div class="teleprompter-bar" id="teleprompterBar">
+      <span class="pulse-dot"></span>
+      <span style="font-weight: 700;">现场提词进行中</span>
+      <span style="cursor: pointer; color: #f87171; display: inline-flex; align-items: center; gap: 0.35rem; margin-left: 0.75rem;" onclick="appendQuickNote()">
+        <svg class="svg-icon" viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        <span>即时速记</span>
+      </span>
+      <span style="cursor: pointer; color: #94a3b8; margin-left: 0.75rem;" onclick="switchStageMode()">退出提词</span>
+    </div>
+
+    <!-- ================= 弹窗 ①：学员档案名录 (含独立新建与分页) ================= -->
+    <div class="modal-backdrop" id="dialogStudent">
+      <div class="modal-card">
+        <div class="modal-top">
+          <span class="modal-caption">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+            <span>学员档案管理</span>
+          </span>
+          <div style="display: flex; align-items: center; gap: 0.45rem;">
+            <!-- 🌟 独立新建学员按钮 -->
+            <button class="btn btn-red" onclick="openStudentFormModal()" style="min-height: 2rem; padding: 0.2rem 0.65rem; font-size: 0.75rem;">
+              <svg class="svg-icon" style="width: 1em; height: 1em;" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>新建学员</span>
+            </button>
+            <button class="modal-x" onclick="closeDialog('dialogStudent')">
+              <svg class="svg-icon" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.2rem;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: var(--muted);">学员档案库 (点击即可选定当前授课学员)：</span>
+            <div style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; color: var(--muted);">
+              <span>每页:</span>
+              <select class="field-input" id="selStudentPageSize" onchange="onStudentPageSizeChange()" style="padding: 0.15rem 0.35rem; width: auto; font-size: 0.74rem;">
+                <option value="5" selected>5 条</option>
+                <option value="10">10 条</option>
+                <option value="20">20 条</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 学员列表容器 -->
+          <div class="list-container" id="studentListContainer">
+            <div style="text-align: center; color: var(--muted); padding: 1.5rem 0;">请先登录讲师账户以读取云端学员库</div>
+          </div>
+
+          <!-- 🌟 分页控制栏 -->
+          <div class="pagination-bar" id="studentPaginationBar">
+            <button class="page-btn" id="btnStudentPrevPage" onclick="changeStudentPage(-1)">上一页</button>
+            <span id="lblStudentPageStatus">第 1 / 1 页</span>
+            <button class="page-btn" id="btnStudentNextPage" onclick="changeStudentPage(1)">下一页</button>
+          </div>
+        </div>
+
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogStudent')">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 弹窗 ②：创建/编辑学员信息 (独立表单窗) ================= -->
+    <div class="modal-backdrop" id="dialogStudentForm" style="z-index: 110;">
+      <div class="modal-card" style="max-width: 26rem;">
+        <div class="modal-top">
+          <span class="modal-caption" id="lblStudentFormTitle">新建学员档案</span>
+          <button class="modal-x" onclick="closeDialog('dialogStudentForm')">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="tab-content">
+          <input type="hidden" id="editStudentId" value="">
+          <div class="field-wrap">
+            <label>学员姓名 *</label>
+            <input type="text" class="field-input" id="inpStudentFormName" placeholder="例如：阿强">
+          </div>
+          <div class="field-wrap">
+            <label>课程类型 *</label>
+            <select class="field-input" id="selStudentFormType">
+              <option value="1V1 私课">1V1 私课</option>
+              <option value="通用型课程">通用型课程</option>
+            </select>
+          </div>
+          <div class="field-wrap">
+            <label>教学/学员备注</label>
+            <textarea class="field-input" id="inpStudentFormNotes" rows="3" placeholder="选填，例如排课偏好、特殊习惯、伤病注意等"></textarea>
+          </div>
+        </div>
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogStudentForm')">取消</button>
+          <button class="btn btn-red" onclick="submitStudentForm()">保存学员档案</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 弹窗 ③：历史教案 (拖动排序 + 结课标记 + 重命名 + 删除) ================= -->
+    <div class="modal-backdrop" id="dialogHistoryPlans">
+      <div class="modal-card">
+        <div class="modal-top">
+          <span class="modal-caption">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span id="lblHistoryPlansModalTitle">历史教案进度管理</span>
+          </span>
+          <button class="modal-x" onclick="closeDialog('dialogHistoryPlans')">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="tab-content">
+          <div style="font-size: 0.75rem; color: var(--muted); display: flex; justify-content: space-between; align-items: center;">
+            <span>💡 提示：按住左侧手柄可<b>拖动排序</b>；点击卡片载入主舞台；点击铅笔可<b>修改教案名称</b>。</span>
+          </div>
+
+          <div class="list-container" id="historyPlansContainer">
+            <div style="text-align: center; color: var(--muted); padding: 2rem 0;">请先在上方选定学员</div>
+          </div>
+        </div>
+
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogHistoryPlans')">关闭</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 弹窗 ④：讲师登录 (纯用户名模式) ================= -->
+    <div class="modal-backdrop" id="dialogAuth">
+      <div class="modal-card" style="max-width: 24rem;">
+        <div class="modal-top">
+          <span class="modal-caption">讲师专属登录</span>
+          <button class="modal-x" onclick="closeDialog('dialogAuth')">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="tab-content">
+          <div class="field-wrap">
+            <label>讲师用户名</label>
+            <input type="text" class="field-input" id="inpAuthUsername" placeholder="例如：admin (纯用户名即可)">
+          </div>
+          <div class="field-wrap">
+            <label>登录密码</label>
+            <input type="password" class="field-input" id="inpAuthPassword" placeholder="******">
+          </div>
+          <div style="font-size: 0.72rem; color: var(--muted); line-height: 1.5;">
+            提示：支持纯用户名直接登录。系统已启用智能账户映射，无需手动拼写邮箱域名。
+          </div>
+        </div>
+        <div class="modal-bottom">
+          <button class="btn btn-gray" onclick="closeDialog('dialogAuth')">取消</button>
+          <button class="btn btn-red" id="btnExecuteLogin" onclick="executeLecturerLogin()">登录并连接</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 逻辑脚本核心 ================= -->
+    <script>
+      var DEFAULT_SB_URL = "https://owenzbyonahuzattostk.supabase.co";
+      var DEFAULT_SB_KEY = "sb_publishable_LZ8WvFjXLwWVjHaQ8gYr2A_ZJ3yAvgd";
+
+      var sbClient = null;
+      var currentUser = null;
+      var currentStudent = null;
+      var cachedStudents = [];
+      var cachedStudentPlans = [];
+
+      // 🌟 核心状态：锁定当前主舞台载入的教案 ID 与标题 (用于精确 UPDATE，防止重复新增)
+      var currentLoadedPlanId = null;
+      var currentLoadedPlanTopic = "";
+
+      // 学员分页状态
+      var studentCurrentPage = 1;
+      var studentPageSize = 5;
+
+      var currentLectureText = "";
+      var isRawEditorOn = false;
+      var isStageModeOn = false;
+      var draggedPlanIndex = null;
+
+      // 初始化生命周期
+      window.addEventListener("DOMContentLoaded", function () {
+        initMarkdownEngine();
+        initSupabase();
+
+        var savedDoc = localStorage.getItem("kinbaku_doc_cache");
+        if (savedDoc) renderMarkdownToScreen(savedDoc);
+
+        var savedStudent = localStorage.getItem("kinbaku_current_student");
+        if (savedStudent) {
+          try {
+            currentStudent = JSON.parse(savedStudent);
+            updateStudentUI();
+          } catch (e) { }
+        }
+
+        if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          document.documentElement.setAttribute("data-theme", "dark");
+          updateThemeSvg(true);
+        }
+      });
+
+      function initMarkdownEngine() {
+        if (window.marked && window.markedKatex) {
+          marked.use(markedKatex({ throwOnError: false, nonStandard: true }));
+        }
+        if (window.marked) {
+          marked.setOptions({ gfm: true, breaks: true, pedantic: false });
+        }
+      }
+
+      function initSupabase() {
+        if (window.supabase) {
+          try {
+            sbClient = window.supabase.createClient(DEFAULT_SB_URL, DEFAULT_SB_KEY);
+            checkUserSession();
+          } catch (e) {
+            console.warn("Supabase 初始化异常", e);
+          }
+        }
+      }
+
+      async function checkUserSession() {
+        if (!sbClient) return;
+        var { data } = await sbClient.auth.getSession();
+        if (data && data.session) {
+          currentUser = data.session.user;
+          updateAuthUI(currentUser);
+          await loadStudentsList();
+        } else {
+          updateAuthUI(null);
+        }
+      }
+
+      function updateAuthUI(user) {
+        var indicator = document.getElementById("authIndicator");
+        var text = document.getElementById("authStatusText");
+        var pill = document.getElementById("btnAuthPill");
+
+        if (user) {
+          var showName = user.email.split("@")[0];
+          if (indicator) indicator.className = "dot-indicator ready";
+          if (text) text.innerText = showName;
+          if (pill) pill.title = "讲师已登录: " + showName + " (点击可登出)";
+        } else {
+          if (indicator) indicator.className = "dot-indicator";
+          if (text) text.innerText = "讲师登录";
+          if (pill) pill.title = "讲师未登录 (点击登录)";
+        }
+      }
+
+      /* ================= 3. 讲师登录/登出 (纯用户名机制) ================= */
+      function openAuthModal() {
+        if (currentUser) {
+          var showName = currentUser.email.split("@")[0];
+          if (confirm("当前已登录讲师账号：" + showName + "\n是否确认退出登录？")) {
+            sbClient.auth.signOut().then(function () {
+              currentUser = null;
+              updateAuthUI(null);
+              cachedStudents = [];
+              cachedStudentPlans = [];
+              renderStudentList();
+              alert("已退出登录");
+            });
+          }
+        } else {
+          var lastUsername = localStorage.getItem("kinbaku_last_username") || "";
+          document.getElementById("inpAuthUsername").value = lastUsername;
+          openDialog("dialogAuth");
+        }
+      }
+
+      async function executeLecturerLogin() {
+        if (!sbClient) return alert("Supabase 客户端尚未就绪");
+        var userInput = document.getElementById("inpAuthUsername").value.trim();
+        var password = document.getElementById("inpAuthPassword").value.trim();
+        if (!userInput || !password) return alert("请输入讲师用户名与密码");
+
+        var btn = document.getElementById("btnExecuteLogin");
+        btn.innerText = "正在验证...";
+        btn.disabled = true;
+
+        try {
+          var targetEmail = userInput;
+
+          // 核心机制：如果用户输入的是单纯的用户名（不含 @），自动去数据库映射表反查真实邮箱
+          if (userInput.indexOf("@") === -1) {
+            var { data: account, error: accErr } = await sbClient
+              .from("lecturer_accounts")
+              .select("email")
+              .ilike("username", userInput)
+              .maybeSingle();
+
+            if (account && account.email) {
+              targetEmail = account.email;
+            } else {
+              throw new Error("未找到讲师用户名【" + userInput + "】。请确认输入，或在 Supabase 的 lecturer_accounts 表中添加绑定。");
+            }
+          }
+
+          // 拿着匹配出的真实邮箱执行认证
+          var { data, error } = await sbClient.auth.signInWithPassword({
+            email: targetEmail,
+            password: password
+          });
+          if (error) throw error;
+
+          currentUser = data.user;
+          var showName = userInput.indexOf("@") === -1 ? userInput : currentUser.email.split("@")[0];
+          localStorage.setItem("kinbaku_last_username", showName);
+
+          updateAuthUI(currentUser);
+          closeDialog("dialogAuth");
+          alert("欢迎回来，讲师 " + showName + "！");
+          await loadStudentsList();
+        } catch (err) {
+          alert("登录失败: " + (err.message || "密码错误"));
+        } finally {
+          btn.innerText = "登录并连接";
+          btn.disabled = false;
+        }
+      }
+
+      /* ================= 4. 学员管理 (分页 + 独立新建/编辑 + 删除) ================= */
+      function openStudentModal() {
+        if (!currentUser) {
+          if (confirm("学员档案库需要讲师登录以保障数据安全。\n是否立即登录？")) openAuthModal();
+          return;
+        }
+        openDialog("dialogStudent");
+        renderStudentList();
+      }
+
+      async function loadStudentsList() {
+        if (!sbClient || !currentUser) return;
+        try {
+          var { data, error } = await sbClient.from("students").select("*").order("created_at", { ascending: false });
+          if (!error && data) {
+            cachedStudents = data;
+            if (currentStudent) {
+              var found = cachedStudents.find(function (s) { return s.id === currentStudent.id; });
+              if (found) currentStudent = found;
+              updateStudentUI();
+            }
+            renderStudentList();
+          }
+        } catch (e) {
+          console.warn("读取学员失败", e);
+        }
+      }
+
+      function onStudentPageSizeChange() {
+        studentPageSize = parseInt(document.getElementById("selStudentPageSize").value);
+        studentCurrentPage = 1;
+        renderStudentList();
+      }
+
+      function changeStudentPage(delta) {
+        studentCurrentPage += delta;
+        renderStudentList();
+      }
+
+      function renderStudentList() {
+        var box = document.getElementById("studentListContainer");
+        if (!box) return;
+
+        if (!cachedStudents.length) {
+          box.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 1.5rem 0;">暂无学员，请点击右上角【+ 新建学员】录入</div>';
+          document.getElementById("studentPaginationBar").style.display = "none";
+          return;
+        }
+
+        document.getElementById("studentPaginationBar").style.display = "flex";
+
+        var total = cachedStudents.length;
+        var totalPages = Math.ceil(total / studentPageSize) || 1;
+        if (studentCurrentPage > totalPages) studentCurrentPage = totalPages;
+        if (studentCurrentPage < 1) studentCurrentPage = 1;
+
+        var startIdx = (studentCurrentPage - 1) * studentPageSize;
+        var pageItems = cachedStudents.slice(startIdx, startIdx + studentPageSize);
+
+        document.getElementById("lblStudentPageStatus").innerText = "第 " + studentCurrentPage + " / " + totalPages + " 页 (共 " + total + " 人)";
+        document.getElementById("btnStudentPrevPage").disabled = (studentCurrentPage <= 1);
+        document.getElementById("btnStudentNextPage").disabled = (studentCurrentPage >= totalPages);
+
+        box.innerHTML = pageItems.map(function (s) {
+          var isCur = currentStudent && currentStudent.id === s.id;
+          var courseType = s.course_type || "1V1 私课";
+          var notes = s.notes || s.contact_notes || "无备注";
+
+          return (
+            '<div class="student-card-item ' + (isCur ? "active" : "") + '" onclick="selectStudent(\'' + s.id + '\')">' +
+            '<div style="min-width: 0; flex: 1;">' +
+            '<div style="display: flex; align-items: center; gap: 0.45rem;">' +
+            '<strong style="font-size: 0.88rem;">' + s.name + '</strong>' +
+            '<span style="font-size: 0.68rem; background: var(--paper); border: var(--border-thin) solid var(--border); padding: 0.1rem 0.35rem; border-radius: 0.25rem; color: var(--accent);">' + courseType + '</span>' +
+            '</div>' +
+            '<div style="font-size: 0.73rem; color: var(--muted); margin-top: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">备注：' + notes + '</div>' +
+            '</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.2rem;" onclick="event.stopPropagation()">' +
+            '<!-- ✏️ 编辑学员按钮 -->' +
+            '<button class="icon-only-btn" style="width: 1.85rem; height: 1.85rem;" onclick="openStudentFormModal(\'' + s.id + '\')" title="编辑学员信息">' +
+            '<svg class="svg-icon" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
+            '</button>' +
+            '<!-- 🗑️ 删除学员按钮 -->' +
+            '<button class="icon-only-btn" style="color: #ef4444; width: 1.85rem; height: 1.85rem;" onclick="deleteStudent(\'' + s.id + '\', \'' + s.name + '\')" title="删除此学员">' +
+            '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            '</button>' +
+            '</div>' +
+            '</div>'
+          );
+        }).join("");
+      }
+
+      function selectStudent(id) {
+        var s = cachedStudents.find(function (x) { return x.id === id; });
+        if (!s) return;
+        currentStudent = s;
+        localStorage.setItem("kinbaku_current_student", JSON.stringify(s));
+        updateStudentUI();
+        renderStudentList();
+        closeDialog("dialogStudent");
+      }
+
+      function updateStudentUI() {
+        var lbl = document.getElementById("labelCurrentStudent");
+        if (lbl) {
+          lbl.innerText = currentStudent ? currentStudent.name + " (" + (currentStudent.course_type || "1V1") + ")" : "选择学员";
+        }
+      }
+
+      function openStudentFormModal(studentId) {
+        var title = document.getElementById("lblStudentFormTitle");
+        var idInp = document.getElementById("editStudentId");
+
+        if (studentId) {
+          var s = cachedStudents.find(function (x) { return x.id === studentId; });
+          title.innerText = "编辑学员档案";
+          idInp.value = s.id;
+          document.getElementById("inpStudentFormName").value = s.name;
+          document.getElementById("selStudentFormType").value = s.course_type || "1V1 私课";
+          document.getElementById("inpStudentFormNotes").value = s.notes || s.contact_notes || "";
+        } else {
+          title.innerText = "新建学员档案";
+          idInp.value = "";
+          document.getElementById("inpStudentFormName").value = "";
+          document.getElementById("selStudentFormType").value = "1V1 私课";
+          document.getElementById("inpStudentFormNotes").value = "";
+        }
+        openDialog("dialogStudentForm");
+      }
+
+      async function submitStudentForm() {
+        var id = document.getElementById("editStudentId").value;
+        var name = document.getElementById("inpStudentFormName").value.trim();
+        var courseType = document.getElementById("selStudentFormType").value;
+        var notes = document.getElementById("inpStudentFormNotes").value.trim();
+
+        if (!name) return alert("请输入学员姓名");
+        if (!sbClient || !currentUser) return alert("请先登录讲师账户");
+
+        try {
+          var payload = { name: name, course_type: courseType, notes: notes };
+
+          if (id) {
+            var { error } = await sbClient.from("students").update(payload).eq("id", id);
+            if (error) throw error;
+            alert("学员档案已成功修改！");
+          } else {
+            var { data, error } = await sbClient.from("students").insert([payload]).select();
+            if (error) throw error;
+            if (data && data[0]) selectStudent(data[0].id);
+            alert("学员【" + name + "】创建成功！");
+          }
+
+          closeDialog("dialogStudentForm");
+          await loadStudentsList();
+        } catch (e) {
+          alert("保存学员档案失败: " + e.message);
+        }
+      }
+
+      async function deleteStudent(id, name) {
+        if (!confirm("确定要删除学员【" + name + "】吗？\n删除后该测试学员名下的关联教案也将一并清理。")) return;
+
+        try {
+          var { error } = await sbClient.from("students").delete().eq("id", id);
+          if (error) throw error;
+
+          if (currentStudent && currentStudent.id === id) {
+            currentStudent = null;
+            localStorage.removeItem("kinbaku_current_student");
+            updateStudentUI();
+          }
+          await loadStudentsList();
+          alert("学员档案已删除！");
+        } catch (err) {
+          alert("删除学员失败: " + err.message);
+        }
+      }
+
+      /* ================= 5. 历史教案 (排序 + 结课 + 改名 + 删除) ================= */
+      async function openHistoryPlansModal() {
+        if (!currentUser) {
+          if (confirm("查看历史教案需先登录讲师账户。\n是否立即登录？")) openAuthModal();
+          return;
+        }
+        if (!currentStudent) {
+          alert("请先点击【学员档案】选定一位学员！");
+          openStudentModal();
+          return;
+        }
+
+        document.getElementById("lblHistoryPlansModalTitle").innerText = "【" + currentStudent.name + "】的教案进度";
+        openDialog("dialogHistoryPlans");
+        await loadStudentPlans();
+      }
+
+      async function loadStudentPlans() {
+        var box = document.getElementById("historyPlansContainer");
+        box.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">正在读取教案...</div>';
+
+        try {
+          var { data, error } = await sbClient
+            .from("teaching_plans")
+            .select("*")
+            .eq("student_id", currentStudent.id)
+            .order("sort_order", { ascending: true })
+            .order("created_at", { ascending: false });
+
+          if (error) throw error;
+          cachedStudentPlans = data || [];
+          renderHistoryPlansList();
+        } catch (e) {
+          box.innerHTML = '<div style="color: red; padding: 1rem 0;">读取失败: ' + e.message + '</div>';
+        }
+      }
+
+      function renderHistoryPlansList() {
+        var box = document.getElementById("historyPlansContainer");
+        if (!cachedStudentPlans.length) {
+          box.innerHTML = '<div style="text-align: center; color: var(--muted); padding: 2rem 0;">该学员尚无教案记录，可在主屏编辑后点击【导出教案 ➔ 保存至云端】</div>';
+          return;
+        }
+
+        box.innerHTML = cachedStudentPlans.map(function (p, index) {
+          var isDone = !!p.is_completed;
+          var dateStr = p.created_at ? p.created_at.split("T")[0] : "";
+
+          return (
+            '<div class="plan-drag-card" draggable="true" data-index="' + index + '" onclick="loadHistoricalPlanToStage(\'' + p.id + '\')">' +
+            '<!-- 拖动手柄 (六点抓手 SVG) -->' +
+            '<div class="drag-handle" title="按住上下拖动调整顺序" onclick="event.stopPropagation()">' +
+            '<svg class="svg-icon" viewBox="0 0 24 24">' +
+            '<circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>' +
+            '<circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>' +
+            '</svg>' +
+            '</div>' +
+
+            '<!-- 信息主体 -->' +
+            '<div class="plan-info-box">' +
+            '<div class="plan-title-row">' +
+            '<div style="display: flex; align-items: center; gap: 0.35rem; min-width: 0; flex: 1;">' +
+            '<span class="plan-title-text ' + (isDone ? "completed" : "") + '" title="' + p.topic + '">' + p.topic + '</span>' +
+            '<!-- ✏️ 教案重命名按钮 -->' +
+            '<button class="icon-only-btn" style="width: 1.45rem; height: 1.45rem;" onclick="renameTeachingPlan(\'' + p.id + '\', \'' + encodeURIComponent(p.topic) + '\', event)" title="修改教案名称">' +
+            '<svg class="svg-icon" style="width: 0.9em; height: 0.9em;" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>' +
+            '</button>' +
+            '</div>' +
+            '<span class="plan-date-badge">' + dateStr + '</span>' +
+            '</div>' +
+
+            '<div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.25rem;">' +
+            '<!-- 结课状态切换 -->' +
+            '<span class="status-tag-toggle ' + (isDone ? "done" : "") + '" onclick="togglePlanCompleted(\'' + p.id + '\', ' + isDone + ', event)" title="点击切换结课状态">' +
+            (isDone ?
+              '<svg class="svg-icon" style="width: 0.9em; height: 0.9em;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> 已结课' :
+              '<svg class="svg-icon" style="width: 0.9em; height: 0.9em;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg> 待上课') +
+            '</span>' +
+            '<!-- 删除单条教案 -->' +
+            '<button class="icon-only-btn" style="color: #ef4444; width: 1.6rem; height: 1.6rem;" onclick="deleteHistoricalPlan(\'' + p.id + '\', \'' + encodeURIComponent(p.topic) + '\', event)" title="彻底删除此教案">' +
+            '<svg class="svg-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            '</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>'
+          );
+        }).join("");
+
+        bindDragDropEvents();
+      }
+
+      // 修改教案名称 (直接同步 Supabase)
+      async function renameTeachingPlan(planId, currentTopicEncoded, e) {
+        e.stopPropagation();
+        var currentTopic = decodeURIComponent(currentTopicEncoded || "");
+        var newTitle = prompt("请输入此教案的新名称：", currentTopic);
+        if (newTitle === null) return;
+        newTitle = newTitle.trim();
+        if (!newTitle) return alert("教案名称不能为空");
+        if (newTitle === currentTopic) return;
+
+        try {
+          var { error } = await sbClient.from("teaching_plans").update({ topic: newTitle }).eq("id", planId);
+          if (error) throw error;
+          var item = cachedStudentPlans.find(function (x) { return x.id === planId; });
+          if (item) item.topic = newTitle;
+
+          // 🌟 若修改的正好是当前主屏幕打开的教案，同步更新标题
+          if (currentLoadedPlanId === planId) {
+            currentLoadedPlanTopic = newTitle;
+            document.getElementById("labelStatus").innerText = "已载入：《" + newTitle + "》";
+          }
+
+          renderHistoryPlansList();
+        } catch (err) {
+          alert("修改教案名称失败: " + err.message);
+        }
+      }
+
+      function bindDragDropEvents() {
+        var cards = document.querySelectorAll(".plan-drag-card");
+        cards.forEach(function (card) {
+          card.addEventListener("dragstart", function (e) {
+            draggedPlanIndex = parseInt(this.getAttribute("data-index"));
+            this.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+          });
+
+          card.addEventListener("dragover", function (e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+          });
+
+          card.addEventListener("drop", function (e) {
+            e.preventDefault();
+            var targetIndex = parseInt(this.getAttribute("data-index"));
+            if (draggedPlanIndex !== null && draggedPlanIndex !== targetIndex) {
+              var movedItem = cachedStudentPlans.splice(draggedPlanIndex, 1)[0];
+              cachedStudentPlans.splice(targetIndex, 0, movedItem);
+              renderHistoryPlansList();
+              savePlansNewSortOrder();
+            }
+          });
+
+          card.addEventListener("dragend", function () {
+            this.classList.remove("dragging");
+            draggedPlanIndex = null;
+          });
+        });
+      }
+
+      async function savePlansNewSortOrder() {
+        if (!sbClient || !currentUser) return;
+        try {
+          var updates = cachedStudentPlans.map(function (p, idx) {
+            return sbClient.from("teaching_plans").update({ sort_order: idx }).eq("id", p.id);
+          });
+          await Promise.all(updates);
+        } catch (e) {
+          console.warn("保存排序权重失败", e);
+        }
+      }
+
+      async function togglePlanCompleted(planId, currentStatus, e) {
+        e.stopPropagation();
+        var nextStatus = !currentStatus;
+        try {
+          var { error } = await sbClient.from("teaching_plans").update({ is_completed: nextStatus }).eq("id", planId);
+          if (error) throw error;
+          var item = cachedStudentPlans.find(function (x) { return x.id === planId; });
+          if (item) item.is_completed = nextStatus;
+          renderHistoryPlansList();
+        } catch (err) {
+          alert("更新结课状态失败: " + err.message);
+        }
+      }
+
+      async function deleteHistoricalPlan(planId, topicEncoded, e) {
+        e.stopPropagation();
+        var topic = decodeURIComponent(topicEncoded || "此教案");
+        if (!confirm("确定要在云端彻底删除教案【" + topic + "】吗？\n删除后不可恢复。")) return;
+
+        try {
+          var { error } = await sbClient.from("teaching_plans").delete().eq("id", planId);
+          if (error) throw error;
+          cachedStudentPlans = cachedStudentPlans.filter(function (x) { return x.id !== planId; });
+
+          // 🌟 若删除的正好是当前主屏幕打开的教案，解除锁定
+          if (currentLoadedPlanId === planId) {
+            currentLoadedPlanId = null;
+            currentLoadedPlanTopic = "";
+            document.getElementById("labelStatus").innerText = "教案待导入";
+          }
+
+          renderHistoryPlansList();
+          alert("教案已从云端删除！");
+        } catch (err) {
+          alert("删除教案失败: " + err.message);
+        }
+      }
+
+      // 🌟 核心修复 ①：载入历史教案时，牢牢锁定 ID 与标题
+      function loadHistoricalPlanToStage(planId) {
+        var p = cachedStudentPlans.find(function (x) { return x.id === planId; });
+        if (!p) return;
+
+        currentLoadedPlanId = p.id;
+        currentLoadedPlanTopic = p.topic;
+
+        if (isRawEditorOn) forceExitRawEditor();
+        renderMarkdownToScreen(p.plan_content);
+
+        document.getElementById("labelStatus").innerText = "已载入：《" + p.topic + "》";
+        closeDialog("dialogHistoryPlans");
+      }
+
+      /* ================= 6. Markdown 渲染引擎与排版 ================= */
+      function renderMarkdownToScreen(text) {
+        var cleanText = text ? text.trim() : "";
+        currentLectureText = cleanText;
+
+        var placeholder = document.getElementById("emptyPlaceholder");
+        var docBox = document.getElementById("renderedDocTarget");
+        var rawBox = document.getElementById("sourceEditorBox");
+        var statusBadge = document.getElementById("cardStatusBadge");
+
+        if (rawBox) rawBox.value = cleanText;
+
+        if (!cleanText) {
+          localStorage.removeItem("kinbaku_doc_cache");
+          if (placeholder) placeholder.style.display = "block";
+          if (docBox) { docBox.style.display = "none"; docBox.innerHTML = ""; }
+          document.getElementById("labelStatus").innerText = "教案待导入";
+          if (statusBadge) statusBadge.className = "badge-dot";
+          return;
+        }
+
+        localStorage.setItem("kinbaku_doc_cache", cleanText);
+        if (placeholder) placeholder.style.display = "none";
+
+        if (docBox) {
+          docBox.style.display = isRawEditorOn ? "none" : "block";
+
+          var processedText = cleanText.replace(/\$\$(.*?)\$\$/gs, function (match, content) {
+            var pureText = content.replace(/\\text\{([^}]+)\}/g, "$1").trim();
+            if (/\\longrightarrow|\\rightarrow|->|→/.test(pureText)) {
+              var steps = pureText.split(/\\longrightarrow|\\rightarrow|->|→/);
+              var stepsHtml = '<div class="chain-flow-box">';
+              steps.forEach(function (step, idx) {
+                stepsHtml += '<span class="chain-node">' + step.trim() + '</span>';
+                if (idx < steps.length - 1) stepsHtml += '<span class="chain-arrow">➔</span>';
+              });
+              stepsHtml += '</div>';
+              return stepsHtml;
+            }
+            return match;
+          });
+
+          docBox.innerHTML = window.marked ? marked.parse(processedText) : processedText;
+
+          docBox.querySelectorAll('input[type="checkbox"]').forEach(function (chk) {
+            chk.removeAttribute("disabled");
+            var parentLine = chk.parentElement;
+            if (parentLine) {
+              parentLine.classList.add("check-line-item");
+              chk.onchange = function () {
+                if (chk.checked) {
+                  parentLine.style.opacity = "0.55";
+                  parentLine.style.textDecoration = "line-through";
+                } else {
+                  parentLine.style.opacity = "1";
+                  parentLine.style.textDecoration = "none";
+                }
+              };
+              parentLine.onclick = function (e) {
+                if (e.target !== chk) {
+                  chk.checked = !chk.checked;
+                  chk.dispatchEvent(new Event("change"));
+                }
+              };
+            }
+          });
+        }
+
+        // 若当前未锁定特定教案名称，使用默认时间提示
+        if (!currentLoadedPlanTopic) {
+          document.getElementById("labelStatus").innerText = "教案就绪 (" + new Date().toLocaleTimeString() + ")";
+        }
+        if (statusBadge) statusBadge.className = "badge-dot active";
+      }
+
+      /* ================= 7. 导入、编辑与清空控制 ================= */
+      // 🌟 核心修复 ②：导入外部文件时，解除旧教案锁定，标记为新建模式
+      function handleFileImport(e) {
+        var file = e.target.files && e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          currentLoadedPlanId = null; // 解锁 ID，作为全新教案处理
+          currentLoadedPlanTopic = file.name.replace(/\.[^/.]+$/, ""); // 提取纯文件名
+
+          if (isRawEditorOn) forceExitRawEditor();
+          renderMarkdownToScreen(evt.target.result);
+          document.getElementById("labelStatus").innerText = "已导入新教案：" + currentLoadedPlanTopic;
+          alert("教案导入成功！");
+        };
+        reader.readAsText(file);
+        e.target.value = "";
+      }
+
+      function switchRawEditor() {
+        var raw = document.getElementById("sourceEditorBox");
+        var out = document.getElementById("renderedDocTarget");
+        var placeholder = document.getElementById("emptyPlaceholder");
+        var btnDock = document.getElementById("btnDockToggleEdit");
+        var textDock = document.getElementById("dockEditText");
+        var topClearBtn = document.getElementById("btnTopClearPlan");
+
+        isRawEditorOn = !isRawEditorOn;
+        if (isRawEditorOn) {
+          raw.value = currentLectureText || "";
+          raw.style.display = "block";
+          if (out) out.style.display = "none";
+          if (placeholder) placeholder.style.display = "none";
+          if (textDock) textDock.innerText = "完成预览";
+          if (btnDock) btnDock.classList.add("active");
+          if (topClearBtn) topClearBtn.style.display = "inline-flex";
+        } else {
+          currentLectureText = (raw.value || "").trim();
+          raw.style.display = "none";
+          if (textDock) textDock.innerText = "编辑教案";
+          if (btnDock) btnDock.classList.remove("active");
+          if (topClearBtn) topClearBtn.style.display = "none";
+          renderMarkdownToScreen(currentLectureText);
+        }
+      }
+
+      function forceExitRawEditor() {
+        isRawEditorOn = false;
+        var raw = document.getElementById("sourceEditorBox");
+        if (raw) raw.style.display = "none";
+        var btnDock = document.getElementById("btnDockToggleEdit");
+        var textDock = document.getElementById("dockEditText");
+        var topClearBtn = document.getElementById("btnTopClearPlan");
+        if (textDock) textDock.innerText = "编辑教案";
+        if (btnDock) btnDock.classList.remove("active");
+        if (topClearBtn) topClearBtn.style.display = "none";
+      }
+
+      function onRawEditorChange() {
+        currentLectureText = document.getElementById("sourceEditorBox").value;
+        localStorage.setItem("kinbaku_doc_cache", currentLectureText);
+      }
+
+      // 清空教案并彻底解除 ID 锁定
+      function clearCurrentPlan() {
+        if (!confirm("确定要清空当前的教案正文吗？此操作将重置编辑区。")) return;
+        currentLectureText = "";
+        currentLoadedPlanId = null;
+        currentLoadedPlanTopic = "";
+        document.getElementById("sourceEditorBox").value = "";
+        renderMarkdownToScreen("");
+        forceExitRawEditor();
+      }
+
+      /* ================= 8. 提词模式与导出功能 ================= */
+      function switchStageMode() {
+        if (isRawEditorOn) {
+          forceExitRawEditor();
+          renderMarkdownToScreen(currentLectureText);
+        }
+        isStageModeOn = !isStageModeOn;
+        var card = document.getElementById("articlePaper");
+        var bar = document.getElementById("teleprompterBar");
+        var dock = document.getElementById("bottomActionDock");
+
+        if (isStageModeOn) {
+          card.classList.add("stage-mode");
+          bar.style.display = "flex";
+          dock.style.display = "none";
+        } else {
+          card.classList.remove("stage-mode");
+          bar.style.display = "none";
+          dock.style.display = "flex";
+        }
+      }
+
+      function appendQuickNote() {
+        var note = prompt("请输入现场授课即时速记（将追加在教案末尾）：");
+        if (note) {
+          currentLectureText += "\n\n> 📝 **现场速记 (" + new Date().toLocaleTimeString() + ")**：" + note + "\n";
+          renderMarkdownToScreen(currentLectureText);
+        }
+      }
+
+      // 🌟 核心修复 ③：保存至云端，精准区分【覆盖更新已有教案】与【插入全新教案】
+      async function saveCurrentPlanToSupabase() {
+        closeAllDropdowns();
+        if (!sbClient || !currentUser) {
+          alert("保存至云端需先登录讲师账户！");
+          openAuthModal();
+          return;
+        }
+        if (!currentLectureText.trim()) return alert("当前没有可保存的教案内容");
+        if (!currentStudent) {
+          alert("请先在顶栏【学员档案】中指定该教案归属的学员！");
+          openStudentModal();
+          return;
+        }
+
+        // 推导默认名称
+        var defaultTopic = currentLoadedPlanTopic || "专业绳缚实操教案";
+        if (!currentLoadedPlanTopic) {
+          var firstLine = currentLectureText.trim().split("\n")[0];
+          if (firstLine.indexOf("#") !== -1) {
+            defaultTopic = firstLine.replace(/#/g, "").trim();
+          }
+        }
+
+        var isUpdating = !!currentLoadedPlanId;
+        var promptMsg = isUpdating
+          ? "确认修改此教案名称（将直接覆盖更新原教案，不新增重复项）："
+          : "请确认新教案名称：";
+
+        var topic = prompt(promptMsg, defaultTopic);
+        if (topic === null) return;
+        topic = topic.trim() || defaultTopic;
+
+        try {
+          if (isUpdating) {
+            // 🌟 原地覆盖 UPDATE
+            var { error } = await sbClient
+              .from("teaching_plans")
+              .update({
+                topic: topic,
+                plan_content: currentLectureText
+              })
+              .eq("id", currentLoadedPlanId);
+
+            if (error) throw error;
+            currentLoadedPlanTopic = topic;
+            document.getElementById("labelStatus").innerText = "已更新：《" + topic + "》";
+            alert("教案《" + topic + "》已成功覆盖更新！");
+          } else {
+            // 全新插入 INSERT
+            var payload = {
+              student_id: currentStudent.id,
+              topic: topic,
+              plan_content: currentLectureText,
+              is_completed: false,
+              sort_order: 0
+            };
+            var { data, error } = await sbClient.from("teaching_plans").insert([payload]).select();
+            if (error) throw error;
+
+            if (data && data[0]) {
+              currentLoadedPlanId = data[0].id;
+              currentLoadedPlanTopic = topic;
+            }
+            document.getElementById("labelStatus").innerText = "已归档：《" + topic + "》";
+            alert("新教案《" + topic + "》已成功录入云端！");
+          }
+        } catch (e) {
+          alert("保存失败: " + e.message);
+        }
+      }
+
+      function saveAsMarkdown() {
+        closeAllDropdowns();
+        if (!currentLectureText) return alert("当前没有可导出的教案");
+        var blob = new Blob([currentLectureText], { type: "text/markdown;charset=utf-8" });
+        triggerFileDownload(blob, "绳缚教案_" + makeDateStamp() + ".md");
+      }
+
+      function saveAsWord() {
+        closeAllDropdowns();
+        if (!currentLectureText) return alert("当前没有可导出的教案");
+        var bodyHtml = document.getElementById("renderedDocTarget").innerHTML;
+        var docPrefix = '\u003Chtml xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"\u003E\u003Chead\u003E\u003Cmeta charset="utf-8"\u003E\u003Ctitle\u003E教案\u003C/title\u003E\u003Cstyle\u003Ebody{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-size:11pt;line-height:1.7}h1{font-size:18pt;color:#991b1b;border-bottom:2pt solid #991b1b}h2{font-size:14pt;color:#b91c1c;border-left:4pt solid #b91c1c;padding-left:6pt}h3{font-size:12pt;color:#991b1b}blockquote{background:#fef3c7;border-left:4pt solid #d97706;padding:8pt}\u003C/style\u003E\u003C/head\u003E\u003Cbody\u003E';
+        var docSuffix = '\u003C/body\u003E\u003C/html\u003E';
+        var blob = new Blob(["\ufeff" + docPrefix + bodyHtml + docSuffix], { type: "application/msword" });
+        triggerFileDownload(blob, "绳缚教案_" + makeDateStamp() + ".doc");
+      }
+
+      function copyLectureContent() {
+        if (!currentLectureText.trim()) return alert("当前暂无教案内容可复制");
+        navigator.clipboard.writeText(currentLectureText)
+          .then(function () { alert("教案 Markdown 已成功复制到剪贴板！"); })
+          .catch(function () { alert("复制失败，请手动选取复制。"); });
+      }
+
+      /* ================= 9. 通用辅助 (明暗、弹窗、下拉) ================= */
+      function switchTheme() {
+        var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
+        updateThemeSvg(!isDark);
+      }
+
+      function updateThemeSvg(isDark) {
+        var svg = document.getElementById("themeSvg");
+        if (!svg) return;
+        if (isDark) {
+          svg.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+        } else {
+          svg.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        }
+      }
+
+      function openDialog(id) { document.getElementById(id).style.display = "flex"; }
+      function closeDialog(id) { document.getElementById(id).style.display = "none"; }
+
+      function toggleDropdown(e, panelId) {
+        e.stopPropagation();
+        var targetPanel = document.getElementById(panelId);
+        var isOpen = targetPanel.classList.contains("show");
+        closeAllDropdowns();
+        if (!isOpen) targetPanel.classList.add("show");
+      }
+
+      function closeAllDropdowns() {
+        document.querySelectorAll(".dropdown-panel").forEach(function (p) { p.classList.remove("show"); });
+      }
+
+      document.addEventListener("click", function (e) {
+        if (!e.target.closest(".dropdown-container")) closeAllDropdowns();
+      });
+
+      function triggerFileDownload(blob, filename) {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function makeDateStamp() {
+        var d = new Date();
+        return "" + d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+      }
+    </script>
+  </body>
+
+</html>
