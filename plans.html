@@ -913,6 +913,83 @@
         cursor: not-allowed;
       }
 
+      /* ================= 移动端小屏极简优化 (≤ 640px) ================= */
+      html,
+      body {
+        overflow-x: hidden;
+        /* 彻底防止横向滚动条 */
+      }
+
+      @media (max-width: 640px) {
+
+        /* 1. 压缩顶栏两侧多余留白 */
+        header {
+          padding: 0.5rem 0.65rem;
+        }
+
+        .nav-wrap {
+          gap: 0.25rem;
+        }
+
+        /* 2. 隐藏 Logo 旁的长标题文字，仅保留图标 */
+        .brand-name {
+          display: none !important;
+        }
+
+        /* 3. 按钮容器间距微调 */
+        .nav-actions {
+          gap: 0.35rem;
+        }
+
+        /* 4. 胶囊按钮全面转为纯图标按钮（尺寸统一为 2.2rem 方块） */
+        .pill-btn {
+          width: 2.2rem;
+          height: 2.2rem;
+          min-height: 2.2rem;
+          padding: 0;
+          justify-content: center;
+          position: relative;
+          border-radius: var(--radius-btn);
+        }
+
+        /* 隐藏按钮内的中文文字，仅保留 SVG 图标 */
+        .pill-btn span:not(.dot-indicator) {
+          display: none !important;
+        }
+
+        /* 5. 讲师在线状态绿点：转换为按钮右上角的小角标 */
+        #btnAuthPill {
+          position: relative;
+        }
+
+        #btnAuthPill .dot-indicator {
+          position: absolute;
+          top: 0.3rem;
+          right: 0.3rem;
+          width: 0.45rem;
+          height: 0.45rem;
+          margin: 0;
+        }
+
+        /* 6. 卡片顶部的状态行优化，防止被复制按钮换行挤压 */
+        .card-topbar {
+          padding-bottom: 0.5rem;
+          margin-bottom: 0.85rem;
+        }
+
+        .card-topbar-actions .btn span {
+          display: none;
+          /* 小屏下“复制全文”只显示剪贴板图标 */
+        }
+
+        .card-topbar-actions .btn {
+          padding: 0.4rem;
+          min-height: 2rem;
+          width: 2rem;
+          justify-content: center;
+        }
+      }
+
       @media print {
 
         header,
@@ -2183,29 +2260,29 @@
       }
 
       // 🌟 点击左上角 Logo：彻底重置为未选学员、未选教案的初始空主页
-        function resetToHomeState() {
-          // 如果正在提词或编辑，先退出
-          if (isStageModeOn) switchStageMode();
-          if (isRawEditorOn) forceExitRawEditor();
+      function resetToHomeState() {
+        // 如果正在提词或编辑，先退出
+        if (isStageModeOn) switchStageMode();
+        if (isRawEditorOn) forceExitRawEditor();
 
-          // 1. 重置学员为未选状态
-          currentStudent = null;
-          localStorage.removeItem("kinbaku_current_student");
-          updateStudentUI();
+        // 1. 重置学员为未选状态
+        currentStudent = null;
+        localStorage.removeItem("kinbaku_current_student");
+        updateStudentUI();
 
-          // 2. 清空教案内容与 ID 绑定
-          currentLectureText = "";
-          currentLoadedPlanId = null;
-          currentLoadedPlanTopic = "";
-          localStorage.removeItem("kinbaku_doc_cache");
+        // 2. 清空教案内容与 ID 绑定
+        currentLectureText = "";
+        currentLoadedPlanId = null;
+        currentLoadedPlanTopic = "";
+        localStorage.removeItem("kinbaku_doc_cache");
 
-          var rawBox = document.getElementById("sourceEditorBox");
-          if (rawBox) rawBox.value = "";
+        var rawBox = document.getElementById("sourceEditorBox");
+        if (rawBox) rawBox.value = "";
 
-          // 3. 恢复主屏到空状态大卡片
-          renderMarkdownToScreen("");
-          document.getElementById("labelStatus").innerText = "教案待导入";
-        }
+        // 3. 恢复主屏到空状态大卡片
+        renderMarkdownToScreen("");
+        document.getElementById("labelStatus").innerText = "教案待导入";
+      }
     </script>
   </body>
 
