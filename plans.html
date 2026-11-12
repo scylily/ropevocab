@@ -1039,12 +1039,12 @@
           </button>
 
           <!-- ② 历史教案 -->
-          <button class="pill-btn" onclick="openHistoryPlansModal()" id="btnHistoryPlans" title="查看该学员的历史教案与进度">
+          <button class="pill-btn" onclick="openHistoryPlansModal()" id="btnHistoryPlans" title="查看该学员的教案列表与进度">
             <svg class="svg-icon" viewBox="0 0 24 24">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
-            <span>历史教案</span>
+            <span>教案列表</span>
           </button>
 
           <!-- ③ 讲师登录/认证 -->
@@ -1105,7 +1105,7 @@
           <div class="empty-wrapper" id="emptyPlaceholder">
             <div class="empty-head">当前暂无载入的课程教案</div>
             <div class="empty-sub">
-              点击下方【导入教案】选取本地 Markdown 文件，或点击顶栏【历史教案】调阅该学员名下的已存教案。
+              点击下方【导入教案】选取本地 Markdown 文件，或点击顶栏【历史教案列表】调阅该学员名下的已存教案。
             </div>
           </div>
 
@@ -1314,7 +1314,7 @@
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
-            <span id="lblHistoryPlansModalTitle">历史教案进度管理</span>
+            <span id="lblHistoryPlansModalTitle">教案列表管理</span>
           </span>
           <button class="modal-x" onclick="closeDialog('dialogHistoryPlans')">
             <svg class="svg-icon" viewBox="0 0 24 24">
@@ -1355,7 +1355,7 @@
         <div class="tab-content">
           <div class="field-wrap">
             <label>讲师用户名</label>
-            <input type="text" class="field-input" id="inpAuthUsername" placeholder="例如：admin (纯用户名即可)">
+            <input type="text" class="field-input" id="inpAuthUsername" placeholder="例如：doraemon">
           </div>
           <div class="field-wrap">
             <label>登录密码</label>
@@ -1721,7 +1721,7 @@
       /* ================= 5. 历史教案 (排序 + 结课 + 改名 + 删除) ================= */
       async function openHistoryPlansModal() {
         if (!currentUser) {
-          if (confirm("查看历史教案需先登录讲师账户。\n是否立即登录？")) openAuthModal();
+          if (confirm("查看教案列表需先登录讲师账户。\n是否立即登录？")) openAuthModal();
           return;
         }
         if (!currentStudent) {
