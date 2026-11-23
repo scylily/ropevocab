@@ -197,11 +197,22 @@ async function initTermDetailPage() {
   }
 
   try {
-    const { data: term, error } = await client
-      .from('ropevocab_terms')
-      .select('*')
-      .eq('id', termId)
-      .maybeSingle();
+    // 同时读取当前词条数据 & 全局图片总开关
+    const [termRes, settingRes] = await Promise.all([
+      client
+        .from('ropevocab_terms')
+        .select('*')
+        .eq('id', termId)
+        .maybeSingle(),
+      client
+        .from('ropevocab_settings')
+        .select('show_all_images')
+        .eq('id', 'global')
+        .maybeSingle()
+    ]);
+
+    const { data: term, error } = termRes;
+    const globalShowImages = settingRes.data ? settingRes.data.show_all_images !== false : true;
 
     if (error || !term) {
       showDetailErrorState(error ? error.message : '未找到对应的词条数据！');
@@ -222,7 +233,7 @@ async function initTermDetailPage() {
     renderTermHeader(term);
     renderMultilingualCards(term);
     renderDynamicSections(term);
-    renderImageGallery(term);
+    renderImageGallery(term, globalShowImages);
 
     const loadingEl = document.getElementById('detail-loading');
     const mainEl = document.getElementById('detail-main-content');
@@ -363,7 +374,7 @@ function createListSectionNode(title, items) {
   return div;
 }
 
-function renderImageGallery(term) {
+function renderImageGallery(term, globalShowImages = true) {
   const galleryContainer = document.getElementById('image-gallery-container');
   const gallerySection = document.getElementById('section-gallery');
   if (!galleryContainer) return;
@@ -371,7 +382,8 @@ function renderImageGallery(term) {
   const images = parseJsonArray(term.images);
   const captions = parseJsonArray(term.image_captions);
 
-  if (!images || images.length === 0) {
+  // 总开关关闭 OR 单条开关关闭 OR 没有图片数据时，隐藏整块“示意图展示”区域
+  if (!globalShowImages || term.show_images === false || !images || images.length === 0) {
     if (gallerySection) gallerySection.style.display = 'none';
     return;
   }
