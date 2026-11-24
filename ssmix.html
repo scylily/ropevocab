@@ -319,6 +319,7 @@
         margin-bottom: 0;
       }
 
+      /* 标准多级无序列表 */
       .markdown-body ul {
         list-style-type: disc !important;
         padding-left: 1.35rem !important;
@@ -337,6 +338,7 @@
         margin: 0.12rem 0 0.2rem 0 !important;
       }
 
+      /* 标准多级有序列表 */
       .markdown-body ol {
         list-style-type: decimal !important;
         padding-left: 1.35rem !important;
@@ -415,20 +417,19 @@
         margin: 0 !important;
       }
 
-      /* 1. 标准分割线 */
+      /* 标准分割线 */
       .markdown-body hr {
         border: 0 !important;
         border-top: 1.5px dashed #cbd5e1 !important;
         margin: 10px 0 !important;
       }
 
-      /* 🌟 2. 自适应消除重影：如果 hr 位于小节的最开头或最末尾，自动隐藏，避免与卡片外框双重叠加 */
+      /* 自适应消除重影 */
       .markdown-body>hr:first-child,
       .markdown-body>hr:last-child {
         display: none !important;
       }
 
-      /* 兼容处理：有时 hr 前后会附带空段落，用 has / adjacent 彻底兜底 */
       .content-block hr:last-of-type:is(:last-child, :nth-last-child(2)) {
         display: none !important;
       }
@@ -693,7 +694,6 @@
         outline: none;
       }
 
-      /* ================= 排序与分页控制条样式 ================= */
       .sidebar-filter-bar {
         display: flex;
         align-items: center;
@@ -1577,7 +1577,7 @@
             <input type="text" class="search-input" id="searchStudentInput" placeholder="搜索学员姓名或编号..." oninput="handleSearchInput()">
           </div>
 
-          <!-- 🌟 新增：多维度排序工具条 -->
+          <!-- 多维度排序工具条 -->
           <div class="sidebar-filter-bar">
             <span>排序方式</span>
             <select class="filter-select" id="studentSortSelect" onchange="handleSortChange(this.value)">
@@ -1592,7 +1592,7 @@
           <!-- 学员列表容器 -->
           <div class="student-list" id="studentListContainer"></div>
 
-          <!-- 🌟 新增：分页与条数切换工具底栏 -->
+          <!-- 分页与条数切换工具底栏 -->
           <div class="sidebar-pagination-footer" id="sidebarPaginationFooter">
             <select class="filter-select" id="pageSizeSelect" onchange="handlePageSizeChange(this.value)">
               <option value="10">10条/页</option>
@@ -1961,9 +1961,9 @@
       let collapsedCardMap = {};
 
       /* ================= 排序与分页核心状态机 ================= */
-      let currentSortType = 'created_desc'; // 默认按创建时间倒序
-      let currentPage = 1;                  // 当前页码
-      let currentPageSize = 10;             // 每页学员数 (10 / 20 / 50)
+      let currentSortType = 'created_desc';
+      let currentPage = 1;
+      let currentPageSize = 10;
 
       window.addEventListener('DOMContentLoaded', () => {
         if (typeof marked !== 'undefined') {
@@ -1986,7 +1986,6 @@
         if (!items || items.length === 0) return [];
         const n = items.length;
 
-        // 判定项是否属于“短内容”
         const isShortList = items.map(it => {
           const rawContent = it.content || it.content_markdown || '';
           const title = it.title || '';
@@ -1997,13 +1996,11 @@
         let i = 0;
         while (i < n) {
           if (isShortList[i]) {
-            // 只有当紧接着的下一项也是短项时，才成对生成左右双栏
             if (i + 1 < n && isShortList[i + 1]) {
               layoutClasses[i] = 'col-left';
               layoutClasses[i + 1] = 'col-right';
-              i += 2; // 成对跳过
+              i += 2;
             } else {
-              // 孤单单项，前后都是长模块，自动通栏铺开，彻底杜绝单边留白！
               layoutClasses[i] = 'span-full';
               i += 1;
             }
@@ -2074,7 +2071,6 @@
         renderStudentList();
       }
 
-      /* ================= 排序与分页控制交互响应 ================= */
       function handleSortChange(sortVal) {
         currentSortType = sortVal;
         currentPage = 1;
@@ -2097,20 +2093,18 @@
         renderStudentList();
       }
 
-      /* ================= 核心渲染：支持排序、检索与切片分页 ================= */
+      /* 核心渲染：支持排序、检索与切片分页 */
       function renderStudentList() {
         const container = document.getElementById('studentListContainer');
         const q = document.getElementById('searchStudentInput').value.toLowerCase().trim();
         container.innerHTML = '';
 
-        // 1. 过滤：支持学员姓名与学员编号双重模糊检索
         let filtered = students.filter(s => {
           const nameMatch = (s.name || '').toLowerCase().includes(q);
           const noMatch = (s.student_no || '').toLowerCase().includes(q);
           return nameMatch || noMatch;
         });
 
-        // 2. 核心排序逻辑
         filtered.sort((a, b) => {
           if (currentSortType === 'created_desc') {
             return new Date(b.created_at || 0) - new Date(a.created_at || 0);
@@ -2125,13 +2119,11 @@
             return (b.student_no || '').localeCompare(a.student_no || '', undefined, { numeric: true, sensitivity: 'base' });
           }
           if (currentSortType === 'name_asc') {
-            // 利用中文字典序进行精准拼音首字母排序
             return (a.name || '').localeCompare(b.name || '', 'zh-Hans-CN', { sensitivity: 'accent' });
           }
           return 0;
         });
 
-        // 3. 计算分页切片
         const totalItems = filtered.length;
         const totalPages = Math.ceil(totalItems / currentPageSize) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
@@ -2141,7 +2133,6 @@
         const endIdx = startIdx + currentPageSize;
         const pageData = filtered.slice(startIdx, endIdx);
 
-        // 4. 更新底部分页栏信息
         const pageInfoText = document.getElementById('pageInfoText');
         const prevPageBtn = document.getElementById('prevPageBtn');
         const nextPageBtn = document.getElementById('nextPageBtn');
@@ -2151,7 +2142,6 @@
           nextPageBtn.disabled = (currentPage >= totalPages);
         }
 
-        // 5. 渲染卡片
         if (pageData.length === 0) {
           container.innerHTML = `<div style="text-align:center; padding:2rem 0; font-size:0.8rem; color:#94a3b8;">未找到匹配学员</div>`;
           return;
@@ -2392,7 +2382,6 @@
           <div class="card-expandable-content">
             ${gridHtml}
 
-            <!-- 授课备忘区 -->
             <div style="margin-top:1.2rem; padding:0.8rem; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0; display:flex; flex-direction:column; gap:0.45rem;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.78rem; font-weight:700; color:#475569;">授课观察手记与备忘 (仅教务后台可见)</span>
@@ -2483,7 +2472,6 @@
         });
       }
 
-      /* 通用大课专属检查表逻辑 */
       function renderGeneralCheckList(contentMd, parentItemId) {
         if (!contentMd) return '';
         const lines = contentMd.split('\n');
@@ -2522,7 +2510,6 @@
         return html;
       }
 
-      /* 结课状态操作坞 */
       function openMarkCompleteModal(secId, itemId, targetType) {
         const sec = currentSections.find(s => s.id === secId);
         if (!sec) return;
@@ -2635,7 +2622,6 @@
         renderCourseScopeView();
       }
 
-      /* 结课页面渲染 (学员交付单) */
       function openStudentCompletionCard(secId, itemId, targetType) {
         const sec = currentSections.find(s => s.id === secId);
         if (!sec || !currentStudent) return;
@@ -2739,7 +2725,6 @@
         });
       }
 
-      /* 核心替换：全面接管为标准 Markdown 渲染引擎 */
       function renderMultiLevelList(text) {
         if (!text) return '';
         try {
@@ -2810,7 +2795,6 @@
         alert('授课手记与模特信息已成功保存！');
       }
 
-      /* 视图切换 */
       function switchMainView(viewKey) {
         document.getElementById('tabBtnCms').classList.toggle('active', viewKey === 'cms');
         document.getElementById('tabBtnStudio').classList.toggle('active', viewKey === 'studio');
@@ -2828,7 +2812,6 @@
         document.getElementById('mdEditor').focus();
       }
 
-      /* 学员档案操作 */
       function openStudentModalDirect(sId) {
         currentStudent = students.find(s => s.id === sId);
         if (!currentStudent) return;
@@ -2916,7 +2899,6 @@
         await loadStudents();
       }
 
-      /* 智能合并保存 */
       async function saveStudioChangesToStudent() {
         if (!currentStudent) return alert('请先选择一位学员！');
         const md = document.getElementById('mdEditor').value;
@@ -3048,7 +3030,7 @@
         }
       }
 
-      /* Markdown 文档解析拆分器 */
+      /* ================= 核心修复：Markdown 文档解析拆分器 ================= */
       function parseMarkdownDoc(md) {
         const lines = md.split('\n');
         let docTitle = '未命名课程大纲';
@@ -3058,10 +3040,14 @@
 
         for (let rawLine of lines) {
           let line = rawLine.trimEnd();
+
+          // 1. 文档标题
           if (line.startsWith('# ') && !line.startsWith('## ')) {
             docTitle = line.replace('# ', '').trim();
             continue;
           }
+
+          // 2. 二级大阶段
           if (line.startsWith('## ')) {
             if (currentSec) sections.push(currentSec);
             const rawSec = line.replace('## ', '').trim();
@@ -3082,6 +3068,13 @@
             currentItem = null;
             continue;
           }
+
+          // 🌟 核心破局 1：拦截作为小节间分隔的单独 --- 或 *** 行，绝不作为文字塞进上一小节末尾，从源头杜绝被识别为 Setext H2 大标题语法！
+          if (/^(\-{3,}|\*{3,}|_{3,})$/.test(line.trim())) {
+            continue;
+          }
+
+          // 3. 三级小节
           if (line.startsWith('### ')) {
             const rawItem = line.replace('### ', '').trim();
             let itemCode = '';
@@ -3097,17 +3090,30 @@
             if (currentSec) currentSec.items.push(currentItem);
             continue;
           }
-          if (currentItem && line.trim().length > 0) currentItem.contentLines.push(line);
+
+          // 🌟 核心破局 2：保留正文中的必要空行，仅忽略小节顶部的首个无意义空行
+          if (currentItem) {
+            if (currentItem.contentLines.length === 0 && line.trim().length === 0) {
+              continue;
+            }
+            currentItem.contentLines.push(line);
+          }
         }
         if (currentSec) sections.push(currentSec);
 
+        // 清除小节末尾的无意义空行并生成最终 content
         sections.forEach(s => {
-          s.items.forEach(it => { it.content = it.contentLines.join('\n'); delete it.contentLines; });
+          s.items.forEach(it => {
+            while (it.contentLines.length > 0 && it.contentLines[it.contentLines.length - 1].trim() === '') {
+              it.contentLines.pop();
+            }
+            it.content = it.contentLines.join('\n');
+            delete it.contentLines;
+          });
         });
         return { title: docTitle, sections };
       }
 
-      /* 教案设计工坊实时预览 (接入成对预读引擎) */
       function renderSyllabus(md) {
         document.getElementById('charCount').innerText = md.length + ' 字';
         const previewArea = document.getElementById('exportArea');
