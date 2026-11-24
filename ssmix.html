@@ -104,7 +104,7 @@
       .markdown-body td:last-child { border-right: none; }
       .markdown-body tbody tr:hover td { background-color: #f8fafc; }
 
-      /* 窄屏容器自适应（拖拽缩小左侧框或窄视口时自动切换单栏） */
+      /* 窄屏容器自适应 */
       .render-canvas.is-narrow .card-header-bar, .is-narrow .card-header-bar { align-items: flex-start; }
       .render-canvas.is-narrow .header-title-inline, .is-narrow .header-title-inline { flex-direction: column; align-items: flex-start; gap: 6px; }
       .render-canvas.is-narrow .card-content-grid, .is-narrow .card-content-grid { grid-template-columns: 1fr !important; gap: 14px; }
@@ -131,6 +131,7 @@
 
       .app-btn { background: #ffffff; color: #334155; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.15s; white-space: nowrap; min-height: 32px; }
       .app-btn:hover { background: #f8fafc; border-color: #94a3b8; }
+      .app-btn:disabled { opacity: 0.65; cursor: wait; }
       .app-btn.primary { background: #0f172a; border-color: #0f172a; color: #ffffff; }
       .app-btn.primary:hover { background: #0284c7; border-color: #0284c7; }
       .app-btn.accent { background: #0284c7; border-color: #0284c7; color: #ffffff; }
@@ -284,11 +285,11 @@
           <label style="font-size: 0.8rem; color: #64748b; cursor: pointer; display:flex; align-items:center; gap:4px;"><input type="checkbox" id="rememberMe" checked> 保持登录状态</label>
           <span style="font-size: 0.78rem; color: #0284c7; cursor: pointer;" onclick="alert('初始账号: admin\n初始密码: 123456')">初始密码</span>
         </div>
-        <button class="app-btn primary" style="width: 100%; padding: 0.6rem; justify-content: center;" onclick="doAdminLogin()">
+        <button class="app-btn primary" id="btnAdminLogin" style="width: 100%; padding: 0.6rem; justify-content: center;" onclick="doAdminLogin()">
           <svg class="svg-icon svg-icon-sm" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" /><polyline points="10 17 15 12 10 7" /><line x1="15" y1="12" x2="3" y2="12" /></svg>
           验证并登入工作台
         </button>
-        <div id="loginErrorMsg" style="color: #dc2626; font-size: 0.8rem; margin-top: 0.6rem; display: none;"></div>
+        <div id="loginErrorMsg" style="color: #dc2626; font-size: 0.8rem; margin-top: 0.6rem; display: none; word-break: break-word;"></div>
       </div>
     </div>
 
@@ -645,15 +646,20 @@
       let currentPageSize = 10;
 
       window.addEventListener('DOMContentLoaded', () => {
-        if (typeof marked !== 'undefined') {
-          marked.setOptions({ gfm: true, breaks: true, pedantic: false });
-        }
-        sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+        try {
+          if (typeof marked !== 'undefined') {
+            marked.setOptions({ gfm: true, breaks: true, pedantic: false });
+          }
+          if (typeof supabase !== 'undefined') {
+            sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+          }
+        } catch (e) { console.error('Init error:', e); }
+
         checkAutoLogin();
-        initStudioResizer();
-        initStudioSyncScroll();
-        initEditorKeyShortcuts();
-        initAdaptiveObservers();
+        try { initStudioResizer(); } catch (e) { console.error(e); }
+        try { initStudioSyncScroll(); } catch (e) { console.error(e); }
+        try { initEditorKeyShortcuts(); } catch (e) { console.error(e); }
+        try { initAdaptiveObservers(); } catch (e) { console.error(e); }
       });
 
       /* ================= 窄屏自适应监听 ================= */
@@ -711,12 +717,12 @@
         return layoutClasses;
       }
 
-      /* 登录与鉴权 */
+      /* ================= 登录与鉴权 ================= */
       async function checkAutoLogin() {
         const savedUser = localStorage.getItem('ss_logged_user');
-        if (savedUser && sbClient) {
+        if (savedUser) {
           document.getElementById('loginOverlay').style.display = 'none';
-          await loadStudents();
+          if (sbClient) await loadStudents();
         } else {
           document.getElementById('loginOverlay').style.display = 'flex';
         }
@@ -726,19 +732,53 @@
         const u = document.getElementById('loginUsername').value.trim();
         const p = document.getElementById('loginPassword').value.trim();
         const errBox = document.getElementById('loginErrorMsg');
-        if (!u || !p) { errBox.innerText = '请输入账号名与密码！'; errBox.style.display = 'block'; return; }
+        const loginBtn = document.getElementById('btnAdminLogin');
+        errBox.style.display = 'none';
+
+        if (!u || !p) {
+          errBox.innerText = '请输入账号名与密码！';
+          errBox.style.display = 'block';
+          return;
+        }
+
+        if (!sbClient && typeof supabase !== 'undefined') {
+          sbClient = supabase.createClient(DEFAULT_SUPABASE_URL, DEFAULT_SUPABASE_ANON_KEY);
+        }
+
+        if (!sbClient) {
+          if (u === 'admin' && p === '123456') { enterWorkbench(u); return; }
+          errBox.innerText = '数据库组件未加载完成（请检查网络是否能访问 jsdelivr CDN 后刷新页面重试）';
+          errBox.style.display = 'block';
+          return;
+        }
+
+        const oldBtnHtml = loginBtn ? loginBtn.innerHTML : '';
+        if (loginBtn) {
+          loginBtn.disabled = true;
+          loginBtn.innerText = '⏳ 正在验证登录...';
+        }
 
         try {
-          const { data, error } = await sbClient.from('ss_admins').select('*').eq('username', u).eq('password_hash', p).single();
+          const queryPromise = sbClient.from('ss_admins').select('*').eq('username', u).eq('password_hash', p).single();
+          const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('连接数据库超时，请检查网络或代理设置')), 10000));
+          const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+
           if (error || !data) {
             if (u === 'admin' && p === '123456') { enterWorkbench(u); return; }
-            errBox.innerText = '账号名或密码错误！'; errBox.style.display = 'block';
+            errBox.innerText = '账号名或密码错误！' + (error && error.message && !error.message.includes('JSON object requested') ? ` (${error.message})` : '');
+            errBox.style.display = 'block';
           } else {
             enterWorkbench(u);
           }
         } catch (err) {
           if (u === 'admin' && p === '123456') { enterWorkbench(u); return; }
-          errBox.innerText = '登录失败: ' + err.message; errBox.style.display = 'block';
+          errBox.innerText = '登录失败: ' + (err.message || err);
+          errBox.style.display = 'block';
+        } finally {
+          if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = oldBtnHtml;
+          }
         }
       }
 
@@ -757,6 +797,7 @@
 
       /* 学员加载、排序与分页 */
       async function loadStudents() {
+        if (!sbClient) return;
         const { data, error } = await sbClient.from('ss_students').select('*').order('created_at', { ascending: false });
         if (error) return console.error(error);
         students = data || [];
@@ -1440,7 +1481,7 @@
         const safeLines = [];
         for (let i = 0; i < lines.length; i++) {
           const t = lines[i].trim();
-          if (t.startsWith('```')) inCodeBlock = !inCodeBlock;
+          if (t.startsWith('\x60\x60\x60')) inCodeBlock = !inCodeBlock;
           if (!inCodeBlock && /^(\-{3,}|\*{3,}|_{3,})$/.test(t) && safeLines.length > 0 && safeLines[safeLines.length - 1].trim() !== '') {
             safeLines.push('');
           }
@@ -1725,7 +1766,7 @@
         }
       }
 
-      /* 导出微信长图（同步继承 is-narrow 窄屏状态与无裁剪坐标系） */
+      /* 导出微信长图 */
       function exportImageNative() {
         const isStudio = document.getElementById('viewStudio').style.display === 'flex';
         const target = isStudio ? document.getElementById('exportArea') : document.getElementById('printableArea');
@@ -1770,3 +1811,28 @@
         const previewArea = document.getElementById('exportArea');
         const doc = document.implementation.createHTMLDocument("课程计划");
         const metaCharset = doc.createElement("meta"); metaCharset.setAttribute("charset", "UTF-8"); doc.head.appendChild(metaCharset);
+        const metaViewport = doc.createElement("meta"); metaViewport.name = "viewport"; metaViewport.content = "width=device-width, initial-scale=1.0"; doc.head.appendChild(metaViewport);
+
+        const currentActualWidth = previewArea.offsetWidth || 820;
+        const isNarrow = previewArea.classList.contains('is-narrow');
+        const narrowRule = isNarrow ? `\n.render-canvas { max-width: ${currentActualWidth}px !important; }` : "";
+
+        const style = doc.createElement("style");
+        style.textContent = `*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif; background-color: #f1f5f9; padding: 36px 16px 80px; } .container { max-width: ${currentActualWidth}px; margin: 0 auto; }` + document.getElementById("coreStyles").textContent + narrowRule;
+        doc.head.appendChild(style);
+
+        const container = doc.createElement("div");
+        container.className = "container render-canvas" + (isNarrow ? " is-narrow" : "");
+        容器.innerHTML = PreviewArea.innerHTML;
+        doc.body.appendChild(container);
+
+        const blob = new Blob(["<!DOCTYPE html>\n" + doc.documentElement.outerHTML], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = `宣发大纲-${currentStudent ? currentStudent.name : '学员'}.html`;
+        link.href = url; link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+    </script>
+  </body>
+</html>
